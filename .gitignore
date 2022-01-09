@@ -1,0 +1,30 @@
+# hidden folders
+.old/
+.debug/
+.tmp/
+.raw/
+
+# python
+__pycache__/
+.npy/
+*.pyc
+
+# tex
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*-blx.bib
+*.bcf
+*.nav
+*.snm
+*.vrb
+*.run.xml
+*.synctex
+*.synctex.gz
+*-converted-to.pdf
+
+# windows
+.DS_Store
