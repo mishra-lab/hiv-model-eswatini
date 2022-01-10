@@ -1,9 +1,6 @@
 import numpy as np
-from utils import _,NAN
-from utils import stats
+from utils import _,NAN,stats,linear_comb
 from utils import tarray as ta
-from utils.ops import lincomb,keystartswith
-import check
 
 # TODO: clean up low/middle/joined group notation + main/casual + new/reg
 
@@ -41,7 +38,7 @@ def get_sample_random(PD=None,seed=None,checks=True):
   P['seed'] = seed
   # adjustments / forcing
   if checks:
-    resample_until(P,PD,check_condom,keystartswith(PD,'PA_condom_'))
+    resample_until(P,PD,check_condom,[k for k in PD.keys() if k.startswith('PA_condom_')])
     resample_until(P,PD,check_A,['PA_ai_mc','PA_ai_sw'])
     resample_until(P,PD,check_acute,['Rbeta_acute','dur_acute'])
     resample_until(P,PD,check_gud,['P_gud_fsw_l','P_gud_fsw_hl'])
@@ -218,7 +215,7 @@ def get_beta_a(P): # [OK]
   Rbeta_as = Rbeta_as / Rbeta_as[0,:].mean()
   P_gud_gp = .07 # REEF: SDHS2006
   P_sexa_l = .6  # REF: (approx) SDHS2006, SHIMS2
-  P_gud_cli_h = lincomb(P['P_gud_cli_h_eps'],P['P_gud_fsw_l'],P_gud_gp)
+  P_gud_cli_h = linear_comb(P['P_gud_cli_h_eps'],P['P_gud_fsw_l'],P_gud_gp)
   P_gud  = np.array([
     [P_gud_gp*P_sexa_l, P_gud_gp, P['P_gud_fsw_l'], P['P_gud_fsw_l']*P['P_gud_fsw_hl']],
     [P_gud_gp*P_sexa_l, P_gud_gp, P_gud_gp, P_gud_cli_h],

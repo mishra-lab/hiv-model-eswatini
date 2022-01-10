@@ -1,6 +1,5 @@
 import numpy as np
-from utils import _,deco
-from utils.array import dtfun
+from utils import _,deco,dtfun
 
 labels = {
   'NX':         'Population Size, Absolute (\'000s)',

@@ -2,9 +2,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from scipy.stats import gaussian_kde as kde
-from model.target import filter_targets,top_q_ll
-from utils.ops import flatten,cinterp,intervalqs,squarish,dictsplit,globs
+from model.target import filter_targets
+from utils import genpath,flatten,clr_interp,interval_qs,squarish,dict_split,globs
 from model import _,dimkeys,dimensions,slicers,out
 
 # TODO: labeling & colors for vsop
@@ -17,19 +16,14 @@ def cmap(N,trim=False):
   cmlist = [cmfun(i) for i in range(N)]
   return cmlist[1:-1] if trim else cmlist
 
-def clean():
-  if os.path.isfile('pyplots.pdf'):
-    os.system('rm pyplots.pdf')
-
 def subplots(row,col):
   fh,ah = plt.subplots(row,col)
   ah = np.reshape(ah,(row,col))
   return fh,ah
 
 def save(fname,*args,close=True,**kwds):
-  plt.savefig(fname,*args,**kwds)
-  if close:
-    plt.close()
+  plt.savefig(genpath(fname),*args,**kwds)
+  if close: plt.close()
   return fname
 
 def labels(x='Year',y=None,title=None,fs=11):
@@ -40,19 +34,6 @@ def labels(x='Year',y=None,title=None,fs=11):
 def lims(x=None,y=None):
   if x is not None: plt.xlim(x)
   if y is not None: plt.ylim(y)
-
-def robustxlim(x,xlim=None,interval=.999):
-  if xlim:
-    return xlim
-  qs   = intervalqs(interval)
-  xlim = tuple(np.nanquantile(x,qs))
-  if xlim[0] == xlim[1]:
-    if xlim[0] == 0:
-      return (-qs[0],+qs[0])
-    else:
-      return (xlim[0]*qs[1],xlim[0]*(1+qs[0]))
-  else:
-    return xlim
 
 def sliceiter(shape,dstr,ah=None,join='\n'):
   # iterate over all stratifications for a shape;
@@ -89,7 +70,7 @@ def line(t,x,taxis=0,**kwds):
 def ribbon(t,x,taxis=0,interval=.9,alpha=.2,median=True,**kwds):
   # x is a list of ndarrays, with time along taxis
   x3 = np.stack([np.moveaxis(xi,taxis,0).reshape((len(t),-1)) for xi in x])
-  qs = [intervalqs(i) for i in flatten(interval)]
+  qs = [interval_qs(i) for i in flatten(interval)]
   label = kwds.pop('label',None)
   for i in range(x3.shape[2]):
     for q in qs:
@@ -154,7 +135,7 @@ def targets_vS(T,oname,sname1,sname2,vsop,label=True,**kwds):
 def plot_S(fun,t,R,sname,**kwds):
   S = slicers[sname]
   color = kwds.pop('color',S.color)
-  fkwds = dictsplit(kwds,['tvec','rate'])
+  fkwds = dict_split(kwds,['tvec','rate'])
   if isinstance(fun,str):
     fun = out.by_name(fun)
   if isinstance(R,list):
@@ -168,7 +149,7 @@ def plot_vS(fun,t,R,sname1,sname2,vsop,**kwds):
   S1 = slicers[sname1]
   S2 = slicers[sname2]
   color = kwds.pop('color',cinterp(S1.color,S2.color))
-  fkwds = dictsplit(kwds,['tvec','rate'])
+  fkwds = dict_split(kwds,['tvec','rate'])
   if isinstance(R,list):
     x = [out.vs_pop(fun,Ri,S1.pop,S2.pop,vsop,**fkwds,aggr=True) for Ri in R]
     ribbon(t,x,color=color,label=out.vs_label(S1.label,S2.label,vsop),**kwds)
@@ -179,7 +160,7 @@ def plot_vS(fun,t,R,sname1,sname2,vsop,**kwds):
 def plot_SvR(fun,t,R1,R2,sname,vsop,**kwds):
   S = slicers[sname]
   color = kwds.pop('color',S.color)
-  fkwds = dictsplit(kwds,['tvec','rate'])
+  fkwds = dict_split(kwds,['tvec','rate'])
   if isinstance(R1,list):
     x = [out.vs_R(fun,R1i,R2i,vsop,**S.pop,**fkwds,aggr=True) for R1i,R2i in zip(R1,R2)]
     ribbon(t,x,color=color,label=S.label,**kwds)

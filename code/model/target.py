@@ -1,7 +1,6 @@
 import numpy as np
 from inspect import signature
-from utils import stats
-from utils.ops import dictstr,flatten
+from utils import stats,flatten,dict_str
 from model import out
 
 class Target():
@@ -19,7 +18,7 @@ class Target():
       self.name,
       self.popstr(),
       self.dist.dist.name,
-      dictstr(dict(mu=self.mean(),ci=self.ci()),3),
+      dict_str(dict(mu=self.mean(),ci=self.ci()),3),
     )
 
   def __repr__(self):
@@ -30,9 +29,9 @@ class Target():
 
   def popstr(self):
     if not self.vsop:
-      return dictstr(self.pop)
+      return dict_str(self.pop)
     else:
-      return out.vs_label(dictstr(self.pop1),dictstr(self.pop2),self.vsop)
+      return out.vs_label(dict_str(self.pop1),dict_str(self.pop2),self.vsop)
 
   def ll(self,x,interval=None):
     if self.weight:

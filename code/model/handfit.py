@@ -1,6 +1,6 @@
-import os,time
+import os
 import numpy as np
-from utils.ops import flatten,squarish
+from utils import flatten,squarish
 from model import out,target,plot,slicers
 
 plotsize = 3 # inches

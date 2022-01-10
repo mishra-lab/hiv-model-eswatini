@@ -1,12 +1,10 @@
 import numpy as np
-from utils import tarray as ta
-from utils import os,stats,rootpath
-from utils.ops import flatten,ppool,minimize,npsave,npload,filehash
+from utils import stats,rootpath,genpath,flatten,ppool,minimize
+from utils import fio
 from model import slicers,params,system,target,out,plot,handfit
-import ipdb
 
 plotsize = 3 # inches
-hash = filehash('params.py','system.py','target.py',root=rootpath('code','model'))
+hash = fio.filehash('params.py','system.py','target.py',root=rootpath('code','model'))
 
 def Rqx_by_group(Rqx=None,**kwds):
   # create/update a relative-rate using pop=value kwds, e.g. FSW=1.5
@@ -54,10 +52,15 @@ def plot_diff(t,R1s,R2s,oname,snames,intervals=.95,**kwds):
   fh.tight_layout()
   return fh,ah
 
-def fname(key,N,N0=0,ext=''):
-  return '{}_N={}-{}{}'.format(key,N0,N0+N-1,ext)
+def fname(case,key,N,N0):
+  if case=='data':
+    path,ext = ['data','.npy',hash],''
+  if case=='fig':
+    path,ext = ['out','fig',hash],'.pdf'
+  return genpath(rootpath(*path,'{}_N={}-{}{}'.format(key,N0,N0+N-1,ext)))
 
 def run(N,N0=0,sample=True,refit=True,top=.10):
+  # TODO: clean this up?
   t  = system.f_t(t1=2025)
   t2 = system.f_t(t1=2050)
   T1 = target.get_all_esw()
@@ -66,17 +69,17 @@ def run(N,N0=0,sample=True,refit=True,top=.10):
     P1s_sam = params.get_n_all(N,seeds=range(N0,N0+N))
     R1s_sam = system.run_n(P1s_sam,t,T1)
     R1s_sam = system.drop_fails(R1s_sam)[0]
-    handfit.plot_all(t,R1s_sam,T1,fname=fname('handfit_sam',N,N0,'.pdf'))
+    handfit.plot_all(t,R1s_sam,T1,fname=fname('fig','handfit_sam',N,N0))
     # save top % samples
     R1s = target.top_q_ll(R1s_sam,top=top)
     P1s = [R1['P'] for R1 in R1s]
-    npsave(os.path.join(hash,fname('P1s',N,N0)),P1s)
+    fio.save(fname('data','P1s',N,N0),P1s)
   else:
-    P1s = npload(os.path.join(hash,fname('P1s',N,N0)))
+    P1s = fio.load(fname('data','P1s',N,N0))
   R1s = system.run_n(P1s,t2,T1) # re-run for t2
   R1s = system.drop_fails(R1s)[0] # TODO: better solution?
   P1s = [R1['P'] for R1 in R1s]   # TODO: better solution?
-  handfit.plot_all(t2,R1s,T1,fname=fname('handfit_base',N,N0,'.pdf'))
+  handfit.plot_all(t2,R1s,T1,fname=fname('fig','handfit_base',N,N0))
   # re-fitting definitions
   PDD = {'0-1':stats.uniform(0,1),'1-1':stats.uniform(1-1e-9,1+1e-9),'1-50':stats.uniform(1,50)}
   for case in ['LoLo','LoHi','HiLo']:
@@ -95,14 +98,14 @@ def run(N,N0=0,sample=True,refit=True,top=.10):
     if refit:
       # resample relative-dx,tx,ux to fit T2
       P2s = fit_cascade_n(P1s,PD,T2,t,ftol=.01)
-      npsave(os.path.join(hash,fname('P2s_'+case,N,N0)),P2s)
+      fio.save(fname('data','P2s_'+case,N,N0),P2s)
     else:
-      P2s = npload(os.path.join(hash,fname('P2s_'+case,N,N0)))
+      P2s = fio.load(fname('data','P2s_'+case,N,N0))
     R2s = system.run_n(P2s,t2,T2) # re-run for t2
-    handfit.plot_all(t2,R2s,T2,fname=fname('handfit_'+case,N,N0,'.pdf'))
+    handfit.plot_all(t2,R2s,T2,fname=fname('fig','handfit_'+case,N,N0))
     # plot differences
     fh,ah = plot_diff(t2,R2s,R1s,'cuminfect',['ALL','FSW','Cli'],intervals=[.5,.95])
     for ahi in ah.flatten(): ahi.set_ylim((0,1))
-    plot.save('cia_'+case+'.pdf')
+    plot.save(fname('fig','cia_'+case,N,N0))
 
   

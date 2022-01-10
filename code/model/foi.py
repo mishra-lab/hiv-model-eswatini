@@ -1,6 +1,5 @@
 import numpy as np
-from utils import _,deco
-from utils.ops import lincomb
+from utils import _,deco,linear_comb
 
 @deco.nowarn
 #@profile
@@ -9,8 +8,8 @@ def f_beta_p(P,t):
   PA_condom = P['PA_condom'](t) * P['RPA_condom_s']
   PA_circum = P['PA_circum'](t)
   P_gud_t   = P['P_gud_t'](t) * P['P_gud']
-  Rbeta_gud_s = lincomb(P_gud_t,P['Rbeta_gud_s'],1).reshape([1,1,2,4,1,1,1,1])
-  Rbeta_gud_i = lincomb(P_gud_t,P['Rbeta_gud_i'],1).reshape([1,1,1,1,2,4,1,1])
+  Rbeta_gud_s = linear_comb(P_gud_t,P['Rbeta_gud_s'],1).reshape([1,1,2,4,1,1,1,1])
+  Rbeta_gud_i = linear_comb(P_gud_t,P['Rbeta_gud_i'],1).reshape([1,1,1,1,2,4,1,1])
   beta_a = P['beta_a'] * Rbeta_gud_s * Rbeta_gud_i
   beta_a = np.minimum(beta_a,.5) # protect against nan (assumed max beta_a = .5)
   B = 1 - np.exp(np.sum( # for speeed: equivalent to 1 - np.prod((1-R*beta)^(A) * ...)
