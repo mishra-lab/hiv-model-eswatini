@@ -1,4 +1,4 @@
 from model import scenario
 
-scenario.run(700)
-scenario.run(700,sample=False,refit=False)
+scenario.main(7)
+scenario.main(7,sample=False,refit=False)

@@ -14,6 +14,7 @@ def genpath(fname):
 def save(fname,obj):
   # save obj to file via numpy, ensuring the path exists
   np.save(genpath(fname),obj)
+  return obj
 
 def load(fname):
   # load obj from file via numpy & avoid 0-dimensional array obj for dict and other obj types

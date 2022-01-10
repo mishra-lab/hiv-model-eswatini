@@ -6,6 +6,21 @@ from model import slicers,params,system,target,out,plot,handfit
 plotsize = 3 # inches
 hash = fio.filehash('params.py','system.py','target.py',root=rootpath('code','model'))
 
+def fname(case,key,N,N0):
+  if case=='data':
+    path,ext = ['data','.npy',hash],''
+  if case=='fig':
+    path,ext = ['out','fig',hash],'.pdf'
+  return genpath(rootpath(*path,'{}_N={}-{}{}'.format(key,N0,N0+N-1,ext)))
+
+def get_sample(t,T,N,N0=0,top=.10):
+  Ps_sam = params.get_n_all(N,seeds=range(N0,N0+N))
+  Rs_sam = system.run_n(Ps_sam,t,T)
+  Rs_sam = system.drop_fails(Rs_sam)[0]
+  handfit.plot_all(t,Rs_sam,T,fname=fname('fig','handfit_sam',N,N0))
+  Rs = target.top_q_ll(Rs_sam,top=top)
+  return Rs
+
 def Rqx_by_group(Rqx=None,**kwds):
   # create/update a relative-rate using pop=value kwds, e.g. FSW=1.5
   if Rqx is None: Rqx = np.ones((2,4,1))
@@ -39,7 +54,9 @@ def fit_cascade_n(Ps,PD,T,t,P0=None,**kwds):
   fun = lambda P: fit_cascade(P,PD=PD,T=T,t=t,P0=P0,**kwds)
   return ppool(min(len(Ps),7)).map(fun,Ps)
 
-def plot_diff(t,R1s,R2s,oname,snames,intervals=.95,**kwds):
+def plot_diff(t,R1s,R2s,oname,snames,intervals=.95,ylim=None,**kwds):
+  assert len(R1s)==len(R2s), 'R1s and R2s must have the same length'
+  R1s,R2s = system.drop_fails(R1s,R2s)
   fh,ah = plot.subplots(1,len(snames))
   intervals = flatten(intervals)
   for i,sname in enumerate(snames): # subplots
@@ -48,64 +65,59 @@ def plot_diff(t,R1s,R2s,oname,snames,intervals=.95,**kwds):
       x='Time (years)',y=out.labels.get(oname,oname) if i==0 else None)
     for interval in intervals:
       plot.plot_SvR(oname,t,R1s,R2s,sname,vsop='1-2/1',tvec=t,interval=interval)
+    plot.plt.ylim(ylim)
   fh.set_size_inches((plotsize*len(snames),plotsize))
   fh.tight_layout()
   return fh,ah
 
-def fname(case,key,N,N0):
-  if case=='data':
-    path,ext = ['data','.npy',hash],''
-  if case=='fig':
-    path,ext = ['out','fig',hash],'.pdf'
-  return genpath(rootpath(*path,'{}_N={}-{}{}'.format(key,N0,N0+N-1,ext)))
+def get_refit_case(case):
+  eps = 1e-9
+  PDD = {
+    '0-1':  stats.uniform(l=0,h=1),
+    '1-1':  stats.uniform(l=1-eps,h=1+eps),
+    '1-50': stats.uniform(l=1,h=50),
+  }
+  if case=='LoLo':
+    T2 = target.get_cascade_2020('ssa-lowest')\
+       + target.get_cascade_2020('ssa-lowest-fsw')
+    PD = {'Rdx:ALL':PDD['0-1'],'Rtx:ALL':PDD['0-1'],'Rux:ALL':PDD['1-50'],
+          'Rdx:FSW':PDD['0-1'],'Rtx:FSW':PDD['0-1'] }
+  if case=='LoHi':
+    T2 = target.get_cascade_2020('ssa-lowest')
+    PD = {'Rdx:ALL':PDD['0-1'],'Rtx:ALL':PDD['0-1'],'Rux:ALL':PDD['1-50'],
+          'Rdx:FSW':PDD['1-1'],'Rtx:FSW':PDD['1-1'] }
+  if case=='HiLo':
+    T2 = target.get_cascade_2020('ssa-lowest-fsw')
+    PD = {'Rdx:ALL':PDD['1-1'],'Rtx:ALL':PDD['1-1'],'Rux:ALL':PDD['1-1'],
+          'Rdx:FSW':PDD['0-1'],'Rtx:FSW':PDD['0-1'],'Rux:FSW':PDD['1-50'] }
+  return T2,PD
 
-def run(N,N0=0,sample=True,refit=True,top=.10):
-  # TODO: clean this up?
+def main(N,N0=0,sample=True,refit=True,top=.10):
   t  = system.f_t(t1=2025)
   t2 = system.f_t(t1=2050)
   T1 = target.get_all_esw()
+  # base case (fitted)
   if sample:
-    # run model with random samples
-    P1s_sam = params.get_n_all(N,seeds=range(N0,N0+N))
-    R1s_sam = system.run_n(P1s_sam,t,T1)
-    R1s_sam = system.drop_fails(R1s_sam)[0]
-    handfit.plot_all(t,R1s_sam,T1,fname=fname('fig','handfit_sam',N,N0))
-    # save top % samples
-    R1s = target.top_q_ll(R1s_sam,top=top)
-    P1s = [R1['P'] for R1 in R1s]
-    fio.save(fname('data','P1s',N,N0),P1s)
+    R1s = get_sample(t,T1,N,N0=N0,top=top)
+    P1s = fio.save(fname('data','P1s',N,N0),[R['P'] for R in R1s])
   else:
     P1s = fio.load(fname('data','P1s',N,N0))
-  R1s = system.run_n(P1s,t2,T1) # re-run for t2
-  R1s = system.drop_fails(R1s)[0] # TODO: better solution?
-  P1s = [R1['P'] for R1 in R1s]   # TODO: better solution?
-  handfit.plot_all(t2,R1s,T1,fname=fname('fig','handfit_base',N,N0))
-  # re-fitting definitions
-  PDD = {'0-1':stats.uniform(0,1),'1-1':stats.uniform(1-1e-9,1+1e-9),'1-50':stats.uniform(1,50)}
+  # re-run for t2
+  R1s = system.run_n(P1s,t2,T1)
+  handfit.plot_all(t2,R1s,T1,fname=fname('fig','handfit_base',N,N0)) # DEBUG
+  # counterfactuals
   for case in ['LoLo','LoHi','HiLo']:
-    if case=='LoLo':
-      T2 = target.get_cascade_2020('ssa-lowest')+target.get_cascade_2020('ssa-lowest-fsw')
-      PD = {'Rdx:ALL':PDD['0-1'],'Rtx:ALL':PDD['0-1'],'Rux:ALL':PDD['1-50'],
-            'Rdx:FSW':PDD['0-1'],'Rtx:FSW':PDD['0-1'] }
-    if case=='LoHi':
-      T2 = target.get_cascade_2020('ssa-lowest')
-      PD = {'Rdx:ALL':PDD['0-1'],'Rtx:ALL':PDD['0-1'],'Rux:ALL':PDD['1-50'],
-            'Rdx:FSW':PDD['1-1'],'Rtx:FSW':PDD['1-1'] }
-    if case=='HiLo':
-      T2 = target.get_cascade_2020('ssa-lowest-fsw')
-      PD = {'Rdx:ALL':PDD['1-1'],'Rtx:ALL':PDD['1-1'],'Rux:ALL':PDD['1-1'],
-            'Rdx:FSW':PDD['0-1'],'Rtx:FSW':PDD['0-1'],'Rux:FSW':PDD['1-50'] }
+    T2,PD = get_refit_case(case)
     if refit:
-      # resample relative-dx,tx,ux to fit T2
       P2s = fit_cascade_n(P1s,PD,T2,t,ftol=.01)
       fio.save(fname('data','P2s_'+case,N,N0),P2s)
     else:
       P2s = fio.load(fname('data','P2s_'+case,N,N0))
-    R2s = system.run_n(P2s,t2,T2) # re-run for t2
-    handfit.plot_all(t2,R2s,T2,fname=fname('fig','handfit_'+case,N,N0))
-    # plot differences
-    fh,ah = plot_diff(t2,R2s,R1s,'cuminfect',['ALL','FSW','Cli'],intervals=[.5,.95])
-    for ahi in ah.flatten(): ahi.set_ylim((0,1))
+    # re-run for t2
+    R2s = system.run_n(P2s,t2,T2)
+    handfit.plot_all(t2,R2s,T2,fname=fname('fig','handfit_'+case,N,N0)) # DEBUG
+    # plot cia: cumulative infections averted
+    plot_diff(t2,R2s,R1s,'cuminfect',['ALL','FSW','Cli'],intervals=[.5,.95],ylim=(0,1))
     plot.save(fname('fig','cia_'+case,N,N0))
 
   

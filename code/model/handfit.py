@@ -1,12 +1,13 @@
 import os
 import numpy as np
 from utils import flatten,squarish
-from model import out,target,plot,slicers
+from model import slicers,system,out,target,plot
 
 plotsize = 3 # inches
 tfname = '.handfit-{}.pdf'
 
-def plot_all(t,Rs,T,fname='handfit.pdf',tops=(.5,.10,.02)):
+def plot_all(t,Rs,T,fname='handfit.pdf',tops=(.5,.10,.02),drop=True):
+  if drop: Rs = system.drop_fails(Rs)[0]
   Rss = [target.top_q_ll(Rs,top) for top in tops] if tops else [Rs]
   tfnames = [
     # param histograms
