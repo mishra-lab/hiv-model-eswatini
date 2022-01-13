@@ -1,5 +1,6 @@
 import warnings
 import numpy as np
+from utils import itslice
 
 def nowarn(fun):
   # don't print warnings while executing fun
@@ -27,7 +28,7 @@ def tslice(targs=[]):
   def wrapper(fun):
     def decorator(t=None,tvec=None,**kwds):
       if t is not None:
-        it = np.in1d(tvec,t) # boolean
+        it = itslice(t,tvec) # boolean
         for k in kwds.keys():
           if k in targs:
             kwds[k] = kwds[k][it] # slicing (keeps singleton)

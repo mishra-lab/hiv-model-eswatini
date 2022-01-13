@@ -1,5 +1,7 @@
 import os
+import csv
 import numpy as np
+from datetime import datetime
 
 therootpath = os.path.abspath(__file__).replace(os.path.join('code','utils','fio.py'),'')
 
@@ -22,6 +24,21 @@ def load(fname):
   if not obj.shape: # dict etc.
     return obj[()]
   return obj # array-like
+
+def save_csv(fname,obj):
+  with open(genpath(fname),'w') as f:
+    if isinstance(obj[0],dict):
+      w = csv.DictWriter(f,obj[0].keys())
+      w.writeheader()
+      w.writerows(obj)
+    else:
+      w = csv.writer(f)
+      w.writerows(obj)
+
+def datestamp(date=None):
+  # standard formatted datestamp
+  if date is None: date = datetime.now()
+  return date.strftime('%Y-%m-%d')
 
 def filehash(*fnames,root=None,N=6):
   # get a unique hash based on the current state of some files
