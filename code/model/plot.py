@@ -129,7 +129,7 @@ def targets_vS(T,oname,sname1,sname2,vsop,label=True,**kwds):
   S2 = slicers[sname2]
   labelstr = out.vs_label(S1.label,S2.label,vsop)
   for Ti in filter_targets(T,name=oname,pop1=S1.pop,pop2=S2.pop,vsop=vsop):
-    target(Ti,color=cinterp(S1.color,S2.color),label=(labelstr if label else None),**kwds)
+    target(Ti,color=clr_interp(S1.color,S2.color),label=(labelstr if label else None),**kwds)
     label = False # only label once
 
 def plot_S(fun,t,R,sname,**kwds):
@@ -148,7 +148,7 @@ def plot_S(fun,t,R,sname,**kwds):
 def plot_vS(fun,t,R,sname1,sname2,vsop,**kwds):
   S1 = slicers[sname1]
   S2 = slicers[sname2]
-  color = kwds.pop('color',cinterp(S1.color,S2.color))
+  color = kwds.pop('color',clr_interp(S1.color,S2.color))
   fkwds = dict_split(kwds,['tvec','rate'])
   if isinstance(R,list):
     x = [out.vs_pop(fun,Ri,S1.pop,S2.pop,vsop,**fkwds,aggr=True) for Ri in R]

@@ -1,5 +1,5 @@
 import numpy as np
-from model import foi,check,target
+from model import foi,target
 from utils import _,deco,ppool
 
 def f_t(t0=1980,t1=2030,dt=0.1):
