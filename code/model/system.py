@@ -34,6 +34,7 @@ def run(P,t=None,T=None,RPts=None,interval=None):
     return R
   if T is not None:
     R['ll'] = target.get_model_ll(T,R,t,interval=interval)
+    R['P']['ll'] = R['ll']
   if RPts:
     for RPt in RPts:
       R[RPt] = np.rollaxis(P[RPt](t),-1)
