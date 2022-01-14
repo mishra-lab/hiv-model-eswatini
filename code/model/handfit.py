@@ -1,6 +1,5 @@
-import os
 import numpy as np
-from utils import flatten,squarish
+from utils import flatten,squarish,fio
 from model import slicers,system,out,target,plot
 
 plotsize = 3 # inches
@@ -34,7 +33,6 @@ def plot_all(t,Rs,T,fname='handfit.pdf',tops=(.5,.10,.02),drop=True):
     plot_output(t,Rss,'treated_u', ['ALL','W','M','FSW'],T=T),
     plot_output(t,Rss,'vls_u',     ['ALL','W','M','FSW'],T=T),
     plot_output(t,Rss,'condom',    ['LT','ST','SWR','SWO']),
-    
     plot_output(t,Rss,'circum',    ['*']),
     plot_output(t,Rss,'gud',       ['*']),
     # plot_output(t,Rss,'dx_rate',   ['W','M','FSW']),
@@ -42,7 +40,7 @@ def plot_all(t,Rs,T,fname='handfit.pdf',tops=(.5,.10,.02),drop=True):
     # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
     # plot_output(t,Rss,'cuminfect', ['W','M','FSW'],tvec=t,T=T),
   ]
-  os.system('pdftk {} cat output {} && rm {}'.format(' '.join(tfnames),fname,' '.join(tfnames)))
+  fio.pdfmerge(fname,tfnames,rm=True)
 
 def plot_param(Rss,pname,t=None,**kwds):
   p0 = Rss[0][0]['P'][pname]

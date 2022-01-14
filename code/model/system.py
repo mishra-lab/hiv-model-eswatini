@@ -28,6 +28,7 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
 def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = f_t()
   if RPts is None: RPts = ['PA_condom','PA_circum','P_gud_t','dx','tx','Rtx_h']
+  print(P['seed'],end=' ',flush=True)
   R = solve(P,t)
   if not R:
     return R
