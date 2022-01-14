@@ -1,6 +1,6 @@
 from pathos.multiprocessing import ProcessingPool
 
-global cpus
+cpus = 7
 
 def ppool(N,*args,**kwds):
   global cpus
