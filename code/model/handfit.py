@@ -11,32 +11,32 @@ def plot_all(t,Rs,T,fname='handfit.pdf',tops=(.5,.10,.02),drop=True):
   Rss = [target.top_q_ll(Rs,top) for top in tops] if tops else [Rs]
   tfnames = [
     # param histograms
-    # plot_param(Rss,'PX_si',    dstr='si'),
-    # plot_param(Rss,'A_ap',     dstr='ap'),
-    # plot_param(Rss,'C_psi',    dstr='psi'),
-    # plot_param(Rss,'Rbeta_as', dstr='as'),
-    # plot_param(Rss,'Rbeta_h',  dstr='h'),
-    # plot_param(Rss,'P_gud',    dstr='si'),
-    # plot_param(Rss,'EHM_acute',dstr=''),
-    # plot_param(Rss,'t0_hiv',   dstr=''),
+    plot_param(Rss,'PX_si',    dstr='si'),
+    plot_param(Rss,'A_ap',     dstr='ap'),
+    plot_param(Rss,'C_psi',    dstr='psi'),
+    plot_param(Rss,'Rbeta_as', dstr='as'),
+    plot_param(Rss,'Rbeta_h',  dstr='h'),
+    plot_param(Rss,'P_gud',    dstr='si'),
+    plot_param(Rss,'EHM_acute',dstr=''),
+    plot_param(Rss,'t0_hiv',   dstr=''),
     # output projections
-    # plot_output(t,Rss,'NX',        ['ALL'],T=T),
-    # plot_output(t,Rss,'Ph',        ['AHI','>500','<500','<350','<200'],T=T),
-    # plot_output(t,Rss,'X_rate',    ['ALL'],rate='death_hc',ylab='HIV Mortality'),
-    plot_output(t,Rss,'prevalence',['ALL','W','M','FSW'],T=T),
-    # plot_output(t,Rss,'prevalence',
-    #   [('FSW.H','FSW.L'),('FSW','W'),('WH','WL'),('Cli.H','Cli.L'),('Cli','M'),('MH','ML')],
-    #   vsop='1/2',T=T,ylim=(1,10)),
-    # plot_output(t,Rss,'incidence', ['ALL','W','M','FSW'],T=T),
+    plot_output(t,Rss,'NX',        ['ALL'],T=T),
+    plot_output(t,Rss,'Ph',        ['AHI','>500','<500','<350','<200'],T=T),
+    plot_output(t,Rss,'X_rate',    ['ALL'],rate='death_hc',ylab='HIV Mortality'),
+    plot_output(t,Rss,'prevalence',['ALL','W','M','FSW'],T=T,ylim=(0,1)),
+    plot_output(t,Rss,'prevalence',
+      [('FSW.H','FSW.L'),('FSW','W'),('WH','WL'),('Cli.H','Cli.L'),('Cli','M'),('MH','ML')],
+      vsop='1/2',T=T,ylim=(1,5)),
+    plot_output(t,Rss,'incidence', ['ALL','W','M','FSW'],T=T),
     plot_output(t,Rss,'diagnosed', ['ALL','W','M','FSW'],T=T),
     plot_output(t,Rss,'treated_c', ['ALL','W','M','FSW'],T=T),
     plot_output(t,Rss,'vls_c',     ['ALL','W','M','FSW'],T=T),
-    # plot_output(t,Rss,'treated_u', ['ALL','W','M','FSW'],T=T),
-    # plot_output(t,Rss,'vls_u',     ['ALL','W','M','FSW'],T=T),
-    # plot_output(t,Rss,'condom',    ['LT','ST','SWR','SWO']),
+    plot_output(t,Rss,'treated_u', ['ALL','W','M','FSW'],T=T),
+    plot_output(t,Rss,'vls_u',     ['ALL','W','M','FSW'],T=T),
+    plot_output(t,Rss,'condom',    ['LT','ST','SWR','SWO']),
     
-    # plot_output(t,Rss,'circum',    ['*']),
-    # plot_output(t,Rss,'gud',       ['*']),
+    plot_output(t,Rss,'circum',    ['*']),
+    plot_output(t,Rss,'gud',       ['*']),
     # plot_output(t,Rss,'dx_rate',   ['W','M','FSW']),
     # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
     # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
@@ -46,13 +46,13 @@ def plot_all(t,Rs,T,fname='handfit.pdf',tops=(.5,.10,.02),drop=True):
 
 def plot_param(Rss,pname,t=None,**kwds):
   p0 = Rss[0][0]['P'][pname]
-  r,c = squarish(np.prod(np.shape(p0)))
-  fh,ah = plot.subplots(r,c)
+  row,col = squarish(np.size(p0))
+  fh,ah = plot.subplots(row,col)
   kwds.update(ah=ah,gbins=True,density=True)
   cmap = plot.cmap(len(Rss),trim=True)
   for r,Rs in enumerate(Rss): # subsets of model fits
     plot.hist_p([R['P'] for R in Rs],pname,color=cmap[r],**kwds)
-  fh.set_size_inches((plotsize*c,plotsize*r))
+  fh.set_size_inches((plotsize*col,plotsize*row))
   fh.tight_layout()
   return plot.save(tfname.format(pname))
 

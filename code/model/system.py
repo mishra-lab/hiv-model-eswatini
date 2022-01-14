@@ -1,9 +1,9 @@
 import numpy as np
 from model import foi,target
-from utils import _,deco,ppool
+from utils import _,deco,parallel
 
 def f_t(t0=1980,t1=2030,dt=0.1):
-  return np.round(np.arange(t0,t1,dt),9)
+  return np.round(np.arange(t0,t1+dt,dt),9)
 
 @deco.nowarn
 def f_X(X0,t):
@@ -18,10 +18,10 @@ def drop_fails(*Rss):
   oks = [all(Ris) for Ris in zip(*Rss)]
   return tuple([R for (R,ok) in zip(Rs,oks) if ok] for Rs in Rss)
 
-def run_n(Ps,t=None,T=None,parallel=True,cpus=7,**kwds):
-  if parallel:
+def run_n(Ps,t=None,T=None,para=True,**kwds):
+  if para:
     fun = lambda P: run(P,t=t,T=T,**kwds)
-    return ppool(min(len(Ps),cpus)).map(fun,Ps)
+    return parallel.ppool(len(Ps)).map(fun,Ps)
   else:
     return [run(P,t=t,T=T,**kwds) for P in Ps]
 

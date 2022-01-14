@@ -1,6 +1,6 @@
 import numpy as np
-from utils import stats,rootpath,genpath,flatten,ppool,minimize,itslice
-from utils import fio,deco
+from utils import rootpath,genpath,flatten,minimize,itslice
+from utils import stats,fio,deco,parallel
 from model import slicers,params,system,target,out,plot,handfit
 
 plotsize = 3 # inches
@@ -54,7 +54,7 @@ def fit_cascade(P,PD,T,t,P0=None,ftol=.01):
 
 def fit_cascade_n(Ps,PD,T,t,P0=None,**kwds):
   fun = lambda P: fit_cascade(P,PD=PD,T=T,t=t,P0=P0,**kwds)
-  return ppool(min(len(Ps),7)).map(fun,Ps)
+  return parallel.ppool(len(Ps)).map(fun,Ps)
 
 def get_sens_data(R,t,case):
   # extract outputs of interest & selected model params for sensitivity analysis
@@ -115,9 +115,9 @@ def get_refit_case(case):
           'Rdx:FSW':PDD['0-1'],'Rtx:FSW':PDD['0-1'],'Rux:FSW':PDD['1-50'] }
   return T2,PD
 
-def main(N,N0=0,sample=True,refit=True,top=.10,sens=True):
+def main(N,N0=0,sample=True,cf=True,refit=True,top=.10,sens=True):
   t  = system.f_t(t1=2025)
-  t2 = system.f_t(t1=2050.05,dt=.05) # TEMP
+  t2 = system.f_t(t1=2050,dt=.05)
   T1 = target.get_all_esw()
   # base case (fitted)
   if sample:
@@ -129,6 +129,7 @@ def main(N,N0=0,sample=True,refit=True,top=.10,sens=True):
   R1s = system.run_n(P1s,t2,T1)
   if sens: fio.save_csv(fname('csv','sens_base',N,N0),get_sens_data_n(R1s,t2,'base'))
   handfit.plot_all(t2,R1s,T1,fname=fname('fig','handfit_base',N,N0)) # DEBUG
+  if not cf: return
   # counterfactuals
   for case in ['LoLo','LoHi','HiLo']:
     T2,PD = get_refit_case(case)
