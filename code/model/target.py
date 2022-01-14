@@ -70,6 +70,7 @@ def get_model_ll(T,R,t,interval=None):
   return ll
 
 def top_q_ll(Rs,top=.1,ll='ll'):
+  if isinstance(top,int): top = top / len(Rs)
   llcut = np.nanquantile([R[ll] for R in Rs],1-top)
   return [R for R in Rs if R[ll] >= llcut]
 
