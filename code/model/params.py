@@ -39,9 +39,9 @@ def get_sample_random(PD=None,seed=None,checks=True):
   # adjustments / forcing
   if checks:
     resample_until(P,PD,check_condom,[k for k in PD.keys() if k.startswith('PA_condom_')])
-    resample_until(P,PD,check_A,['PA_ai_mc','PA_ai_sw'])
+    resample_until(P,PD,check_A,['PA_ai_mcq','PA_ai_swq','A_reg'])
     resample_until(P,PD,check_acute,['Rbeta_acute','dur_acute'])
-    resample_until(P,PD,check_gud,['P_gud_fsw_l','P_gud_fsw_hl'])
+    resample_until(P,PD,check_gud,['P_gud_fsw_l','RP_gud_fsw_h:l'])
   return P
 
 def resample_until(P,PD,checker,keys,log=False):
@@ -65,25 +65,25 @@ def def_sample_distrs():
   't0_hiv':               stats.uniform(l=1980,h=1985),
   'PX_fsw':               stats.beta_binom(p=.028,n=112),
   'PX_mm':                stats.beta_binom(p=.05,n=60),
-  'dur_fsw_l':            stats.gamma_p(p=4.9,v=.21),
-  'dur_fsw_h':            stats.gamma_p(p=10,v=.26),
+  'dur_fsw_l':            stats.gamma_p(p=3.6,v=.96),
+  'dur_fsw_h':            stats.gamma_p(p=10,v=0.26),
   'dur_cli':              stats.gamma_p(p=10,v=5.32),
-  'Pturn_h:m':            stats.beta_binom(p=.724,n=18),
+  'Pturn_fsw_h:m':        stats.beta_binom(p=.724,n=18),
   # C
   'C_new_fswl':           stats.gamma_p(p=4.1,v=.8),  # per month
   'C_reg_fswl':           stats.gamma_p(p=8.4,v=1.6), # per month 
-  'RC_new_fsw_hl':        stats.gamma_p(p=2.0,v=.05),
-  'RC_reg_fsw_hl':        stats.gamma_p(p=1.5,v=.01),
+  'RC_new_fsw_h:l':       stats.gamma_p(p=2.0,v=.05),
+  'RC_reg_fsw_h:l':       stats.gamma_p(p=1.5,v=.01),
   'A_swq_cli':            stats.gamma_p(p=2.8,v=.953), # per month
-  'RA_swq_cli_hl':        stats.gamma_p(p=2.8,v=.953),
+  'RA_swq_cli_h:l':       stats.gamma_p(p=2.8,v=.953),
   # A
   'A_mc':                 stats.gamma_p(p=78,v=1130),
-  # 'A_reg':                stats.gamma_p(p=2,v=.2),
+  'A_reg':                stats.gamma_p(p=2.6,v=.411),
   'dur_cas':              stats.beta_binom(p=.383,n=6),
-  'PA_ai_mc':             stats.beta_binom(p=.059,n=30),
-  'PA_ai_sw':             stats.beta_binom(p=.097,n=14),
+  'PA_ai_mcq':            stats.beta_binom(p=.059,n=30),
+  'PA_ai_swq':            stats.beta_binom(p=.097,n=14),
   # condoms
-  'RPA_condom_av':        stats.beta_binom(p=.768,n= 12),
+  'RPA_condom_a:v':       stats.beta_binom(p=.768,n= 12),
   'PA_condom_msp_1988':   stats.beta_binom(p=.022,n=100),
   'PA_condom_msp_2006':   stats.beta_binom(p=.230,n=483),
   'PA_condom_msp_2016':   stats.beta_binom(p=.416,n= 75),
@@ -98,30 +98,31 @@ def def_sample_distrs():
   'PA_condom_reg_2014':   stats.beta_binom(p=.759,n=11),
   'PA_circum_2050':       stats.beta_binom(p=.724,n=18),
   # beta
-  'beta_0':               stats.gamma_p(p=.0007,v=1.65e-8),
+  'beta_0':               stats.gamma_p(p=.00075,v=4.2e-8),
   'Rbeta_acute':          stats.gamma_p(p=5.3,v=10),
   'Rbeta_350':            stats.gamma_p(p=1.6,v=.0233),
   'Rbeta_200':            stats.gamma_p(p=8.3,v=4.71),
-  'Rbeta_vr':             stats.gamma_p(p=1.45,v=.0658),
-  'Rbeta_gud_s':          stats.gamma_p(p=7.6,v=23),
-  'Rbeta_gud_i':          stats.gamma_p(p=2.9,v=1.45),
+  'Rbeta_vi_rec':         stats.gamma_p(p=1.45,v=.0658),
+  'Rbeta_gud_sus_w':      stats.gamma_p(p=5.3,v=6.8),
+  'Rbeta_gud_sus_m:w':    stats.gamma_p(p=1.45,v=.0658),
+  'Rbeta_gud_inf':        stats.gamma_p(p=2.9,v=1.45),
   'dur_acute':            stats.gamma_p(p=.1417,v=4.08e-3),
-  'P_gud_fsw_l':          stats.beta_binom(p=.23,n=29),
-  'P_gud_fsw_hl':         stats.gamma_p(p=3,v=.809),
+  'P_gud_fsw_l':          stats.beta_binom(p=.16,n=45),
+  'RP_gud_fsw_h:l':       stats.gamma_p(p=3,v=.809),
   'RP_gud_2050':          stats.uniform(l=0.2,h=1),
-  'P_gud_cli_h_eps':      stats.uniform(l=0,h=1),
+  'iP_gud_cli_fsw:gp':    stats.uniform(l=0,h=1),
   'Rbeta_uvls':           stats.beta_binom(p=.25,n=5),
   # diagnosis
   'dx_2010':              stats.gamma_p(p=.26,v=1.08e-2),
-  'iRdx_2020':            stats.gamma_p(p=.30,v=7.09e-2),
-  'iRdx_2050':            stats.gamma_p(p=.30,v=7.09e-2),
+  'aRdx_2020':            stats.gamma_p(p=.30,v=7.09e-2),
+  'aRdx_2050':            stats.gamma_p(p=.30,v=7.09e-2),
   'Rdx_mqq':              stats.gamma_p(p=.52,v=2.82e-2),
   'Rdx_cli':              stats.gamma_p(p=.52,v=2.82e-2),
   'Rdx_fsw':              stats.gamma_p(p=2.6,v=1.08),
   # treatment
   'tx_2010':              stats.gamma_p(p=3.0,v=1.67),
-  'iRtx_2020':            stats.gamma_p(p=.30,v=7.09e-2),
-  'iRtx_2050':            stats.gamma_p(p=.30,v=7.09e-2),
+  'aRtx_2020':            stats.gamma_p(p=.30,v=7.09e-2),
+  'aRtx_2050':            stats.gamma_p(p=.30,v=7.09e-2),
   'Rtx_mqq':              stats.gamma_p(p=.72,v=1.65e-2),
   'Rtx_cli':              stats.gamma_p(p=.72,v=1.65e-2),
   'Rtx_fsw':              stats.gamma_p(p=.72,v=1.65e-2),
@@ -151,8 +152,8 @@ def get_X0(P): # TODO
   PX_si[0,2] = P['PX_w'] * P['PX_fsw'] * (1-P['PX_fsw_h'])
   PX_si[0,3] = P['PX_w'] * P['PX_fsw'] * P['PX_fsw_h']
   # Clients
-  A_new_total = A[2] * P['C_new_fswl'] * (PX_si[0,2] + P['RC_new_fsw_hl'] * PX_si[0,3])
-  A_reg_total = A[3] * P['C_reg_fswl'] * (PX_si[0,2] + P['RC_reg_fsw_hl'] * PX_si[0,3])
+  A_new_total = A[2] * P['C_new_fswl'] * (PX_si[0,2] + P['RC_new_fsw_h:l'] * PX_si[0,3])
+  A_reg_total = A[3] * P['C_reg_fswl'] * (PX_si[0,2] + P['RC_reg_fsw_h:l'] * PX_si[0,3])
   cli_total = (A_new_total + A_reg_total) / P['A_swq_cli']
   PX_si[1,3] = cli_total * P['PX_cli_h']
   PX_si[1,2] = cli_total * (1-P['PX_cli_h'])
@@ -189,15 +190,16 @@ def get_turnover(P): # OK
   t_cli   = 1/P['dur_cli'] - P['death']
   turn = np.zeros((2,4,4))
   # fsw -> med & low
-  turn[0,2,1] = t_fsw_l * (P['Pturn_h:m'])
-  turn[0,2,0] = t_fsw_l * (1 - P['Pturn_h:m'])
-  turn[0,3,1] = t_fsw_h * (P['Pturn_h:m'])
-  turn[0,3,0] = t_fsw_h * (1 - P['Pturn_h:m'])
+  turn[0,2,1] = t_fsw_l * (P['Pturn_fsw_h:m'])
+  turn[0,2,0] = t_fsw_l * (1 - P['Pturn_fsw_h:m'])
+  turn[0,3,1] = t_fsw_h * (P['Pturn_fsw_h:m'])
+  turn[0,3,0] = t_fsw_h * (1 - P['Pturn_fsw_h:m'])
   # clients -> med & low
-  turn[1,2,1] = t_cli * (P['Pturn_h:m'])
-  turn[1,2,0] = t_cli * (1 - P['Pturn_h:m'])
-  turn[1,3,1] = t_cli * (P['Pturn_h:m'])
-  turn[1,3,0] = t_cli * (1 - P['Pturn_h:m'])
+  Pturn_cli_hm = P['PX_si'][1,1] / P['PX_si'][1,:2].sum()
+  turn[1,2,1] = t_cli * (Pturn_cli_hm)
+  turn[1,2,0] = t_cli * (1 - Pturn_cli_hm)
+  turn[1,3,1] = t_cli * (Pturn_cli_hm)
+  turn[1,3,0] = t_cli * (1 - Pturn_cli_hm)
   # balance flows (absolute)
   i = [(3,3,2,2,1),(1,0,1,0,0)]
   turn[:,i[1],i[0]] += turn[:,i[0],i[1]] * P['PX_si'][:,i[0]] / P['PX_si'][:,i[1]]
@@ -211,22 +213,24 @@ def get_turnover(P): # OK
 def get_beta_a(P): # [OK]
   # beta_a dimensions: a,p,s,i,s',i',h',c',(t)
   Rbeta_ar = 10
-  Rbeta_as = np.array([[P['Rbeta_vr'],1],[Rbeta_ar,1]]).reshape([2,1,2,1,1,1,1,1])
+  Rbeta_as = np.array([[P['Rbeta_vi_rec'],1],[Rbeta_ar,1]]).reshape([2,1,2,1,1,1,1,1])
   Rbeta_as = Rbeta_as / Rbeta_as[0,:].mean()
   P_gud_gp = .07 # REEF: SDHS2006
   P_sexa_l = .6  # REF: (approx) SDHS2006, SHIMS2
-  P_gud_cli_h = linear_comb(P['P_gud_cli_h_eps'],P['P_gud_fsw_l'],P_gud_gp)
-  P_gud  = np.array([
-    [P_gud_gp*P_sexa_l, P_gud_gp, P['P_gud_fsw_l'], P['P_gud_fsw_l']*P['P_gud_fsw_hl']],
+  P_gud_cli_h = linear_comb(P['iP_gud_cli_fsw:gp'],P['P_gud_fsw_l'],P_gud_gp)
+  P_gud = np.array([
+    [P_gud_gp*P_sexa_l, P_gud_gp, P['P_gud_fsw_l'], P['P_gud_fsw_l']*P['RP_gud_fsw_h:l']],
     [P_gud_gp*P_sexa_l, P_gud_gp, P_gud_gp, P_gud_cli_h],
   ])
   P_gud_t = ta.tarray([1980,2000,2050,2051],[1,1,*2*[P['RP_gud_2050']]])
+  Rbeta_gud_sus = np.array([P['Rbeta_gud_sus_w'],P['Rbeta_gud_sus_m:w']]).reshape((2,1))
   Rbeta_h = np.array([0,P['Rbeta_acute'],1,1,P['Rbeta_350'],P['Rbeta_200']]).reshape([1,1,1,1,1,1,6,1])
   Rbeta_c = np.array([1,1,1,P['Rbeta_uvls'],.00]).reshape([1,1,1,1,1,1,1,5])
   return {
     'beta_a': P['beta_0'] * Rbeta_as * Rbeta_h * Rbeta_c,
     'Rbeta_as': Rbeta_as,
     'Rbeta_h': Rbeta_h,
+    'Rbeta_gud_sus': Rbeta_gud_sus,
     'P_gud': P_gud,
     'P_gud_t': P_gud_t,
     'EHM_acute': P['Rbeta_acute'] * P['dur_acute'] * 12,
@@ -238,14 +242,14 @@ def check_acute(P):
 def check_gud(P):
   return (
     P['P_gud_fsw_l'] > .07 and
-    P['P_gud_fsw_l'] * P['P_gud_fsw_hl'] < 1
+    P['P_gud_fsw_l'] * P['RP_gud_fsw_h:l'] < 1
   )
 
 def get_A(P): # TODO
   # dimensions: a,p
   # A_ap = np.array(A_p * ).reshape([2,4,1,1,1,1,1,1])
-  A_p   = np.array([ P['A_mc'], P['dur_cas'] * P['A_mc'], 1, 4 ])
-  PA_ai = np.array([ P['PA_ai_mc'],P['PA_ai_mc'],P['PA_ai_sw'],P['PA_ai_sw'] ])
+  A_p   = np.array([ P['A_mc'], P['dur_cas'] * P['A_mc'], 1, P['A_reg'] ])
+  PA_ai = np.array([ P['PA_ai_mcq'],P['PA_ai_mcq'],P['PA_ai_swq'],P['PA_ai_swq'] ])
   A_ap  = A_p.reshape([1,4,1,1,1,1,1,1]) * np.array([1-PA_ai,PA_ai]).reshape([2,4,1,1,1,1,1,1])
   return {
     'A_ap': A_ap,
@@ -253,13 +257,14 @@ def get_A(P): # TODO
 
 def check_A(P):
   return (
-    P['PA_ai_mc'] <= P['PA_ai_sw']
+    P['PA_ai_mcq'] <= P['PA_ai_swq'] and
+    1 <= P['A_reg']
   )
 
 def get_C(P): # TODO
   PX_si = P['PX_si']
   A = np.squeeze(P['A_ap'].sum(axis=0))
-  PA_swq_cli_lh = PX_si[1,2] / (PX_si[1,2] + P['RA_swq_cli_hl'] * PX_si[1,3])
+  PA_swq_cli_lh = PX_si[1,2] / (PX_si[1,2] + P['RA_swq_cli_h:l'] * PX_si[1,3])
   # dimensions: p,s,i
   C_psi = np.zeros((4,2,4))
   # main / spousal
@@ -276,9 +281,9 @@ def get_C(P): # TODO
   C_psi[ 1, 1, 3] = P['C_cas_cli'] # TODO: balance
   # FSW
   C_psi[ 2, 0, 2] = 12 * P['C_new_fswl']
-  C_psi[ 2, 0, 3] = 12 * P['C_new_fswl'] * P['RC_new_fsw_hl']
+  C_psi[ 2, 0, 3] = 12 * P['C_new_fswl'] * P['RC_new_fsw_h:l']
   C_psi[ 3, 0, 2] = 12 * P['C_reg_fswl']
-  C_psi[ 3, 0, 3] = 12 * P['C_reg_fswl'] * P['RC_reg_fsw_hl']
+  C_psi[ 3, 0, 3] = 12 * P['C_reg_fswl'] * P['RC_reg_fsw_h:l']
   # clients
   C_psi[ 2, 1, 2] = 12 * P['A_new_total'] * PA_swq_cli_lh     / A[2] / PX_si[1,2]
   C_psi[ 2, 1, 3] = 12 * P['A_new_total'] * (1-PA_swq_cli_lh) / A[2] / PX_si[1,3]
@@ -298,7 +303,7 @@ def get_condom(P):
      [0,NAN,P[k+'new_2002'],NAN,P[k+'new_2011'],P[k+'new_2014'],NAN,P[k+'new_2014'] ]] # sw-new
   )
   PA_condom = ta.tarray([1980,1988,2002,2006,2011,2014,2016,2050],PA_condom).reshape([1,4,1,1,1,1,1,1])
-  RPA_condom_s = np.array([1,P['RPA_condom_av']]).reshape([2,1,1,1,1,1,1,1])
+  RPA_condom_s = np.array([1,P['RPA_condom_a:v']]).reshape([2,1,1,1,1,1,1,1])
   return {
     'PA_condom': PA_condom,
     'RPA_condom_s': RPA_condom_s,
@@ -338,10 +343,10 @@ def get_circumcision(P): # [OK]
 
 def get_mix(P): # TODO
   pref_pii = np.zeros((4,4,4))
-  pref_pii[1,0,0] = 1
-  pref_pii[1,3,3] = 1
-  pref_pii[0,2,2] = 9
-  pref_pii[0,3,3] = 9
+  pref_pii[0,2,2] = 3
+  pref_pii[0,2,3] = 3
+  pref_pii[0,3,3] = 3
+  pref_pii[0,3,2] = 3
   return {
     'pref_pii': pref_pii,
     'mix': np.zeros((4,2,4,2,4)), # initialize
@@ -378,7 +383,7 @@ def Rmr(r0,*iRrs,replast=True):
 
 def get_diag(P):
   # dimensions: s,i,h
-  dx_t   = np.array([0,0,*Rmr(P['dx_2010'],P['iRdx_2020'],P['iRdx_2050'])]).reshape([1,1,6])
+  dx_t   = np.array([0,0,*Rmr(P['dx_2010'],P['aRdx_2020'],P['aRdx_2050'])]).reshape([1,1,6])
   Rdx_si = np.array(
     [[           1,           1,P['Rdx_fsw'],P['Rdx_fsw']],
      [P['Rdx_mqq'],P['Rdx_mqq'],P['Rdx_cli'],P['Rdx_cli']]]).reshape([2,4,1])
@@ -391,7 +396,7 @@ def get_diag(P):
 
 def get_treat(P):
   # dimensions: s,i,h
-  tx_t   = np.array([0,0,*Rmr(P['tx_2010'],P['iRtx_2020'],P['iRtx_2050'])]).reshape([1,1,6])
+  tx_t   = np.array([0,0,*Rmr(P['tx_2010'],P['aRtx_2020'],P['aRtx_2050'])]).reshape([1,1,6])
   Rtx_si = np.array(
     [[           1,           1,P['Rtx_fsw'],P['Rtx_fsw']],
      [P['Rtx_mqq'],P['Rtx_mqq'],P['Rtx_cli'],P['Rtx_cli']]]).reshape([2,4,1])

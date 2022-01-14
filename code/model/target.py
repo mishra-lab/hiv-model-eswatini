@@ -94,7 +94,7 @@ def get_prevalence_esw():
     Target(stats.ratio_binom(p1=.61,n1=99,p2=.388,n2=9843),'prevalence',
       dict(t=2011.0,s=0,i=(2,3)),dict(t=2011.0,s=0,i=(0,1,2,3)),vsop='1/2'), # FSW vs W
     Target(stats.gamma_p(p=1.46,v=7.09e-3),'prevalence',
-      dict(t=2011.0,s=0,i=3),dict(t=2011.0,s=0,i=2),vsop='1/2'), # FSW.H vs FSW.L
+      dict(t=2011.0,s=0,i=3),dict(t=2011.0,s=0,i=2),vsop='1/2',weight=10), # FSW.H vs FSW.L
     Target(stats.gamma_p(p=2.3,v=4.52e-2),'prevalence',
       dict(t=2014.0,s=0,i=3),dict(t=2014.0,s=0,i=2),vsop='1/2',weight=0), # FSW.H vs FSW.L
     Target(stats.ratio_binom(p1=.545,n1=373,p2=.382,n2=9412),'prevalence',
@@ -102,9 +102,9 @@ def get_prevalence_esw():
     Target(stats.ratio_binom(p1=.281,n1=1515,p2=.232,n2=6733),'prevalence',
       dict(t=2011.0,s=1,i=(1,2,3)),dict(t=2011.0,s=1,i=0),vsop='1/2'), # W.2+ vs W.0-1
     # Baral2014
-    Target(stats.beta_binom(p=.61 ,n=   99),'prevalence',dict(t=2011.0,s=0,    i=(2,3))),
-    Target(stats.beta_binom(p=.94, n=   65),'prevalence',dict(t=2011.0,s=0,    i=(2))), # JK
-    Target(stats.beta_binom(p=.64, n=  260),'prevalence',dict(t=2011.0,s=0,    i=(3))), # JK
+    Target(stats.beta_binom(p=.61 ,n=   99),'prevalence',dict(t=2011.0,s=0,    i=(2,3)),weight=10),
+    Target(stats.beta_binom(p=.94, n=   65),'prevalence',dict(t=2011.0,s=0,    i=(2)),weight=10), # JK
+    Target(stats.beta_binom(p=.64, n=  260),'prevalence',dict(t=2011.0,s=0,    i=(3)),weight=10), # JK
     # EswKP2014
     Target(stats.beta_binom(p=.38, n=  781),'prevalence',dict(t=2014.0,s=0,    i=(2,3)),weight=0), # SR
     Target(stats.beta_binom(p=.71, n=  114),'prevalence',dict(t=2014.0,s=0,    i=(2)),  weight=0), # SR,JK
