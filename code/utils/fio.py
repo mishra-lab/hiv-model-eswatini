@@ -2,6 +2,7 @@ import os
 import csv
 import numpy as np
 from datetime import datetime
+from PyPDF2 import PdfFileMerger as pdfm
 
 therootpath = os.path.abspath(__file__).replace(os.path.join('code','utils','fio.py'),'')
 
@@ -43,3 +44,16 @@ def datestamp(date=None):
 def filehash(*fnames,root=None,N=6):
   # get a unique hash based on the current state of some files
   return ''.join([os.popen('sha1sum '+os.path.join(root,fname)).read()[0:N] for fname in fnames])
+
+def pdfmerge(ofname,fnames,rm=False):
+  # concatenate pdfs
+  m = pdfm()
+  for fname in fnames:
+    m.append(fname)
+  with open(ofname,'wb') as f:
+    m.write(f)
+  if rm:
+    for fname in fnames:
+      os.remove(fname)
+
+
