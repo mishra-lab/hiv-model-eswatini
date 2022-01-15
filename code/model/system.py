@@ -86,7 +86,7 @@ def f_dX(P,X,t):
   dX -= X * P['death']
   dX -= X * P['death_hc']
   # turnover
-  dXi = P['turn_sii'][:,:,:,_,_] * X[:,:,_,:,:]
+  dXi = foi.f_turnover(P,X)
   dX -= dXi.sum(axis=2)
   dX += dXi.sum(axis=1)
   # cascade: diagnosis
@@ -113,4 +113,3 @@ def f_dX(P,X,t):
     'dX': dX,
     'inc': inc,
   }
-  

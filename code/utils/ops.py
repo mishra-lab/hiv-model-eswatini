@@ -43,3 +43,8 @@ def dtfun(t):
 
 def itslice(t,tvec):
   return np.in1d(tvec,t)
+
+def nan_to_value(x,v):
+  # faster than np.nan_to_num as we don't deal with infs?
+  x[np.isnan(x)] = v
+  return x

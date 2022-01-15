@@ -1,5 +1,5 @@
 import numpy as np
-from utils import _,deco,linear_comb
+from utils import _,deco,linear_comb,nan_to_value
 
 @deco.nowarn
 #@profile
@@ -58,3 +58,18 @@ def f_lambda(P,X):
   return 1 - np.prod(
     (1 - P['beta_pp'])**(P['mix']),
   axis=(0,3,4))
+
+#@profile
+def f_turnover(P,X):
+  # turn.shape = (s:2, i:4, i':4, h:6, c:5)
+  turn = P['turn_sii'][:,:,:,_,_] * X[:,:,_,:,:]
+  # P['ORturn_sus:hiv'] = 0 # DEBUG
+  if np.any(X[:,:,1:,:]): # HIV introduced
+    Xhiv = X[:,:,1:,:].sum(axis=(2,3))
+    # odds of turnover aomng sus vs hiv (source-group-specific)
+    Osus = P['ORturn_sus:hiv'] * nan_to_value(X[:,:,0,0] / Xhiv, 1)[:,:,_]
+    Phc_hiv = nan_to_value(X[:,:,1:,:] / Xhiv[:,:,_,_], 0)
+    turn_hiv = turn.sum(axis=(3,4)) / (1 + Osus)
+    turn[:,:,:,1:,:] = turn_hiv[:,:,:,_,_] * Phc_hiv[:,:,_,:,:]
+    turn[:,:,:,0,0]  = turn_hiv * Osus
+  return turn

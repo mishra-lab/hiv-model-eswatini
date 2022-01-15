@@ -69,6 +69,7 @@ def def_sample_distrs():
   'dur_fsw_h':            stats.gamma_p(p=10,v=0.26),
   'dur_cli':              stats.gamma_p(p=10,v=5.32),
   'Pturn_fsw_h:m':        stats.beta_binom(p=.724,n=18),
+  'LORturn_wq_sus:hiv':   stats.gamma_p(p=1,v=.605),
   # C
   'C_new_fswl':           stats.gamma_p(p=4.1,v=.8),  # per month
   'C_reg_fswl':           stats.gamma_p(p=8.4,v=1.6), # per month 
@@ -203,9 +204,12 @@ def get_turnover(P): # OK
   # balance flows (absolute)
   i = [(3,3,2,2,1),(1,0,1,0,0)]
   turn[:,i[1],i[0]] += turn[:,i[0],i[1]] * P['PX_si'][:,i[0]] / P['PX_si'][:,i[1]]
+  ORi = np.exp(P['LORturn_wq_sus:hiv'])
+  ORturn_sus_hiv = np.array([[ORi,ORi,1,1],[1,1,1,1]]).reshape((2,4,1))
   return {
     'turn_sii': turn,
     'dur_sii': 1 / (turn.sum(axis=2) + P['death']),
+    'ORturn_sus:hiv': ORturn_sus_hiv,
   }
 
 # FOI ----------------------------------------------------------------------------------------------
