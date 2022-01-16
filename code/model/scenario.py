@@ -1,5 +1,5 @@
 import numpy as np
-from utils import rootpath,genpath,flatten,minimize,itslice
+from utils import rootpath,genpath,flatten,minimize,itslice,squarish
 from utils import stats,fio,deco,parallel
 from model import slicers,params,system,target,out,plot,handfit
 
@@ -32,28 +32,39 @@ def Rqx_by_group(Rqx=None,**kwds):
         Rqx[sk,ik,0] = sRqx
   return Rqx
 
-def fit_cascade(P,PD,T,t,P0=None,ftol=.01):
+def fit_cascade_jfun(pfits,P,PD,T,t):
+  # map pfits (quantiles) -> values from PD & update P with the new values
+  for pfit,key in zip(pfits,PD.keys()):
+    rate,pop = key.split(':')
+    P.update({rate:Rqx_by_group(Rqx=P.get(rate),**{pop:PD[key].ppf(pfit)})})
+  # run the model
+  R = system.run(P,t,T,RPts=[])
+  return -R['ll']
+
+def fit_cascade(P,PD,T,t,ftol=.2):
+  # TODO: re-implement specified P0
   # fit the model to "T", with base parameters P, and re-sampled values in PD
   # PD has keys like "rate:pop"; we re-sample based on percentiles (pfit)
-  if P0 is None: P0 = [.1 for i in PD]
-  def jfun(pfits): # optimization function
-    # map pfits (quantiles) -> values from PD & update P with the new values
-    for pfit,key in zip(pfits,PD.keys()):
-      rate,pop = key.split(':')
-      P.update({rate:Rqx_by_group(Rqx=P.get(rate),**{pop:PD[key].ppf(pfit)})})
-    # run the model
-    R = system.run(P,t,T,RPts=[])
-    # print((R['ll'],pfits),flush=True) # DEBUG
-    return -R['ll']
-  # run the optimization:
-  # SLSQP works best; all bounds (0,1) due to percentile trick; ftol controls precision
-  M = minimize(jfun,P0,method='SLSQP',bounds=len(PD)*((0,1),),options=dict(ftol=ftol))
-  if M.success:
-    return P # TODO: is this robust updated P?
-  return False
+  kwds = dict(method='SLSQP',options=dict(ftol=ftol))
+  # we fit relative rates stepwise (dx, +tx, +ux) as it is more efficient
+  PDz = {}; P0z = []; Tz = []; # init step-wise: distrs, x0, targets
+  for pz,oz in zip(['Rdx','Rtx','Rux'],['diagnosed','treated','vls']):
+    PDzi = {k:v for k,v in PD.items() if (pz in k)}
+    PDz.update(PDzi)
+    P0z += [.1 for k in PDzi]
+    Tz  += [Ti for Ti in T if (oz in Ti.name)]
+    jfun = lambda pfits: fit_cascade_jfun(pfits,P,PDz,Tz,t)
+    M = minimize(jfun,P0z,bounds=[(0,1) for k in PDz],**kwds)
+    P0z[:] = M.x
+    if not M.success:
+      return False
+  # DEBUG: non-stepwise
+  # jfun = lambda pfits: fit_cascade_jfun(pfits,P,PD,T,t)
+  # M = minimize(jfun,[.1 for k in PD],bounds=[(0,1) for k in PD],**kwds)
+  return P # TODO: is this robust updated P?
 
-def fit_cascade_n(Ps,PD,T,t,P0=None,**kwds):
-  fun = lambda P: fit_cascade(P,PD=PD,T=T,t=t,P0=P0,**kwds)
+def fit_cascade_n(Ps,PD,T,t,**kwds):
+  fun = lambda P: fit_cascade(P,PD=PD,T=T,t=t,**kwds)
   return parallel.ppool(len(Ps)).map(fun,Ps)
 
 def get_sens_data(R,t,case):
@@ -134,7 +145,7 @@ def main(N,N0=0,sample=True,cf=True,refit=True,top=.10,sens=True):
   for case in ['LoLo','LoHi','HiLo']:
     T2,PD = get_refit_case(case)
     if refit:
-      P2s = fit_cascade_n(P1s,PD,T2,t,ftol=.01)
+      P2s = fit_cascade_n(P1s,PD,T2,t,ftol=.2)
       fio.save(fname('npy','P2s_'+case,N,N0),P2s)
     else:
       P2s = fio.load(fname('npy','P2s_'+case,N,N0))
