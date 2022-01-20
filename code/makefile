@@ -11,5 +11,5 @@ do.debug.py:
 	python3.8 .debug/ta-save.py && echo [OK]
 do.debug.r:
 	Rscript .debug/duration.r && echo [OK]
-do.profile: # TODO: make this its own script
-	kernprof -lv -u 1 model/main.py && rm main.py.lprof && echo [OK]
+do.profile:
+	./profile/run.sh && echo [OK]
