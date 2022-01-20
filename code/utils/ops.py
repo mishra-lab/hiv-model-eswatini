@@ -11,6 +11,11 @@ def flatten(x):
       f.extend(flatten(xi))
   return f
 
+def unique(x):
+  # return unique elements in x (preserve order)
+  seen = set()
+  return [xi for xi in x if xi not in seen and (seen.add(xi) or True)]
+
 def interval_qs(interval):
   return ((1-interval)/2, 1-(1-interval)/2)
 

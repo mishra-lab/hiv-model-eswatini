@@ -72,7 +72,7 @@ def get_sens_data(R,t,case):
   to  = [2020,2025,2030,2035,2040,2045,2050]
   ito = itslice(to,t)
   Pkeys = ['seed',
-    'beta_0','EHM_acute','Rbeta_vi_rec', # HIV
+    'beta_0','EHY_acute','Rbeta_vi_rec', # HIV
     'A_mc','RPA_condom_a:v','PA_circum_2050','PA_ai_mcq','PA_ai_swq',# sex
     'RP_gud_2050','Rbeta_gud_sus_w','Rbeta_gud_sus_m:w','Rbeta_gud_inf', # GUD
     'PX_fsw','dur_fsw_l','C_new_fswl', # FSW

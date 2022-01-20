@@ -1,15 +1,14 @@
 import numpy as np
-from utils import _,NAN,stats,linear_comb
+from utils import _,NAN,stats,flatten,dict_split,linear_comb
 from utils import tarray as ta
 
 # TODO: clean up low/middle/joined group notation + main/casual + new/reg
 
 # main -------------------------------------------------------------------------
 
-def get_all(P=None,random=True,seed=None,**kwds):
+def get_all(P,seed=None,**kwds):
   P = P if P is not None else \
-      get_sample_random(seed=seed) if random else \
-      get_sample_hand()
+      get_sample_random(seed=seed)
   P.update(kwds)
   # order matters for some dependencies
   P.update(get_A(P))
@@ -27,21 +26,40 @@ def get_all(P=None,random=True,seed=None,**kwds):
   # check.ch_pn(P) # TEMP
   return P
 
-def get_n_all(n,Ps=None,seeds=None,**kwds):
-  if Ps is None: Ps = get_n_samples_random(n,seeds=seeds)
+def get_n_all(n,Ps=None,seeds=None,lhs=True,**kwds):
+  if seeds is None: seeds = n*[None]
+  if Ps is None:
+    PD = def_sample_distrs()
+    if lhs:
+      # only latin hypercube sample params without constraints
+      # too expensive / frail for constraints - https://arxiv.org/abs/0909.0329
+      PDc = dict_split(PD,flatten(def_checkers().values()))
+      Ps = [{**Ph,**Pc} for Ph,Pc in zip(
+        get_n_sample_random(n,PDc,seeds=seeds),
+        get_n_sample_lhs(n,PD,seed=seeds[0])
+      )]
+    else:
+      Ps = get_n_sample_random(n,PD,seeds=seeds)
   return [get_all(P,**kwds) for P in Ps]
 
-def get_sample_random(PD=None,seed=None,checks=True):
+def get_n_sample_lhs(n,PD,seed=None):
+  Qs = stats.lhs(len(PD),n,seed=seed)
+  return [{key:PD[key].ppf(q) for key,q in zip(PD,Q)} for Q in Qs]
+
+def get_n_sample_random(n,PD=None,seeds=None):
+  if seeds is None: seeds = n*[None]
+  if PD is None: PD = def_sample_distrs()
+  return [get_sample_random(PD,seed=seeds[i]) for i in range(n)]
+
+def get_sample_random(PD=None,seed=None):
   if seed is not None: np.random.seed(seed)
   if PD is None: PD = def_sample_distrs()
   P = {key:dist.rvs() for key,dist in PD.items()}
   P['seed'] = seed
+  checkers = def_checkers()
   # adjustments / forcing
-  if checks:
-    resample_until(P,PD,check_condom,[k for k in PD.keys() if k.startswith('PA_condom_')])
-    resample_until(P,PD,check_A,['PA_ai_mcq','PA_ai_swq','A_reg'])
-    resample_until(P,PD,check_acute,['Rbeta_acute','dur_acute'])
-    resample_until(P,PD,check_gud,['P_gud_fsw_l','RP_gud_fsw_h:l'])
+  for checker,keys in checkers.items():
+    resample_until(P,PD,checker,keys)
   return P
 
 def resample_until(P,PD,checker,keys,log=False):
@@ -55,9 +73,15 @@ def resample_until(P,PD,checker,keys,log=False):
     print('{:.5f} {:>15} @ {}'.format((1/n),str(checker).split()[1],', '.join(keys)))
   return P
 
-def get_n_samples_random(n,PD=None,seeds=None):
-  if PD is None: PD = def_sample_distrs()
-  return [get_sample_random(PD,seed=(seeds[i] if seeds else None)) for i in range(n)]
+def def_checkers():
+  k = 'PA_condom_' # convenience
+  return {
+    check_A:      ['PA_ai_mcq','PA_ai_swq','A_reg'],
+    check_acute:  ['Rbeta_acute','dur_acute'],
+    check_gud:    ['P_gud_fsw_l','RP_gud_fsw_h:l'],
+    check_condom: [k+'msp_1988',k+'msp_2006',k+'msp_2016',k+'cas_1988',k+'cas_2006',k+'cas_2016',
+                   k+'new_2002',k+'new_2011',k+'new_2014',k+'reg_2002',k+'reg_2011',k+'reg_2014']
+  }
 
 def def_sample_distrs():
   return {
@@ -128,9 +152,6 @@ def def_sample_distrs():
   'Rtx_cli':              stats.gamma_p(p=.72,v=1.65e-2),
   'Rtx_fsw':              stats.gamma_p(p=.72,v=1.65e-2),
   }
-
-def get_sample_hand(): # TODO
-  raise NotImplementedError('params.get_sample_hand()')
 
 # demographics -------------------------------------------------------------------------------------
 
@@ -313,19 +334,20 @@ def get_condom(P):
   }
 
 def check_condom(P):
+  k = 'PA_condom_'
   return (
     # across years (same type)
-    P['PA_condom_msp_1988'] < P['PA_condom_msp_2006'] < P['PA_condom_msp_2016'] and
-    P['PA_condom_cas_1988'] < P['PA_condom_cas_2006'] < P['PA_condom_cas_2016'] and
-    P['PA_condom_new_2002'] < P['PA_condom_new_2011'] < P['PA_condom_new_2014'] and
-    P['PA_condom_reg_2002'] < P['PA_condom_reg_2011'] < P['PA_condom_reg_2014'] and
+    P[k+'msp_1988'] < P[k+'msp_2006'] < P[k+'msp_2016'] and
+    P[k+'cas_1988'] < P[k+'cas_2006'] < P[k+'cas_2016'] and
+    P[k+'new_2002'] < P[k+'new_2011'] < P[k+'new_2014'] and
+    P[k+'reg_2002'] < P[k+'reg_2011'] < P[k+'reg_2014'] and
     # across types (same year)
-    P['PA_condom_msp_1988'] < P['PA_condom_cas_1988'] and
-    P['PA_condom_msp_2006'] < P['PA_condom_cas_2006'] and
-    P['PA_condom_msp_2016'] < P['PA_condom_cas_2016'] and
-    P['PA_condom_reg_2002'] < P['PA_condom_new_2002'] and 
-    P['PA_condom_reg_2011'] < P['PA_condom_new_2011'] and 
-    P['PA_condom_reg_2014'] < P['PA_condom_new_2014']
+    P[k+'msp_1988'] < P[k+'cas_1988'] and
+    P[k+'msp_2006'] < P[k+'cas_2006'] and
+    P[k+'msp_2016'] < P[k+'cas_2016'] and
+    P[k+'reg_2002'] < P[k+'new_2002'] and 
+    P[k+'reg_2011'] < P[k+'new_2011'] and 
+    P[k+'reg_2014'] < P[k+'new_2014']
   )
 
 def get_circumcision(P): # [OK]
