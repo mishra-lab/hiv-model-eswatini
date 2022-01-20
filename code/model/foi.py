@@ -5,8 +5,8 @@ from utils import _,deco,linear_comb,nan_to_value
 #@profile
 def f_beta_p(P,t):
   # return.shape = (p:4, s:2, i:4, s':2, i':1, h':6, c':5)
-  PA_condom = P['PA_condom'](t) * P['RPA_condom_s']
-  PA_circum = P['PA_circum'](t)
+  PA_condom = P['PA_condom_t'](t) * P['RPA_condom_s']
+  PA_circum = P['PA_circum_t'](t)
   P_gud_t   = P['P_gud_t'](t) * P['P_gud']
   Rbeta_gud_sus = linear_comb(P_gud_t,P['Rbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
   Rbeta_gud_inf = linear_comb(P_gud_t,P['Rbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])

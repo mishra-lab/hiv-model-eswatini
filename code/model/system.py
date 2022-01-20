@@ -27,7 +27,7 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
 
 def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = f_t()
-  if RPts is None: RPts = ['PA_condom','PA_circum','P_gud_t','dx','tx','Rtx_h']
+  if RPts is None: RPts = ['PA_condom_t','PA_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
   print(P['seed'],end=' ',flush=True)
   R = solve(P,t)
   if not R:
@@ -90,11 +90,11 @@ def f_dX(P,X,t):
   dX -= dXi.sum(axis=2)
   dX += dXi.sum(axis=1)
   # cascade: diagnosis
-  dXi = X[:,:,1:6,0] * P['dx'](t) * P['Rdx']
+  dXi = X[:,:,1:6,0] * P['dx_t'](t) * P['Rdx_si'] * P['Rdx_scen']
   dX[:,:,1:6,0] -= dXi # undiag
   dX[:,:,1:6,1] += dXi # diag
   # cascade: treatment
-  dXi = X[:,:,1:6,1] * P['tx'](t) * P['Rtx_h'](t) * P['Rtx']
+  dXi = X[:,:,1:6,1] * P['tx_t'](t) * P['Rtx_ht'](t) * P['Rtx_scen']
   dX[:,:,1:6,1] -= dXi # diag
   dX[:,:,1:6,3] += dXi # treat
   # cascade: VLS
@@ -102,7 +102,7 @@ def f_dX(P,X,t):
   dX[:,:,1:6,3] -= dXi # treat
   dX[:,:,1:6,4] += dXi # vls
   # cascade: unlink
-  dXi = X[:,:,1:6,4] * P['unvx'](t) * P['Rux']
+  dXi = X[:,:,1:6,4] * P['unvx_t'](t) * P['Rux_scen']
   dX[:,:,1:6,4] -= dXi # vls
   dX[:,:,1:6,2] += dXi # unlink
   # cascade: relink

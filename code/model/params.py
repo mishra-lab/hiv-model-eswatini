@@ -299,17 +299,15 @@ def get_C(P): # TODO
 
 def get_condom(P):
   k = 'PA_condom_' # convenience
-  PA_condom = np.array(
-  #  [1980, 1988, 2002, 2006, 2011, 2014, 2016, 2050 ]
+  PA_condom_t = ta.tarray([1980,1988,2002,2006,2011,2014,2016,2050],
     [[0,P[k+'msp_1988'],NAN,P[k+'msp_2006'],NAN,NAN,P[k+'msp_2016'],P[k+'msp_2016'] ], # main
      [0,P[k+'cas_1988'],NAN,P[k+'cas_2006'],NAN,NAN,P[k+'cas_2016'],P[k+'cas_2016'] ], # casual
      [0,NAN,P[k+'reg_2002'],NAN,P[k+'reg_2011'],P[k+'reg_2014'],NAN,P[k+'reg_2014'] ], # sw-reg
      [0,NAN,P[k+'new_2002'],NAN,P[k+'new_2011'],P[k+'new_2014'],NAN,P[k+'new_2014'] ]] # sw-new
-  )
-  PA_condom = ta.tarray([1980,1988,2002,2006,2011,2014,2016,2050],PA_condom).reshape([1,4,1,1,1,1,1,1])
+  ).reshape([1,4,1,1,1,1,1,1])
   RPA_condom_s = np.array([1,P['RPA_condom_a:v']]).reshape([2,1,1,1,1,1,1,1])
   return {
-    'PA_condom': PA_condom,
+    'PA_condom_t': PA_condom_t,
     'RPA_condom_s': RPA_condom_s,
     'Rbeta_condom': .26,
   }
@@ -332,7 +330,7 @@ def check_condom(P):
 
 def get_circumcision(P): # [OK]
   # (SHIMS2), SDHS2006, Bicego2013, SHIMS2, "COP20", assume
-  PA_circum = ta.tarray(
+  PA_circum_t = ta.tarray(
      [1980.0,2006.5,2011.0,2016.5,2020.0,2050,2051],
      [  .007,  .082,  .171,  .300,  .370,*2*[P['PA_circum_2050']]]
   ).reshape([1,1,1,1,1,1,1,1])
@@ -341,7 +339,7 @@ def get_circumcision(P): # [OK]
       [1,.27], # anal - Wiysonge2011
     ]).reshape([2,1,2,1,1,1,1,1])
   return {
-    'PA_circum': PA_circum,
+    'PA_circum_t': PA_circum_t,
     'Rbeta_circum': Rbeta_circum,
   }
 
@@ -387,24 +385,26 @@ def Rmr(r0,*iRrs,replast=True):
 
 def get_diag(P):
   # dimensions: s,i,h
-  dx_t   = np.array([0,0,*Rmr(P['dx_2010'],P['aRdx_2020'],P['aRdx_2050'])]).reshape([1,1,6])
+  dx_t = ta.tarray([1980,2000,2010,2020,2050,2051],
+      [0,0,*Rmr(P['dx_2010'],P['aRdx_2020'],P['aRdx_2050'])])
   Rdx_si = np.array(
     [[           1,           1,P['Rdx_fsw'],P['Rdx_fsw']],
      [P['Rdx_mqq'],P['Rdx_mqq'],P['Rdx_cli'],P['Rdx_cli']]]).reshape([2,4,1])
-  dx  = ta.tarray([1980,2000,2010,2020,2050,2051],dx_t*Rdx_si).reshape([2,4,1])
-  Rdx  = np.ones((2,4,1))
+  Rdx_scen  = np.ones((2,4,1))
   return {
-    'dx': dx,
-    'Rdx': Rdx,
+    'dx_t': dx_t,
+    'Rdx_si': Rdx_si,
+    'Rdx_scen': Rdx_scen,
   }
 
 def get_treat(P):
   # dimensions: s,i,h
-  tx_t   = np.array([0,0,*Rmr(P['tx_2010'],P['aRtx_2020'],P['aRtx_2050'])]).reshape([1,1,6])
+  tx_t = ta.tarray([1980,2004,2010,2020,2050,2051],
+      [0,0,*Rmr(P['tx_2010'],P['aRtx_2020'],P['aRtx_2050'])])
   Rtx_si = np.array(
     [[           1,           1,P['Rtx_fsw'],P['Rtx_fsw']],
      [P['Rtx_mqq'],P['Rtx_mqq'],P['Rtx_cli'],P['Rtx_cli']]]).reshape([2,4,1])
-  Rtx_h = ta.tarray(
+  Rtx_ht = ta.tarray(
      [1980,2004,2010,2015,2017,2019,2050,2051], [
      [   0,   0,   0,   0,  .1,   1,   1,   1],   # acute:           scale-up 2017-2019
      [   0,   0,   0,   0,  .1,   1,   1,   1],   # cd4 > 500:       scale-up 2017-2019
@@ -412,18 +412,18 @@ def get_treat(P):
      [   0,   0,   1,   1,   1,   1,   1,   1],   # 200 < cd4 < 350: scale-up 2004-2010
      [   0,   0,   1,   1,   1,   1,   1,   1],   # cd4 < 200:       scale-up 2004-2010
   ]).reshape([1,1,5]) 
-  tx   = ta.tarray([1980,2004,2010,2020,2050,2051],tx_t*Rtx_si).reshape([2,4,1])
-  Rtx  = np.ones((2,4,1))
-  vx   = np.array(1/.36).reshape([1,1,1]) # median 3 months -> mean ~ 4 months
-  unvx = ta.tarray([1980,2000,2009,2050,2051],[.2,.2,.1,.04,.04]).reshape([1,1,1]) # NERCHA2014 Figure 15
-  Rux  = np.ones((2,4,1))
-  retx = np.array(1).reshape([1,1,1])   # TODO
+  vx   = np.array(1/.36) # median 3 months -> mean ~ 4 months
+  unvx_t = ta.tarray([1980,2000,2009,2050,2051],[.2,.2,.1,.04,.04]).reshape([1,1,1]) # NERCHA2014 Figure 15
+  retx = np.array(1) # TODO
+  Rtx_scen = np.ones((2,4,1))
+  Rux_scen = np.ones((2,4,1))
   return {
-    'tx':    tx,
-    'Rtx_h': Rtx_h,
-    'Rtx':   Rtx,
-    'vx':    vx,
-    'unvx':  unvx,
-    'Rux':   Rux,
-    'retx':  retx,
+    'tx_t': tx_t,
+    'Rtx_ht': Rtx_ht,
+    'Rtx_si': Rtx_si,
+    'vx': vx,
+    'unvx_t': unvx_t,
+    'retx': retx,
+    'Rtx_scen': Rtx_scen,
+    'Rux_scen': Rux_scen,
   }

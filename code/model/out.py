@@ -158,20 +158,20 @@ vls_u     = lambda *a,**k: vls(*a,**k,cond=False)
 vls_c     = lambda *a,**k: vls(*a,**k,cond=True)
 
 @deco.nanzero
-@deco.rmap(args=['X','dx'])
-@deco.tslice(targs=['X','dx'])
-def dx_rate(X,dx,s=None,i=None,aggr=False):
+@deco.rmap(args=['X','dx_t'])
+@deco.tslice(targs=['X','dx_t'])
+def dx_rate(X,dx_t,s=None,i=None,aggr=False):
   X = X[:,:,:,1:,0].sum(axis=(3)) # undiagnosed only
-  Xdx = X_by_si(X*np.squeeze(dx),s=s,i=i)
+  Xdx = X_by_si(X*np.squeeze(dx_t),s=s,i=i)
   XS  = X_by_si(X,s=s,i=i)
   return aggratio(Xdx,XS,aggr)
 
 @deco.nanzero
-@deco.rmap(args=['X','tx','Rtx_h'])
-@deco.tslice(targs=['X','tx','Rtx_h'])
-def tx_rate(X,tx,Rtx_h,s=None,i=None,aggr=False):
+@deco.rmap(args=['X','tx','Rtx_ht'])
+@deco.tslice(targs=['X','tx','Rtx_ht'])
+def tx_rate(X,tx,Rtx_ht,s=None,i=None,aggr=False):
   X = X[:,:,:,1:6,1]
-  Xtx = X_by_si(X*tx*Rtx_h,s=s,i=i).sum(axis=3)
+  Xtx = X_by_si(X*tx*Rtx_ht,s=s,i=i).sum(axis=3)
   XS  = X_by_si(X,s=s,i=i).sum(axis=3)
   return aggratio(Xtx,XS,aggr)
 
@@ -183,15 +183,15 @@ def X_rate(X,P,rate,s=None,i=None,aggr=False):
   XS    = X_by_si(X,s=s,i=i).sum(axis=(3,4))
   return aggratio(Xrate,XS,aggr)
 
-@deco.rmap(args=['PA_condom'])
-@deco.tslice(targs=['PA_condom'])
-def condom(PA_condom,p,aggr=None):
-  return np.squeeze(PA_condom)[:,p]
+@deco.rmap(args=['PA_condom_t'])
+@deco.tslice(targs=['PA_condom_t'])
+def condom(PA_condom_t,p,aggr=None):
+  return np.squeeze(PA_condom_t)[:,p]
 
-@deco.rmap(args=['PA_circum'])
-@deco.tslice(targs=['PA_circum'])
-def circum(PA_circum,aggr=None):
-  return np.squeeze(PA_circum)[:]
+@deco.rmap(args=['PA_circum_t'])
+@deco.tslice(targs=['PA_circum_t'])
+def circum(PA_circum_t,aggr=None):
+  return np.squeeze(PA_circum_t)[:]
 
 @deco.rmap(args=['P_gud_t'])
 @deco.tslice(targs=['P_gud_t'])
