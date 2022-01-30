@@ -53,11 +53,12 @@ def f_mix(P,X):
   return(P['mix'])
 
 #@profile
-def f_lambda(P,X):
+def f_lambda(P,X,e=True):
+  # esc.shape = (p:4, s:2, i:4, s':2, i':4)
   # lam.shape = (s:2, i:4)
-  return 1 - np.prod(
-    (1 - P['beta_pp'])**(P['mix']),
-  axis=(0,3,4))
+  esc = (1 - P['beta_pp'])**P['mix']
+  return esc if e else 1 - np.prod(esc,axis=(0,3,4))
+  # return np.sum(P['beta_pp']*P['mix'],axis=(0,3,4)) # biased: no saturation effect
 
 #@profile
 def f_turnover(P,X):

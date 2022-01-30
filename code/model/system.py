@@ -42,14 +42,14 @@ def run(P,t=None,T=None,RPts=None,interval=None):
 
 def solve(P,t):
   X   = f_X(P['X0'],t)
-  inc = f_X(np.zeros([2,4]),t)
+  esc = f_X(np.zeros([4,2,4,2,4]),t)
   t0_hiv = int(P['t0_hiv'])
   for i in range(1,t.size):
     # TODO: use array.dtfun?
     R = f_dX(P,X[i-1],t[i-1])
     X[i] = X[i-1] + (t[i] - t[i-1]) * R['dX']
-    inc[i] = R['inc']
-    if t[i] == t0_hiv: # add HIV
+    esc[i] = R['esc']
+    if t[i] == t0_hiv:
       X[i] = X[i,:,:,_,0,:] * P['PX_h_hiv']
     if np.any(X[i] < 0): # abort / fail
       return False
@@ -58,7 +58,7 @@ def solve(P,t):
     'P': P,
     'X': X,
     't': t,
-    'inc': inc,
+    'esc': esc,
   }
 
 #@profile
@@ -69,7 +69,8 @@ def f_dX(P,X,t):
   # initialize
   dX = 0*X
   # force of infection
-  inc = foi.f_lambda(P,X)
+  esc = foi.f_lambda(P,X)
+  inc = 1 - np.prod(esc,axis=(0,3,4))
   dXi = X[:,:,0,0] * inc
   dX[:,:,0,0] -= dXi # sus
   dX[:,:,1,0] += dXi # acute undiag
@@ -111,5 +112,5 @@ def f_dX(P,X,t):
   dX[:,:,1:6,3] += dXi # treat
   return {
     'dX': dX,
-    'inc': inc,
+    'esc': esc,
   }

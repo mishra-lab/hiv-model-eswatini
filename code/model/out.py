@@ -95,20 +95,50 @@ def prevalence(X,s=None,i=None,aggr=False):
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
   return aggratio(Xhiv,XS,aggr)
 
-@deco.rmap(args=['X','inc'])
-@deco.tslice(targs=['X','inc'])
-def incidence(X,inc,s=None,i=None,aggr=False):
+@deco.rmap(args=['X','esc'])
+@deco.tslice(targs=['X','esc'])
+def whoinfectwhom(X,esc,p=None,fpop=None,tpop=None,aggr=False):
+  # total infections between pop1 & pop2 along partnership type p
+  # TODO: implement cumulative?
+  fs = None if fpop is None else fpop.get('s')
+  fi = None if fpop is None else fpop.get('i')
+  ts = None if tpop is None else tpop.get('s')
+  ti = None if tpop is None else tpop.get('i')
   X = X[:,:,:,0,0] # only susceptible
+  esc = esc.prod(axis=1,keepdims=True) if p is None \
+        else esc[:,_,p] if isinstance(p,int) else esc[:,p]
+  esc = esc.prod(axis=4,keepdims=True) if fs is None \
+        else esc[:,:,:,:,_,fs] if isinstance(fs,int) else esc[:,:,:,:,fs]
+  esc = esc.prod(axis=5,keepdims=True) if fi is None \
+        else esc[:,:,:,:,:,_,fi] if isinstance(fi,int) else esc[:,:,:,:,:,fi]
+  inc = (1 - esc.prod(axis=(1,4,5),keepdims=True)) if aggr else (1 - esc)
+  inf = X[:,_,:,:,_,_] * inc
+  inf = inf.sum(axis=2,keepdims=True) if ts is None \
+        else inf[:,:,_,ts] if isinstance(ts,int) else inf[:,:,ts]
+  inf = inf.sum(axis=3,keepdims=True) if ti is None \
+        else inf[:,:,:,_,ti] if isinstance(ti,int) else inf[:,:,:,ti]
+  inf = inf.sum(axis=(2,3),keepdims=True) if aggr else inf
+  return np.squeeze(inf) if aggr else inf
+
+@deco.rmap(args=['X','esc'])
+@deco.tslice(targs=['X','esc'])
+def incidence(X,esc,s=None,i=None,aggr=False):
+  X = X[:,:,:,0,0] # only susceptible
+  inc = 1 - np.prod(esc,axis=(1,4,5))
   Xinc = X_by_si(X*inc,s=s,i=i)
   Xsus = X_by_si(X,s=s,i=i)
   return aggratio(Xinc,Xsus,aggr)
 
-@deco.rmap(args=['X','inc'])
-def cuminfect(X,inc,tvec,s=None,i=None,aggr=False):
+@deco.rmap(args=['X','esc'])
+def cuminfect(X,esc,tvec,s=None,i=None,aggr=False,t0=None):
   X  = X[:,:,:,0,0] # only susceptible
+  inc = 1 - np.prod(esc,axis=(1,4,5))
   dt = dtfun(tvec)
   Xinc = X_by_si(X*inc,s=s,i=i)
-  return np.cumsum(Xinc.sum(axis=(1,2)) * dt if aggr else Xinc * dt[:,_,_], axis=0)
+  inf = Xinc.sum(axis=(1,2)) * dt if aggr else Xinc * dt[:,_,_]
+  if t0:
+    inf[tvec < t0] = 0
+  return np.cumsum(inf, axis=0)
 
 @deco.nanzero
 @deco.rmap(args=['X'])

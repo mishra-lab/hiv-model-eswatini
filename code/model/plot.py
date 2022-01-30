@@ -84,7 +84,7 @@ def ribbon(t,x,taxis=0,interval=.9,alpha=.2,median=True,**kwds):
 def boxplot(t,x,dt=5,taxis=0,alpha=.2,median=True,**kwds):
   # x is a list of ndarrays, with time along taxis
   # TODO: support multiple x with offsets?
-  if isinstance(dt,(int,float)): dt = [ti for ti in t if ti%dt==0]
+  if isinstance(dt,(int,float)): dt = [int(ti) for ti in t if ti%dt==0]
   it = itslice(dt,t)
   x3 = np.stack([np.moveaxis(xi,taxis,0).reshape((len(t),-1)) for xi in x])
   label = kwds.pop('label',None)
@@ -94,7 +94,7 @@ def boxplot(t,x,dt=5,taxis=0,alpha=.2,median=True,**kwds):
     boxprops     = dict(lw=1,ec=color,fc=(*color,alpha)),
     whiskerprops = dict(lw=1,color=color),
     capprops     = dict(lw=1,color=color),
-    flierprops   = dict(lw=1,mec=color,marker='+'),
+    flierprops   = dict(lw=1,mec=color,marker='+',mew=.5,ms=3),
   ))
   for i in range(x3.shape[2]):
     plt.boxplot(x3[:,it,i],positions=dt,widths=.4*min(np.diff(dt)),patch_artist=True,**kwds)
@@ -153,7 +153,7 @@ def targets_vS(T,oname,sname1,sname2,vsop,label=True,**kwds):
 def plot_S(fun,t,R,sname,**kwds):
   S = slicers[sname]
   color = kwds.pop('color',S.color)
-  fkwds = dict_split(kwds,['tvec','rate'])
+  fkwds = dict_split(kwds,['tvec','rate','t0']) # TODO: make decorator?
   if isinstance(fun,str):
     fun = out.by_name(fun)
   if isinstance(R,list):
@@ -167,7 +167,7 @@ def plot_vS(fun,t,R,sname1,sname2,vsop,**kwds):
   S1 = slicers[sname1]
   S2 = slicers[sname2]
   color = kwds.pop('color',clr_interp(S1.color,S2.color))
-  fkwds = dict_split(kwds,['tvec','rate'])
+  fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R,list):
     x = [out.vs_pop(fun,Ri,S1.pop,S2.pop,vsop,**fkwds,aggr=True) for Ri in R]
     ribbon(t,x,color=color,label=out.vs_label(S1.label,S2.label,vsop),**kwds)
@@ -178,7 +178,7 @@ def plot_vS(fun,t,R,sname1,sname2,vsop,**kwds):
 def plot_SvR(fun,t,R1,R2,sname,vsop,**kwds):
   S = slicers[sname]
   color = kwds.pop('color',S.color)
-  fkwds = dict_split(kwds,['tvec','rate'])
+  fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R1,list):
     x = [out.vs_R(fun,R1i,R2i,vsop,**S.pop,**fkwds,aggr=True) for R1i,R2i in zip(R1,R2)]
     ribbon(t,x,color=color,label=S.label,**kwds)
