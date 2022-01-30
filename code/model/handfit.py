@@ -16,7 +16,7 @@ def plot_all(t,Rs,T,fname='handfit.pdf',tops=(.5,.10,.02),drop=True):
     plot_param(Rss,'Rbeta_as', dstr='as'),
     plot_param(Rss,'Rbeta_h',  dstr='h'),
     plot_param(Rss,'P_gud',    dstr='si'),
-    plot_param(Rss,'EHM_acute',dstr=''),
+    plot_param(Rss,'EHY_acute',dstr=''),
     plot_param(Rss,'t0_hiv',   dstr=''),
     # output projections
     plot_output(t,Rss,'NX',        ['ALL'],T=T),

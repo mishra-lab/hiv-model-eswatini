@@ -258,7 +258,7 @@ def get_beta_a(P): # [OK]
     'Rbeta_gud_sus': Rbeta_gud_sus,
     'P_gud': P_gud,
     'P_gud_t': P_gud_t,
-    'EHM_acute': P['Rbeta_acute'] * P['dur_acute'] * 12,
+    'EHY_acute': P['Rbeta_acute'] * P['dur_acute'],
   }
 
 def check_acute(P):
