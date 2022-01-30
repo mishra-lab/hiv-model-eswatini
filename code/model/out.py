@@ -227,3 +227,19 @@ def circum(PA_circum_t,aggr=None):
 @deco.tslice(targs=['P_gud_t'])
 def gud(P_gud_t,aggr=None):
   return np.squeeze(P_gud_t)[:]
+
+def get_sankey(Rs,tvec,t):
+  # get fully stratified infection counts by partnership/group for plotting sankey diagram in R
+  # TODO: stay in python? https://github.com/vinsburg/alluvial_diagram/blob/master/alluvial.py
+  sankey = [['t','p','fs','fi','ts','ti','infections']]
+  for p in range(4):
+    for fs in range(2):
+      for fi in range(4):
+        for ts in range(2):
+          for ti in range(4):
+            kwds = dict(tvec=tvec,t=t,p=p,fpop=dict(s=fs,i=fi),tpop=dict(s=ts,i=ti),aggr=True)
+            inf  = np.median([whoinfectwhom(R,**kwds) for R in Rs],axis=0) if isinstance(Rs,list) else\
+                   whoinfectwhom(Rs,**kwds)
+            sankey += [[tk,p,fs,fi,ts,ti,infk] for tk,infk in zip(t,inf)]
+  return sankey
+  
