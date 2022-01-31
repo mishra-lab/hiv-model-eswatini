@@ -42,7 +42,7 @@ def run(P,t=None,T=None,RPts=None,interval=None):
 
 def solve(P,t):
   X   = f_X(P['X0'],t)
-  esc = f_X(np.zeros([4,2,4,2,4]),t)
+  esc = f_X(np.ones([4,2,4,2,4]),t)
   t0_hiv = int(P['t0_hiv'])
   for i in range(1,t.size):
     # TODO: use array.dtfun?
