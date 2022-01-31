@@ -81,7 +81,7 @@ def ribbon(t,x,taxis=0,interval=.9,alpha=.2,median=True,**kwds):
     if median:
       plt.plot(t,np.nanquantile(x3[:,:,i],.5,axis=0),label=label,**kwds)
 
-def boxplot(t,x,dt=5,taxis=0,alpha=.2,median=True,**kwds):
+def boxplot(t,x,dt=5,taxis=0,alpha=.2,**kwds):
   # x is a list of ndarrays, with time along taxis
   # TODO: support multiple x with offsets?
   if isinstance(dt,(int,float)): dt = [int(ti) for ti in t if ti%dt==0]
@@ -98,6 +98,12 @@ def boxplot(t,x,dt=5,taxis=0,alpha=.2,median=True,**kwds):
   ))
   for i in range(x3.shape[2]):
     plt.boxplot(x3[:,it,i],positions=dt,widths=.4*min(np.diff(dt)),patch_artist=True,**kwds)
+
+def ribbon_or_box(t,x,box=False,**kwds):
+  if box:
+    boxplot(t,x,dt=box,**kwds)
+  else:
+    ribbon(t,x,**kwds)
 
 def target(Ti,interval=.95,**kwds):
   label  = kwds.pop('label',None)
@@ -150,7 +156,7 @@ def targets_vS(T,oname,sname1,sname2,vsop,label=True,**kwds):
     target(Ti,color=clr_interp(S1.color,S2.color),label=(labelstr if label else None),**kwds)
     label = False # only label once
 
-def plot_S(fun,t,R,sname,**kwds):
+def plot_S(fun,t,R,sname,box=False,**kwds):
   S = slicers[sname]
   color = kwds.pop('color',S.color)
   fkwds = dict_split(kwds,['tvec','rate','t0']) # TODO: make decorator?
@@ -158,30 +164,30 @@ def plot_S(fun,t,R,sname,**kwds):
     fun = out.by_name(fun)
   if isinstance(R,list):
     x = [fun(Ri,**S.pop,**fkwds,aggr=True) for Ri in R]
-    ribbon(t,x,color=color,label=S.label,**kwds)
+    ribbon_or_box(t,x,box=box,color=color,label=S.label,**kwds)
   else:
     x = fun(R,**S.pop,aggr=True)
     line(t,x,color=color,label=S.label,**kwds)
 
-def plot_vS(fun,t,R,sname1,sname2,vsop,**kwds):
+def plot_vS(fun,t,R,sname1,sname2,vsop,box=False,**kwds):
   S1 = slicers[sname1]
   S2 = slicers[sname2]
   color = kwds.pop('color',clr_interp(S1.color,S2.color))
   fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R,list):
     x = [out.vs_pop(fun,Ri,S1.pop,S2.pop,vsop,**fkwds,aggr=True) for Ri in R]
-    ribbon(t,x,color=color,label=out.vs_label(S1.label,S2.label,vsop),**kwds)
+    ribbon_or_box(t,x,box=box,color=color,label=out.vs_label(S1.label,S2.label,vsop),**kwds)
   else:
     x = out.vs_pop(fun,R,S1.pop,S2.pop,vsop,**fkwds,aggr=True)
     line(t,x,color=color,label=out.vs_label(S1.label,S2.label,vsop),**kwds)
 
-def plot_SvR(fun,t,R1,R2,sname,vsop,**kwds):
+def plot_SvR(fun,t,R1,R2,sname,vsop,box=False,**kwds):
   S = slicers[sname]
   color = kwds.pop('color',S.color)
   fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R1,list):
     x = [out.vs_R(fun,R1i,R2i,vsop,**S.pop,**fkwds,aggr=True) for R1i,R2i in zip(R1,R2)]
-    ribbon(t,x,color=color,label=S.label,**kwds)
+    ribbon_or_box(t,x,box=box,color=color,label=S.label,**kwds)
   else:
     x = out.vs_R(fun,R1,R2,vsop,**S.pop,**fkwds,aggr=True)
     line(t,x,color=color,label=S.label,**kwds)
