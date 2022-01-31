@@ -206,22 +206,23 @@ def get_cascade_esw():
     Target(stats.beta_binom(p=.886,n= 486),'vls_c',dict(t=2016.5,s=1,    i=(0,1,2,3))),
   ]
 
-def get_cascade_2020(which,weight=1):
-  def make_targets(p,n,t=2020.0,s=None,i=None):
-    if s is None: s = (0,1)
-    if i is None: i = (0,1,2,3)
-    names = ['diagnosed','treated_c','vls_c']
-    pop = dict(t=t,s=s,i=i)
-    return [Target(stats.beta_binom(p=p[i],n=n[i]),names[i],pop,weight=weight) for i in range(len(p))]
-  if which=='90-90-90':       return make_targets([.900,.900,.900],[4259,4259,4259]) # AIDSinfo
-  if which=='95-95-95':       return make_targets([.950,.950,.950],[1650,1650,1650]) # AIDSinfo
-  if which=='ssa':            return make_targets([.847,.879,.891],[  31,  32,  32]) # AIDSinfo
-  if which=='ssa-lowest':     return make_targets([.168,.465,.733],[ 334, 168,  55]) # AIDSinfo
-  if which=='ssa-lowest-fsw': return make_targets([.451,.465,.733],[ 168, 168,  55],s=0,i=(2,3)) # alt-2
-# if which=='ssa-lowest-fsw': return make_targets([.168,.465,.733],[ 334, 168,  55],s=0,i=(2,3)) # alt-1
-# if which=='ssa-lowest-fsw': return make_targets([.451,.112],     [ 100, 100],     s=0,i=(2,3)) # AIDSinfo
-  if which=='90-90-90-fsw':   return make_targets([.900,.900,.900],[4259,4259,4259],s=0,i=(2,3))
-  if which=='95-95-95-fsw':   return make_targets([.950,.950,.950],[1650,1650,1650],s=0,i=(2,3))
+def make_targets_2020(p,n,t=2020.0,s=None,i=None,w=1):
+  if s is None: s = (0,1)
+  if i is None: i = (0,1,2,3)
+  names = ['diagnosed','treated_c','vls_c']
+  pop = dict(t=t,s=s,i=i)
+  return [Target(stats.beta_binom(p=p[i],n=n[i]),names[i],pop,weight=w) for i in range(len(p))]
+
+def get_cascade_2020(which,w=1):
+  # if which=='90-90-90':       return make_targets_2020([.90,.90,.90],[4259,4259,4259],w=w) # AIDSinfo
+  # if which=='95-95-95':       return make_targets_2020([.95,.95,.95],[1650,1650,1650],w=w) # AIDSinfo
+  if which=='ssa':            return make_targets_2020([.847,.879,.891],[31,32,32],w=w)
+  if which=='90-90-90':       return make_targets_2020([.90,.90,.90],[100,100,100],w=w)
+  if which=='95-95-95':       return make_targets_2020([.95,.95,.95],[100,100,100],w=w)
+  if which=='lower-all':      return make_targets_2020([.6,.8,.8],[100,100,100],w=w)
+  if which=='lower-fsw':      return make_targets_2020([.6,.8,.8],[100,100,100],s=0,i=(2,3),w=w) # assume
+  if which=='90-90-90-fsw':   return make_targets_2020([.90,.90,.90],[100,100,100],s=0,i=(2,3),w=w)
+  if which=='95-95-95-fsw':   return make_targets_2020([.95,.95,.95],[100,100,100],s=0,i=(2,3),w=w)
 
 def get_pop_total_esw():
   return [
