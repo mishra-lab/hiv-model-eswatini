@@ -1,66 +1,47 @@
 suppressPackageStartupMessages({
   # library('rms')
-  library('epiR')
+  library('reshape2')
   library('ggplot2')
+  library('viridis')
 })
 source('utils/ops.r')
-uid  = '2022-01-10'
-cases = c(
-  'Low Overall\nLow FSW' ='LoLo',
-  'Low Overall\nHigh FSW'='LoHi',
-  'High Overall\nLow FSW'='HiLo')
-
+N    = 1024
+Nr   = 10
+uid  = '2022-01-24'
 load.data = function(){
-  return(do.call(rbind,lapply(c('base',cases),function(case){
-    return(read.csv(root.path('data','mid',uid,paste0('sens_',case,'_N=0-699.csv'))))
+  return(do.call(rbind,lapply(c('base',paste0('RL',Nr)),function(case){
+    return(read.csv(root.path('data','mid',uid,paste0('sens_',case,'_N=0-',N-1,'.csv'))))
   })))
 }
-clean.data = function(X.raw,t.hor){
+clean.data = function(X.raw,t.hor=2040){
   X.base = X.raw[X.raw$case=='base',]
-  X = X.raw[X.raw$case!='base',]
-  o = function(output){ paste0(output,'_',t.hor) }
-  X$inc.red = (X[[o('incid')]]  - X.base[[o('incid')]])  / X[[o('incid')]]
-  X$inc.ext = (X[[o('incid')]]  - X.base[[o('incid')]])  / X.base[[o('incid')]]
-  X$inf.red = (X[[o('cuminf')]] - X.base[[o('cuminf')]]) / X[[o('cuminf')]]
-  X$inf.ext = (X[[o('cuminf')]] - X.base[[o('cuminf')]]) / X.base[[o('cuminf')]]
+  X      = X.raw[X.raw$case!='base',]
+  X$r.id = 1:Nr
+  X = X[order(X$r.id,X$seed),]
+  o = function(Xi,output){
+    out = Xi[[paste0(output,'_',t.hor)]]
+  }
+  X$inc.red = (o(X,'incid')  - o(X.base,'incid'))  / o(X,'incid')
+  X$inc.ext = (o(X,'incid')  - o(X.base,'incid'))  / o(X.base,'incid')
+  X$inf.red = (o(X,'cuminf') - o(X.base,'cuminf')) / o(X,'cuminf')
+  X$inf.ext = (o(X,'cuminf') - o(X.base,'cuminf')) / o(X.base,'cuminf')
+  X$d.vls.all = X.base$vls_u_ALL - X$vls_u_ALL
+  X$d.vls.fsw = X.base$vls_u_FSW - X$vls_u_FSW
   for (output in c('incid','cuminf')){ X[grepl(output,names(X))] = NULL } # remove raw outputs
   return(X)
 }
-do.glm = function(X,y,vars){
-  f = formula(paste(y,'~',paste(vars,collapse=' + ')))
-  for (case in cases){
-    M = Glm(f,X[X$case==case,],family=quasibinomial())
-    print(M)
-  }
-}
-do.prcc = function(X,y,vars){
-  Q = do.call(rbind,lapply(cases,function(case){
-    Q = epi.prcc(X[X$case==case,c(vars,y)]) # NOTE: order robust?
-    Q$var  = vars
-    Q$case = case
-    Q$case.name = names(cases)[grepl(case,cases)]
-    return(Q)
-  }))
-}
-plot.prcc = function(Q,y){
-  w = .7
-  g.lab = 'Cascade Scenario\nvs Base Case:\nHigh Overall\nHigh FSW'
-  g = ggplot(Q,aes(y=est,x=var,fill=case.name,color=case.name)) +
-    geom_bar(stat='identity',width=w,position=position_dodge(w),alpha=.5) +
-    geom_errorbar(aes(ymin=lower,ymax=upper),width=.2,position=position_dodge(w)) +
-    labs(x='Parameter',y=paste0('PRCC (',y,')'),color=g.lab,fill=g.lab) +
-    theme_light() +
-    scale_fill_viridis_d(option='inferno',begin=.2,end=.8) +
-    scale_colour_viridis_d(option='inferno',begin=.2,end=.8) +
-    theme(legend.position='top',legend.justification='right') +
-    coord_flip()
+do.plot = function(X,y='inf.red',ylab='% Infections Averted',...){
+  X.long = melt(X,m=c('d.vls.all','d.vls.fsw'))
+  levels(X.long$variable) = c('NVS Overall','NVS FSW')
+  g = ggplot(X.long,aes_string(x='100 * value',y=paste('100 *',y),...)) +
+    # geom_line(aes(group=seed),alpha=.3) +
+    geom_point() +
+    facet_grid(cols=vars(variable)) +
+    scale_colour_viridis(option='inferno',begin=.1,end=.9) +
+    labs(x='% Not Virally Suppressed (NVS)',y=ylab) +
+    theme_light()
   return(g)
 }
-
-X.raw = load.data()
-X = clean.data(X.raw,2050)
-vars = setdiff(colnames(X),c('case','seed','inc.red','inf.red','inc.ext','inf.ext'))
-# do.glm(X,'inf.ext',vars)
-Q = do.prcc(X,'inf.ext',vars)
-g = plot.prcc(Q,y='Relative Additional Infections')
-ggsave('Rplots.pdf',h=2+.15*length(cases)*length(vars),w=5)
+X = clean.data(load.data(),2020)
+g = do.plot(X,color='prev_all')
+ggsave('Rplots.pdf',w=6,h=3)
