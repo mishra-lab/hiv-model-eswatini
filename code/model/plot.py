@@ -163,10 +163,10 @@ def plot_S(fun,t,R,sname,box=False,**kwds):
   if isinstance(fun,str):
     fun = out.by_name(fun)
   if isinstance(R,list):
-    x = [fun(Ri,**S.pop,**fkwds,aggr=True) for Ri in R]
+    x = [fun(Ri,**S.pop,**fkwds) for Ri in R]
     ribbon_or_box(t,x,box=box,color=color,label=S.label,**kwds)
   else:
-    x = fun(R,**S.pop,aggr=True)
+    x = fun(R,**S.pop)
     line(t,x,color=color,label=S.label,**kwds)
 
 def plot_vS(fun,t,R,sname1,sname2,vsop,box=False,**kwds):
@@ -175,10 +175,10 @@ def plot_vS(fun,t,R,sname1,sname2,vsop,box=False,**kwds):
   color = kwds.pop('color',clr_interp(S1.color,S2.color))
   fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R,list):
-    x = [out.vs_pop(fun,Ri,S1.pop,S2.pop,vsop,**fkwds,aggr=True) for Ri in R]
+    x = [out.vs_pop(fun,Ri,S1.pop,S2.pop,vsop,**fkwds) for Ri in R]
     ribbon_or_box(t,x,box=box,color=color,label=out.vs_label(S1.label,S2.label,vsop),**kwds)
   else:
-    x = out.vs_pop(fun,R,S1.pop,S2.pop,vsop,**fkwds,aggr=True)
+    x = out.vs_pop(fun,R,S1.pop,S2.pop,vsop,**fkwds)
     line(t,x,color=color,label=out.vs_label(S1.label,S2.label,vsop),**kwds)
 
 def plot_SvR(fun,t,R1,R2,sname,vsop,box=False,**kwds):
@@ -186,10 +186,10 @@ def plot_SvR(fun,t,R1,R2,sname,vsop,box=False,**kwds):
   color = kwds.pop('color',S.color)
   fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R1,list):
-    x = [out.vs_R(fun,R1i,R2i,vsop,**S.pop,**fkwds,aggr=True) for R1i,R2i in zip(R1,R2)]
+    x = [out.vs_R(fun,R1i,R2i,vsop,**S.pop,**fkwds) for R1i,R2i in zip(R1,R2)]
     ribbon_or_box(t,x,box=box,color=color,label=S.label,**kwds)
   else:
-    x = out.vs_R(fun,R1,R2,vsop,**S.pop,**fkwds,aggr=True)
+    x = out.vs_R(fun,R1,R2,vsop,**S.pop,**fkwds)
     line(t,x,color=color,label=S.label,**kwds)
 
 # TODO: labels for vsop

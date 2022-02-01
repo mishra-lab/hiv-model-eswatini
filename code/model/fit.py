@@ -57,7 +57,7 @@ def plot_param(Rss,pname,t=None,**kwds):
 def plot_output(t,Rss,oname,snames,T=None,ylab=None,ylim=None,**kwds):
   if ylab is None: ylab = out.labels.get(oname,oname)
   fh,ah = plot.subplots(1,len(snames))
-  kwds.update(median=False,interval=1)
+  kwds.update(median=False,interval=1 if T else (1,.5,.1))
   for s,sname in enumerate(snames): # subplots
     plot.plt.sca(ah[0,s])
     if isinstance(sname,tuple):

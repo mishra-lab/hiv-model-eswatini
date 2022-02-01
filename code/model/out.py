@@ -74,14 +74,14 @@ def X_by_si(X,s=None,i=None):
 
 @deco.rmap(args=['X'])
 @deco.tslice(targs=['X'])
-def NX(X,s=None,i=None,aggr=False):
+def NX(X,s=None,i=None,aggr=True):
   X = X.sum(axis=(3,4))
   X = X_by_si(X,s=s,i=i)
   return X.sum(axis=(1,2)) if aggr else X
 
 @deco.rmap(args=['X'])
 @deco.tslice(targs=['X'])
-def Psi(X,s=None,i=None,aggr=False):
+def Psi(X,s=None,i=None,aggr=True):
   X  = X.sum(axis=(3,4))
   XS = X.sum(axis=(1,2),keepdims=True)
   X  = X_by_si(X,s=s,i=i)
@@ -89,7 +89,7 @@ def Psi(X,s=None,i=None,aggr=False):
 
 @deco.rmap(args=['X'])
 @deco.tslice(targs=['X'])
-def prevalence(X,s=None,i=None,aggr=False):
+def prevalence(X,s=None,i=None,aggr=True):
   X  = X_by_si(X,s=s,i=i)
   XS = X.sum(axis=(3,4)) # <- denominator; numerator -> (1 - susceptible)
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
@@ -97,7 +97,7 @@ def prevalence(X,s=None,i=None,aggr=False):
 
 @deco.rmap(args=['X','esc'])
 @deco.tslice(targs=['X','esc'])
-def whoinfectwhom(X,esc,p=None,fpop=None,tpop=None,aggr=False):
+def whoinfectwhom(X,esc,p=None,fpop=None,tpop=None,aggr=True):
   # total infections between pop1 & pop2 along partnership type p
   # TODO: implement cumulative?
   fs = None if fpop is None else fpop.get('s')
@@ -122,7 +122,7 @@ def whoinfectwhom(X,esc,p=None,fpop=None,tpop=None,aggr=False):
 
 @deco.rmap(args=['X','esc'])
 @deco.tslice(targs=['X','esc'])
-def incidence(X,esc,s=None,i=None,aggr=False):
+def incidence(X,esc,s=None,i=None,aggr=True):
   X = X[:,:,:,0,0] # only susceptible
   inc = 1 - np.prod(esc,axis=(1,4,5))
   Xinc = X_by_si(X*inc,s=s,i=i)
@@ -130,7 +130,7 @@ def incidence(X,esc,s=None,i=None,aggr=False):
   return aggratio(Xinc,Xsus,aggr)
 
 @deco.rmap(args=['X','esc'])
-def cuminfect(X,esc,tvec,s=None,i=None,aggr=False,t0=None):
+def cuminfect(X,esc,tvec,s=None,i=None,aggr=True,t0=None):
   X  = X[:,:,:,0,0] # only susceptible
   inc = 1 - np.prod(esc,axis=(1,4,5))
   dt = dtfun(tvec)
@@ -143,7 +143,7 @@ def cuminfect(X,esc,tvec,s=None,i=None,aggr=False,t0=None):
 @deco.nanzero
 @deco.rmap(args=['X'])
 @deco.tslice(targs=['X'])
-def Ph(X,h,s=None,i=None,aggr=False):
+def Ph(X,h,s=None,i=None,aggr=True):
   X    = X_by_si(X,s=s,i=i)
   Xh   = (X[:,:,:,_,h] if isinstance(h,int) else X[:,:,:,h]).sum(axis=(3,4))
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
@@ -152,7 +152,7 @@ def Ph(X,h,s=None,i=None,aggr=False):
 @deco.nanzero
 @deco.rmap(args=['X'])
 @deco.tslice(targs=['X'])
-def diagnosed(X,s=None,i=None,aggr=False):
+def diagnosed(X,s=None,i=None,aggr=True):
   X = X_by_si(X,s=s,i=i)
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4)) # HIV+
   Xdia = X[:,:,:,1:,1:].sum(axis=(3,4)) # diagnosed
@@ -161,7 +161,7 @@ def diagnosed(X,s=None,i=None,aggr=False):
 @deco.nanzero
 @deco.rmap(args=['X'])
 @deco.tslice(targs=['X'])
-def treated(X,s=None,i=None,aggr=False,cond=False):
+def treated(X,s=None,i=None,aggr=True,cond=False):
   X = X_by_si(X,s=s,i=i)
   if cond:
     Xref = X[:,:,:,1:,1:].sum(axis=(3,4)) # diagnosed
@@ -173,7 +173,7 @@ def treated(X,s=None,i=None,aggr=False,cond=False):
 @deco.nanzero
 @deco.rmap(args=['X'])
 @deco.tslice(targs=['X'])
-def vls(X,s=None,i=None,aggr=False,cond=False):
+def vls(X,s=None,i=None,aggr=True,cond=False):
   X = X_by_si(X,s=s,i=i)
   if cond:
     Xref = X[:,:,:,1:,3:].sum(axis=(3,4)) # treated
@@ -190,7 +190,7 @@ vls_c     = lambda *a,**k: vls(*a,**k,cond=True)
 @deco.nanzero
 @deco.rmap(args=['X','dx_t'])
 @deco.tslice(targs=['X','dx_t'])
-def dx_rate(X,dx_t,s=None,i=None,aggr=False):
+def dx_rate(X,dx_t,s=None,i=None,aggr=True):
   X = X[:,:,:,1:,0].sum(axis=(3)) # undiagnosed only
   Xdx = X_by_si(X*np.squeeze(dx_t),s=s,i=i)
   XS  = X_by_si(X,s=s,i=i)
@@ -199,7 +199,7 @@ def dx_rate(X,dx_t,s=None,i=None,aggr=False):
 @deco.nanzero
 @deco.rmap(args=['X','tx','Rtx_ht'])
 @deco.tslice(targs=['X','tx','Rtx_ht'])
-def tx_rate(X,tx,Rtx_ht,s=None,i=None,aggr=False):
+def tx_rate(X,tx,Rtx_ht,s=None,i=None,aggr=True):
   X = X[:,:,:,1:6,1]
   Xtx = X_by_si(X*tx*Rtx_ht,s=s,i=i).sum(axis=3)
   XS  = X_by_si(X,s=s,i=i).sum(axis=3)
@@ -208,7 +208,7 @@ def tx_rate(X,tx,Rtx_ht,s=None,i=None,aggr=False):
 @deco.nanzero
 @deco.rmap(args=['X','P'])
 @deco.tslice(targs=['X'])
-def X_rate(X,P,rate,s=None,i=None,aggr=False):
+def X_rate(X,P,rate,s=None,i=None,aggr=True):
   Xrate = X_by_si(X*P[rate][_,],s=s,i=i).sum(axis=(3,4))
   XS    = X_by_si(X,s=s,i=i).sum(axis=(3,4))
   return aggratio(Xrate,XS,aggr)
