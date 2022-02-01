@@ -1,4 +1,5 @@
 import numpy as np
+from copy import copy
 from utils import rootpath,genpath,flatten,minimize,itslice,squarish
 from utils import stats,fio,deco,parallel
 from model import slicers,params,system,target,out,plot,fit
@@ -7,20 +8,20 @@ plotsize = 3 # inches
 uid = fio.datestamp()
 low = (.60,.80,.80)
 
-def fname(case,key,N,N0):
-  if case=='npy':
+def fname(ftype,key,case,N,N0):
+  if ftype=='npy':
     path,ext = ['data','.npy',uid],''
-  if case=='csv':
+  if ftype=='csv':
     path,ext = ['data','mid',uid],'.csv'
-  if case=='fig':
+  if ftype=='fig':
     path,ext = ['out','fig',uid],'.pdf'
-  return genpath(rootpath(*path,'{}_N={}-{}{}'.format(key,N0,N0+N-1,ext)))
+  return genpath(rootpath(*path,'{}_{}_N={}-{}{}'.format(key,case,N0,N0+N-1,ext)))
 
-def get_sample(t,T,N,N0=0,top=.10):
+def sample_run_base(t,T,N,N0=0,top=.10):
   Ps_sam = params.get_n_all(N,seeds=range(N0,N0+N))
   Rs_sam = system.run_n(Ps_sam,t,T)
   Rs_sam = system.drop_fails(Rs_sam)[0]
-  fit.plot_all(t,Rs_sam,T,fname=fname('fig','fit_sam',N,N0))
+  fit.plot_all(t,Rs_sam,T,fname=fname('fig','fit','sam',N,N0))
   Rs = target.top_q_ll(Rs_sam,top=top)
   return Rs
 
@@ -33,11 +34,27 @@ def Rqx_by_group(Rqx=None,**kwds):
         Rqx[sk,ik,0] = sRqx
   return Rqx
 
+def P_update_Rqx_by_group(P,Pu):
+  for key in Pu.keys():
+    rate,pop = key.split(':')
+    P.update({rate+'_scen':Rqx_by_group(Rqx=P.get(rate),**{pop:Pu[key]})})
+  return P
+
+def sample_random_lower(Ps,n=1):
+  PD = {
+    'Rdx:ALL': stats.uniform(l=.05,h=.95),
+    'Rtx:ALL': stats.uniform(l=.05,h=.95),
+    'Rux:ALL': stats.uniform(l=1.05,h=50),
+    'Rdx:FSW': stats.uniform(l=.05,h=.95),
+    'Rtx:FSW': stats.uniform(l=.05,h=.95),
+  }
+  Pss = [copy(P_update_Rqx_by_group(P,Pu))
+    for P in Ps for Pu in params.get_n_sample_lhs(n,PD,seed=P['seed'])]
+  return Pss
+
 def fit_cascade_jfun(pfits,P,PD,T,t):
   # map pfits (quantiles) -> values from PD & update P with the new values
-  for pfit,key in zip(pfits,PD.keys()):
-    rate,pop = key.split(':')
-    P.update({rate+'_scen':Rqx_by_group(Rqx=P.get(rate),**{pop:PD[key].ppf(pfit)})})
+  P_update_Rqx_by_group(P,{key:PD[key].ppf(pfit) for key,pfit in zip(PD.keys(),pfits)})
   # run the model
   R = system.run(P,t,T,RPts=[])
   return -R['ll']
@@ -78,17 +95,19 @@ def get_sens_data(R,t,case):
     'RP_gud_2050','Rbeta_gud_sus_w','Rbeta_gud_inf', # GUD
     'PX_fsw','dur_fsw_l','A_swq_cli','dur_cli', # FSW & Cli
   ]
-  D = dict(case=case,
-    **{'cuminf_'+str(toi):oi for toi,oi in zip(to,out.cuminfect(R,**slicers['ALL'].pop,aggr=True,tvec=t)[ito])},
-    **{'incid_' +str(toi):oi for toi,oi in zip(to,out.incidence(R,**slicers['ALL'].pop,aggr=True,tvec=t,t=to))},
+  return dict(case=case,
     **{key:R['P'][key] for key in Pkeys},
+    **{'cuminf_'+str(toi):oi for toi,oi in zip(to,out.cuminfect(R,**slicers['ALL'].pop,tvec=t)[ito])},
+    **{'incid_' +str(toi):oi for toi,oi in zip(to,out.incidence(R,**slicers['ALL'].pop,tvec=t,t=to))},
+    **{step+'_'+pop:out.by_name(step)(R,**slicers[pop].pop,tvec=t,t=2020)[0]
+        for step in ['diagnosed','treated_c','vls_c','treated_u','vls_u'] for pop in ['ALL','FSW']},
     **{
-      'prev_all_2020': out.prevalence(R,**slicers['ALL'].pop,aggr=True,tvec=t,t=2020)[0],
+      'inc_all':  out.incidence(R,**slicers['ALL'].pop,tvec=t,t=2020)[0],
+      'prev_all': out.prevalence(R,**slicers['ALL'].pop,tvec=t,t=2020)[0],
       'prev_ratio_fsw:wq': out.vs_pop('prevalence',R,slicers['FSW'].pop,slicers['WQ'].pop,tvec=t,t=2020)[0],
       'prev_ratio_cli:mq': out.vs_pop('prevalence',R,slicers['Cli'].pop,slicers['MQ'].pop,tvec=t,t=2020)[0],
     }
   )
-  return D
 
 def get_sens_data_n(Rs,t,case):
   return [get_sens_data(R,t,case) for R in Rs]
@@ -133,41 +152,66 @@ def get_refit_case(case):
           'Rdx:FSW':PDD['0-1'],'Rtx:FSW':PDD['0-1'],'Rux:FSW':PDD['1-50'] }
   return T2,PD
 
-def main(N,N0=0,sample=True,cf=True,refit=True,top=.10,sens=True,plotfit=True,sankey=False):
+def main_fit(N,N0=0,sample=True,cf=True,refit=True,top=.10,sens=True,plotfit=True):
   t  = system.f_t(t1=2025)
   t2 = system.f_t(t1=2050,dt=.05)
   T1 = target.get_all_esw()
   # base case (fitted)
+  case = 'base'
   if sample:
-    R1s = get_sample(t,T1,N,N0=N0,top=top)
-    P1s = fio.save(fname('npy','P1s',N,N0),[R['P'] for R in R1s])
+    R1s = sample_run_base(t,T1,N,N0=N0,top=top)
+    P1s = fio.save(fname('npy','Ps',case,N,N0),[R['P'] for R in R1s])
   else:
-    P1s = fio.load(fname('npy','P1s',N,N0))
+    P1s = fio.load(fname('npy','Ps',case,N,N0))
   # re-run for t2
   R1s = system.run_n(P1s,t2,T1)
-  if sens: fio.save_csv(fname('csv','sens_base',N,N0),get_sens_data_n(R1s,t2,'base'))
-  if sankey: fio.save_csv(fname('csv','sankey_base',N,N0),out.get_sankey(R1s,t2,range(1985,2050)))
-  if plotfit: fit.plot_all(t2,R1s,T1,fname=fname('fig','fit_base',N,N0))
+  if sens: fio.save_csv(fname('csv','sens',case,N,N0),get_sens_data_n(R1s,t2,'base'))
+  if plotfit: fit.plot_all(t2,R1s,T1,fname=fname('fig','fit',case,N,N0))
   if not cf: return
-  # counterfactuals
+  # counterfactuals (fitted)
   for case in ['LoLo','LoHi','HiLo']:
     T2,PD = get_refit_case(case)
     casestr = case+'_'+''.join(str(int(z*100)) for z in low)
     if refit:
       P2s = fit_cascade_n(P1s,PD,T2,t,ftol=.1)
-      fio.save(fname('npy','P2s_'+casestr,N,N0),P2s)
+      fio.save(fname('npy','Ps',casestr,N,N0),P2s)
     else:
-      P2s = fio.load(fname('npy','P2s_'+casestr,N,N0))
+      P2s = fio.load(fname('npy','Ps',casestr,N,N0))
     # re-run for t2
     R2s = system.run_n(P2s,t2,T2)
-    if sens: fio.save_csv(fname('csv','sens_'+casestr,N,N0),get_sens_data_n(R2s,t2,case))
-    if sankey: fio.save_csv(fname('csv','sankey_'+casestr,N,N0),out.get_sankey(R1s,t2,range(1985,2050)))
-    if plotfit: fit.plot_all(t2,R2s,T2,fname=fname('fig','fit_'+casestr,N,N0))
+    if sens: fio.save_csv(fname('csv','sens',casestr,N,N0),get_sens_data_n(R2s,t2,case))
+    if plotfit: fit.plot_all(t2,R2s,T2,fname=fname('fig','fit',casestr,N,N0))
     # plot cumulative infections averted / extra
     plot_diff(t2,R2s,R1s,'cuminfect',['ALL','FSW','Cli'],intervals=[.5,.95],ylim=(0,.8),
       xlim=(1998,2042),vsop='1-2/1',ylab='Cumulative Infections Averted')
-    plot.save(fname('fig','ci_avert_'+casestr,N,N0))
+    plot.save(fname('fig','ci_avert',casestr,N,N0))
     plot_diff(t2,R2s,R1s,'cuminfect',['ALL','FSW','Cli'],intervals=[.5,.95],ylim=(0,.8),
       xlim=(1998,2042),vsop='1-2/2',ylab='Cumulative Additional Infections')
-    plot.save(fname('fig','ci_extra_'+casestr,N,N0))
+    plot.save(fname('fig','ci_extra',casestr,N,N0))
 
+def main_random(N,N0=0,Nr=10,sample=True,resample=True,top=.10,sens=True,plotfit=True):
+  t  = system.f_t(t1=2025)
+  t2 = system.f_t(t1=2050,dt=.05)
+  T1 = target.get_all_esw()
+  # base case (fitted)
+  case = 'base'
+  if sample:
+    R1s = sample_run_base(t,T1,N,N0=N0,top=top)
+    P1s = fio.save(fname('npy','Ps',case,N,N0),[R['P'] for R in R1s])
+  else:
+    P1s = fio.load(fname('npy','Ps',case,N,N0))
+  # re-run for t2
+  R1s = system.run_n(P1s,t2,T1)
+  if sens: fio.save_csv(fname('csv','sens',case,N,N0),get_sens_data_n(R1s,t2,'base'))
+  if plotfit: fit.plot_all(t2,R1s,T1,fname=fname('fig','fit',case,N,N0))
+  # counterfactuals (random)
+  case = 'RL'+str(Nr)
+  if resample:
+    P2s = sample_random_lower(P1s,Nr)
+    fio.save(fname('npy','Ps',case,N,N0),P2s)
+  else:
+    P2s = fio.load(fname('npy','Ps',case,N,N0))
+  # run for t2
+  R2s = system.run_n(P2s,t2)
+  if sens: fio.save_csv(fname('csv','sens',case,N,N0),get_sens_data_n(R2s,t2,'RL'))
+  if plotfit: fit.plot_all(t2,R2s,None,tops=None,fname=fname('fig','fit',case,N,N0))
