@@ -8,7 +8,7 @@ source('utils/ops.r')
 # config: model fits
 N    = 1024
 Nr   = 10
-uid  = '2022-01-24'
+uid  = '2022-02-02'
 load.data = function(){
   return(do.call(rbind,lapply(c('base',paste0('RL',Nr)),function(case){
     return(read.csv(root.path('data','mid',uid,paste0('sens_',case,'_N=0-',N-1,'.csv'))))
@@ -26,13 +26,14 @@ clean.data = function(X.raw,t.hor=2040){
   X$inc.ext = (o(X,'incid')  - o(X.base,'incid'))  / o(X.base,'incid')
   X$inf.red = (o(X,'cuminf') - o(X.base,'cuminf')) / o(X,'cuminf')
   X$inf.ext = (o(X,'cuminf') - o(X.base,'cuminf')) / o(X.base,'cuminf')
-  X$d.vls.all = X.base$vls_u_ALL - X$vls_u_ALL
+  X$d.vls.aq  = X.base$vls_u_AQ  - X$vls_u_AQ
   X$d.vls.fsw = X.base$vls_u_FSW - X$vls_u_FSW
+  X$d.vls.cli = X.base$vls_u_Cli - X$vls_u_Cli
   X$ipr_all   = X$inc_all / X$prev_all
   for (output in c('incid','cuminf')){ X[grepl(output,names(X))] = NULL } # remove raw outputs
   return(X)
 }
-do.glm = function(X,y='inf.red',pred.vars,mod.vars,scale=FALSE){
+do.glm = function(X,y='inf.red',pred.vars,mod.vars,scale=TRUE){
   f = paste(y,' ~ ',paste(sep=' + ',0,
     paste(pred.vars,collapse=' * '),
     paste('(',paste(pred.vars,collapse=' + '),') : (',paste(mod.vars,collapse=' + '),')')))
@@ -65,8 +66,8 @@ plot.effects = function(models,c.lab='Year'){
 }
 plot.points = function(X,y,ylab,...){
   # TODO: facet by effects?
-  X.long = melt(X,m=c('d.vls.all','d.vls.fsw'))
-  levels(X.long$variable) = c('NVS Overall','NVS FSW')
+  X.long = melt(X,m=c('d.vls.aq','d.vls.fsw','d.vls.cli'))
+  levels(X.long$variable) = c('NVS non-SW','NVS FSW','NVS Cli')
   g = ggplot(X.long,aes_string(x='100 * value',y=paste('100 *',y),...)) +
     # geom_line(aes(group=seed),alpha=.3) +
     geom_point() +
@@ -76,35 +77,30 @@ plot.points = function(X,y,ylab,...){
     theme_light()
   return(g)
 }
-fig.save = function(...,w=7,h=7){
-  fig.name = root.path('out','fig',uid,paste0(paste(...,sep='_'),'.pdf'))
-  print(paste('saving:',fig.name))
-  ggsave(fig.name,w=w,h=h)
-}
 # config: this analysis
 y.def = 'inf.red'
 y.lab = '% Infections Averted'
 t.def = 2040
 t.vec = c(2010,2020,2030,2040,2050)
-pred.vars = c('d.vls.all','d.vls.fsw')
+pred.vars = c('d.vls.aq','d.vls.fsw','d.vls.cli')
 mod.vars = list(
   mech = c('EHY_acute','RPA_condom_a.v','PX_fsw','dur_fsw_l','A_swq_cli','dur_cli'),
   cond = c('prev_ratio_fsw.wq','prev_ratio_cli.mq','inc_all','prev_all')
 )
 X.raw = load.data()
 X = clean.data(X.raw,t.def)
+# exploratory
+# g = plot.points(X,y.def,y.lab,color='inc_all'); ggsave('Rplots.pdf',w=12,h=4); q()
 for (name in names(mod.vars)){
   # standardized effects
   M = lapply(setNames(t.vec,t.vec),function(t){
-    do.glm(clean.data(X.raw,t),y.def,pred.vars,mod.vars[[name]],scale=TRUE)
+    do.glm(clean.data(X.raw,t),y.def,pred.vars,mod.vars[[name]])
   })
   g = plot.effects(M)
   fig.save('sens','std-eff',name,w=6,h=8)
   # raw effects
-  m = do.glm(X,y.def,pred.vars,mod.vars[[name]],scale=FALSE)
+  m = do.glm(X,y.def,pred.vars,mod.vars[[name]])
   print(summary(m))
 }
-# exploratory
-# g = plot.points(X,y.def,y.lab,color='EHY_acute')
-# ggsave('Rplots.pdf',w=8,h=4)
+
 # TODO: clean up labels...
