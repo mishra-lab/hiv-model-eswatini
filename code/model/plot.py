@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from model.target import filter_targets
-from utils import genpath,flatten,clr_interp,interval_qs,squarish,dict_split,itslice,globs
+from utils import genpath,flatten,clr_interp,interval_qs,squarish,dict_split,itslice,tdt,globs
 from model import _,dimkeys,dimensions,slicers,out
 
 # TODO: labeling & colors for vsop
@@ -81,23 +81,27 @@ def ribbon(t,x,taxis=0,interval=.9,alpha=.2,median=True,**kwds):
     if median:
       plt.plot(t,np.nanquantile(x3[:,:,i],.5,axis=0),label=label,**kwds)
 
-def boxplot(t,x,dt=5,taxis=0,alpha=.2,**kwds):
+def boxplot(t,x,dt=5,tb=None,taxis=0,alpha=.2,**kwds):
   # x is a list of ndarrays, with time along taxis
   # TODO: support multiple x with offsets?
-  if isinstance(dt,(int,float)): dt = [int(ti) for ti in t if ti%dt==0]
-  it = itslice(dt,t)
+  if tb is None:
+    tb = tdt(t,dt)
+  else:
+    dt = min(np.diff(dt))
+  it = itslice(tb,t)
   x3 = np.stack([np.moveaxis(xi,taxis,0).reshape((len(t),-1)) for xi in x])
   label = kwds.pop('label',None)
-  color = kwds.pop('color','k')
+  color = kwds.pop('color',(0,0,0))
   kwds.update(dict( # :\ really plt?
-    medianprops  = dict(lw=1,color=color),
-    boxprops     = dict(lw=1,ec=color,fc=(*color,alpha)),
-    whiskerprops = dict(lw=1,color=color),
-    capprops     = dict(lw=1,color=color),
-    flierprops   = dict(lw=1,mec=color,marker='+',mew=.5,ms=3),
+    medianprops  = dict(lw=.5,color=color),
+    boxprops     = dict(lw=.5,ec=color,fc=(*color,alpha)),
+    whiskerprops = dict(lw=.5,color=color),
+    capprops     = dict(lw=.5,color=color),
+    flierprops   = dict(lw=.5,mec=color,marker='+',mew=.5,ms=3),
   ))
   for i in range(x3.shape[2]):
-    plt.boxplot(x3[:,it,i],positions=dt,widths=.4*min(np.diff(dt)),patch_artist=True,**kwds)
+    plt.boxplot(x3[:,it,i],positions=tb,widths=.4*dt,patch_artist=True,**kwds)
+    if dt < 10: plt.xticks(tdt(t,10),tdt(t,10))
 
 def ribbon_or_box(t,x,box=False,**kwds):
   if box:
