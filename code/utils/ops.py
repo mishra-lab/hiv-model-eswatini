@@ -3,6 +3,7 @@ import numpy as np
 def flatten(x):
   # flatten & ensure x is iterable
   # e.g. [[1,[2,[3]]],4,[[5]]] -> [1,2,3,4,5]
+  # TODO: undefined behaviour for dicts?
   f = []
   if isinstance(x,str) or not hasattr(x,'__iter__'):
     f.append(x)
@@ -48,6 +49,9 @@ def dtfun(t):
 
 def itslice(t,tvec):
   return np.in1d(tvec,t)
+
+def tdt(t,dt,cast=int):
+  return [cast(ti) for ti in t if ti%dt==0]
 
 def nan_to_value(x,v):
   # faster than np.nan_to_num as we don't deal with infs?

@@ -1,7 +1,9 @@
-options(width=256)
-root.path = function(...){
+options(width=200)
+root.path = function(...,create=FALSE){
   root = strsplit(file.path(getwd(),''),file.path('','code',''))[[1]][1]
-  return(file.path(root,...))
+  path = file.path(root,...)
+  if (create & !dir.exists(dirname(path))){ dir.create(dirname(path),recursive=TRUE) }
+  return(path)
 }
 quiet = function(code){
   sink('/dev/null')

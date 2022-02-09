@@ -3,6 +3,12 @@ suppressPackageStartupMessages({
   library('viridis')
 })
 
+fig.save = function(uid,...,w=7,h=7){
+  fig.name = root.path('out','fig',uid,paste0(paste(...,sep='_'),'.pdf'))
+  print(paste('saving:',fig.name))
+  ggsave(fig.name,w=w,h=h)
+}
+
 sankey = function(X,fill='part',norm=FALSE){
   pop.labs  = c('W Low','W Med','LR FSW','HR FSW','M Low','M Med','LR Cli','HR Cli')
   part.labs = c('Main / Spousal','Casual','New Sex Work','Reg Sex Work')
