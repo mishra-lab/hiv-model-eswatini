@@ -153,6 +153,13 @@ def def_sample_distrs():
   'Rtx_fsw':              stats.gamma_p(p=.72,v=1.65e-2),
   }
 
+def print_sample_distrs(PD=None,fmt='{:6.3f}',interval=.95):
+  if PD is None: PD = def_sample_distrs()
+  r = max(map(len,PD.keys()))
+  sf = '{}: '+fmt+' & ('+fmt+',~'+fmt+') | {}'
+  for key in PD.keys():
+    print(sf.format(key.rjust(r),PD[key].mean(),*PD[key].interval(interval),PD[key].dist.name))
+
 # demographics -------------------------------------------------------------------------------------
 
 def get_X0(P): # TODO
@@ -176,9 +183,9 @@ def get_X0(P): # TODO
   # Clients
   A_new_total = A[2] * P['C_new_fswl'] * (PX_si[0,2] + P['RC_new_fsw_h:l'] * PX_si[0,3])
   A_reg_total = A[3] * P['C_reg_fswl'] * (PX_si[0,2] + P['RC_reg_fsw_h:l'] * PX_si[0,3])
-  cli_total = (A_new_total + A_reg_total) / P['A_swq_cli']
-  PX_si[1,3] = cli_total * P['PX_cli_h']
-  PX_si[1,2] = cli_total * (1-P['PX_cli_h'])
+  PX_cli = (A_new_total + A_reg_total) / P['A_swq_cli']
+  PX_si[1,3] = PX_cli * P['PX_cli_h']
+  PX_si[1,2] = PX_cli * (1-P['PX_cli_h'])
   # non-client men
   PX_si[1,1] = P['PX_mm']
   PX_si[1,0] = 1 - P['PX_w'] - PX_si[1,1:].sum()
@@ -188,6 +195,7 @@ def get_X0(P): # TODO
                - P['C_cas_fsw'] * PX_si[0,2:].sum() ) / P['C_cas_med']
   PX_si[0,0] = P['PX_w'] - PX_si[0,1:].sum()
   return {
+    'PX_cli': PX_cli,
     'PX_s':  PX_si.sum(axis=1),
     'PX_si': PX_si,
     'PX_si_s': PX_si / PX_si.sum(axis=1)[:,_],
@@ -351,10 +359,10 @@ def check_condom(P):
   )
 
 def get_circumcision(P): # [OK]
-  # (SHIMS2), SDHS2006, Bicego2013, SHIMS2, "COP20", assume
+  # (SHIMS2), SDHS2006, Bicego2013, MICS2014, SHIMS2, "COP20", assume
   PA_circum_t = ta.tarray(
-     [1980.0,2006.5,2011.0,2016.5,2020.0,2050,2051],
-     [  .007,  .082,  .171,  .300,  .370,*2*[P['PA_circum_2050']]]
+     [1980.0,2006.5,2011.0,2014.8,2016.5,2020.0,2050,2051],
+     [  .007,  .082,  .171,  .250,  .300,  .370,*2*[P['PA_circum_2050']]]
   ).reshape([1,1,1,1,1,1,1,1])
   Rbeta_circum =  np.array([ # [women,men]
       [1,.50], # vaginal - Boily2009,Hughes2012,Patel2014
