@@ -8,6 +8,7 @@ tfname = '.fit-{}.pdf'
 def plot_all(t,Rs,T,fname='fit.pdf',tops=(.5,.10,.02),drop=True):
   if drop: Rs = system.drop_fails(Rs)[0]
   Rss = [target.top_q_ll(Rs,top) for top in tops] if tops else [Rs]
+  # TODO: something duplicated going on with death_hc, gud, condom, & circum (?)
   tfnames = [
     # param histograms
     plot_param(Rss,'PX_si',    dstr='si'),
@@ -39,6 +40,22 @@ def plot_all(t,Rs,T,fname='fit.pdf',tops=(.5,.10,.02),drop=True):
     # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
     # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
     # plot_output(t,Rss,'cuminfect', ['W','M','FSW'],tvec=t,T=T),
+  ]
+  fio.pdfmerge(fname,tfnames,rm=True)
+
+def plot_refit(t,Rs,T,fname,tops=(1,.2,.04),drop=True):
+  if drop: Rs = system.drop_fails(Rs)[0]
+  Rss = [target.top_q_ll(Rs,top) for top in tops]
+  groups = ['ALL','AQ','FSW','Cli']
+  tfnames = [
+    # output projections
+    plot_output(t,Rss,'prevalence',groups,T=T,ylim=(0,1)),
+    plot_output(t,Rss,'incidence', groups,T=T,ylim=(0,1)),
+    plot_output(t,Rss,'diagnosed', groups,T=T,ylim=(0,1)),
+    plot_output(t,Rss,'treated_c', groups,T=T,ylim=(0,1)),
+    plot_output(t,Rss,'vls_c',     groups,T=T,ylim=(0,1)),
+    plot_output(t,Rss,'treated_u', groups,T=T,ylim=(0,1)),
+    plot_output(t,Rss,'vls_u',     groups,T=T,ylim=(0,1)),
   ]
   fio.pdfmerge(fname,tfnames,rm=True)
 
