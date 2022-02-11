@@ -24,35 +24,42 @@ def by_name(name):
   # get a function in this module by its name
   return globals()[name]
 
+def vs_fun(O1,O2,vsop):
+  if   vsop=='1/2':    return (O1/O2)
+  elif vsop=='2/1':    return (O2/O1)
+  elif vsop=='1-2':    return (O1-O2)
+  elif vsop=='2-1':    return (O2-O1)
+  elif vsop=='1-2/1':  return (O1-O2)/O1
+  elif vsop=='2-1/1':  return (O2-O1)/O1
+  elif vsop=='1-2/2':  return (O1-O2)/O2
+  elif vsop=='2-1/2':  return (O2-O1)/O2
+  else: raise NotImplementedError('out.vs_pop(): vsop = '+str(vsop))
+
+def vs_label(lab1,lab2,vsop):
+  if   vsop=='1/2':    return '{} / {}'.format(lab1,lab2)
+  elif vsop=='2/1':    return '{} / {}'.format(lab2,lab1)
+  elif vsop=='1-2':    return '{} - {}'.format(lab1,lab2)
+  elif vsop=='2-1':    return '{} - {}'.format(lab2,lab1)
+  elif vsop=='1-2/1':  return '{} - {} (REF=1)'.format(lab1,lab2)
+  elif vsop=='2-1/1':  return '{} - {} (REF=1)'.format(lab2,lab1)
+  elif vsop=='1-2/2':  return '{} - {} (REF=2)'.format(lab1,lab2)
+  elif vsop=='2-1/2':  return '{} - {} (REF=2)'.format(lab2,lab1)
+  else: raise NotImplementedError('out.vs_label(): vsop = '+str(vsop))
+
 @deco.nanzero
 def vs_pop(ofun,R,pop1,pop2,vsop='1/2',aggr=True,**kwds):
   # compute ofun from R for pop1 and pop2, then do some operation to combine the results
   if isinstance(ofun,str): ofun = by_name(ofun)
   O1 = ofun(R,**pop1,**kwds,aggr=aggr)
   O2 = ofun(R,**pop2,**kwds,aggr=aggr)
-  if   vsop=='1/2':    return (O1/O2)
-  elif vsop=='1-2':    return (O1-O2)
-  elif vsop=='1-2/1':  return (O1-O2)/O1
-  elif vsop=='1-2/2':  return (O1-O2)/O2
-  else: raise NotImplementedError('out.vs_pop(): vsop = '+str(vsop))
+  return vs_fun(O1,O2,vsop)
 
 @deco.nanzero
 def vs_R(ofun,R1,R2,vsop='1-2',aggr=True,**kwds):
   if isinstance(ofun,str): ofun = by_name(ofun)
   O1 = ofun(R1,**kwds,aggr=aggr)
   O2 = ofun(R2,**kwds,aggr=aggr)
-  if   vsop=='1/2':    return (O1/O2)
-  elif vsop=='1-2':    return (O1-O2)
-  elif vsop=='1-2/1':  return (O1-O2)/O1
-  elif vsop=='1-2/2':  return (O1-O2)/O2
-  else: raise NotImplementedError('out.vs_R(): vsop = '+str(vsop))
-
-def vs_label(lab1,lab2,vsop):
-  if   vsop=='1/2':    return '{} / {}'.format(lab1,lab2)
-  elif vsop=='1-2':    return '{} - {}'.format(lab1,lab2)
-  elif vsop=='1-2/1':  return '{} - {} (Rel)'.format(lab1,lab2)
-  elif vsop=='1-2/2':  return '{} - {} (Rel)'.format(lab1,lab2)
-  else: raise NotImplementedError('out.vs_label(): vsop = '+str(vsop))
+  return vs_fun(O1,O2,vsop)
 
 # X dimensions: t,s,i,h,c
 
@@ -228,7 +235,7 @@ def circum(PA_circum_t,aggr=None):
 def gud(P_gud_t,aggr=None):
   return np.squeeze(P_gud_t)[:]
 
-def get_sankey(Rs,tvec,t):
+def get_alluvial(Rs,tvec,t):
   # get fully stratified infection counts by partnership/group for plotting sankey diagram in R
   # TODO: stay in python? https://github.com/vinsburg/alluvial_diagram/blob/master/alluvial.py
   sankey = [['t','p','fs','fi','ts','ti','infections']]
