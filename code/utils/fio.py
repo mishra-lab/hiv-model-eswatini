@@ -27,8 +27,16 @@ def load(fname):
   return obj # array-like
 
 def save_csv(fname,obj):
+  # equivalent formats (ordered as implemented below)
+  # 1. {'A':[0,1,2],'B':[3,4,5]}
+  # 2. [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
+  # 3. [['A','B'],[0,3],[1,4],[2,5]]
   with open(genpath(fname),'w') as f:
-    if isinstance(obj[0],dict):
+    if isinstance(obj,dict):
+      w = csv.writer(f)
+      w.writerow(obj.keys())
+      w.writerows(zip(*obj.values()))
+    elif isinstance(obj[0],dict):
       w = csv.DictWriter(f,obj[0].keys())
       w.writeheader()
       w.writerows(obj)
