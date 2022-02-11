@@ -1,4 +1,5 @@
 import numpy as np
+from copy import copy
 from utils import _,NAN,stats,flatten,dict_split,linear_comb
 from utils import tarray as ta
 
@@ -12,7 +13,7 @@ def get_all(P,seed=None,**kwds):
   P.update(kwds)
   # order matters for some dependencies
   P.update(get_A(P))
-  P.update(get_X0(P))
+  P.update(get_PX(P))
   P.update(get_birth_death(P))
   P.update(get_turnover(P))
   P.update(get_beta_a(P))
@@ -34,10 +35,8 @@ def get_n_all(n,Ps=None,seeds=None,lhs=True,**kwds):
       # only latin hypercube sample params without constraints
       # too expensive / frail for constraints - https://arxiv.org/abs/0909.0329
       PDc = dict_split(PD,flatten(def_checkers().values()))
-      Ps = [{**Ph,**Pc} for Ph,Pc in zip(
-        get_n_sample_random(n,PDc,seeds=seeds),
-        get_n_sample_lhs(n,PD,seed=seeds[0])
-      )]
+      Phs = get_n_sample_lhs(n,PD,seed=seeds[0])
+      Ps = get_n_sample_random(n,PDc,seeds=seeds,Ps=Phs)
     else:
       Ps = get_n_sample_random(n,PD,seeds=seeds)
   return [get_all(P,**kwds) for P in Ps]
@@ -46,15 +45,17 @@ def get_n_sample_lhs(n,PD,seed=None):
   Qs = stats.lhs(len(PD),n,seed=seed)
   return [{key:PD[key].ppf(q) for key,q in zip(PD,Q)} for Q in Qs]
 
-def get_n_sample_random(n,PD=None,seeds=None):
+def get_n_sample_random(n,PD=None,seeds=None,Ps=None):
+  if Ps is None: Ps = n*[{}]
   if seeds is None: seeds = n*[None]
   if PD is None: PD = def_sample_distrs()
-  return [get_sample_random(PD,seed=seeds[i]) for i in range(n)]
+  return [get_sample_random(PD,seed=seeds[i],P=Ps[i]) for i in range(n)]
 
-def get_sample_random(PD=None,seed=None):
+def get_sample_random(PD=None,seed=None,P=None):
+  if P is None: P = {}
   if seed is not None: np.random.seed(seed)
   if PD is None: PD = def_sample_distrs()
-  P = {key:dist.rvs() for key,dist in PD.items()}
+  P.update({key:dist.rvs() for key,dist in PD.items()})
   P['seed'] = seed
   checkers = def_checkers()
   # adjustments / forcing
@@ -77,6 +78,7 @@ def def_checkers():
   k = 'PA_condom_' # convenience
   return {
     check_A:      ['PA_ai_mcq','PA_ai_swq','A_reg'],
+    check_PX:     ['PX_w_fsw','A_swq_cli'],
     check_acute:  ['Rbeta_acute','dur_acute'],
     check_gud:    ['P_gud_fsw_l','RP_gud_fsw_h:l'],
     check_condom: [k+'msp_1988',k+'msp_2006',k+'msp_2016',k+'cas_1988',k+'cas_2006',k+'cas_2016',
@@ -87,7 +89,7 @@ def def_sample_distrs():
   return {
   # PX
   't0_hiv':               stats.uniform(l=1980,h=1985),
-  'PX_fsw':               stats.beta_binom(p=.028,n=112),
+  'PX_w_fsw':             stats.beta_binom(p=.028,n=112),
   'PX_mm':                stats.beta_binom(p=.05,n=60),
   'dur_fsw_l':            stats.gamma_p(p=3.6,v=.96),
   'dur_fsw_h':            stats.gamma_p(p=10,v=0.26),
@@ -95,8 +97,8 @@ def def_sample_distrs():
   'Pturn_fsw_h:m':        stats.beta_binom(p=.724,n=18),
   'LORturn_wq_sus:hiv':   stats.gamma_p(p=1,v=.605),
   # C
-  'C_new_fswl':           stats.gamma_p(p=4.1,v=.8),  # per month
-  'C_reg_fswl':           stats.gamma_p(p=8.4,v=1.6), # per month 
+  'C_new_fsw_l':          stats.gamma_p(p=4.1,v=.8),  # per month
+  'C_reg_fsw_l':          stats.gamma_p(p=8.4,v=1.6), # per month 
   'RC_new_fsw_h:l':       stats.gamma_p(p=2.0,v=.05),
   'RC_reg_fsw_h:l':       stats.gamma_p(p=1.5,v=.01),
   'A_swq_cli':            stats.gamma_p(p=2.8,v=.953), # per month
@@ -162,30 +164,24 @@ def print_sample_distrs(PD=None,fmt='{:6.3f}',interval=.95):
 
 # demographics -------------------------------------------------------------------------------------
 
-def get_X0(P): # TODO
+def get_PX(P): # TODO
   # population size
   NX0   = np.array(243)
   PX0_h = np.array([1,0,0,0,0,0]).reshape([1,1,6,1])
   PX0_c  = np.array([1,0,0,0,0]).reshape([1,1,1,5])
   PX_h_hiv = np.array([0,5,65,30,0,0]).reshape([1,1,6,1])*1e-6 # REF: assume
   PX_h_hiv[:,:,0,:] = 1 - PX_h_hiv.sum()
-  P['PX_w']       = .52 # REF: WorldBank
-  P['PX_fsw_h']   = .2  # REF: assume
-  P['PX_cli_h']   = .2  # REF: assume
   P['C_cas_med']  = 2   # REF: TODO
   P['C_cas_fsw']  = 0.5 # REF: TODO
   P['C_cas_cli']  = 1   # REF: TODO
+  P = get_PX_fsw_cli(P)
   PX_si = np.zeros((2,4))
-  A = np.squeeze(P['A_ap'].sum(axis=0))
   # FSW
-  PX_si[0,2] = P['PX_w'] * P['PX_fsw'] * (1-P['PX_fsw_h'])
-  PX_si[0,3] = P['PX_w'] * P['PX_fsw'] * P['PX_fsw_h']
+  PX_si[0,2] = P['PX_fsw'] * (1-P['PX_fsw_h'])
+  PX_si[0,3] = P['PX_fsw'] * P['PX_fsw_h']
   # Clients
-  A_new_total = A[2] * P['C_new_fswl'] * (PX_si[0,2] + P['RC_new_fsw_h:l'] * PX_si[0,3])
-  A_reg_total = A[3] * P['C_reg_fswl'] * (PX_si[0,2] + P['RC_reg_fsw_h:l'] * PX_si[0,3])
-  PX_cli = (A_new_total + A_reg_total) / P['A_swq_cli']
-  PX_si[1,3] = PX_cli * P['PX_cli_h']
-  PX_si[1,2] = PX_cli * (1-P['PX_cli_h'])
+  PX_si[1,3] = P['PX_cli'] * P['PX_cli_h']
+  PX_si[1,2] = P['PX_cli'] * (1-P['PX_cli_h'])
   # non-client men
   PX_si[1,1] = P['PX_mm']
   PX_si[1,0] = 1 - P['PX_w'] - PX_si[1,1:].sum()
@@ -195,15 +191,30 @@ def get_X0(P): # TODO
                - P['C_cas_fsw'] * PX_si[0,2:].sum() ) / P['C_cas_med']
   PX_si[0,0] = P['PX_w'] - PX_si[0,1:].sum()
   return {
-    'PX_cli': PX_cli,
+    'PX_m_cli': P['PX_cli'] / (1 - P['PX_w']),
     'PX_s':  PX_si.sum(axis=1),
     'PX_si': PX_si,
     'PX_si_s': PX_si / PX_si.sum(axis=1)[:,_],
     'X0': NX0 * PX_si[:,:,_,_] * PX0_h * PX0_c,
     'PX_h_hiv': PX_h_hiv,
-    'A_new_total': A_new_total,
-    'A_reg_total': A_reg_total,
   }
+
+def get_PX_fsw_cli(P):
+  P['PX_w']        = .52 # REF: WorldBank
+  P['PX_fsw_h']    = .2  # REF: assume
+  P['PX_cli_h']    = .2  # REF: assume
+  P['A_new']       = 1   # c.f. get_A()
+  P['PX_fsw']      = P['PX_w'] * P['PX_w_fsw']
+  P['A_new_total'] = P['PX_fsw'] * P['A_new'] * P['C_new_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_new_fsw_h:l'],1)
+  P['A_reg_total'] = P['PX_fsw'] * P['A_reg'] * P['C_reg_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_reg_fsw_h:l'],1)
+  P['PX_cli']      = (P['A_new_total'] + P['A_reg_total']) / P['A_swq_cli']
+  # NOTE: A_swq_cli is true client average, not A_swq_cli_l; see get_C()
+  return P
+
+def check_PX(P):
+  P_tmp = get_PX_fsw_cli(copy(P)) # copy to avoid adding non-sampled keys P during resample_until
+  # at least 10% men = Men Low
+  return (P['PX_mm'] + P_tmp['PX_cli']) / (1 - P_tmp['PX_w']) < .90
 
 def get_birth_death(P): # [OK]
   death = 1/35 + (1-.64)*.0144 # death rate ~ .034 for 15-49 years + non-HIV mortality
@@ -297,6 +308,7 @@ def check_A(P):
 def get_C(P): # TODO
   PX_si = P['PX_si']
   A = np.squeeze(P['A_ap'].sum(axis=0))
+  # TODO: describe exactly what this is after reviewing derivation
   PA_swq_cli_lh = PX_si[1,2] / (PX_si[1,2] + P['RA_swq_cli_h:l'] * PX_si[1,3])
   # dimensions: p,s,i
   C_psi = np.zeros((4,2,4))
@@ -313,10 +325,10 @@ def get_C(P): # TODO
   C_psi[ 1, 1, 2] = P['C_cas_cli'] # TODO: balance
   C_psi[ 1, 1, 3] = P['C_cas_cli'] # TODO: balance
   # FSW
-  C_psi[ 2, 0, 2] = 12 * P['C_new_fswl']
-  C_psi[ 2, 0, 3] = 12 * P['C_new_fswl'] * P['RC_new_fsw_h:l']
-  C_psi[ 3, 0, 2] = 12 * P['C_reg_fswl']
-  C_psi[ 3, 0, 3] = 12 * P['C_reg_fswl'] * P['RC_reg_fsw_h:l']
+  C_psi[ 2, 0, 2] = 12 * P['C_new_fsw_l']
+  C_psi[ 2, 0, 3] = 12 * P['C_new_fsw_l'] * P['RC_new_fsw_h:l']
+  C_psi[ 3, 0, 2] = 12 * P['C_reg_fsw_l']
+  C_psi[ 3, 0, 3] = 12 * P['C_reg_fsw_l'] * P['RC_reg_fsw_h:l']
   # clients
   C_psi[ 2, 1, 2] = 12 * P['A_new_total'] * PA_swq_cli_lh     / A[2] / PX_si[1,2]
   C_psi[ 2, 1, 3] = 12 * P['A_new_total'] * (1-PA_swq_cli_lh) / A[2] / PX_si[1,3]
