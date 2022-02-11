@@ -13,5 +13,5 @@ do.params.fsw:
 	Rscript params/fsw/main.r && echo [OK]
 do.params.np-gp:
 	Rscript params/np-gp/main.r && echo [OK]
-do.sankey:
-	Rscript post/sankey.r && echo [OK]
+do.infections:
+	Rscript post/infections.r && echo [OK]
