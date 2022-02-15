@@ -343,8 +343,8 @@ def get_condom(P):
   PA_condom_t = ta.tarray([1980,1988,2002,2006,2011,2014,2016,2050],
     [[0,P[k+'msp_1988'],NAN,P[k+'msp_2006'],NAN,NAN,P[k+'msp_2016'],P[k+'msp_2016'] ], # main
      [0,P[k+'cas_1988'],NAN,P[k+'cas_2006'],NAN,NAN,P[k+'cas_2016'],P[k+'cas_2016'] ], # casual
-     [0,NAN,P[k+'reg_2002'],NAN,P[k+'reg_2011'],P[k+'reg_2014'],NAN,P[k+'reg_2014'] ], # sw-reg
-     [0,NAN,P[k+'new_2002'],NAN,P[k+'new_2011'],P[k+'new_2014'],NAN,P[k+'new_2014'] ]] # sw-new
+     [0,NAN,P[k+'new_2002'],NAN,P[k+'new_2011'],P[k+'new_2014'],NAN,P[k+'new_2014'] ], # sw-new
+     [0,NAN,P[k+'reg_2002'],NAN,P[k+'reg_2011'],P[k+'reg_2014'],NAN,P[k+'reg_2014'] ]] # sw-reg
   ).reshape([1,4,1,1,1,1,1,1])
   RPA_condom_s = np.array([1,P['RPA_condom_a:v']]).reshape([2,1,1,1,1,1,1,1])
   return {
