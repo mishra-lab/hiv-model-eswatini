@@ -2,8 +2,8 @@ import numpy as np
 from model import foi,target
 from utils import _,deco,parallel
 
-def f_t(t0=1980,t1=2050,dt=0.1):
-  return np.round(np.arange(t0,t1+dt,dt),9)
+def f_t(t0=1980,tf=2050,dt=0.1):
+  return np.round(np.arange(t0,tf+dt,dt),9)
 
 @deco.nowarn
 def f_X(X0,t):

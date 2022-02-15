@@ -4,12 +4,26 @@ from copy import deepcopy
 from utils import rootpath,genpath,flatten,minimize,itslice,squarish
 from utils import stats,fio,deco,parallel
 from model import slicers,params,system,target,out,plot,fit
-
 plotsize = 3 # inches
-uid = fio.datestamp()
-cascade_low  = (.40,.60,.80)
-cascade_mid  = (.60,.80,.80)
-cascade_high = (.95,.95,.95)
+
+# override any of these global config values in main before running
+uid = fio.datestamp() # unique ID
+N = dict(
+  top = .10,
+  size = 1024,
+  batch = 0,
+  rand = 3,
+)
+tvec = dict( # time vectors
+  fits = system.f_t(tf=2021),
+  main = system.f_t(tf=2050,dt=.05),
+  infs = system.f_t(tf=2050,dt=1),
+) 
+cascade = dict( # 2020 cascade targets
+  low  = (.40,.60,.80),
+  mid  = (.60,.80,.80),
+  high = (.95,.95,.95),
+)
 cases = [
   'FSW-Cli+',
   'FSW+Cli-',
@@ -17,22 +31,22 @@ cases = [
   'FSW+Cli+',
 ]
 
-def fname(ftype,key,case,N,N0):
-  # TODO: omit N0 if N0==0
+def fname(ftype,key,case):
   if ftype=='npy':
     path,ext = ['data','.npy',uid],''
   if ftype=='csv':
     path,ext = ['data','mid',uid],'.csv'
   if ftype=='fig':
     path,ext = ['out','fig',uid],'.pdf'
-  return genpath(rootpath(*path,'{}_{}_N={}-{}{}'.format(key,case,N0,N0+N-1,ext)))
+  return genpath(rootpath(*path,'{}_{}_N={}-{}{}'.format(key,case,N['size'],N['batch'],ext)))
 
-def sample_run_base(t,T,N,N0=0,top=.10):
-  Ps_sam = params.get_n_all(N,seeds=range(N0,N0+N))
+def sample_run_base(t,T):
+  seeds = range(N['batch']*N['size'],(N['batch']+1)*N['size'])
+  Ps_sam = params.get_n_all(N['size'],seeds=seeds)
   Rs_sam = system.run_n(Ps_sam,t,T)
   Rs_sam = system.drop_fails(Rs_sam)[0]
-  fit.plot_all(t,Rs_sam,T,fname=fname('fig','fit','sam',N,N0))
-  Rs = target.top_q_ll(Rs_sam,top=top)
+  fit.plot_all(t,Rs_sam,T,fname=fname('fig','fit','sam'))
+  Rs = target.top_q_ll(Rs_sam,top=N['top'])
   return Rs
 
 def Rqx_by_group(Rqx=None,**kwds):
@@ -85,10 +99,10 @@ def fit_cascade_n(Ps,PD,T,t,**kwds):
   fun = lambda P: fit_cascade(P,PD=PD,T=T,t=t,**kwds)
   return parallel.ppool(len(Ps)).map(fun,Ps)
 
-def sample_random_lower(Ps,n=1):
+def sample_random_lower(Ps):
   PD = get_refit_case('FSW-Cli-')[1]
   Pss = [P_update_Rqx_by_group(deepcopy(P),Pu)
-    for P in Ps for Pu in params.get_n_sample_lhs(n,PD,seed=P['seed'])]
+    for P in Ps for Pu in params.get_n_sample_lhs(N['rand'],PD,seed=P['seed'])]
   return Pss
 
 def get_sens_data(R,t,case):
@@ -169,71 +183,67 @@ def get_refit_case(case):
     'u+': stats.uniform(l=1-eps,h=1+eps), 'u-': stats.uniform(l=1,h=25),
   }
   T2s = {
-    'FSW-': target.make_targets_2020(cascade_low, s=0,i=(2,3)),
-    'FSW+': target.make_targets_2020(cascade_high,s=0,i=(2,3),w=1e-6),
-    'Cli-': target.make_targets_2020(cascade_low, s=1,i=(2,3)),
-    'Cli+': target.make_targets_2020(cascade_high,s=1,i=(2,3),w=1e-6),
-    'ALL-': target.make_targets_2020(cascade_mid, s=(0,1),i=(0,1,2,3)),
-    'ALL+': target.make_targets_2020(cascade_high,s=(0,1),i=(0,1,2,3),w=1e-6),
+    'FSW-': target.make_targets_2020(cascade['low'], s=0,i=(2,3)),
+    'FSW+': target.make_targets_2020(cascade['high'],s=0,i=(2,3),w=1e-6),
+    'Cli-': target.make_targets_2020(cascade['low'], s=1,i=(2,3)),
+    'Cli+': target.make_targets_2020(cascade['high'],s=1,i=(2,3),w=1e-6),
+    'ALL-': target.make_targets_2020(cascade['mid'], s=(0,1),i=(0,1,2,3)),
+    'ALL+': target.make_targets_2020(cascade['high'],s=(0,1),i=(0,1,2,3),w=1e-6),
   }
   T2 = flatten( T2s[pop+c] for pop,c in parse_case(case+'ALL-') )
   PD = {'R'+step+'x:'+pop: PDs[step+c] for pop,c in parse_case(case+'AQ-') for step in 'dtu'}
   return T2,PD
 
-def do_scenario(Ps,t2,T2,case,N,N0,outs=True,sens=True,infs=True,plotfit=True):
-  Rs = system.run_n(Ps,t2,T2)
-  if outs: fio.save_csv(fname('csv','outs',case,N,N0),get_outs(Rs,t2,case))
-  if sens: fio.save_csv(fname('csv','sens',case,N,N0),get_sens_data_n(Rs,t2,case))
-  if infs: fio.save_csv(fname('csv','infs',case,N,N0),out.get_infections(Rs,t2,system.f_t(dt=1)))
-  if plotfit: fit.plot_refit(t2,Rs,T2,fname('fig','fit',case,N,N0))
+def do_scenario(Ps,t,T2,case,outs=True,sens=True,infs=True,plotfit=True):
+  Rs = system.run_n(Ps,t,T2)
+  if outs: fio.save_csv(fname('csv','outs',case),get_outs(Rs,t,case))
+  if sens: fio.save_csv(fname('csv','sens',case),get_sens_data_n(Rs,t,case))
+  if infs: fio.save_csv(fname('csv','infs',case),out.get_infections(Rs,t,tvec['infs']))
+  if plotfit: fit.plot_refit(t,Rs,T2,fname('fig','fit',case))
   return Rs
 
-def main_fit(N,N0=0,sample=True,refit=True,top=.10,outs=True,sens=True,infs=True,plotfit=True):
-  t  = system.f_t(t1=2021)
-  t2 = system.f_t(t1=2050,dt=.05)
+def main_fit(sample=True,refit=True,outs=True,sens=True,infs=True,plotfit=True):
   T1 = target.get_all_esw()
   case = 'base'
   if sample:
-    R0s = sample_run_base(t,T1,N,N0=N0,top=top)
-    P0s = fio.save(fname('npy','Ps',case,N,N0),[R['P'] for R in R0s])
+    R0s = sample_run_base(tvec['fits'],T1)
+    P0s = fio.save(fname('npy','Ps',case),[R['P'] for R in R0s])
   else:
-    P0s = fio.load(fname('npy','Ps',case,N,N0))
-  R0s = do_scenario(P0s,t2,T1,case,N,N0,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
+    P0s = fio.load(fname('npy','Ps',case))
+  R0s = do_scenario(P0s,tvec['main'],T1,case,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
   for case in cases: # counterfactuals (fitted)
     print('\n'+case,flush=True)
     T2,PD = get_refit_case(case)
     if refit:
-      P1s = fit_cascade_n(P0s,PD,T2,t,ftol=.1)
-      fio.save(fname('npy','Ps',case,N,N0),P1s)
+      P1s = fit_cascade_n(P0s,PD,T2,tvec['fits'],ftol=.1)
+      fio.save(fname('npy','Ps',case),P1s)
     else:
-      P1s = fio.load(fname('npy','Ps',case,N,N0))
+      P1s = fio.load(fname('npy','Ps',case))
     # re-run for t2
-    R1s = do_scenario(P1s,t2,T2,case,N,N0,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
-    if infs: fio.save_csv(fname('csv','infs-diff',case,N,N0),
-      out.get_infections(R1s,t2,system.f_t(dt=1),R2s=R0s,vsop='1-2'))
+    R1s = do_scenario(P1s,tvec['main'],T2,case,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
+    if infs: fio.save_csv(fname('csv','infs-diff',case),
+      out.get_infections(R1s,tvec['main'],tvec['infs'],R2s=R0s,vsop='1-2'))
     # plot cumulative additional infections
-    plot_diff(t2,R1s,R0s,'cuminfect',['ALL','AQ','FSW','Cli'],intervals=[.5,.95],ylim=(0,1),
+    plot_diff(tvec['main'],R1s,R0s,'cuminfect',['ALL','AQ','FSW','Cli'],intervals=[.5,.95],ylim=(0,1),
       xlim=(1998,2042),vsop='1-2/2',ylab='Cumulative Additional Infections')
-    plot.save(fname('fig','cai4',case,N,N0))
-    if N > 256: time.sleep(30) # let CPU cool :)
+    plot.save(fname('fig','cai4',case))
+    if N['size'] > 256: time.sleep(30) # let CPU cool :)
 
-def main_random(N,N0=0,Nr=10,sample=True,resample=True,top=.10,outs=True,sens=True,infs=True,plotfit=True):
-  t  = system.f_t(t1=2021)
-  t2 = system.f_t(t1=2050,dt=.05)
+def main_random(sample=True,resample=True,outs=True,sens=True,infs=True,plotfit=True):
   T1 = target.get_all_esw()
   # base case (fitted)
   case = 'base'
   if sample:
-    R0s = sample_run_base(t,T1,N,N0=N0,top=top)
-    P0s = fio.save(fname('npy','Ps',case,N,N0),[R['P'] for R in R0s])
+    R0s = sample_run_base(tvec['fits'],T1)
+    P0s = fio.save(fname('npy','Ps',case),[R['P'] for R in R0s])
   else:
-    P0s = fio.load(fname('npy','Ps',case,N,N0))
-  R0s = do_scenario(P0s,t2,T1,case,N,N0,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
+    P0s = fio.load(fname('npy','Ps',case))
+  R0s = do_scenario(P0s,tvec['main'],T1,case,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
   # counterfactuals (random)
-  case = 'RL'+str(Nr)
+  case = 'RL'+str(N['rand'])
   if resample:
-    P1s = sample_random_lower(P0s,Nr)
-    fio.save(fname('npy','Ps',case,N,N0),P1s)
+    P1s = sample_random_lower(P0s)
+    fio.save(fname('npy','Ps',case),P1s)
   else:
-    P1s = fio.load(fname('npy','Ps',case,N,N0))
-  R1s = do_scenario(P1s,t2,None,case,N,N0,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
+    P1s = fio.load(fname('npy','Ps',case))
+  R1s = do_scenario(P1s,tvec['main'],None,case,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
