@@ -1,6 +1,6 @@
 import numpy as np
 from copy import copy
-from utils import _,NAN,stats,flatten,dict_split,linear_comb
+from utils import _,NAN,stats,flatten,dict_split,linear_comb,interval_qs
 from utils import tarray as ta
 
 # TODO: clean up low/middle/joined group notation + main/casual + new/reg
@@ -161,6 +161,15 @@ def print_sample_distrs(PD=None,fmt='{:6.3f}',interval=.95):
   sf = '{}: '+fmt+' & ('+fmt+',~'+fmt+') | {}'
   for key in PD.keys():
     print(sf.format(key.rjust(r),PD[key].mean(),*PD[key].interval(interval),PD[key].dist.name))
+
+def print_sampled_distrs(Ps,fmt='{:6.3f}',interval=.95,keys=None):
+  # TODO: support slicing?
+  if keys is None: keys = Ps[0].keys()
+  r = max(map(len,keys))
+  sf = '{}: '+fmt+' & ('+fmt+',~'+fmt+')'
+  for key in keys:
+    Pk = [P[key] for P in Ps]
+    print(sf.format(key.rjust(r),np.mean(Pk),*np.quantile(Pk,interval_qs(interval))))
 
 # demographics -------------------------------------------------------------------------------------
 
