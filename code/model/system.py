@@ -2,7 +2,7 @@ import numpy as np
 from model import foi,target
 from utils import _,deco,parallel
 
-def f_t(t0=1980,t1=2030,dt=0.1):
+def f_t(t0=1980,t1=2050,dt=0.1):
   return np.round(np.arange(t0,t1+dt,dt),9)
 
 @deco.nowarn
@@ -24,11 +24,12 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
     return parallel.ppool(len(Ps)).map(fun,Ps)
   else:
     return [run(P,t=t,T=T,**kwds) for P in Ps]
+  print(flush=True)
 
 def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = f_t()
   if RPts is None: RPts = ['PA_condom_t','PA_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
-  print(P['seed'],end=' ',flush=True)
+  print(str(P['seed']).rjust(6),end=' ',flush=True)
   R = solve(P,t)
   if not R:
     return R
