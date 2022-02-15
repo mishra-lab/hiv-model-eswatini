@@ -5,10 +5,9 @@ from model import slicers,system,out,target,plot
 plotsize = 3 # inches
 tfname = '.fit-{}.pdf'
 
-def plot_all(t,Rs,T,fname='fit.pdf',tops=(.5,.10,.02),drop=True):
+def plot_all(t,Rs,T,fname='fit.pdf',tops=(1,.2,.04),drop=True):
   if drop: Rs = system.drop_fails(Rs)[0]
   Rss = [target.top_q_ll(Rs,top) for top in tops] if tops else [Rs]
-  # TODO: something duplicated going on with death_hc, gud, condom, & circum (?)
   tfnames = [
     # param histograms
     plot_param(Rss,'PX_si',    dstr='si'),
@@ -22,7 +21,7 @@ def plot_all(t,Rs,T,fname='fit.pdf',tops=(.5,.10,.02),drop=True):
     # output projections
     plot_output(t,Rss,'NX',        ['ALL'],T=T),
     plot_output(t,Rss,'Ph',        ['AHI','>500','<500','<350','<200'],T=T),
-    plot_output(t,Rss,'X_rate',    ['ALL'],rate='death_hc',ylab='HIV Mortality'),
+    plot_output(t,Rss,'X_rate',    ['ALL'],rate='death_hc',ylab='HIV Mortality',T=T),
     plot_output(t,Rss,'prevalence',['ALL','W','M','FSW'],T=T,ylim=(0,1)),
     plot_output(t,Rss,'prevalence',
       [('FSW.H','FSW.L'),('FSW','W'),('WH','WL'),('Cli.H','Cli.L'),('Cli','M'),('MH','ML')],
@@ -33,9 +32,9 @@ def plot_all(t,Rs,T,fname='fit.pdf',tops=(.5,.10,.02),drop=True):
     plot_output(t,Rss,'vls_c',     ['ALL','W','M','FSW'],T=T),
     plot_output(t,Rss,'treated_u', ['ALL','W','M','FSW'],T=T),
     plot_output(t,Rss,'vls_u',     ['ALL','W','M','FSW'],T=T),
-    plot_output(t,Rss,'condom',    ['LT','ST','SWR','SWO']),
-    plot_output(t,Rss,'circum',    ['*']),
-    plot_output(t,Rss,'gud',       ['*']),
+    plot_output(t,Rss,'condom',    ['LT','ST','SWR','SWO'],T=T),
+    plot_output(t,Rss,'circum',    ['*'],T=T),
+    plot_output(t,Rss,'gud',       ['*'],T=T),
     # plot_output(t,Rss,'dx_rate',   ['W','M','FSW']),
     # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
     # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
@@ -45,7 +44,7 @@ def plot_all(t,Rs,T,fname='fit.pdf',tops=(.5,.10,.02),drop=True):
 
 def plot_refit(t,Rs,T,fname,tops=(1,.2,.04),drop=True):
   if drop: Rs = system.drop_fails(Rs)[0]
-  Rss = [target.top_q_ll(Rs,top) for top in tops]
+  Rss = [target.top_q_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
   groups = ['ALL','AQ','FSW','Cli']
   tfnames = [
     # output projections
