@@ -14,11 +14,12 @@ class Target():
     self.weight = weight
 
   def __str__(self):
-    return 'Target: {} {{{}}} ~ {}({})'.format(
+    return 'Target: {} {{{}}} ~ {} @ {}, w = {}'.format(
       self.name,
       self.popstr(),
       self.dist.dist.name,
       dict_str(dict(mu=self.mean(),ci=self.ci())),
+      self.weight,
     )
 
   def __repr__(self):
