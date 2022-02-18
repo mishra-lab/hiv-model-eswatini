@@ -19,20 +19,20 @@ def plot_all(t,Rs,T,fname='fit.pdf',tops=(1,.2,.04),drop=True):
     plot_param(Rss,'EHY_acute',dstr=''),
     plot_param(Rss,'t0_hiv',   dstr=''),
     # output projections
-    plot_output(t,Rss,'NX',        ['ALL'],T=T),
-    plot_output(t,Rss,'Ph',        ['AHI','>500','<500','<350','<200'],T=T),
-    plot_output(t,Rss,'X_rate',    ['ALL'],rate='death_hc',ylab='HIV Mortality',T=T),
-    plot_output(t,Rss,'prevalence',['ALL','W','M','FSW'],T=T,ylim=(0,1)),
+    plot_output(t,Rss,'NX',        ['all'],T=T),
+    plot_output(t,Rss,'Ph',        ['ahi','>500','<500','<350','<200'],T=T),
+    plot_output(t,Rss,'X_rate',    ['all'],rate='death_hc',ylab='HIV Mortality',T=T),
+    plot_output(t,Rss,'prevalence',['all','w','m','fsw'],T=T,ylim=(0,1)),
     plot_output(t,Rss,'prevalence',
-      [('FSW.H','FSW.L'),('FSW','W'),('WH','WL'),('Cli.H','Cli.L'),('Cli','M'),('MH','ML')],
+      [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
       vsop='1/2',T=T,ylim=(1,5)),
-    plot_output(t,Rss,'incidence', ['ALL','W','M','FSW'],T=T),
-    plot_output(t,Rss,'diagnosed', ['ALL','W','M','FSW'],T=T),
-    plot_output(t,Rss,'treated_c', ['ALL','W','M','FSW'],T=T),
-    plot_output(t,Rss,'vls_c',     ['ALL','W','M','FSW'],T=T),
-    plot_output(t,Rss,'treated_u', ['ALL','W','M','FSW'],T=T),
-    plot_output(t,Rss,'vls_u',     ['ALL','W','M','FSW'],T=T),
-    plot_output(t,Rss,'condom',    ['LT','ST','SWR','SWO'],T=T),
+    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],T=T),
+    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],T=T),
+    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],T=T),
+    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],T=T),
+    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],T=T),
+    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],T=T),
+    plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],T=T),
     plot_output(t,Rss,'circum',    ['*'],T=T),
     plot_output(t,Rss,'gud',       ['*'],T=T),
     # plot_output(t,Rss,'dx_rate',   ['W','M','FSW']),
@@ -45,7 +45,7 @@ def plot_all(t,Rs,T,fname='fit.pdf',tops=(1,.2,.04),drop=True):
 def plot_refit(t,Rs,T,fname,tops=(1,.2,.04),drop=True):
   if drop: Rs = system.drop_fails(Rs)[0]
   Rss = [target.top_q_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
-  groups = ['ALL','AQ','FSW','Cli']
+  groups = ['all','aq','fsw','cli']
   tfnames = [
     # output projections
     plot_output(t,Rss,'prevalence',groups,T=T,ylim=(0,1)),

@@ -10,9 +10,9 @@ plotsize = 3 # inches
 uid = fio.datestamp() # unique ID
 N = dict(
   top = .10,
-  size = 1024,
+  size = 1000,
   batch = 0,
-  rand = 3,
+  rand = 10,
 )
 tvec = dict( # time vectors
   fits = system.f_t(tf=2021),
@@ -25,10 +25,10 @@ cascade = dict( # 2020 cascade targets
   high = (.95,.95,.95),
 )
 cases = [
-  'FSW-Cli+',
-  'FSW+Cli-',
-  'FSW-Cli-',
-  'FSW+Cli+',
+  'fsw-cli+',
+  'fsw+cli-',
+  'fsw-cli-',
+  'fsw+cli+',
 ]
 
 def fname(ftype,key,case):
@@ -100,39 +100,36 @@ def fit_cascade_n(Ps,PD,T,t,**kwds):
   return parallel.ppool(len(Ps)).map(fun,Ps)
 
 def sample_random_lower(Ps):
-  PD = get_refit_case('FSW-Cli-')[1]
+  PD = get_refit_case('fsw~cli~aq~',default=False)[1]
   Pss = [P_update_Rqx_by_group(deepcopy(P),Pu)
     for P in Ps for Pu in params.get_n_sample_lhs(N['rand'],PD,seed=P['seed'])]
   return Pss
 
 def get_sens_data(R,t,case):
   # extract outputs of interest & selected model params for sensitivity analysis
+  pops = ['all','aq','fsw','cli']
   to  = list(range(2000,2050+1,5))
   ito = itslice(to,t)
   Pkeys = ['seed',
     'PX_fsw','PX_cli','dur_fsw_l','dur_fsw_h','dur_cli', # PX & turnover
     'EHY_acute','Rbeta_gud_inf','Rbeta_gud_sus_w','P_gud_fsw_l','iP_gud_cli_fsw:gp', # beta
-    'A_mc','A_reg','PA_ai_mcq','PA_ai_swq', # sex acts
-    'C_new_fsw_l','C_reg_fsw_l','RC_new_fsw_h:l','RC_reg_fsw_h:l','A_swq_cli', # sex work
+    'A_mc','A_swr','PA_ai_mcq','PA_ai_swq', # sex acts
+    'C_swo_fsw_l','C_swr_fsw_l','RC_swo_fsw_h:l','RC_swr_fsw_h:l','A_swq_cli', # sex work
     'Rdx_fsw','Rdx_cli','Rdx_mqq','Rtx_fsw','Rtx_cli','Rtx_mqq', # diag & treat
   ]
   return dict(case=case,
     **{key:R['P'][key] for key in Pkeys},
     # TODO: add group-specific HIV prevalence
-    **{'cuminf_'+str(toi):oi for toi,oi in zip(to,out.cuminfect(R,**slicers['ALL'].pop,tvec=t)[ito])},
-    **{'incid_' +str(toi):oi for toi,oi in zip(to,out.incidence(R,**slicers['ALL'].pop,tvec=t,t=to))},
-    **{step+'_'+pop:out.by_name(step)(R,**slicers[pop].pop,tvec=t,t=2020)[0]
-        for step in ['diagnosed','treated_c','vls_c','treated_u','vls_u']
-        for pop in ['ALL','AQ','FSW','Cli']},
-    **{
-      'inc_all':  out.incidence(R,**slicers['ALL'].pop,tvec=t,t=2020)[0],
-      'prev_all': out.prevalence(R,**slicers['ALL'].pop,tvec=t,t=2020)[0],
-      'prev_fsw': out.prevalence(R,**slicers['FSW'].pop,tvec=t,t=2020)[0],
-      'prev_cli': out.prevalence(R,**slicers['Cli'].pop,tvec=t,t=2020)[0],
-      'prev_aq':  out.prevalence(R,**slicers['AQ'].pop,tvec=t,t=2020)[0],
-      'prev_ratio_fsw.wq': out.vs_pop('prevalence',R,slicers['FSW'].pop,slicers['WQ'].pop,tvec=t,t=2020)[0],
-      'prev_ratio_cli.mq': out.vs_pop('prevalence',R,slicers['Cli'].pop,slicers['MQ'].pop,tvec=t,t=2020)[0],
-    }
+    **{'cuminf_'+pop+'_'+str(toi):oi for pop in pops
+        for toi,oi in zip(to,out.cuminfect(R,**slicers[pop].pop,tvec=t)[ito])},
+    **{'inc_'+pop+'_'+str(toi):oi for pop in pops
+        for toi,oi in zip(to,out.incidence(R,**slicers[pop].pop,tvec=t,t=to))},
+    **{'prev_'+pop+'_'+str(toi):oi for pop in pops
+        for toi,oi in zip(to,out.prevalence(R,**slicers[pop].pop,tvec=t,t=to))},
+    **{'prev_ratio_'+pop[0]+'.'+pop[1]+'_'+str(toi):oi for pop in [('fsw','wq'),('cli','mq')]
+        for toi,oi in zip(to,out.vs_pop('prevalence',R,slicers[pop[0]].pop,slicers[pop[1]].pop,tvec=t,t=to))},
+    **{step+'_'+pop+'_2020':out.by_name(step)(R,**slicers[pop].pop,tvec=t,t=2020)[0] for pop in pops
+        for step in ['diagnosed','treated_c','vls_c','treated_u','vls_u']},
   )
 
 def get_sens_data_n(Rs,t,case):
@@ -148,11 +145,11 @@ def get_outs(Rs,t,case):
     oname+'.hi': np.quantile(Os,.975,axis=0),
   }
   return dict(case=[case]*len(t),t=t,
-    **summary('prev_all',[out.prevalence(R,**slicers['ALL'].pop) for R in Rs]),
-    **summary('inc_all', [out.incidence(R,**slicers['ALL'].pop) for R in Rs]),
-    **summary('inc_aq',  [out.incidence(R,**slicers['AQ'].pop)  for R in Rs]),
-    **summary('inc_fsw', [out.incidence(R,**slicers['FSW'].pop) for R in Rs]),
-    **summary('inc_cli', [out.incidence(R,**slicers['Cli'].pop) for R in Rs]),
+    **summary('prev_all',[out.prevalence(R,**slicers['all'].pop) for R in Rs]),
+    **summary('inc_all', [out.incidence(R,**slicers['all'].pop) for R in Rs]),
+    **summary('inc_aq',  [out.incidence(R,**slicers['aq'].pop)  for R in Rs]),
+    **summary('inc_fsw', [out.incidence(R,**slicers['fsw'].pop) for R in Rs]),
+    **summary('inc_cli', [out.incidence(R,**slicers['cli'].pop) for R in Rs]),
   )
 
 def plot_diff(t,R1s,R2s,oname,snames,vsop,intervals=.95,ylim=None,xlim=None,ylab=None,**kwds):
@@ -172,26 +169,29 @@ def plot_diff(t,R1s,R2s,oname,snames,vsop,intervals=.95,ylim=None,xlim=None,ylab
   return fh,ah
 
 def parse_case(case):
-  # e.g. FSW-Cli-AQ+  =>  [('FSW','-'),('Cli','-'),('AQ','+')]
-  return re.findall('(.*?)(\+|\-)',case)
+  # e.g. fsw-cli-aq+  =>  [('fsw','-'),('cli','-'),('aq','+')]
+  return re.findall('(.*?)(\+|\-|\~)',case)
 
-def get_refit_case(case):
+def get_refit_case(case,default=True):
   eps = 1e-9
+  case_PD = case+'aq-'  if default else case
+  case_T2 = case+'all-' if default else case
   PDs = {
-    'd+': stats.uniform(l=1-eps,h=1+eps), 'd-': stats.uniform(l=0,h=1),
-    't+': stats.uniform(l=1-eps,h=1+eps), 't-': stats.uniform(l=0,h=1),
-    'u+': stats.uniform(l=1-eps,h=1+eps), 'u-': stats.uniform(l=1,h=25),
+    'd+': stats.uniform(l=1-eps,h=1+eps), 'd-': stats.uniform(l=0,h=1),  'd~': stats.beta_binom(p=.6,n=3),
+    't+': stats.uniform(l=1-eps,h=1+eps), 't-': stats.uniform(l=0,h=1),  't~': stats.beta_binom(p=.6,n=3),
+    'u+': stats.uniform(l=1-eps,h=1+eps), 'u-': stats.uniform(l=1,h=25), 'u~': stats.gamma_p(p=4,v=12),
   }
   T2s = {
-    'FSW-': target.make_targets_2020(cascade['low'], s=0,i=(2,3)),
-    'FSW+': target.make_targets_2020(cascade['high'],s=0,i=(2,3),w=1e-6),
-    'Cli-': target.make_targets_2020(cascade['low'], s=1,i=(2,3)),
-    'Cli+': target.make_targets_2020(cascade['high'],s=1,i=(2,3),w=1e-6),
-    'ALL-': target.make_targets_2020(cascade['mid'], s=(0,1),i=(0,1,2,3)),
-    'ALL+': target.make_targets_2020(cascade['high'],s=(0,1),i=(0,1,2,3),w=1e-6),
+    'fsw-': target.make_targets_2020(cascade['low'], s=0,i=(2,3)),
+    'fsw+': target.make_targets_2020(cascade['high'],s=0,i=(2,3),w=1e-6),
+    'cli-': target.make_targets_2020(cascade['low'], s=1,i=(2,3)),
+    'cli+': target.make_targets_2020(cascade['high'],s=1,i=(2,3),w=1e-6),
+    'all-': target.make_targets_2020(cascade['mid'], s=(0,1),i=(0,1,2,3)),
+    'all+': target.make_targets_2020(cascade['high'],s=(0,1),i=(0,1,2,3),w=1e-6),
+    'fsw~': [], 'cli~': [], 'aq~': [], # TODO: clean this up?
   }
-  T2 = flatten( T2s[pop+c] for pop,c in parse_case(case+'ALL-') )
-  PD = {'R'+step+'x:'+pop: PDs[step+c] for pop,c in parse_case(case+'AQ-') for step in 'dtu'}
+  T2 = flatten( T2s[pop+c] for pop,c in parse_case(case_T2) )
+  PD = {'R'+step+'x:'+pop: PDs[step+c] for pop,c in parse_case(case_PD) for step in 'dtu'}
   return T2,PD
 
 def do_scenario(Ps,t,T2,case,outs=True,sens=True,infs=True,plotfit=True):
@@ -224,10 +224,10 @@ def main_fit(sample=True,refit=True,outs=True,sens=True,infs=True,plotfit=True):
     if infs: fio.save_csv(fname('csv','infs-diff',case),
       out.get_infections(R1s,tvec['main'],tvec['infs'],R2s=R0s,vsop='1-2'))
     # plot cumulative additional infections
-    plot_diff(tvec['main'],R1s,R0s,'cuminfect',['ALL','AQ','FSW','Cli'],intervals=[.5,.95],ylim=(0,1),
+    plot_diff(tvec['main'],R1s,R0s,'cuminfect',['all','aq','fsw','cli'],intervals=[.5,.95],ylim=(0,1),
       xlim=(1998,2042),vsop='1-2/2',ylab='Cumulative Additional Infections')
     plot.save(fname('fig','cai4',case))
-    if N['size'] > 256: time.sleep(30) # let CPU cool :)
+    if refit and N['size'] > 256: time.sleep(30) # let CPU cool :)
 
 def main_random(sample=True,resample=True,outs=True,sens=True,infs=True,plotfit=True):
   T1 = target.get_all_esw()

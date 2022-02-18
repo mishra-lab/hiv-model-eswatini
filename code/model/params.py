@@ -3,8 +3,6 @@ from copy import copy
 from utils import _,NAN,stats,flatten,dict_split,linear_comb,interval_qs
 from utils import tarray as ta
 
-# TODO: clean up low/middle/joined group notation + main/casual + new/reg
-
 # main -------------------------------------------------------------------------
 
 def get_all(P,seed=None,**kwds):
@@ -77,12 +75,12 @@ def resample_until(P,PD,checker,keys,log=False):
 def def_checkers():
   k = 'PA_condom_' # convenience
   return {
-    check_A:      ['PA_ai_mcq','PA_ai_swq','A_reg'],
+    check_A:      ['PA_ai_mcq','PA_ai_swq','A_swr'],
     check_PX:     ['PX_w_fsw','A_swq_cli'],
     check_acute:  ['Rbeta_acute','dur_acute'],
     check_gud:    ['P_gud_fsw_l','RP_gud_fsw_h:l'],
     check_condom: [k+'msp_1988',k+'msp_2006',k+'msp_2016',k+'cas_1988',k+'cas_2006',k+'cas_2016',
-                   k+'new_2002',k+'new_2011',k+'new_2014',k+'reg_2002',k+'reg_2011',k+'reg_2014']
+                   k+'swo_2002',k+'swo_2011',k+'swo_2014',k+'swr_2002',k+'swr_2011',k+'swr_2014']
   }
 
 def def_sample_distrs():
@@ -97,15 +95,15 @@ def def_sample_distrs():
   'Pturn_fsw_h:m':        stats.beta_binom(p=.724,n=18),
   'LORturn_wq_sus:hiv':   stats.gamma_p(p=1,v=.605),
   # C
-  'C_new_fsw_l':          stats.gamma_p(p=4.1,v=.8),  # per month
-  'C_reg_fsw_l':          stats.gamma_p(p=8.4,v=1.6), # per month 
-  'RC_new_fsw_h:l':       stats.gamma_p(p=2.0,v=.05),
-  'RC_reg_fsw_h:l':       stats.gamma_p(p=1.5,v=.01),
+  'C_swo_fsw_l':          stats.gamma_p(p=4.1,v=.8),  # per month
+  'C_swr_fsw_l':          stats.gamma_p(p=8.4,v=1.6), # per month 
+  'RC_swo_fsw_h:l':       stats.gamma_p(p=2.0,v=.05),
+  'RC_swr_fsw_h:l':       stats.gamma_p(p=1.5,v=.01),
   'A_swq_cli':            stats.gamma_p(p=2.8,v=.953), # per month
   'RA_swq_cli_h:l':       stats.gamma_p(p=2.8,v=.953),
   # A
   'A_mc':                 stats.gamma_p(p=78,v=1130),
-  'A_reg':                stats.gamma_p(p=2.6,v=.411),
+  'A_swr':                stats.gamma_p(p=2.6,v=.411),
   'dur_cas':              stats.beta_binom(p=.383,n=6),
   'PA_ai_mcq':            stats.beta_binom(p=.059,n=30),
   'PA_ai_swq':            stats.beta_binom(p=.097,n=14),
@@ -117,12 +115,12 @@ def def_sample_distrs():
   'PA_condom_cas_1988':   stats.beta_binom(p=.088,n=316),
   'PA_condom_cas_2006':   stats.beta_binom(p=.598,n=235),
   'PA_condom_cas_2016':   stats.beta_binom(p=.694,n=420),
-  'PA_condom_new_2002':   stats.beta_binom(p=.432,n= 9),
-  'PA_condom_new_2011':   stats.beta_binom(p=.777,n=21),
-  'PA_condom_new_2014':   stats.beta_binom(p=.787,n=14),
-  'PA_condom_reg_2002':   stats.beta_binom(p=.337,n=13),
-  'PA_condom_reg_2011':   stats.beta_binom(p=.754,n=24),
-  'PA_condom_reg_2014':   stats.beta_binom(p=.759,n=11),
+  'PA_condom_swo_2002':   stats.beta_binom(p=.432,n= 9),
+  'PA_condom_swo_2011':   stats.beta_binom(p=.777,n=21),
+  'PA_condom_swo_2014':   stats.beta_binom(p=.787,n=14),
+  'PA_condom_swr_2002':   stats.beta_binom(p=.337,n=13),
+  'PA_condom_swr_2011':   stats.beta_binom(p=.754,n=24),
+  'PA_condom_swr_2014':   stats.beta_binom(p=.759,n=11),
   'PA_circum_2050':       stats.beta_binom(p=.724,n=18),
   # beta
   'beta_0':               stats.gamma_p(p=.00075,v=4.2e-8),
@@ -212,11 +210,11 @@ def get_PX_fsw_cli(P):
   P['PX_w']        = .52 # REF: WorldBank
   P['PX_fsw_h']    = .2  # REF: assume
   P['PX_cli_h']    = .2  # REF: assume
-  P['A_new']       = 1   # c.f. get_A()
+  P['A_swo']       = 1   # c.f. get_A()
   P['PX_fsw']      = P['PX_w'] * P['PX_w_fsw']
-  P['A_new_total'] = P['PX_fsw'] * P['A_new'] * P['C_new_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_new_fsw_h:l'],1)
-  P['A_reg_total'] = P['PX_fsw'] * P['A_reg'] * P['C_reg_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_reg_fsw_h:l'],1)
-  P['PX_cli']      = (P['A_new_total'] + P['A_reg_total']) / P['A_swq_cli']
+  P['A_swo_total'] = P['PX_fsw'] * P['A_swo'] * P['C_swo_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_swo_fsw_h:l'],1)
+  P['A_swr_total'] = P['PX_fsw'] * P['A_swr'] * P['C_swr_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_swr_fsw_h:l'],1)
+  P['PX_cli']      = (P['A_swo_total'] + P['A_swr_total']) / P['A_swq_cli']
   # NOTE: A_swq_cli is true client average, not A_swq_cli_l; see get_C()
   return P
 
@@ -301,7 +299,7 @@ def check_gud(P):
 def get_A(P): # TODO
   # dimensions: a,p
   # A_ap = np.array(A_p * ).reshape([2,4,1,1,1,1,1,1])
-  A_p   = np.array([ P['A_mc'], P['dur_cas'] * P['A_mc'], 1, P['A_reg'] ])
+  A_p   = np.array([ P['A_mc'], P['dur_cas'] * P['A_mc'], 1, P['A_swr'] ])
   PA_ai = np.array([ P['PA_ai_mcq'],P['PA_ai_mcq'],P['PA_ai_swq'],P['PA_ai_swq'] ])
   A_ap  = A_p.reshape([1,4,1,1,1,1,1,1]) * np.array([1-PA_ai,PA_ai]).reshape([2,4,1,1,1,1,1,1])
   return {
@@ -311,7 +309,7 @@ def get_A(P): # TODO
 def check_A(P):
   return (
     P['PA_ai_mcq'] <= P['PA_ai_swq'] and
-    1 <= P['A_reg']
+    1 <= P['A_swr']
   )
 
 def get_C(P): # TODO
@@ -334,15 +332,15 @@ def get_C(P): # TODO
   C_psi[ 1, 1, 2] = P['C_cas_cli'] # TODO: balance
   C_psi[ 1, 1, 3] = P['C_cas_cli'] # TODO: balance
   # FSW
-  C_psi[ 2, 0, 2] = 12 * P['C_new_fsw_l']
-  C_psi[ 2, 0, 3] = 12 * P['C_new_fsw_l'] * P['RC_new_fsw_h:l']
-  C_psi[ 3, 0, 2] = 12 * P['C_reg_fsw_l']
-  C_psi[ 3, 0, 3] = 12 * P['C_reg_fsw_l'] * P['RC_reg_fsw_h:l']
+  C_psi[ 2, 0, 2] = 12 * P['C_swo_fsw_l']
+  C_psi[ 2, 0, 3] = 12 * P['C_swo_fsw_l'] * P['RC_swo_fsw_h:l']
+  C_psi[ 3, 0, 2] = 12 * P['C_swr_fsw_l']
+  C_psi[ 3, 0, 3] = 12 * P['C_swr_fsw_l'] * P['RC_swr_fsw_h:l']
   # clients
-  C_psi[ 2, 1, 2] = 12 * P['A_new_total'] * PA_swq_cli_lh     / A[2] / PX_si[1,2]
-  C_psi[ 2, 1, 3] = 12 * P['A_new_total'] * (1-PA_swq_cli_lh) / A[2] / PX_si[1,3]
-  C_psi[ 3, 1, 2] = 12 * P['A_reg_total'] * PA_swq_cli_lh     / A[3] / PX_si[1,2]
-  C_psi[ 3, 1, 3] = 12 * P['A_reg_total'] * (1-PA_swq_cli_lh) / A[3] / PX_si[1,3]
+  C_psi[ 2, 1, 2] = 12 * P['A_swo_total'] * PA_swq_cli_lh     / A[2] / PX_si[1,2]
+  C_psi[ 2, 1, 3] = 12 * P['A_swo_total'] * (1-PA_swq_cli_lh) / A[2] / PX_si[1,3]
+  C_psi[ 3, 1, 2] = 12 * P['A_swr_total'] * PA_swq_cli_lh     / A[3] / PX_si[1,2]
+  C_psi[ 3, 1, 3] = 12 * P['A_swr_total'] * (1-PA_swq_cli_lh) / A[3] / PX_si[1,3]
   return {
     'C_psi': C_psi,
   }
@@ -352,8 +350,8 @@ def get_condom(P):
   PA_condom_t = ta.tarray([1980,1988,2002,2006,2011,2014,2016,2050],
     [[0,P[k+'msp_1988'],NAN,P[k+'msp_2006'],NAN,NAN,P[k+'msp_2016'],P[k+'msp_2016'] ], # main
      [0,P[k+'cas_1988'],NAN,P[k+'cas_2006'],NAN,NAN,P[k+'cas_2016'],P[k+'cas_2016'] ], # casual
-     [0,NAN,P[k+'new_2002'],NAN,P[k+'new_2011'],P[k+'new_2014'],NAN,P[k+'new_2014'] ], # sw-new
-     [0,NAN,P[k+'reg_2002'],NAN,P[k+'reg_2011'],P[k+'reg_2014'],NAN,P[k+'reg_2014'] ]] # sw-reg
+     [0,NAN,P[k+'swo_2002'],NAN,P[k+'swo_2011'],P[k+'swo_2014'],NAN,P[k+'swo_2014'] ], # sw-new
+     [0,NAN,P[k+'swr_2002'],NAN,P[k+'swr_2011'],P[k+'swr_2014'],NAN,P[k+'swr_2014'] ]] # sw-reg
   ).reshape([1,4,1,1,1,1,1,1])
   RPA_condom_s = np.array([1,P['RPA_condom_a:v']]).reshape([2,1,1,1,1,1,1,1])
   return {
@@ -368,15 +366,15 @@ def check_condom(P):
     # across years (same type)
     P[k+'msp_1988'] < P[k+'msp_2006'] < P[k+'msp_2016'] and
     P[k+'cas_1988'] < P[k+'cas_2006'] < P[k+'cas_2016'] and
-    P[k+'new_2002'] < P[k+'new_2011'] < P[k+'new_2014'] and
-    P[k+'reg_2002'] < P[k+'reg_2011'] < P[k+'reg_2014'] and
+    P[k+'swo_2002'] < P[k+'swo_2011'] < P[k+'swo_2014'] and
+    P[k+'swr_2002'] < P[k+'swr_2011'] < P[k+'swr_2014'] and
     # across types (same year)
     P[k+'msp_1988'] < P[k+'cas_1988'] and
     P[k+'msp_2006'] < P[k+'cas_2006'] and
     P[k+'msp_2016'] < P[k+'cas_2016'] and
-    P[k+'reg_2002'] < P[k+'new_2002'] and 
-    P[k+'reg_2011'] < P[k+'new_2011'] and 
-    P[k+'reg_2014'] < P[k+'new_2014']
+    P[k+'swr_2002'] < P[k+'swo_2002'] and 
+    P[k+'swr_2011'] < P[k+'swo_2011'] and 
+    P[k+'swr_2014'] < P[k+'swo_2014']
   )
 
 def get_circumcision(P): # [OK]
