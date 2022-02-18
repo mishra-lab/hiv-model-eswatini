@@ -1,8 +1,8 @@
 source('utils/ops.r')
 source('utils/plot.r')
 
-uid = '2022-02-13'
-N = list(size=1024,batches=1,rand=3)
+uid = '2022-02-16'
+N = list(size=1000,batches=5,rand=10)
 pops = list(
   'wl'    = list(clr=rgb(1.,.6,.6),lab='Women Low'),
   'wm'    = list(clr=rgb(.8,.4,.4),lab='Women Med'),
@@ -15,8 +15,8 @@ pops = list(
 parts = list(
   'msp' = list(clr=rgb(.26,.04,.41),lab='Main / Spousal'),
   'cas' = list(clr=rgb(.58,.15,.40),lab='Casual'),
-  'new' = list(clr=rgb(.87,.32,.23),lab='New Sex Work'),
-  'reg' = list(clr=rgb(.99,.65,.04),lab='Reg Sex Work'))
+  'swo' = list(clr=rgb(.87,.32,.23),lab='Occasional Sex Work'),
+  'swr' = list(clr=rgb(.99,.65,.04),lab='Regular Sex Work'))
 groups = list(
   'all' = list(clr=rgb(.4,.4,.4),lab='Overall'),
   'aq'  = list(clr=rgb(.9,.7,.0),lab='Lower Risk'),

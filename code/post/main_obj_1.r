@@ -5,19 +5,22 @@ source('post/config.r')
 load.sens.data = function(t.hors){
   if (missing(t.hors)){ t.hors = seq(2000,2050,5) }
   X.raw = load.csvs('sens')
-  vars = c('cuminf','incid')
+  vars = c('cuminf_all','inc_all','prev_all')
   X = reshape(X.raw,idvar=c('seed','case'),direction='long',times=t.hors,timevar='year',
-    v.names=vars,varying=lapply(vars,function(i){ grepl(i,names(X.raw)) }))
+    v.names=vars,varying=lapply(vars,function(v){ grepl(v,names(X.raw)) }))
   X = X[order(X$case,X$seed),]
   X.base = X[X$case.id=='bc',]
-  X$inf.red = (X$cuminf - X.base$cuminf) / X$cuminf
-  X$inf.add = (X$cuminf - X.base$cuminf) / X.base$cuminf
-  X$inc.red = (X$incid  - X.base$incid)  / X$incid
-  X$inc.add = (X$incid  - X.base$incid)  / X.base$incid
+  X$inf.red  = (X$cuminf_all - X.base$cuminf_all) / X$cuminf_all
+  X$inf.add  = (X$cuminf_all - X.base$cuminf_all) / X.base$cuminf_all
+  X$inc.red  = (X$inc_all    - X.base$inc_all)    / X$inc_all
+  X$inc.add  = (X$inc_all    - X.base$inc_all)    / X.base$inc_all
+  X$prev.red = (X$prev_all   - X.base$prev_all)   / X$prev_all
+  X$prev.add = (X$prev_all   - X.base$prev_all)   / X.base$prev_all
   return(X)
 }
 plot.out = function(X,ylist,ylab,scale=1,tlims=NULL,...){
   args = list(...)
+  X = aggregate(.~case+t+case.lab+case.id,X,median) # if >1 batches
   X.long = melt(X,m=unlist(ylist))
   levels(X.long$variable) = names(ylist)
   if (!is.null(tlims)){ t = X.long$t; X.long = X.long[t>=tlims[1] & t<=tlims[2],] }
@@ -30,7 +33,9 @@ plot.out = function(X,ylist,ylab,scale=1,tlims=NULL,...){
   if ('fill' %in% names(args)){ g = g + scale_fill_manual(values=clr$case) }
   return(g)
 }
-plot.obj.1 = function(X,y='100*inf.red',ylab='Infections averted (%)',yl,...){
+plot.obj.1 = function(X,y='100*inf.red',ylab='Infections averted (%)',yl,tlims=c(2005,2040),...){
+  X$case.lab = factor(X$case.lab,labels=gsub('Left Behind: ','',levels(X$case.lab)))
+  if (!is.null(tlims)){ t = as.numeric(X$year); X = X[t>=tlims[1] & t<=tlims[2],] }
   g = ggplot(X[X$case.id!='bc',],aes_string(x='factor(year)',y=y,...)) +
     geom_boxplot(aes(color=case.lab),outlier.size=.5,lwd=.0,width=.6,position=position_dodge(.8)) +
     geom_boxplot(aes(fill=case.lab),outlier.color=NA,lwd=.3,width=.6,position=position_dodge(.8)) +
@@ -70,10 +75,10 @@ numeric.obj.1 = function(X){
   save.med.ci(X.fun('bc','Rtx_fsw'),'Rtx.fsw',dec=2)
   save.med.ci(X.fun('bc','Rtx_cli'),'Rtx.cli',dec=2)
   for (cid in case.ids){
-    save.med.ci(X.fun(cid,'prev_all'),         paste0(cid,'/prev.all.2020'),per=100)
-    save.med.ci(X.fun(cid,'inc_all'),          paste0(cid,'/inc.all.2020'),per=1000)
-    save.med.ci(X.fun(cid,'prev_ratio_fsw.wq'),paste0(cid,'/pr.fsw.2020'),dec=2)
-    save.med.ci(X.fun(cid,'prev_ratio_cli.mq'),paste0(cid,'/pr.cli.2020'),dec=2)
+    save.med.ci(X.fun(cid,'prev_all',year=2020),    paste0(cid,'/prev.all.2020'),per=100)
+    save.med.ci(X.fun(cid,'inc_all',year=2020),     paste0(cid,'/inc.all.2020'),per=1000)
+    save.med.ci(X.fun(cid,'prev_ratio_fsw.wq_2020'),paste0(cid,'/pr.fsw.2020'),dec=2)
+    save.med.ci(X.fun(cid,'prev_ratio_cli.mq_2020'),paste0(cid,'/pr.cli.2020'),dec=2)
     for (year in seq(2000,2050,10)){
       save.med.ci(X.fun(cid,'inf.add',year=year),paste0(cid,'/inf.add.',year),per=100)
       save.med.ci(1 - (X.fun(cid,'inf.add',year=year)/X.fun('--','inf.add',year=year)),

@@ -1,6 +1,8 @@
 suppressPackageStartupMessages({
+  library('ggplot2')
   library('ggalluvial')
   library('viridis')
+  library('reshape2')
 })
 
 fig.save = function(uid,...,w=7,h=7){

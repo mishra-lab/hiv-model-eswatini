@@ -53,7 +53,7 @@ do.margin = function(X,margin,rel=TRUE){
   X.rel = do.norm(X.abs,sum(X.abs$t==X.abs$t[1]))
   X.abs$scale = 'Absolute (\'000s)'
   X.rel$scale = 'Proportion (%)'
-  # if (margin == 'part'){ print(X.rel[X.rel$t %in% seq(1990,2040,5),]) }
+  if (margin == 'part'){ print(X.rel[X.rel$t %in% seq(1990,2040,5),]) }
   if (margin %in% c('from','to')){
     i.men = grepl('Men\\s|\\sClients',X.abs[[margin]])
     X.abs$infections[i.men] = -X.abs$infections[i.men]
@@ -77,7 +77,7 @@ do.margin(X.base,'part');  fig.save(uid,'inf-part',w=8,h=4)
 do.margin(X.base,'to');    fig.save(uid,'inf-to'  ,w=8,h=4)
 do.margin(X.base,'from');  fig.save(uid,'inf-from',w=8,h=4)
 do.alluvial.facet(X.base); fig.save(uid,'inf-alluvial',w=12,h=16)
-do.alluvial.gif(X.base)
+# do.alluvial.gif(X.base)
 X.diff = load.data(diff=TRUE)
 do.margin(X.diff,'part',rel=FALSE) + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-part',w=10,h=3)
 do.margin(X.diff,'to',  rel=FALSE) + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-to',  w=10,h=3)

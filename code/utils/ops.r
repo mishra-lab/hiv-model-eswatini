@@ -33,3 +33,16 @@ squarish = function(n){
   j = ceiling(n/i)
   return(c(i,j))
 }
+iterms = function(x,n,lower=TRUE){
+  return(paste(lapply(ifelse(lower,1,n):n,function(ni){
+    paste(apply(combn(x,ni),2,paste,collapse=':'),collapse=' + ')
+  }),collapse=' + '))
+}
+block.sample = function(X,id.var='id',n=NULL,replace=TRUE){
+  idu = unique(X[[id.var]])
+  if (missing(n)){ n = length(idu) }
+  ids = sample(idu,n,replace=replace)
+  return(do.call(rbind,lapply(ids,function(id){
+    return(X[X[[id.var]]==id,])
+  })))
+}
