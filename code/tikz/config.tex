@@ -1,0 +1,60 @@
+\usepackage[charter]{mathdesign}
+\usepackage{CrimsonPro}
+\usepackage[italic]{mathastext}
+\usepackage{tikz}
+\pgfdeclarelayer{back}
+\pgfdeclarelayer{fore}
+\pgfsetlayers{back,main,fore}
+\tikzset{
+  state/.style = {
+    rectangle,
+    draw = #1,
+    line width = .2mm,
+    fill = #1!20!white,
+    minimum width = 8em,
+    minimum height = 3em,
+    rounded corners = .5em,
+  },
+  arrow/.style = {
+    line width = .5mm,
+    draw = #1,
+  }
+}
+\newcommand{\shiftscope}[3]{%
+  \begin{scope}[transform canvas={xshift=#1,yshift=#2}]
+    #3
+  \end{scope}}
+\definecolor  {all}{rgb}{.40,.00,.40}
+\definecolor   {aq}{rgb}{.60,.20,.60}
+\definecolor    {w}{rgb}{.80,.20,.20}
+\definecolor   {wq}{rgb}{1.0,.60,.60}
+\definecolor   {wl}{rgb}{1.0,.60,.60}
+\definecolor   {wm}{rgb}{.80,.40,.40}
+\definecolor   {wh}{rgb}{.60,.00,.00}
+\definecolor{fsw.l}{rgb}{.60,.20,.20}
+\definecolor{fsw.h}{rgb}{.40,.00,.00}
+\definecolor  {fsw}{rgb}{.60,.00,.00}
+\definecolor    {m}{rgb}{.20,.20,.80}
+\definecolor   {mq}{rgb}{.60,.60,1.0}
+\definecolor   {ml}{rgb}{.60,.60,1.0}
+\definecolor   {mm}{rgb}{.40,.40,.80}
+\definecolor   {mh}{rgb}{.00,.00,.60}
+\definecolor{cli.l}{rgb}{.20,.20,.60}
+\definecolor{cli.h}{rgb}{.00,.00,.40}
+\definecolor  {cli}{rgb}{.00,.00,.60}
+\definecolor  {sus}{rgb}{1.0,.60,.00}
+\definecolor  {ahi}{rgb}{.00,.75,.75}
+\definecolor{hiv.1}{rgb}{.00,.60,.60}
+\definecolor{hiv.2}{rgb}{.00,.45,.45}
+\definecolor{hiv.3}{rgb}{.00,.30,.30}
+\definecolor {aids}{rgb}{.00,.15,.15}
+\definecolor  {udx}{rgb}{.29,.16,.57}
+\definecolor   {dx}{rgb}{.83,.26,.57}
+\definecolor   {tx}{rgb}{.96,.43,.48}
+\definecolor  {ulx}{rgb}{.58,.18,.63}
+\definecolor   {vx}{rgb}{.96,.66,.48}
+\definecolor  {msp}{rgb}{.26,.04,.41}
+\definecolor  {cas}{rgb}{.58,.15,.40}
+\definecolor  {swo}{rgb}{.87,.32,.23}
+\definecolor  {swr}{rgb}{.99,.65,.04}
+\newcommand{\tsub}[1]{\textsubscript{#1}}

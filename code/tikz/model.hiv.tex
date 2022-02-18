@@ -1,0 +1,13 @@
+\begin{tikzpicture}[x=11em,y=6em]
+  \node[state=sus]   (sus) at (0,1) {Sus};
+  \node[state=ahi]   (h0)  at (0,0) {Acute HIV};
+  \node[state=hiv.1] (h1)  at (1,0) {CD4 $>$ 500};
+  \node[state=hiv.2] (h2)  at (2,0) {350 $<$ CD4 $<$ 500};
+  \node[state=hiv.3] (h3)  at (3,0) {200 $<$ CD4 $<$ 350};
+  \node[state=aids]  (h4)  at (4,0) {CD4 $<$ 200 (AIDS)};
+  \draw[arrow,->] (sus) -- node[right=1mm]{$\lambda$} (h0);
+  \draw[arrow,->] (h0)  -- node[above=1mm]{$\eta_{1}$} (h1);
+  \draw[arrow,->] (h1)  -- node[above=1mm]{$\eta_{2}$} (h2);
+  \draw[arrow,->] (h2)  -- node[above=1mm]{$\eta_{3}$} (h3);
+  \draw[arrow,->] (h3)  -- node[above=1mm]{$\eta_{4}$} (h4);
+\end{tikzpicture}

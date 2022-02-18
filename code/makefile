@@ -11,6 +11,8 @@ do.obj.1:
 	Rscript post/main_obj_1.r && echo [OK]
 do.obj.2:
 	Rscript post/main_obj_2.r && echo [OK]
+do.tikz:
+	cd tikz && make all
 do.params.fsw:
 	Rscript params/fsw/main.r && echo [OK]
 do.params.np-gp:
