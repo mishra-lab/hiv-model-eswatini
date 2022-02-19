@@ -72,7 +72,13 @@ def get_model_ll(T,R,t,interval=None):
 
 def top_q_ll(Rs,top=.1,ll='ll'):
   if isinstance(top,int): top = top / len(Rs)
-  llcut = np.nanquantile([R[ll] for R in Rs],1-top)
+  # replace -np.inf with (lowest value - 1e-6)
+  # as np.quantile has undefined behaviour (bug) for +/-infs
+  # https://github.com/numpy/numpy/issues/21091
+  Rll = np.array([R[ll] for R in Rs])
+  iRll = Rll == -np.inf
+  Rll[iRll] = Rll[~iRll].min() - 1e6
+  llcut = np.nanquantile(Rll,1-top)
   return [R for R in Rs if R[ll] >= llcut]
 
 def get_all_esw(T=None,**kwds):
