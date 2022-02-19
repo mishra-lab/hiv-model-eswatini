@@ -31,14 +31,16 @@ cases = [
   'fsw+cli+',
 ]
 
-def fname(ftype,key,case):
+def fname(ftype,key,case,size=None,batch=None):
+  if size is None: size = N['size']
+  if batch is None: batch = N['batch']
   if ftype=='npy':
     path,ext = ['data','.npy',uid],''
   if ftype=='csv':
     path,ext = ['data','mid',uid],'.csv'
   if ftype=='fig':
     path,ext = ['out','fig',uid],'.pdf'
-  return genpath(rootpath(*path,'{}_{}_N={}-{}{}'.format(key,case,N['size'],N['batch'],ext)))
+  return genpath(rootpath(*path,'{}_{}_N={}-{}{}'.format(key,case,size,batch,ext)))
 
 def sample_run_base(t,T):
   seeds = range(N['batch']*N['size'],(N['batch']+1)*N['size'])
@@ -194,15 +196,28 @@ def get_refit_case(case,default=True):
   PD = {'R'+step+'x:'+pop: PDs[step+c] for pop,c in parse_case(case_PD) for step in 'dtu'}
   return T2,PD
 
-def do_scenario(Ps,t,T2,case,outs=True,sens=True,infs=True,plotfit=True):
-  Rs = system.run_n(Ps,t,T2)
+def do_scenario(Ps,t,T,case,outs=True,sens=True,infs=True,plotfit=True):
+  Rs = system.run_n(Ps,t,T)
   if outs: fio.save_csv(fname('csv','outs',case),get_outs(Rs,t,case))
   if sens: fio.save_csv(fname('csv','sens',case),get_sens_data_n(Rs,t,case))
   if infs: fio.save_csv(fname('csv','infs',case),out.get_infections(Rs,t,tvec['infs']))
-  if plotfit: fit.plot_refit(t,Rs,T2,fname('fig','fit',case))
+  if plotfit: fit.plot_refit(t,Rs,T,fname('fig','fit',case))
   return Rs
 
-def main_fit(sample=True,refit=True,outs=True,sens=True,infs=True,plotfit=True):
+def main_plot(batches):
+  # we need this to pull all batches together
+  t  = tvec['main']
+  size = N['size'] * len(batches)
+  for case in ['base']+cases:
+    T  = target.get_all_esw() if case=='base' else get_refit_case(case)[0]
+    Ps = [P for b in batches for P in fio.load(fname('npy','Ps',case,batch=b))]
+    Rs = do_scenario(Ps,t,T,case,outs=False,sens=False,infs=False,plotfit=False)
+    if case=='base':
+      fit.plot_fit(t,Rs,T,fname('fig','fit',case,size=size,batch='{}'),merge=False)
+    else:
+      fit.plot_refit(t,Rs,T,fname('fig','fit',case,size=size,batch='{}'),merge=False)
+
+def main_fit(sample=True,cf=True,refit=True,outs=True,sens=True,infs=True,plotfit=True):
   T1 = target.get_all_esw()
   case = 'base'
   if sample:
@@ -211,6 +226,7 @@ def main_fit(sample=True,refit=True,outs=True,sens=True,infs=True,plotfit=True):
   else:
     P0s = fio.load(fname('npy','Ps',case))
   R0s = do_scenario(P0s,tvec['main'],T1,case,outs=outs,sens=sens,infs=infs,plotfit=plotfit)
+  if not cf: return
   for case in cases: # counterfactuals (fitted)
     print('\n'+case,flush=True)
     T2,PD = get_refit_case(case)
