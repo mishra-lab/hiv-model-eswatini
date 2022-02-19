@@ -3,7 +3,7 @@ from utils import flatten,squarish,fio
 from model import slicers,system,out,target,plot
 
 plotsize = 3 # inches
-ttfname = '.fit-{}.pdf'
+ttfname = fio.tmpfile('fit-{}.pdf')
 
 def plot_all(t,Rs,T,fname='fit.pdf',tops=(1.,.2,.04),drop=True):
   if drop: Rs = system.drop_fails(Rs)[0]

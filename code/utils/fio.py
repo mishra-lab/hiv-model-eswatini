@@ -51,7 +51,19 @@ def datestamp(date=None):
 
 def filehash(*fnames,root=None,N=6):
   # get a unique hash based on the current state of some files
+  root = '.' if root is None else root
   return ''.join([os.popen('sha1sum '+os.path.join(root,fname)).read()[0:N] for fname in fnames])
+
+def randhash(n=6):
+  # get a random hash
+  chars = '0123456789abcdefghijklmnopqrstuvwxyz'
+  return ''.join(np.random.choice(list(chars),n))
+
+def tmpfile(fname=None,root=None,n=6):
+  # generate a dir based on randhash & return path
+  fname = '' if fname is None else fname
+  root  = '.tmp' if root is None else root
+  return genpath(os.path.join(root,randhash(n),fname))
 
 def pdfmerge(ofname,fnames,rm=False):
   # concatenate pdfs
