@@ -1,6 +1,6 @@
 import numpy as np
 from copy import copy
-from utils import _,NAN,stats,flatten,dict_split,linear_comb,interval_qs
+from utils import _,NAN,stats,flatten,dict_split,linear_comb,interval_qs,log
 from utils import tarray as ta
 
 # main -------------------------------------------------------------------------
@@ -26,6 +26,7 @@ def get_all(P,seed=None,**kwds):
   return P
 
 def get_n_all(n,Ps=None,seeds=None,lhs=True,**kwds):
+  log(2,'params.get_n_all: '+str(n))
   if seeds is None: seeds = n*[None]
   if Ps is None:
     PD = def_sample_distrs()

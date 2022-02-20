@@ -3,6 +3,7 @@ import csv
 import numpy as np
 from datetime import datetime
 from PyPDF2 import PdfFileMerger as pdfm
+from utils.log import log
 
 therootpath = os.path.abspath(__file__).replace(os.path.join('code','utils','fio.py'),'')
 
@@ -16,11 +17,13 @@ def genpath(fname):
 
 def save(fname,obj):
   # save obj to file via numpy, ensuring the path exists
+  log(2,'fio.save: '+fname)
   np.save(genpath(fname),obj)
   return obj
 
 def load(fname):
   # load obj from file via numpy & avoid 0-dimensional array obj for dict and other obj types
+  log(2,'fio.load: '+fname)
   obj = np.load(fname+'.npy',allow_pickle=True)
   if not obj.shape: # dict etc.
     return obj[()]
@@ -31,6 +34,7 @@ def save_csv(fname,obj):
   # 1. {'A':[0,1,2],'B':[3,4,5]}
   # 2. [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
   # 3. [['A','B'],[0,3],[1,4],[2,5]]
+  log(2,'fio.save_csv: '+fname)
   with open(genpath(fname),'w') as f:
     if isinstance(obj,dict):
       w = csv.writer(f)
@@ -49,17 +53,17 @@ def datestamp(date=None):
   if date is None: date = datetime.now()
   return date.strftime('%Y-%m-%d')
 
-def filehash(*fnames,root=None,N=6):
+def filehash(*fnames,root=None,n=7):
   # get a unique hash based on the current state of some files
   root = '.' if root is None else root
-  return ''.join([os.popen('sha1sum '+os.path.join(root,fname)).read()[0:N] for fname in fnames])
+  return ''.join([os.popen('sha1sum '+os.path.join(root,fname)).read()[0:n] for fname in fnames])
 
-def randhash(n=6):
+def randhash(n=7):
   # get a random hash
   chars = '0123456789abcdefghijklmnopqrstuvwxyz'
   return ''.join(np.random.choice(list(chars),n))
 
-def tmpfile(fname=None,root=None,n=6):
+def tmpfile(fname=None,root=None,n=7):
   # generate a dir based on randhash & return path
   fname = '' if fname is None else fname
   root  = '.tmp' if root is None else root
@@ -67,6 +71,7 @@ def tmpfile(fname=None,root=None,n=6):
 
 def pdfmerge(ofname,fnames,rm=False):
   # concatenate pdfs
+  log(2,'fio.pdfmerge: '+ofname)
   m = pdfm()
   for fname in fnames:
     m.append(fname)

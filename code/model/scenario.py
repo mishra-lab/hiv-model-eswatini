@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from copy import deepcopy
-from utils import rootpath,genpath,flatten,minimize,itslice
+from utils import rootpath,genpath,flatten,minimize,itslice,log
 from utils import stats,fio,parallel
 from model import slicers,params,system,target,fit,out
 
@@ -87,6 +87,7 @@ def get_expo_data(R,t,case):
 # objective 0: calibration
 
 def run_calibrate():
+  log(0,'scenario.run_calibrate')
   T = target.get_all_esw()
   seeds = batch_select(range(N['cal']))
   P0s = params.get_n_all(len(seeds),seeds=seeds)
@@ -105,12 +106,13 @@ def merge_calibrate():
 # objective 1: refitting
 
 def run_refit():
-  P0s = batch_select(fio.load(fname('npy','cal','Ps',b='all')))
+  log(0,'scenario.run_refit')
+  P0s = batch_select(fio.load(fname('npy','fit','Ps',b='all')))
   for case in cases:
-    print('\n'+case,flush=True)
+    log(1,case)
     T,PD = get_refit_T_PD(case)
     fun = lambda P: refit_cascade(P,PD,T,tvec['fit'],ftol=.1)
-    Ps = parallel.ppool(len(P0s)).map(fun,P0s)
+    Ps = parallel.ppool(len(P0s)).map(fun,P0s); log(1)
     fio.save(fname('npy','fit','Ps',case=case),Ps)
 
 def merge_refit():
@@ -119,7 +121,9 @@ def merge_refit():
     fio.save(fname('npy','fit','Ps',case=case,b='all'),Ps)
 
 def expo_refit(expo=True,infs=True,plot=True):
+  log(0,'scenario.expo_refit')
   for case in ['base']+cases:
+    log(1,case)
     T = target.get_all_esw() if case=='base' else get_refit_T_PD(case)[0]
     Ps = fio.load(fname('npy','fit','Ps',case=case,b='all'))
     Rs = system.run_n(Ps,t=tvec['main'],T=T)

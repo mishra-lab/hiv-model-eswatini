@@ -1,6 +1,6 @@
 import numpy as np
 from model import foi,target
-from utils import _,deco,parallel
+from utils import _,deco,parallel,log
 
 def f_t(t0=1980,tf=2050,dt=0.1):
   return np.round(np.arange(t0,tf+dt,dt),9)
@@ -19,17 +19,19 @@ def drop_fails(*Rss):
   return tuple([R for (R,ok) in zip(Rs,oks) if ok] for Rs in Rss)
 
 def run_n(Ps,t=None,T=None,para=True,**kwds):
+  log(2,'system.run_n: '+str(len(Ps)))
   if para:
     fun = lambda P: run(P,t=t,T=T,**kwds)
-    return parallel.ppool(len(Ps)).map(fun,Ps)
+    Rs = parallel.ppool(len(Ps)).map(fun,Ps)
   else:
-    return [run(P,t=t,T=T,**kwds) for P in Ps]
-  print(flush=True)
+    Rs = [run(P,t=t,T=T,**kwds) for P in Ps]
+  log(1)
+  return Rs
 
 def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = f_t()
   if RPts is None: RPts = ['PA_condom_t','PA_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
-  print(str(P['seed']).rjust(6),end=' ',flush=True)
+  log(3,str(P['seed']).rjust(6))
   R = solve(P,t)
   if not R:
     return R

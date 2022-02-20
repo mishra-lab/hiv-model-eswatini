@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from model.target import filter_targets
-from utils import genpath,flatten,clr_interp,interval_qs,squarish,dict_split,itslice,tdt,globs
+from utils import genpath,flatten,clr_interp,interval_qs,squarish,dict_split,itslice,tdt,log,globs
 from model import _,dimkeys,dimensions,slicers,out
 
 # TODO: labeling & colors for vsop
@@ -22,6 +22,7 @@ def subplots(row,col):
   return fh,ah
 
 def save(fname,*args,close=True,**kwds):
+  log(2,'plot.save: '+fname)
   plt.savefig(genpath(fname),*args,**kwds)
   if close: plt.close()
   return fname
