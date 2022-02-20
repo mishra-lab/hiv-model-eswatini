@@ -5,9 +5,10 @@ from model import slicers,system,out,target,plot
 plotsize = 3 # inches
 ttfname = fio.tmpfile('fit-{}.pdf')
 
-def plot_all(t,Rs,T,fname='fit.pdf',tops=(1.,.2,.04),drop=True):
+def plot_cal(t,Rs,T,fname,tops=(1.,.1,.01),drop=True,merge=True):
   if drop: Rs = system.drop_fails(Rs)[0]
-  Rss = [target.top_q_ll(Rs,top) for top in tops] if tops else [Rs]
+  Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
+  kwds = dict(T=T,tfname=(None if merge else fname))
   tfnames = [
     # param histograms
     plot_param(Rss,'PX_si',    dstr='si'),
@@ -19,53 +20,32 @@ def plot_all(t,Rs,T,fname='fit.pdf',tops=(1.,.2,.04),drop=True):
     plot_param(Rss,'EHY_acute',dstr=''),
     plot_param(Rss,'t0_hiv',   dstr=''),
     # output projections
-    plot_output(t,Rss,'NX',        ['all'],T=T),
-    plot_output(t,Rss,'Ph',        ['ahi','>500','<500','<350','<200'],T=T),
-    plot_output(t,Rss,'X_rate',    ['all'],rate='death_hc',ylab='HIV Mortality',T=T),
-    plot_output(t,Rss,'prevalence',['all','w','m','fsw'],T=T,ylim=(0,1)),
-    plot_output(t,Rss,'prevalence',
-      [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
-      vsop='1/2',T=T,ylim=(1,5)),
-    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],T=T),
-    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],T=T),
-    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],T=T),
-    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],T=T),
-    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],T=T),
-    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],T=T),
-    plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],T=T),
-    plot_output(t,Rss,'circum',    ['*'],T=T),
-    plot_output(t,Rss,'gud',       ['*'],T=T),
-    # plot_output(t,Rss,'dx_rate',   ['W','M','FSW']),
-    # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
-    # plot_output(t,Rss,'tx_rate',   ['W','M','FSW']),
-    # plot_output(t,Rss,'cuminfect', ['W','M','FSW'],tvec=t,T=T),
-  ]
-  fio.pdfmerge(fname,tfnames,rm=True)
-
-def plot_fit(t,Rs,T,fname,tops=(1.,.2,.04),drop=True,merge=True):
-  if drop: Rs = system.drop_fails(Rs)[0]
-  Rss = [target.top_q_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
-  kwds = dict(T=T,tfname=(None if merge else fname))
-  tfnames = [
-    plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'circum',    ['*'],**kwds,ylim=(0,1)),
     plot_output(t,Rss,'NX',        ['all'],**kwds),
     plot_output(t,Rss,'Ph',        ['ahi','>500','<500','<350','<200'],**kwds),
+    plot_output(t,Rss,'X_rate',    ['all'],rate='death_hc',ylab='HIV Mortality',**kwds),
+    plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
     plot_output(t,Rss,'prevalence',
-      [('fsw.h','fsw.l'),('fsw','w'),('cli.h','cli.l'),('cli','m')],
+      [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
       vsop='1/2',**kwds,ylim=(1,5)),
+    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],**kwds),
+    plot_output(t,Rss,'circum',    ['*'],**kwds),
+    plot_output(t,Rss,'gud',       ['*'],**kwds),
+    # plot_output(t,Rss,'dx_rate',   ['all','w','m','fsw'],**kwds),
+    # plot_output(t,Rss,'tx_rate',   ['all','w','m','fsw'],**kwds),
+    # plot_output(t,Rss,'tx_rate',   ['all','w','m','fsw'],**kwds),
   ]
   if merge:
     fio.pdfmerge(fname,tfnames,rm=True)
 
 def plot_refit(t,Rs,T,fname,tops=(1.,.2,.04),drop=True,merge=True):
   if drop: Rs = system.drop_fails(Rs)[0]
-  Rss = [target.top_q_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
+  Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
   kwds = dict(T=T,tfname=(None if merge else fname))
   groups = ['all','aq','fsw','cli']
   tfnames = [
@@ -98,7 +78,7 @@ def plot_output(t,Rss,oname,snames,T=None,tfname=None,ylab=None,ylim=None,**kwds
   if tfname is None: tfname = ttfname
   if ylab is None: ylab = out.labels.get(oname,oname)
   fh,ah = plot.subplots(1,len(snames))
-  kwds.update(median=False,interval=1 if T else (1,.5,.1))
+  kwds.update(median=False,interval=1 if T else (1.,.2,.04))
   for s,sname in enumerate(snames): # subplots
     plot.plt.sca(ah[0,s])
     if isinstance(sname,tuple):

@@ -70,7 +70,7 @@ def get_model_ll(T,R,t,interval=None):
     ll += np.float(Ti.ll(x,interval=interval))
   return ll
 
-def top_q_ll(Rs,top=.1,ll='ll'):
+def top_ll(Rs,top=.1,ll='ll'):
   if isinstance(top,int): top = top / len(Rs)
   # replace -np.inf with (lowest value - 1e-6)
   # as np.quantile has undefined behaviour (bug) for +/-infs
