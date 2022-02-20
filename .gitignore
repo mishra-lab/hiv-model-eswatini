@@ -6,7 +6,7 @@
 
 # python
 __pycache__/
-.npy/
+npy/
 *.pyc
 
 # tex
