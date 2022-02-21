@@ -2,9 +2,9 @@ source('post/config.r')
 
 # --------------------------------------------------------------------------------------------------
 # load & process data
-load.sens.data = function(t.hors){
+load.expo.data = function(t.hors){
   if (missing(t.hors)){ t.hors = seq(2000,2050,5) }
-  X.raw = load.csvs('sens')
+  X.raw = load.csvs('fit','expo')
   vars = c('cuminf_all','inc_all','prev_all')
   X = reshape(X.raw,idvar=c('seed','case'),direction='long',times=t.hors,timevar='year',
     v.names=vars,varying=lapply(vars,function(v){ grepl(v,names(X.raw)) }))
@@ -87,11 +87,12 @@ numeric.obj.1 = function(X){
   }
 }
 # --------------------------------------------------------------------------------------------------
-X.out = load.csvs('outs')
-ylist = list('Overall'='inc_all.mu','Lower Risk'='inc_aq.mu','FSW'='inc_fsw.mu','Clients'='inc_cli.mu')
-g = plot.out(X.out,ylist,ylab='HIV Incidence (per 1000 PY)',scale=1000,color='case.lab',tlims=c(2000,2050)) +
-  labs(color='Left Behind:') + theme(legend.position='top'); fig.save(uid,'obj_1_inc',w=10,h=3)
-X = load.sens.data()
+# TODO: do we really need this ... ? maybe just plot in python
+# X.out = load.csvs('outs')
+# ylist = list('Overall'='inc_all.mu','Lower Risk'='inc_aq.mu','FSW'='inc_fsw.mu','Clients'='inc_cli.mu')
+# g = plot.out(X.out,ylist,ylab='HIV Incidence (per 1000 PY)',scale=1000,color='case.lab',tlims=c(2000,2050)) +
+#   labs(color='Left Behind:') + theme(legend.position='top'); fig.save(uid,'obj_1_inc',w=10,h=3)
+X = load.expo.data()
 numeric.obj.1(X)
 plot.obj.1(X,y='100*inf.red',ylab='Infections averted (%)',      yl=c(0, 70)); fig.save(uid,'obj_1_inf_red',w=8,h=4)
 plot.obj.1(X,y='100*inf.add',ylab='Additional infections (%)',   yl=c(0,150)); fig.save(uid,'obj_1_inf_add',w=8,h=4)

@@ -1,11 +1,10 @@
 library('geepack')
 source('post/config.r')
 
-clean.data = function(X.raw,t.hor=2040,t.cas=2020,t.prev=2000){
-  X.base = X.raw[X.raw$case=='base',]
-  X      = X.raw[X.raw$case!='base',]
-  X$r.id = 1:N$rand
+clean.data = function(X.base,X,t.hor=2040,t.cas=2020,t.prev=2000){
+  X$r.id = 1:N$sens
   X = X[order(X$r.id,X$seed),]
+  # print(all(X$seed==X.base$seed)) # DEBUG
   o = function(Xi,output,t,pop){
     if (missing(t)){ t = t.hor }
     if (missing(pop)){ pop = 'all' }
@@ -155,14 +154,15 @@ mod.vars = list(
   # 'ipr_all'     = 'HIV IPR'
 )
 
-X.raw = load.csvs('sens',case.rand(),batches=1:10)
-X = clean.data(X.raw)
+X.sens = load.csvs('sens','expo',cases.sens[1],b=seq(N$batch)-1)
+X.base = load.csvs('fit', 'expo',cases.sens[2])
+X = clean.data(X.base,X.sens)
 g = plot.cascade(X); fig.save(uid,'obj_2_cascade',w=10,h=3)
 
 for (s in names(specs)){
   spec = specs[[s]]
   models = lapply(setNames(spec$t,spec$t),function(t){
-    do.glm(clean.data(X.raw,t),spec$y.def,names(pred.vars),names(mod.vars))
+    do.glm(clean.data(X.base,X.sens,t),spec$y.def,names(pred.vars),names(mod.vars))
   })
   g = plot.effects(models,pred.vars=pred.vars,mod.vars=mod.vars,
     x.lab=paste('Effect on',spec$y.lab),y.lab='Standardized dVS Variable')
@@ -170,5 +170,5 @@ for (s in names(specs)){
   if (!fs$ts){ print(summary(models[[1]])) }
   fig.save(uid,'obj_2',s,w=fs$w,h=fs$h)
 }
-# g = plot.points(X,y.def,y.lab,color='ipr_all'); ggsave('Rplots.pdf',w=12,h=4); q() # DEBUG
-# q()
+g = plot.points(X,y.def,y.lab,color='ipr_all'); ggsave('Rplots.pdf',w=12,h=4); q() # DEBUG
+q()

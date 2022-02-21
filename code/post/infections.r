@@ -4,9 +4,9 @@ source('post/config.r')
 # --------------------------------------------------------------------------------------------------
 load.data = function(diff=FALSE){
   if (diff){
-    X = load.csvs('infs-diff',cases[1:4],batches=1)
+    X = load.csvs('fit','infs-diff',cases[1:4])
   } else {
-    X = load.csvs('infs',batches=1)
+    X = load.csvs('fit','infs')
   }
   X = X[X$infections>0,] # for speed
   X$from  = factor(1+X$fs*4+X$fi,levels=1:8,labels=lab$pop)

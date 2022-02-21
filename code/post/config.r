@@ -1,8 +1,8 @@
 source('utils/ops.r')
 source('utils/plot.r')
 
-uid = '2022-02-16'
-N = list(size=1000,batches=5,rand=10)
+uid = '2022-02-20'
+N = list(cal=100000,batchs=10,sens=10)
 pops = list(
   'wl'    = list(clr=rgb(1.,.6,.6),lab='Women Low'),
   'wm'    = list(clr=rgb(.8,.4,.4),lab='Women Med'),
@@ -34,12 +34,10 @@ cases = list(
   'fsw-cli-' = list(clr=rgb(.8,.3,.8),id='--',lab='Left Behind: FSW & Clients'),
   'fsw+cli+' = list(clr=rgb(.9,.7,.0),id='++',lab='Left Behind: Neither'),
   'base'     = list(clr=rgb(.4,.4,.4),id='bc',lab='Base Case'))
-case.rand = function(rand){
-  if (missing(rand)){ rand = N$rand }
-  r = list(list(id='rl',lab='Random Lower'),list(id='bc',lab='Base Case'))
-  names(r) = c(paste0('RL',rand),'base')
-  return(r)
-}
+cases.sens = list(
+  'sens' = list(id='rl',lab='Random Lower'),
+  'base' = list(id='bc',lab='Base Case')
+)
 cget = function(defs,key){
   return(unname(sapply(defs,function(def){def[[key]]})))
 }
@@ -58,15 +56,14 @@ lab = list(
   groups = cget(groups,'lab'),
   steps  = cget(steps,'lab'),
   case   = cget(cases,'lab'))
-csv.name = function(key,case,b=0){
-  return(root.path('data','mid',uid,paste0(key,'_',case,'_N=',N$size,'-',b-1,'.csv')))
+csv.name = function(phase,key,case,b){
+  return(root.path('data','mid',uid,sprintf('%d',N$cal),paste0(phase,'_',key,'_',case,'_',b,'.csv')))
 }
-load.csvs = function(key,cases.alt,batches){
+load.csvs = function(phase,key,cases.alt,b='all'){
   if (missing(cases.alt)){ cases.alt = cases }
-  if (missing(batches)){ batches = seq(N$batches) }
   X = do.call(rbind,lapply(names(cases.alt),function(case){
-    X.i = do.call(rbind,lapply(batches,function(b){
-      return(read.csv(csv.name(key,case,b=b)))
+    X.i = do.call(rbind,lapply(b,function(bi){
+      return(read.csv(csv.name(phase,key,case,b=bi)))
     }))
     X.i$case = case
     return(X.i)
