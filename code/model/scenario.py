@@ -100,14 +100,14 @@ def run_calibrate():
 def merge_calibrate():
   P0s = [P for b in range(N['batch']) for P in fio.load(fname('npy','cal','Ps',b=b))]
   Ps = target.top_ll(P0s,top=int(N['cal']*N['topfit']))
-  fio.save(fname('npy','fit','Ps',b='all'),Ps)
+  fio.save(fname('npy','top','Ps',b='all'),Ps)
 
 # --------------------------------------------------------------------------------------------------
 # objective 1: refitting
 
 def run_refit():
   log(0,'scenario.run_refit')
-  P0s = batch_select(fio.load(fname('npy','fit','Ps',b='all')))
+  P0s = batch_select(fio.load(fname('npy','top','Ps',b='all')))
   for case in cases:
     log(1,case)
     T,PD = get_refit_T_PD(case)
@@ -120,16 +120,24 @@ def merge_refit():
     Ps = [P for b in range(N['batch']) for P in fio.load(fname('npy','fit','Ps',case=case,b=b))]
     fio.save(fname('npy','fit','Ps',case=case,b='all'),Ps)
 
-def expo_refit(expo=True,infs=True,plot=True):
+def expo_refit():
   log(0,'scenario.expo_refit')
   for case in ['base']+cases:
     log(1,case)
     T = target.get_all_esw() if case=='base' else get_refit_T_PD(case)[0]
-    Ps = fio.load(fname('npy','fit','Ps',case=case,b='all'))
+    Ps = fio.load(fname('npy','top' if case=='base' else 'fit','Ps',case=case,b='all'))
     Rs = system.run_n(Ps,t=tvec['main'],T=T)
-    if infs: fio.save_csv(fname('csv','fit','infs',case=case,b='all'),out.get_infections(Rs,tvec['main'],tvec['infs']))
-    if expo: fio.save_csv(fname('csv','fit','expo',case=case,b='all'),[get_expo_data(R,tvec['main'],case) for R in Rs])
-    if plot: fit.plot_refit(tvec['main'],Rs,T,fname=fname('fig','fit','Ps',case=case,b='all'))
+    fio.save_csv(fname('csv','fit','expo',case=case,b='all'),
+      [get_expo_data(R,tvec['main'],case) for R in Rs])
+    fio.save_csv(fname('csv','fit','infs',case=case,b='all'),
+      out.get_infections(Rs,tvec['main'],tvec['infs']))
+    fit.plot_refit(tvec['main'],Rs,T,fname=fname('fig','fit','Ps',case=case,b='all'))
+    if case=='base':
+      R0s = Rs
+      fit.plot_cal(tvec['main'],Rs,T,fname=fname('fig','top','Ps',case=case,b='all'))
+    else:
+      fio.save_csv(fname('csv','fit','infs-diff',case=case,b='all'),
+        out.get_infections(Rs,tvec['main'],tvec['infs'],R2s=R0s,vsop='1-2'))
 
 def get_refit_T_PD(case):
   Ts = {
@@ -203,6 +211,7 @@ def run_sens(expo=True,infs=True,plot=True):
   Ps = get_sens_sample(P0s)
   fio.save(fname('npy','sens','Ps'),Ps)
   Rs = system.run_n(Ps,t=tvec['main'])
+  # TODO: clean up
   if infs: fio.save_csv(fname('csv','sens','infs',case='sens'),out.get_infections(Rs,tvec['main'],tvec['infs']))
   if expo: fio.save_csv(fname('csv','sens','expo',case='sens'),[get_expo_data(R,tvec['main'],'sens') for R in Rs])
   if plot: fit.plot_refit(tvec['main'],Rs,T=None,fname=fname('fig','sens','Ps',case='sens'))
