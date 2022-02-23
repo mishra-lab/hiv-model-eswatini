@@ -88,11 +88,11 @@ do.margin = function(X,margin,rel=TRUE){
 # --------------------------------------------------------------------------------------------------
 X = load.data()
 X.base = X[X$case=='base',]
-do.ratio(X.base);          fig.save(uid,'inf-ratio',w=5,h=4)
-do.margin(X.base,'part');  fig.save(uid,'inf-part',w=8,h=4)
-do.margin(X.base,'to');    fig.save(uid,'inf-to'  ,w=8,h=4)
-do.margin(X.base,'from');  fig.save(uid,'inf-from',w=8,h=4)
-do.alluvial.facet(X.base); fig.save(uid,'inf-alluvial',w=12,h=16)
+do.ratio(X.base);          fig.save(uid,'inf-base-ratio',w=5,h=4)
+do.margin(X.base,'part');  fig.save(uid,'inf-base-part',w=8,h=4)
+do.margin(X.base,'to');    fig.save(uid,'inf-base-to'  ,w=8,h=4)
+do.margin(X.base,'from');  fig.save(uid,'inf-base-from',w=8,h=4)
+do.alluvial.facet(X.base); fig.save(uid,'inf-base-alluvial',w=12,h=16)
 # do.alluvial.gif(X.base)
 X.diff = load.data(diff=TRUE)
 do.margin(X.diff,'part',rel=FALSE) + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-part',w=10,h=3)
