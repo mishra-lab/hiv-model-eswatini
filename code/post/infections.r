@@ -8,6 +8,8 @@ load.data = function(diff=FALSE){
   } else {
     X = load.csvs('fit','infs')
   }
+  # X = load.csvs('sens','infs',cases.sens[1],b=seq(N$batch)-1) # DEBUG: obj 2
+  # X = aggregate(infections~t+fs+fi+ts+ti+p,X,median) # DEBUG: obj 2
   X = X[X$infections>0,] # for speed
   X$from  = factor(1+X$fs*4+X$fi,levels=1:8,labels=lab$pop)
   X$to    = factor(1+X$ts*4+X$ti,levels=1:8,labels=lab$pop)
@@ -47,6 +49,19 @@ do.alluvial.gif = function(X){
     print(alluvial(X[X$t==t,],norm=TRUE) + ggtitle(t))
   }),'alluvial.gif',width=600,height=800,delay=1/10,loop=TRUE)
 }
+do.ratio = function(X){
+  X.p = aggregate(infections~t+from+to,X,sum) # sum parts
+  X. = merge(rename.cols(aggregate(infections~t+from,X.p,sum),infections='inf.fr',from='pop'),
+             rename.cols(aggregate(infections~t+to,  X.p,sum),infections='inf.to',to='pop'))
+  X.$inf.ratio = X.$inf.fr / X.$inf.to
+  g = ggplot(X.,aes(y=inf.ratio,x=t,color=pop)) +
+    geom_hline(yintercept=1,color=rgb(.8,.8,.8),lwd=1) +
+    geom_line(lwd=.7) +
+    scale_color_manual(values=clr[['from']]) +
+    labs(x='Year',y='Yearly Infections Transmitted / Acquired (Ratio)',color='',fill='') +
+    theme_light()
+  return(g)
+}
 do.margin = function(X,margin,rel=TRUE){
   # partnership types
   X.abs = aggregate(formula(paste('infections ~ t + case.lab +',margin)),X,sum)
@@ -73,6 +88,7 @@ do.margin = function(X,margin,rel=TRUE){
 # --------------------------------------------------------------------------------------------------
 X = load.data()
 X.base = X[X$case=='base',]
+do.ratio(X.base);          fig.save(uid,'inf-ratio',w=5,h=4)
 do.margin(X.base,'part');  fig.save(uid,'inf-part',w=8,h=4)
 do.margin(X.base,'to');    fig.save(uid,'inf-to'  ,w=8,h=4)
 do.margin(X.base,'from');  fig.save(uid,'inf-from',w=8,h=4)

@@ -17,8 +17,12 @@ clean.data = function(X.base,X,t.hor=2040,t.cas=2020,t.prev=2000){
   X$prev_cli  = o(X,'prev',t.prev,'cli')
   X$prev_aq   = o(X,'prev',t.prev,'aq')
   X$pr_fsw.wq = o(X,'prev_ratio',t.prev,'fsw.wq')
+  # X$ir_fsw.wq = o(X,'inc_ratio',t.prev,'fsw.wq') # TODO
+  X$ir_fsw.aq = o(X,'inc',t.prev,'fsw') / o(X,'inc',t.prev,'aq') # TEMP
   X$pr_cli.mq = o(X,'prev_ratio',t.prev,'cli.mq')
-  X$ipr_all   = o(X,'inc',t.prev,'all') / X$prev_all
+  # X$ir_cli.mq = o(X,'inc_ratio',t.prev,'cli.mq') # TODO
+  X$ir_cli.aq = o(X,'inc',t.prev,'cli') / o(X,'inc',t.prev,'aq') # TEMP
+  X$ipr_all   = o(X,'inc',t.prev,'all') / o(X,'prev',t.prev,'all')
   X$inc.red = (o(X,'inc') - o(X.base,'inc')) / o(X,'inc')
   X$inc.add = (o(X,'inc') - o(X.base,'inc')) / o(X.base,'inc')
   X$inf.red = (o(X,'cuminf') - o(X.base,'cuminf')) / o(X,'cuminf')
@@ -141,11 +145,13 @@ mod.vars = list(
   # 'hiv_fsw'     = 'FSW % PLHIV',
   'dur_fsw_l'   = 'FSW Duration',
   'pr_fsw.wq'   = 'FSW / LR Women HIV PR',
+  # 'ir_fsw.aq'   = 'FSW / LR Women HIV IR',
   'PX_cli'      = 'Clients % Pop.',
-  # 'prev_cli'    = 'Client HIV Prev.',
+  # 'prev_cli'    = 'Clients HIV Prev.',
   # 'hiv_cli'     = 'Clients % PLHIV',
-  'dur_cli'     = 'Client Duration',
+  'dur_cli'     = 'Clients Duration',
   'pr_cli.mq'   = 'Clients / LR Men HIV PR'
+  # 'ir_cli.aq'   = 'Clients / LR Men HIV IR',
   # 'A_swq_cli'   = 'Client Monthly FSW Visits',
   # 'prev_aq'     = 'Lower Risk HIV Prev.'
   # 'EHY_acute'   = 'HIV Acute EHY',
@@ -157,7 +163,8 @@ mod.vars = list(
 X.sens = load.csvs('sens','expo',cases.sens[1],b=seq(N$batch)-1)
 X.base = load.csvs('fit', 'expo',cases.sens[2])
 X = clean.data(X.base,X.sens)
-g = plot.cascade(X); fig.save(uid,'obj_2_cascade',w=10,h=3)
+# g = plot.points(X,specs$inf$y.def,specs$inf$y.lab,color='ir_cli.aq'); ggsave('Rplots.pdf',w=12,h=4); q() # DEBUG
+# g = plot.cascade(X); fig.save(uid,'obj_2_cascade',w=10,h=3)
 
 for (s in names(specs)){
   spec = specs[[s]]
@@ -170,5 +177,3 @@ for (s in names(specs)){
   if (!fs$ts){ print(summary(models[[1]])) }
   fig.save(uid,'obj_2',s,w=fs$w,h=fs$h)
 }
-g = plot.points(X,y.def,y.lab,color='ipr_all'); ggsave('Rplots.pdf',w=12,h=4); q() # DEBUG
-q()

@@ -63,11 +63,11 @@ numeric.obj.1 = function(X){
     if (is.null(year)){ Xi = X } else { Xi = X[X$year==year,] }
     return(Xi[Xi$case.id==case.id,][[col]])
   }
-  Nf = length(unique(X.fun('bc','seed')))
-  save.tex(N$size*N$batches,'n.sample',dec=0)
-  save.tex(10,'top.pct.fit',dec=0)
-  save.tex(Nf,'n.fit',dec=0)
-  save.tex(10,'n.rand',dec=0) # obj.2
+  save.tex(N$cal,'n.cal',dec=0)
+  save.tex(100*N$topfit,'top.pct.fit',dec=0)
+  save.tex(N$cal*N$topfit,'n.fit',dec=0)
+  save.tex(N$sens,'n.sens.per',dec=0) # obj.2
+  save.tex(N$sens*N$topfit,'n.sens',dec=0) # obj.2
   save.med.ci(X.fun('bc','PX_fsw'),'px.fsw',per=100)
   save.med.ci(X.fun('bc','PX_cli'),'px.cli',per=100)
   save.med.ci(X.fun('bc','Rdx_fsw'),'Rdx.fsw',dec=2)
@@ -94,8 +94,8 @@ numeric.obj.1 = function(X){
 #   labs(color='Left Behind:') + theme(legend.position='top'); fig.save(uid,'obj_1_inc',w=10,h=3)
 X = load.expo.data()
 numeric.obj.1(X)
-plot.obj.1(X,y='100*inf.red',ylab='Infections averted (%)',      yl=c(0, 70)); fig.save(uid,'obj_1_inf_red',w=8,h=4)
-plot.obj.1(X,y='100*inf.add',ylab='Additional infections (%)',   yl=c(0,150)); fig.save(uid,'obj_1_inf_add',w=8,h=4)
+plot.obj.1(X,y='100*inf.red',ylab='Infections averted (%)',      yl=c(0, 60)); fig.save(uid,'obj_1_inf_red',w=8,h=4)
+plot.obj.1(X,y='100*inf.add',ylab='Additional infections (%)',   yl=c(0,130)); fig.save(uid,'obj_1_inf_add',w=8,h=4)
 plot.obj.1(X,y='100*inc.red',ylab='Incidence reduction (%)',     yl=c(0,100)); fig.save(uid,'obj_1_inc_red',w=8,h=4)
 plot.obj.1(X,y='  1*inc.add',ylab='Additional incidence (times)',yl=c(0, 30)); fig.save(uid,'obj_1_inc_add',w=8,h=4)
 

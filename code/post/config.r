@@ -2,7 +2,7 @@ source('utils/ops.r')
 source('utils/plot.r')
 
 uid = '2022-02-20'
-N = list(cal=100000,batchs=10,sens=10)
+N = list(cal=100000,batchs=10,sens=10,topfit=.01)
 pops = list(
   'wl'    = list(clr=rgb(1.,.6,.6),lab='Women Low'),
   'wm'    = list(clr=rgb(.8,.4,.4),lab='Women Med'),
