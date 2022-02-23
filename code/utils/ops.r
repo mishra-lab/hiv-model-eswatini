@@ -33,6 +33,15 @@ squarish = function(n){
   j = ceiling(n/i)
   return(c(i,j))
 }
+rename.cols = function(X,...){
+  # e.g. rename.cols(X,a=b) renames existing column 'a' to new column 'b'
+  map = list(...)
+  for (name in names(map)){
+    X[[map[[name]]]] = X[[name]]
+    X[[name]] = NULL
+  }
+  return(X)
+}
 iterms = function(x,n,lower=TRUE){
   return(paste(lapply(ifelse(lower,1,n):n,function(ni){
     paste(apply(combn(x,ni),2,paste,collapse=':'),collapse=' + ')
