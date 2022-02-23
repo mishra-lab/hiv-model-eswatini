@@ -1,0 +1,18 @@
+% !TeX root = main.tex
+% !TeX TS-program = pdflatex
+% !BIB TS-program = bibtex
+\documentclass{ms}
+\input{config}
+\input{meta}
+\begin{document}
+  \maketitle
+  \input{intro}
+  \clearpage\input{methods}
+  \clearpage\input{results}
+  \clearpage\input{discuss}
+  \clearpage
+  \printbibliography
+  \appendix
+  \clearpage\input{app.model}
+  \clearpage\input{app.res}
+\end{document}

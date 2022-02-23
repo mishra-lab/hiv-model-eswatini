@@ -1,0 +1,42 @@
+% fonts
+\usepackage[charter]{mathdesign}
+\usepackage{CrimsonPro}
+\def\tabularfigures{\fontfamily{CrimsonPro-TOsF}\selectfont}
+\usepackage[italic]{mathastext}
+\usepackage[scale=.7]{FiraMono}
+% packages
+\usepackage[bottom]{footmisc}
+\usepackage{microtype,ragged2e}
+\usepackage{bm,amsmath,array}
+\usepackage{xcolor,graphicx,booktabs,multicol,subcaption}
+\usepackage[
+  colorlinks,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=purple,
+]{hyperref}
+\addbibresource{/home/jesse/refs/library.bib}
+% outputs
+\def\uid{2022-02-20}
+\graphicspath{
+  {fig/}
+  {../../out/fig/tikz/}
+  % {../../out/fig/\uid/}
+}
+\newcommand{\x}[1]{\input{../../out/tex/\uid/#1}\unskip}
+\newcommand{\xci}[2][.md]{\x{#2#1}~(\x{#2.lo},~\x{#2.hi})}
+% float stuff
+\newlength{\bigfig}\setlength{\bigfig}{1.33\linewidth}
+\newcolumntype{C}{>{\tabularfigures\arraybackslash}c}
+\newcolumntype{R}{>{\tabularfigures\arraybackslash}r}
+\newcolumntype{L}{>{\tabularfigures\arraybackslash}l}
+\newcommand{\tn}[1]{\rlap{\textsuperscript{~#1}}}
+\newcommand{\tnt}[2][]{\textsuperscript{#1~}#2}
+\newcommand{\floatfoot}{\par\addvspace{1ex}\justifying\footnotesize}
+% misc formatting
+\usepackage{pifont}
+\newcommand{\By}{{\ding{51}}}
+\newcommand{\Bn}{{\ding{55}}}
+\newcommand{\tsub}[1]{\textsubscript{#1}}
+\newcommand{\tsup}[1]{\textsuperscript{#1}}
+\newcommand{\hreftt}[2][https://]{\href{#1#2}{\texttt{#2}}}
