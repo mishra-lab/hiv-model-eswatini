@@ -60,7 +60,7 @@ def parse_case(case):
   return re.findall('(.*?)(\+|\-|\~)',case)
 
 def get_expo_data(R,t,case):
-  pops = ['all','aq','fsw','cli']
+  pops = ['all','aq','wq','mq','fsw','cli']
   to = tvec['outs'].tolist()
   Pkeys = ['seed',
     'PX_fsw','PX_cli','dur_fsw_l','dur_fsw_h','dur_cli', # PX & turnover
@@ -77,8 +77,6 @@ def get_expo_data(R,t,case):
         for toi,oi in zip(to,out.incidence(R,**slicers[pop].pop,tvec=t,t=to))},
     **{'prev_'+pop+'_'+str(toi):oi for pop in pops
         for toi,oi in zip(to,out.prevalence(R,**slicers[pop].pop,tvec=t,t=to))},
-    **{'prev_ratio_'+pop[0]+'.'+pop[1]+'_'+str(toi):oi for pop in [('fsw','wq'),('cli','mq')]
-        for toi,oi in zip(to,out.vs_pop('prevalence',R,slicers[pop[0]].pop,slicers[pop[1]].pop,tvec=t,t=to))},
     **{step+'_'+pop+'_2020':out.by_name(step)(R,**slicers[pop].pop,tvec=t,t=2020)[0] for pop in pops
         for step in ['diagnosed','treated_c','vls_c','treated_u','vls_u']},
   )
