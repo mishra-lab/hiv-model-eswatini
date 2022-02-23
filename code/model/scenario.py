@@ -23,7 +23,7 @@ tvec = dict( # time vectors
   main = system.f_t(tf=2050,dt=.05),
   infs = system.f_t(tf=2050,dt=1),
   outs = system.f_t(tf=2050,t0=2000,dt=5),
-) 
+)
 cascade = dict( # 2020 cascade targets
   low  = (.40,.60,.80),
   mid  = (.60,.80,.80),
@@ -205,7 +205,7 @@ def Rqx_by_group(Rqx=None,**kwds):
 # objective 2: sensitivity
 
 def run_sens(expo=True,infs=True,plot=True):
-  P0s = batch_select(fio.load(fname('npy','fit','Ps',b='all')))
+  P0s = batch_select(fio.load(fname('npy','top','Ps',b='all')))
   Ps = get_sens_sample(P0s)
   fio.save(fname('npy','sens','Ps'),Ps)
   Rs = system.run_n(Ps,t=tvec['main'])
