@@ -54,7 +54,7 @@ def load_csv(fname,fmt='rows',cast=float):
   # 2. fmt='dict': [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
   # 3. fmt='rows': [['A','B'],[0,3],[1,4],[2,5]]
   log(2,'fio.load_csv: '+fname)
-  if cast is None: case = lambda x: X
+  if cast is None: case = lambda x: x
   with open(fname,'r') as f:
     if fmt=='cols':
       r = csv.reader(f)
