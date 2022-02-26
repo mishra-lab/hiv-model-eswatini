@@ -48,6 +48,26 @@ def save_csv(fname,obj):
       w = csv.writer(f)
       w.writerows(obj)
 
+def load_csv(fname,fmt='rows',cast=float):
+  # fmt options are same as save_csv (default=2)
+  # 1. fmt='cols': {'A':[0,1,2],'B':[3,4,5]}
+  # 2. fmt='dict': [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
+  # 3. fmt='rows': [['A','B'],[0,3],[1,4],[2,5]]
+  log(2,'fio.load_csv: '+fname)
+  if cast is None: case = lambda x: X
+  with open(fname,'r') as f:
+    if fmt=='cols':
+      r = csv.reader(f)
+      keys = next(r)
+      return {key:[cast(x) for x in col] for key,col in zip(keys,list(zip(*r)))}
+    if fmt=='dict':
+      r = csv.DictReader(f)
+      return [{key:cast(x) for key,x in row.items()} for row in r]
+    if fmt=='rows':
+      r = csv.reader(f)
+      keys = next(r)
+      return [keys]+[[cast(x) for x in row] for row in r]
+
 def datestamp(date=None):
   # standard formatted datestamp
   if date is None: date = datetime.now()
