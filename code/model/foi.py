@@ -23,7 +23,7 @@ def f_beta_p(P,t):
 #@profile
 @deco.nanzero # TODO: better solution
 def f_beta_pp(P,X):
-  # return.shape = (p:4, s:2, i:1, s':2, i':4)
+  # return.shape = (p:4, s:2, i:4, s':2, i':4)
   return (P['beta_p'] * X[_,_,_,:,:,:,:]).sum(axis=(5,6))\
                       / X[_,_,_,:,:,:,:].sum(axis=(5,6))
 
