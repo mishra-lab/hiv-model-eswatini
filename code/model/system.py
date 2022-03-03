@@ -47,6 +47,7 @@ def solve(P,t):
   X   = f_X(P['X0'],t)
   esc = f_X(np.ones([4,2,4,2,4]),t)
   t0_hiv = int(P['t0_hiv'])
+  t0_tpaf = int(P['t0_tpaf'])
   for i in range(1,t.size):
     # TODO: use array.dtfun?
     R = f_dX(P,X[i-1],t[i-1])
@@ -54,6 +55,8 @@ def solve(P,t):
     esc[i] = R['esc']
     if t[i] == t0_hiv:
       X[i] = X[i,:,:,_,0,:] * P['PX_h_hiv']
+    if t[i] == t0_tpaf:
+      P['mix_mask'] = P['mix_mask_tpaf']
     if np.any(X[i] < 0): # abort / fail
       return False
     # check.all(P,X[i],t[i])
@@ -69,6 +72,7 @@ def f_dX(P,X,t):
   P['beta_p']  = foi.f_beta_p(P,t)
   P['beta_pp'] = foi.f_beta_pp(P,X)
   P['mix']     = foi.f_mix(P,X)
+  P['mix'] *= P['mix_mask']
   # initialize
   dX = 0*X
   # force of infection

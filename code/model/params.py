@@ -402,7 +402,19 @@ def get_mix(P): # TODO
   return {
     'pref_pii': pref_pii,
     'mix': np.zeros((4,2,4,2,4)), # initialize
+    'mix_mask': np.ones((4,2,4,2,4)),
+    't0_tpaf': -1,
   }
+
+def get_mix_mask(mask=None,p=None,sfr=None,ifr=None,sto=None,ito=None):
+  if mask is None: mask = np.ones((4,2,4,2,4))
+  if p   is None: p   = slice(None)
+  if sfr is None: sfr = slice(None)
+  if ifr is None: ifr = slice(None)
+  if sto is None: sto = slice(None)
+  if ito is None: ito = slice(None)
+  mask[p,sfr,ifr,sto,ito] = 0
+  return mask
 
 # HIV ----------------------------------------------------------------------------------------------
 
