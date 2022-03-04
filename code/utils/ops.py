@@ -57,3 +57,13 @@ def nan_to_value(x,v):
   # faster than np.nan_to_num as we don't deal with infs?
   x[np.isnan(x)] = v
   return x
+
+def rk4step(Xi,ti,dt,dXfun,keys=None,**kwds):
+  # Runge-Kutta 4-th order step, assuming dXfun returns a dict with at least 'dX'
+  # Apply RK4 to all (default) or specified keys in the dict
+  R1 = dXfun(Xi,              ti,     **kwds)
+  R2 = dXfun(Xi+dt*R1['dX']/2,ti+dt/2,**kwds)
+  R3 = dXfun(Xi+dt*R2['dX']/2,ti+dt/2,**kwds)
+  R4 = dXfun(Xi+dt*R3['dX'],  ti+dt,  **kwds)
+  if keys is None: keys = R1.keys()
+  return { key: (R1[key] + 2*R2[key] + 2*R3[key] + R4[key])/6 for key in keys }

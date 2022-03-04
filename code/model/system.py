@@ -1,6 +1,6 @@
 import numpy as np
 from model import foi,target
-from utils import _,deco,parallel,log
+from utils import _,rk4step,deco,parallel,log
 
 def f_t(t0=1980,tf=2050,dt=0.1):
   return np.round(np.arange(t0,tf+dt,dt),9)
@@ -49,10 +49,10 @@ def solve(P,t):
   t0_hiv = int(P['t0_hiv'])
   t0_tpaf = int(P['t0_tpaf'])
   for i in range(1,t.size):
-    # TODO: use array.dtfun?
-    R = f_dX(P,X[i-1],t[i-1])
-    X[i] = X[i-1] + (t[i] - t[i-1]) * R['dX']
-    esc[i] = R['esc']
+    Ri = rk4step(X[i-1],t[i-1],(t[i]-t[i-1]),f_dX,P=P)
+    # Ri = f_dX(X[i-1],t[i-1],P) # DEBUG: Euler
+    X[i] = X[i-1] + (t[i] - t[i-1]) * Ri['dX']
+    esc[i] = Ri['esc']
     if t[i] == t0_hiv:
       X[i] = X[i,:,:,_,0,:] * P['PX_h_hiv']
     if t[i] == t0_tpaf:
@@ -68,7 +68,7 @@ def solve(P,t):
   }
 
 #@profile
-def f_dX(P,X,t):
+def f_dX(X,t,P):
   P['beta_p']  = foi.f_beta_p(P,t)
   P['beta_pp'] = foi.f_beta_pp(P,X)
   P['mix']     = foi.f_mix(P,X)
