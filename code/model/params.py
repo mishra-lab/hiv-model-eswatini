@@ -25,7 +25,7 @@ def get_all(P,seed=None,**kwds):
   # check.ch_pn(P) # TEMP
   return P
 
-def get_n_all(n,Ps=None,seeds=None,lhs=True,**kwds):
+def get_n_all(n,Ps=None,seeds=None,lhs=True,all=True,**kwds):
   log(2,'params.get_n_all: '+str(n))
   if seeds is None: seeds = n*[None]
   if Ps is None:
@@ -38,7 +38,10 @@ def get_n_all(n,Ps=None,seeds=None,lhs=True,**kwds):
       Ps = get_n_sample_random(n,PDc,seeds=seeds,Ps=Phs)
     else:
       Ps = get_n_sample_random(n,PD,seeds=seeds)
-  return [get_all(P,**kwds) for P in Ps]
+  if all:
+    return [get_all(P,**kwds) for P in Ps]
+  else:
+    return Ps
 
 def get_n_sample_lhs(n,PD,seed=None):
   Qs = stats.lhs(len(PD),n,seed=seed)
