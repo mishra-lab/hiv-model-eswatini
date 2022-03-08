@@ -90,7 +90,7 @@ def f_dX(X,t,P):
   dX[:,:,3:6,3:5] -= dXi
   dX[:,:,2:5,3:5] += dXi
   # births & deaths
-  dX[:,:,_,0,_,0] += X.sum() * P['birth_si']
+  dX[:,:,0,0] += X.sum() * P['PX_si'] * P['birth_t'](t)
   dX -= X * P['death']
   dX -= X * P['death_hc']
   # turnover

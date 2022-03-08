@@ -98,6 +98,7 @@ def def_sample_distrs():
   'dur_cli':              stats.gamma_p(p=10,v=5.32),
   'Pturn_fsw_h:m':        stats.beta_binom(p=.724,n=18),
   'LORturn_wq_sus:hiv':   stats.gamma_p(p=1,v=.605),
+  'growth_2050':          stats.uniform(l=.007,h=.015),
   # C
   'C_swo_fsw_l':          stats.gamma_p(p=4.1,v=.8),  # per month
   'C_swr_fsw_l':          stats.gamma_p(p=8.4,v=1.6), # per month 
@@ -228,12 +229,11 @@ def check_PX(P):
   return (P['PX_mm'] + P_tmp['PX_cli']) / (1 - P_tmp['PX_w']) < .90
 
 def get_birth_death(P): # [OK]
-  death = 1/35 + (1-.64)*.0144 # death rate ~ .034 for 15-49 years + non-HIV mortality
-  birth = np.array(.03+death)  # birth rate = growth rate + death rate
+  death = np.array(1/35 + (1-.64)*.0144) # death rate ~ .034 for 15-49 years + non-HIV mortality
+  birth = ta.tarray([1980,2000,2010,2020,2050],np.array([.04,.03,.015,.015,P['growth_2050']])+death)
   return {
-    'birth': np.array(birth),
-    'death': np.array(death),
-    'birth_si': birth * P['PX_si'][:,:,_,_],
+    'birth_t': birth,
+    'death': death,
   }
 
 def get_turnover(P): # OK
