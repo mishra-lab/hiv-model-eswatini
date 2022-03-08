@@ -1,163 +1,146 @@
-None None None None None None None None None None Wrote profile results to test.py.lprof
+ > params.get_n_all: 10
+ > system.run_n: 10
+  None  None  None  None  None  None  None  None  None  None
+Wrote profile results to test.py.lprof
 Timer unit: 1 s
 
-Total time: 1.84665 s
+Total time: 0.916505 s
 File: /home/jesse/phd/proj/esw/code/model/foi.py
-Function: f_beta_p at line 4
+Function: f_lambda_p at line 4
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-     4                                           @deco.nowarn
-     5                                           @profile
-     6                                           def f_beta_p(P,t):
-     7                                             # return.shape = (p:4, s:2, i:4, s':2, i':1, h':6, c':5)
-     8      4500          0.5      0.0     24.7    PA_condom = P['PA_condom'](t) * P['RPA_condom_s']
-     9      4500          0.1      0.0      7.3    PA_circum = P['PA_circum'](t)
-    10      4500          0.1      0.0      7.3    P_gud_t   = P['P_gud_t'](t) * P['P_gud']
-    11      4500          0.0      0.0      1.9    Rbeta_gud_sus = linear_comb(P_gud_t,P['Rbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
-    12      4500          0.0      0.0      1.2    Rbeta_gud_inf = linear_comb(P_gud_t,P['Rbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
-    13      4500          0.1      0.0      3.5    beta_a = P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf
-    14      4500          0.0      0.0      0.8    beta_a = np.minimum(beta_a,.5) # protect against nan (assumed max beta_a = .5)
-    15      9000          0.1      0.0      8.0    B = 1 - np.exp(np.sum( # for speeed: equivalent to 1 - np.prod((1-R*beta)^(A) * ...)
-    16     18000          0.3      0.0     16.2      np.log(1-beta_a)                                     * (P['A_ap']*(1-PA_condom)*(1-PA_circum)) +
-    17      4500          0.2      0.0     10.0      np.log(1-beta_a*P['Rbeta_condom'])                   * (P['A_ap']*PA_condom*(1-PA_circum)) +
-    18      4500          0.2      0.0      9.5      np.log(1-beta_a*P['Rbeta_circum'])                   * (P['A_ap']*(1-PA_condom)*PA_circum) +
-    19      4500          0.2      0.0      9.5      np.log(1-beta_a*P['Rbeta_condom']*P['Rbeta_circum']) * (P['A_ap']*(PA_condom)*PA_circum), 
-    20      4500          0.0      0.0      0.1    axis=0))
-    21      4500          0.0      0.0      0.1    return B
+     4                                           @profile
+     5                                           def f_lambda_p(P,t):
+     6                                             # return.shape = (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
+     7      4100          0.4      0.0     42.6    RbA_condom = linear_comb(P['PA_condom_t'](t) * P['RPA_condom_s'], P['Rbeta_condom'], 1)
+     8      4100          0.1      0.0     15.4    RbA_circum = linear_comb(P['PA_circum_t'](t), P['Rbeta_circum'], 1)
+     9      4100          0.1      0.0     12.6    P_gud_t   = P['P_gud_t'](t) * P['P_gud']
+    10      4100          0.0      0.0      2.8    Rbeta_gud_sus = linear_comb(P_gud_t,P['Rbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
+    11      4100          0.0      0.0      2.3    Rbeta_gud_inf = linear_comb(P_gud_t,P['Rbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
+    12      4100          0.0      0.0      4.2    beta_a = P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf
+    13      4100          0.0      0.0      1.4    beta_a = np.minimum(beta_a,.5)
+    14      4100          0.2      0.0     18.7    return np.sum(beta_a * P['A_ap'] * RbA_condom * RbA_circum,axis=0)
 
-Total time: 0.761938 s
+Total time: 0.6633 s
 File: /home/jesse/phd/proj/esw/code/model/foi.py
-Function: f_mix at line 30
+Function: f_mix at line 16
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    30                                           @deco.nowarn
-    31                                           @profile
-    32                                           def f_mix(P,X):
-    33                                             # return.shape = (p:4, s:2, i:1, s':2, i':4)
-    34      4500          0.0      0.0      0.3    tol = 1e-7
-    35      4500          0.0      0.0      2.2    XS = X.sum(axis=(2,3))
-    36      4500          0.0      0.0      1.8    XC = XS[_,:,:] * P['C_psi']
-    37      4500          0.1      0.0     16.9    M0 = XC[:,0,:,_] * XC[:,1,_,:] / XC.sum(axis=2).mean(axis=1)[:,_,_] + tol/10
-    38      4500          0.0      0.0      2.2    m1 = M0.sum(axis=1)
-    39      4500          0.0      0.0      1.5    m2 = M0.sum(axis=2)
-    40                                             # print(m1 / XC[:,1,:]) # DEBUG == 1, unless XC unbalanced
-    41                                             # print(m2 / XC[:,0,:]) # DEBUG == 1, unless XC unbalanced
-    42      4500          0.0      0.0      1.2    M = M0 * np.exp(P['pref_pii'])
-    43     31500          0.0      0.0      2.2    for k in range(100):
-    44     31500          0.1      0.0     13.8      r1 = m1 / M.sum(axis=1)
-    45     31500          0.1      0.0      8.4      M *= r1[:,_,:]
-    46     31500          0.1      0.0     12.8      r2 = m2 / M.sum(axis=2)
-    47     31500          0.1      0.0      7.9      M *= r2[:,:,_]
-    48     31500          0.2      0.0     21.0      if (abs(r1-1) < tol).all() and (abs(r2-1) < tol).all():
-    49      4500          0.0      0.0      0.3        break
-    50      4500          0.0      0.0      2.1    M[abs(M)<tol] = 0
-    51      4500          0.0      0.0      2.7    P['mix'][:,0,:,1,:] = M / XS[_,0,:,_]
-    52      4500          0.0      0.0      2.6    P['mix'][:,1,:,0,:] = M.swapaxes(1,2) / XS[_,1,:,_]
-    53      4500          0.0      0.0      0.3    return(P['mix'])
+    16                                           @deco.nowarn
+    17                                           @profile
+    18                                           def f_mix(P,X):
+    19                                             # return.shape = (p:4, s:2, i:4, s':2, i':4)
+    20      4100          0.0      0.0      0.3    tol = 1e-7
+    21      4100          0.0      0.0      2.2    XS = X.sum(axis=(2,3))
+    22      4100          0.0      0.0      1.7    XC = XS[_,:,:] * P['C_psi']
+    23      4100          0.1      0.0     14.9    M0 = XC[:,0,:,_] * XC[:,1,_,:] / XC.sum(axis=2).mean(axis=1)[:,_,_] + tol/10
+    24      4100          0.0      0.0      2.0    m1 = M0.sum(axis=1)
+    25      4100          0.0      0.0      1.4    m2 = M0.sum(axis=2)
+    26                                             # print(m1 / XC[:,1,:]) # DEBUG == 1, unless XC unbalanced
+    27                                             # print(m2 / XC[:,0,:]) # DEBUG == 1, unless XC unbalanced
+    28      4100          0.0      0.0      1.2    M = M0 * np.exp(P['pref_pii'])
+    29     30750          0.0      0.0      2.2    for k in range(100):
+    30     30750          0.1      0.0     13.8      r1 = m1 / M.sum(axis=1)
+    31     30750          0.1      0.0      8.7      M *= r1[:,_,:]
+    32     30750          0.1      0.0     12.8      r2 = m2 / M.sum(axis=2)
+    33     30750          0.1      0.0      8.0      M *= r2[:,:,_]
+    34     30750          0.2      0.0     23.3      if (abs(r1-1) < tol).all() and (abs(r2-1) < tol).all():
+    35      4100          0.0      0.0      0.3        break
+    36      4100          0.0      0.0      2.3    M[abs(M)<tol] = 0
+    37      4100          0.0      0.0      2.4    P['mix'][:,0,:,1,:] = M / XS[_,0,:,_]
+    38      4100          0.0      0.0      2.3    P['mix'][:,1,:,0,:] = M.swapaxes(1,2) / XS[_,1,:,_]
+    39      4100          0.0      0.0      0.2    return(P['mix'])
 
-Total time: 0.081263 s
+Total time: 0.094164 s
 File: /home/jesse/phd/proj/esw/code/model/foi.py
-Function: f_lambda at line 55
+Function: f_lambda at line 41
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    55                                           @profile
-    56                                           def f_lambda(P,X):
-    57                                             # lam.shape = (s:2, i:4)
-    58      9000          0.1      0.0     67.5    return 1 - np.prod(
-    59      4500          0.0      0.0     31.1      (1 - P['beta_pp'])**(P['mix']),
-    60      4500          0.0      0.0      1.5    axis=(0,3,4))
+    41                                           @profile
+    42                                           def f_lambda(P,X):
+    43                                             # return.shape = (p:4, s:2, i:4, s':2, i':4)
+    44      8200          0.1      0.0     83.6    return P['mix'] * ( (P['lambda_p'] * X[_,_,_,:,:,:,:]).sum(axis=(5,6))
+    45      4100          0.0      0.0     16.4                                       / X[_,_,_,:,:,:,:].sum(axis=(5,6)) )
 
-Total time: 0.191499 s
+Total time: 0.141712 s
 File: /home/jesse/phd/proj/esw/code/model/foi.py
-Function: f_turnover at line 62
+Function: f_turnover at line 47
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    62                                           @profile
-    63                                           def f_turnover(P,X):
-    64                                             # turn.shape = (s:2, i:4, i':4, h:6, c:5)
-    65      4500          0.0      0.0     13.5    turn = P['turn_sii'][:,:,:,_,_] * X[:,:,_,:,:]
-    66                                             # P['ORturn_sus:hiv'] = 0 # DEBUG
-    67      4500          0.0      0.0     23.7    if np.any(X[:,:,1:,:]): # HIV introduced
-    68      3760          0.0      0.0      8.4      Xhiv = X[:,:,1:,:].sum(axis=(2,3))
-    69                                               # odds of turnover aomng sus vs hiv (source-group-specific)
-    70      3760          0.0      0.0     11.9      Osus = P['ORturn_sus:hiv'] * nan_to_value(X[:,:,0,0] / Xhiv, 1)[:,:,_]
-    71      3760          0.0      0.0     10.7      Phc_hiv = nan_to_value(X[:,:,1:,:] / Xhiv[:,:,_,_], 0)
-    72      3760          0.0      0.0     14.1      turn_hiv = turn.sum(axis=(3,4)) / (1 + Osus)
-    73      3760          0.0      0.0     12.0      turn[:,:,:,1:,:] = turn_hiv[:,:,:,_,_] * Phc_hiv[:,:,_,:,:]
-    74      3760          0.0      0.0      5.1      turn[:,:,:,0,0]  = turn_hiv * Osus
-    75      4500          0.0      0.0      0.8    return turn
+    47                                           @profile
+    48                                           def f_turnover(P,X):
+    49                                             # return.shape = (s:2, i:4, i':4, h:6, c:5)
+    50      4100          0.0      0.0     13.3    turn = P['turn_sii'][:,:,:,_,_] * X[:,:,_,:,:]
+    51                                             # P['ORturn_sus:hiv'] = 0 # DEBUG
+    52      4100          0.0      0.0     26.1    if np.any(X[:,:,1:,:]): # HIV introduced
+    53      3080          0.0      0.0      8.3      Xhiv = X[:,:,1:,:].sum(axis=(2,3))
+    54                                               # odds of turnover aomng sus vs hiv (source-group-specific)
+    55      3080          0.0      0.0     10.7      Osus = P['ORturn_sus:hiv'] * nan_to_value(X[:,:,0,0] / Xhiv, 1)[:,:,_]
+    56      3080          0.0      0.0      9.7      Phc_hiv = nan_to_value(X[:,:,1:,:] / Xhiv[:,:,_,_], 0)
+    57      3080          0.0      0.0     14.6      turn_hiv = turn.sum(axis=(3,4)) / (1 + Osus)
+    58      3080          0.0      0.0     11.5      turn[:,:,:,1:,:] = turn_hiv[:,:,:,_,_] * Phc_hiv[:,:,_,:,:]
+    59      3080          0.0      0.0      5.1      turn[:,:,:,0,0]  = turn_hiv * Osus
+    60      4100          0.0      0.0      0.8    return turn
 
-Total time: 6.08904 s
+Total time: 3.34616 s
 File: /home/jesse/phd/proj/esw/code/model/system.py
-Function: f_dX at line 64
+Function: f_dX at line 70
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    64                                           @profile
-    65                                           def f_dX(P,X,t):
-    66      4500          2.0      0.0     32.2    P['beta_p']  = foi.f_beta_p(P,t)
-    67      4500          0.2      0.0      3.5    P['beta_pp'] = foi.f_beta_pp(P,X)
-    68      4500          0.9      0.0     15.1    P['mix']     = foi.f_mix(P,X)
-    69                                             # initialize
-    70      4500          0.0      0.0      0.2    dX = 0*X
-    71                                             # force of infection
-    72      4500          0.1      0.0      1.6    inc = foi.f_lambda(P,X)
-    73      4500          0.0      0.0      0.2    dXi = X[:,:,0,0] * inc
-    74      4500          0.0      0.0      0.2    dX[:,:,0,0] -= dXi # sus
-    75      4500          0.0      0.0      0.2    dX[:,:,1,0] += dXi # acute undiag
-    76                                             # HIV transitions
-    77      4500          0.0      0.0      0.2    dXi = X[:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
-    78      4500          0.0      0.0      0.3    dX[:,:,1:5,0:3] -= dXi
-    79      4500          0.0      0.0      0.2    dX[:,:,2:6,0:3] += dXi
-    80                                             # CD4 recovery
-    81      4500          0.0      0.0      0.2    dXi = X[:,:,3:6,3:5] * P['unprog_h']
-    82      4500          0.0      0.0      0.2    dX[:,:,3:6,3:5] -= dXi
-    83      4500          0.0      0.0      0.2    dX[:,:,2:5,3:5] += dXi
-    84                                             # births & deaths
-    85      4500          0.0      0.0      0.7    dX[:,:,_,0,_,0] += X.sum() * P['birth_si']
-    86      4500          0.0      0.0      0.2    dX -= X * P['death']
-    87      4500          0.0      0.0      0.2    dX -= X * P['death_hc']
-    88                                             # turnover
-    89      4500          0.2      0.0      3.6    dXi = foi.f_turnover(P,X)
-    90      4500          0.0      0.0      0.5    dX -= dXi.sum(axis=2)
-    91      4500          0.0      0.0      0.4    dX += dXi.sum(axis=1)
-    92                                             # cascade: diagnosis
-    93      4500          0.8      0.0     13.9    dXi = X[:,:,1:6,0] * P['dx'](t) * P['Rdx']
-    94      4500          0.0      0.0      0.3    dX[:,:,1:6,0] -= dXi # undiag
-    95      4500          0.0      0.0      0.2    dX[:,:,1:6,1] += dXi # diag
-    96                                             # cascade: treatment
-    97      4500          1.3      0.0     20.9    dXi = X[:,:,1:6,1] * P['tx'](t) * P['Rtx_h'](t) * P['Rtx']
-    98      4500          0.0      0.0      0.3    dX[:,:,1:6,1] -= dXi # diag
-    99      4500          0.0      0.0      0.2    dX[:,:,1:6,3] += dXi # treat
-   100                                             # cascade: VLS
-   101      4500          0.0      0.0      0.2    dXi = X[:,:,1:6,3] * P['vx']
-   102      4500          0.0      0.0      0.2    dX[:,:,1:6,3] -= dXi # treat
-   103      4500          0.0      0.0      0.2    dX[:,:,1:6,4] += dXi # vls
-   104                                             # cascade: unlink
-   105      4500          0.2      0.0      2.5    dXi = X[:,:,1:6,4] * P['unvx'](t) * P['Rux']
-   106      4500          0.0      0.0      0.2    dX[:,:,1:6,4] -= dXi # vls
-   107      4500          0.0      0.0      0.2    dX[:,:,1:6,2] += dXi # unlink
-   108                                             # cascade: relink
-   109      4500          0.0      0.0      0.2    dXi = X[:,:,1:6,2] * P['retx']
-   110      4500          0.0      0.0      0.2    dX[:,:,1:6,2] -= dXi # unlink
-   111      4500          0.0      0.0      0.2    dX[:,:,1:6,3] += dXi # treat
-   112      4500          0.0      0.0      0.0    return {
-   113      4500          0.0      0.0      0.0      'dX': dX,
-   114      4500          0.0      0.0      0.0      'inc': inc,
-   115                                             }
-
-Total time: 0.198293 s
-File: /home/jesse/phd/proj/esw/code/utils/deco.py
-Function: decorator at line 44
-
-Line #      Hits         Time  Per Hit   % Time  Line Contents
-==============================================================
-    44                                             def decorator(*args,**kwds):
-    45      4500          0.2      0.0     92.5      result = nowarn(fun)(*args,**kwds)
-    46      4500          0.0      0.0      6.9      result[np.isnan(result)] = 0
-    47      4500          0.0      0.0      0.6      return result
+    70                                           @profile
+    71                                           def f_dX(X,t,P):
+    72      4100          0.9      0.0     28.2    P['lambda_p'] = foi.f_lambda_p(P,t)
+    73      4100          0.8      0.0     24.3    P['mix']  = foi.f_mix(P,X) * P['mix_mask']
+    74                                             # initialize
+    75      4100          0.0      0.0      0.3    dX = 0*X
+    76                                             # force of infection
+    77      4100          0.1      0.0      3.2    inc = foi.f_lambda(P,X)
+    78      4100          0.0      0.0      0.6    dXi = X[:,:,0,0] * inc.sum(axis=(0,3,4))
+    79      4100          0.0      0.0      0.3    dX[:,:,0,0] -= dXi # sus
+    80      4100          0.0      0.0      0.3    dX[:,:,1,0] += dXi # acute undiag
+    81                                             # HIV transitions
+    82      4100          0.0      0.0      0.4    dXi = X[:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
+    83      4100          0.0      0.0      0.4    dX[:,:,1:5,0:3] -= dXi
+    84      4100          0.0      0.0      0.4    dX[:,:,2:6,0:3] += dXi
+    85                                             # CD4 recovery
+    86      4100          0.0      0.0      0.3    dXi = X[:,:,3:6,3:5] * P['unprog_h']
+    87      4100          0.0      0.0      0.3    dX[:,:,3:6,3:5] -= dXi
+    88      4100          0.0      0.0      0.3    dX[:,:,2:5,3:5] += dXi
+    89                                             # births & deaths
+    90      4100          0.2      0.0      5.3    dX[:,:,0,0] += X.sum() * P['PX_si'] * P['birth_t'](t)
+    91      4100          0.0      0.0      0.4    dX -= X * P['death']
+    92      4100          0.0      0.0      0.4    dX -= X * P['death_hc']
+    93                                             # turnover
+    94      4100          0.2      0.0      4.8    dXi = foi.f_turnover(P,X)
+    95      4100          0.0      0.0      0.7    dX -= dXi.sum(axis=2)
+    96      4100          0.0      0.0      0.5    dX += dXi.sum(axis=1)
+    97                                             # cascade: diagnosis
+    98      4100          0.1      0.0      4.5    dXi = X[:,:,1:6,0] * P['dx_t'](t) * P['Rdx_si'] * P['Rdx_scen']
+    99      4100          0.0      0.0      0.4    dX[:,:,1:6,0] -= dXi # undiag
+   100      4100          0.0      0.0      0.3    dX[:,:,1:6,1] += dXi # diag
+   101                                             # cascade: treatment
+   102      4100          0.5      0.0     16.3    dXi = X[:,:,1:6,1] * P['tx_t'](t) * P['Rtx_ht'](t) * P['Rtx_scen']
+   103      4100          0.0      0.0      0.4    dX[:,:,1:6,1] -= dXi # diag
+   104      4100          0.0      0.0      0.3    dX[:,:,1:6,3] += dXi # treat
+   105                                             # cascade: VLS
+   106      4100          0.0      0.0      0.3    dXi = X[:,:,1:6,3] * P['vx']
+   107      4100          0.0      0.0      0.3    dX[:,:,1:6,3] -= dXi # treat
+   108      4100          0.0      0.0      0.3    dX[:,:,1:6,4] += dXi # vls
+   109                                             # cascade: unlink
+   110      4100          0.1      0.0      3.9    dXi = X[:,:,1:6,4] * P['unvx_t'](t) * P['Rux_scen']
+   111      4100          0.0      0.0      0.3    dX[:,:,1:6,4] -= dXi # vls
+   112      4100          0.0      0.0      0.3    dX[:,:,1:6,2] += dXi # unlink
+   113                                             # cascade: relink
+   114      4100          0.0      0.0      0.3    dXi = X[:,:,1:6,2] * P['retx']
+   115      4100          0.0      0.0      0.3    dX[:,:,1:6,2] -= dXi # unlink
+   116      4100          0.0      0.0      0.3    dX[:,:,1:6,3] += dXi # treat
+   117      4100          0.0      0.0      0.1    return {
+   118      4100          0.0      0.0      0.0      'dX': dX,
+   119      4100          0.0      0.0      0.0      'inc': inc,
+   120                                             }
 
