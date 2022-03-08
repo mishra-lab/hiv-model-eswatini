@@ -45,14 +45,14 @@ def run(P,t=None,T=None,RPts=None,interval=None):
 
 def solve(P,t):
   X   = f_X(P['X0'],t)
-  esc = f_X(np.ones([4,2,4,2,4]),t)
+  inc = f_X(np.zeros([4,2,4,2,4]),t)
   t0_hiv = int(P['t0_hiv'])
   t0_tpaf = int(P['t0_tpaf'])
   for i in range(1,t.size):
     Ri = rk4step(X[i-1],t[i-1],(t[i]-t[i-1]),f_dX,P=P)
     # Ri = f_dX(X[i-1],t[i-1],P) # DEBUG: Euler
     X[i] = X[i-1] + (t[i] - t[i-1]) * Ri['dX']
-    esc[i] = Ri['esc']
+    inc[i] = Ri['inc']
     if t[i] == t0_hiv:
       X[i] = X[i,:,:,_,0,:] * P['PX_h_hiv']
     if t[i] == t0_tpaf:
@@ -64,21 +64,18 @@ def solve(P,t):
     'P': P,
     'X': X,
     't': t,
-    'esc': esc,
+    'inc': inc,
   }
 
 #@profile
 def f_dX(X,t,P):
-  P['beta_p']  = foi.f_beta_p(P,t)
-  P['beta_pp'] = foi.f_beta_pp(P,X)
-  P['mix']     = foi.f_mix(P,X)
-  P['mix'] *= P['mix_mask']
+  P['lambda_p'] = foi.f_lambda_p(P,t)
+  P['mix']  = foi.f_mix(P,X) * P['mix_mask']
   # initialize
   dX = 0*X
   # force of infection
-  esc = foi.f_lambda(P,X)
-  inc = 1 - np.prod(esc,axis=(0,3,4))
-  dXi = X[:,:,0,0] * inc
+  inc = foi.f_lambda(P,X)
+  dXi = X[:,:,0,0] * inc.sum(axis=(0,3,4))
   dX[:,:,0,0] -= dXi # sus
   dX[:,:,1,0] += dXi # acute undiag
   # HIV transitions
@@ -119,5 +116,5 @@ def f_dX(X,t,P):
   dX[:,:,1:6,3] += dXi # treat
   return {
     'dX': dX,
-    'esc': esc,
+    'inc': inc,
   }

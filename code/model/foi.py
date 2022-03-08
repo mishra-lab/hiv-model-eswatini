@@ -1,36 +1,22 @@
 import numpy as np
 from utils import _,deco,linear_comb,nan_to_value
 
-@deco.nowarn
 #@profile
-def f_beta_p(P,t):
-  # return.shape = (p:4, s:2, i:4, s':2, i':1, h':6, c':5)
-  PA_condom = P['PA_condom_t'](t) * P['RPA_condom_s']
-  PA_circum = P['PA_circum_t'](t)
+def f_lambda_p(P,t):
+  # return.shape = (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
+  RbA_condom = linear_comb(P['PA_condom_t'](t) * P['RPA_condom_s'], P['Rbeta_condom'], 1)
+  RbA_circum = linear_comb(P['PA_circum_t'](t), P['Rbeta_circum'], 1)
   P_gud_t   = P['P_gud_t'](t) * P['P_gud']
   Rbeta_gud_sus = linear_comb(P_gud_t,P['Rbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
   Rbeta_gud_inf = linear_comb(P_gud_t,P['Rbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
   beta_a = P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf
-  beta_a = np.minimum(beta_a,.5) # protect against nan (assumed max beta_a = .5)
-  B = 1 - np.exp(np.sum( # for speeed: equivalent to 1 - np.prod((1-R*beta)^(A) * ...)
-    np.log(1-beta_a)                                     * (P['A_ap']*(1-PA_condom)*(1-PA_circum)) +
-    np.log(1-beta_a*P['Rbeta_condom'])                   * (P['A_ap']*PA_condom*(1-PA_circum)) +
-    np.log(1-beta_a*P['Rbeta_circum'])                   * (P['A_ap']*(1-PA_condom)*PA_circum) +
-    np.log(1-beta_a*P['Rbeta_condom']*P['Rbeta_circum']) * (P['A_ap']*(PA_condom)*PA_circum), 
-  axis=0))
-  return B
-
-#@profile
-@deco.nanzero # TODO: better solution
-def f_beta_pp(P,X):
-  # return.shape = (p:4, s:2, i:4, s':2, i':4)
-  return (P['beta_p'] * X[_,_,_,:,:,:,:]).sum(axis=(5,6))\
-                      / X[_,_,_,:,:,:,:].sum(axis=(5,6))
+  beta_a = np.minimum(beta_a,.5)
+  return np.sum(beta_a * P['A_ap'] * RbA_condom * RbA_circum,axis=0)
 
 @deco.nowarn
 #@profile
 def f_mix(P,X):
-  # return.shape = (p:4, s:2, i:1, s':2, i':4)
+  # return.shape = (p:4, s:2, i:4, s':2, i':4)
   tol = 1e-7
   XS = X.sum(axis=(2,3))
   XC = XS[_,:,:] * P['C_psi']
@@ -53,16 +39,14 @@ def f_mix(P,X):
   return(P['mix'])
 
 #@profile
-def f_lambda(P,X,e=True):
-  # esc.shape = (p:4, s:2, i:4, s':2, i':4)
-  # lam.shape = (s:2, i:4)
-  esc = (1 - P['beta_pp'])**P['mix']
-  return esc if e else 1 - np.prod(esc,axis=(0,3,4))
-  # return np.sum(P['beta_pp']*P['mix'],axis=(0,3,4)) # biased: no saturation effect
+def f_lambda(P,X):
+  # return.shape = (p:4, s:2, i:4, s':2, i':4)
+  return P['mix'] * ( (P['lambda_p'] * X[_,_,_,:,:,:,:]).sum(axis=(5,6))
+                                     / X[_,_,_,:,:,:,:].sum(axis=(5,6)) )
 
 #@profile
 def f_turnover(P,X):
-  # turn.shape = (s:2, i:4, i':4, h:6, c:5)
+  # return.shape = (s:2, i:4, i':4, h:6, c:5)
   turn = P['turn_sii'][:,:,:,_,_] * X[:,:,_,:,:]
   # P['ORturn_sus:hiv'] = 0 # DEBUG
   if np.any(X[:,:,1:,:]): # HIV introduced

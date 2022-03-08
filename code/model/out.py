@@ -102,9 +102,9 @@ def prevalence(X,s=None,i=None,aggr=True):
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
   return aggratio(Xhiv,XS,aggr)
 
-@deco.rmap(args=['X','esc'])
-@deco.tslice(targs=['X','esc'])
-def whoinfectwhom(X,esc,p=None,fpop=None,tpop=None,aggr=True):
+@deco.rmap(args=['X','inc'])
+@deco.tslice(targs=['X','inc'])
+def whoinfectwhom(X,inc,p=None,fpop=None,tpop=None,aggr=True):
   # total infections between pop1 & pop2 along partnership type p
   # TODO: implement cumulative?
   fs = None if fpop is None else fpop.get('s')
@@ -112,13 +112,13 @@ def whoinfectwhom(X,esc,p=None,fpop=None,tpop=None,aggr=True):
   ts = None if tpop is None else tpop.get('s')
   ti = None if tpop is None else tpop.get('i')
   X = X[:,:,:,0,0] # only susceptible
-  esc = esc.prod(axis=1,keepdims=True) if p is None \
-        else esc[:,_,p] if isinstance(p,int) else esc[:,p]
-  esc = esc.prod(axis=4,keepdims=True) if fs is None \
-        else esc[:,:,:,:,_,fs] if isinstance(fs,int) else esc[:,:,:,:,fs]
-  esc = esc.prod(axis=5,keepdims=True) if fi is None \
-        else esc[:,:,:,:,:,_,fi] if isinstance(fi,int) else esc[:,:,:,:,:,fi]
-  inc = (1 - esc.prod(axis=(1,4,5),keepdims=True)) if aggr else (1 - esc)
+  inc = inc.sum(axis=1,keepdims=True) if p is None \
+        else inc[:,_,p] if isinstance(p,int) else inc[:,p]
+  inc = inc.sum(axis=4,keepdims=True) if fs is None \
+        else inc[:,:,:,:,_,fs] if isinstance(fs,int) else inc[:,:,:,:,fs]
+  inc = inc.sum(axis=5,keepdims=True) if fi is None \
+        else inc[:,:,:,:,:,_,fi] if isinstance(fi,int) else inc[:,:,:,:,:,fi]
+  inc = inc.sum(axis=(1,4,5),keepdims=True) if aggr else inc
   inf = X[:,_,:,:,_,_] * inc
   inf = inf.sum(axis=2,keepdims=True) if ts is None \
         else inf[:,:,_,ts] if isinstance(ts,int) else inf[:,:,ts]
@@ -127,19 +127,19 @@ def whoinfectwhom(X,esc,p=None,fpop=None,tpop=None,aggr=True):
   inf = inf.sum(axis=(2,3),keepdims=True) if aggr else inf
   return np.squeeze(inf) if aggr else inf
 
-@deco.rmap(args=['X','esc'])
-@deco.tslice(targs=['X','esc'])
-def incidence(X,esc,s=None,i=None,aggr=True):
+@deco.rmap(args=['X','inc'])
+@deco.tslice(targs=['X','inc'])
+def incidence(X,inc,s=None,i=None,aggr=True):
   X = X[:,:,:,0,0] # only susceptible
-  inc = 1 - np.prod(esc,axis=(1,4,5))
+  inc = np.sum(inc,axis=(1,4,5))
   Xinc = X_by_si(X*inc,s=s,i=i)
   Xsus = X_by_si(X,s=s,i=i)
   return aggratio(Xinc,Xsus,aggr)
 
-@deco.rmap(args=['X','esc'])
-def cuminfect(X,esc,tvec,s=None,i=None,aggr=True,t0=None):
+@deco.rmap(args=['X','inc'])
+def cuminfect(X,inc,tvec,s=None,i=None,aggr=True,t0=None):
   X  = X[:,:,:,0,0] # only susceptible
-  inc = 1 - np.prod(esc,axis=(1,4,5))
+  inc = np.sum(inc,axis=(1,4,5))
   dt = dtfun(tvec)
   Xinc = X_by_si(X*inc,s=s,i=i)
   inf = Xinc.sum(axis=(1,2)) * dt if aggr else Xinc * dt[:,_,_]
