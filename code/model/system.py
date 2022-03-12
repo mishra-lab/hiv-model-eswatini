@@ -113,7 +113,7 @@ def f_dX(X,t,P):
   # cascade: relink
   dXi = X[:,:,1:6,2] * P['retx']
   dX[:,:,1:6,2] -= dXi # unlink
-  dX[:,:,1:6,3] += dXi # treat
+  dX[:,:,1:6,4] += dXi # vls
   return {
     'dX': dX,
     'inc': inc,
