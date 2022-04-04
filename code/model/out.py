@@ -220,15 +220,15 @@ def X_rate(X,P,rate,s=None,i=None,aggr=True):
   XS    = X_by_si(X,s=s,i=i).sum(axis=(3,4))
   return aggratio(Xrate,XS,aggr)
 
-@deco.rmap(args=['PA_condom_t'])
-@deco.tslice(targs=['PA_condom_t'])
-def condom(PA_condom_t,p,aggr=None):
-  return np.squeeze(PA_condom_t)[:,p]
+@deco.rmap(args=['PF_condom_t'])
+@deco.tslice(targs=['PF_condom_t'])
+def condom(PF_condom_t,p,aggr=None):
+  return np.squeeze(PF_condom_t)[:,p]
 
-@deco.rmap(args=['PA_circum_t'])
-@deco.tslice(targs=['PA_circum_t'])
-def circum(PA_circum_t,aggr=None):
-  return np.squeeze(PA_circum_t)[:]
+@deco.rmap(args=['PF_circum_t'])
+@deco.tslice(targs=['PF_circum_t'])
+def circum(PF_circum_t,aggr=None):
+  return np.squeeze(PF_circum_t)[:]
 
 @deco.rmap(args=['P_gud_t'])
 @deco.tslice(targs=['P_gud_t'])

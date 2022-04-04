@@ -3,6 +3,8 @@ from scipy import optimize,stats
 from utils import stats as ss
 import numpy as np
 
+plot = False
+
 # FUNCTIONS ----------------------------------------------------------------------------------------
 
 def section(name):
@@ -46,7 +48,7 @@ def plot_dist(dist,ci=None,bound=(0,1)):
   plt.text(ci[0]/2+ci[1]/2,0,'{:.4f}'.format(1-p[0]-p[1]),ha='center')
   plt.show()
 
-def find_beta_binom(m,ci,w=1,n0=100,name='',interval=.95,plot=False):
+def find_beta_binom(m,ci,w=1,n0=100,name='',interval=.95):
   m    = wfun(m,w) # unused in optimize
   ci   = [wfun(ci[0],w),wfun(ci[1],w)]
   x0   = [m,n0]
@@ -57,7 +59,7 @@ def find_beta_binom(m,ci,w=1,n0=100,name='',interval=.95,plot=False):
   if plot:
     plot_dist(ss.beta_binom(p=opt.x[0],n=opt.x[1]),ci)
 
-def find_gamma(m,ci,w=1,log10v=-5,name='',interval=.95,plot=False):
+def find_gamma(m,ci,w=1,log10v=-5,name='',interval=.95):
   m    = wfun(m,w)
   ci   = [wfun(ci[0],w),wfun(ci[1],w)]
   x0   = log10v
@@ -70,43 +72,34 @@ def find_gamma(m,ci,w=1,log10v=-5,name='',interval=.95,plot=False):
 
 # SECTIONS -----------------------------------------------------------------------------------------
 
-def beta(plot=False):
+def beta():
   section('beta')
-  find_gamma(m=.00072,ci=(.0005,.001),name='beta_0',plot=plot) # Boily2009
-  find_gamma(m=5.3,ci=(1,13),name='Rbeta_acute',plot=plot) # Bellan2015 (CI adj)
-  find_gamma(m=.1417,ci=(.045,.3),name='dur_acute',plot=plot) # Bellan2015 (CI adj) - years
-  # find_gamma(m=1.7,ci=(.55,3.5),name='Rbeta_acute',plot=plot) # Bellan2015 (CI adj) - months
-  find_gamma(m=1.6,ci=(1.3,1.9),name='Rbeta_350',plot=plot) # Wawer2005, Boily2009, Donnell2010
-  find_gamma(m=8.3,ci=(4.5,13),name='Rbeta_200',plot=plot) # Wawer2005, Boily2009, Donnell2010
-  find_gamma(m=1.45,ci=(1,2),name='Rbeta_mtf',plot=plot) # assume
-  find_gamma(m=7.6,ci=(1.4,19.5), name='Rbeta_gud_s',plot=plot) # Boily2009
-  find_gamma(m=2.9,ci=(1.03,5.69),name='Rbeta_gud_i',plot=plot) # Gray2001
-  find_beta_binom(m=.2,ci=(.1,.4),name='P_gud_fsw_l',plot=plot) # params/fsw
-  find_gamma(m=3,ci=(1.5,5),name='P_gud_fsw_hl',plot=plot) # params/fsw
+  find_gamma(m=.00072,ci=(.0005,.0015),name='beta_0') # Boily2009
+  find_gamma(m=5.3,ci=(1,13),name='Rbeta_acute') # Bellan2015 (CI adj)
+  find_gamma(m=.1417,ci=(.045,.3),name='dur_acute') # Bellan2015 (CI adj) - years
+  # find_gamma(m=1.7,ci=(.55,3.5),name='Rbeta_acute') # Bellan2015 (CI adj) - months
+  find_gamma(m=1.6,ci=(1.3,1.9),name='Rbeta_350') # Wawer2005, Boily2009, Donnell2010
+  find_gamma(m=8.3,ci=(4.5,13),name='Rbeta_200') # Wawer2005, Boily2009, Donnell2010
+  find_gamma(m=1.45,ci=(1,2),name='Rbeta_mtf') # assume
+  find_gamma(m=7.6,ci=(1.4,19.5), name='Rbeta_gud_s') # Boily2009
+  find_gamma(m=2.5,ci=(1.4,5.3), name='Rbeta_gud_s') # Boily2009 - adj
+  find_gamma(m=2.9,ci=(1.03,5.69),name='Rbeta_gud_i') # Gray2001
+  find_beta_binom(m=.2,ci=(.1,.4),name='P_gud_fsw_l') # params/fsw
+  find_gamma(m=3,ci=(1.5,5),name='P_gud_fsw_hl') # params/fsw
   # @FYI SDHS2006 Table 13.14: ~.07 GUD among wider pop P12M
   # @FYI SDHS2006 Table 13.14: ~.61 GUD among STI/symp/GUD (7% of 11.4%)
-  find_beta_binom(m=.25,ci=(.015,.65),name='Rbeta_uvls',plot=plot) # Donnell2010 (CI adj)
+  find_beta_binom(m=.25,ci=(.015,.65),name='Rbeta_uvls') # Donnell2010 (CI adj)
 
-def A(plot=False):
-  section('sex acts')
-  find_gamma(6,(1,15),name='CA_swq',plot=True)
-  exit()
-  find_beta_binom(.1,(.006,.165),name='PA_ai_mc: Wider Pop ai/vi',plot=plot) # Owen2017
-  find_beta_binom(.1,(.006,.292),name='PA_ai_sw: Higher-Risk ai/vi',plot=plot) # Owen2017
-  find_gamma(78,(26,156),name='A_mc: sex freq',plot=plot) # Delva2013
-  find_beta_binom(6/12,(1/12,9/12),name='dur_cas (?)',plot=plot) # REF: TODO
-  # find_gamma(.56,(.25,1),name='(?)',plot=plot) # ???
-
-def condoms(plot=True):
+def condoms():
   section('condoms')
   # ai vs vi
-  find_beta_binom(.540,(.387,.692),name='PA_condom_ai (FSW)',plot=plot) # Owen2020a
-  find_beta_binom(.684,(.555,.813),name='PA_condom_vi (FSW)',plot=plot) # Owen2020a
+  find_beta_binom(.540,(.387,.692),name='PA_condom_ai (FSW)') # Owen2020a
+  find_beta_binom(.684,(.555,.813),name='PA_condom_vi (FSW)') # Owen2020a
   ru = .789; rlse = np.sqrt(1/22 - 1/40 + 1/33 - 1/48); ci = np.exp(np.log(ru)+[-rlse,+rlse])
-  find_beta_binom(.789,(.664,.938),name='RPA_condom_av (FSW)',plot=plot) # Owen2020a
-  find_beta_binom(.80,(.50,.95),name='RPA_condom_av',plot=plot) # Owen2020a (adj)
-  find_beta_binom(.80,(.7,.9),name='RPA_condom_av (FSW 2011)',plot=plot) # FSW 2011
-  find_beta_binom(.55,(.4,.7),name='RPA_condom_av (FSW 2014)',plot=plot) # FSW 2014
+  find_beta_binom(.789,(.664,.938),name='RPA_condom_av (FSW)') # Owen2020a
+  find_beta_binom(.80,(.50,.95),name='RPA_condom_av') # Owen2020a (adj)
+  find_beta_binom(.80,(.7,.9),name='RPA_condom_av (FSW 2011)') # FSW 2011
+  find_beta_binom(.55,(.4,.7),name='RPA_condom_av (FSW 2014)') # FSW 2014
   # sex work
   find_beta_binom(.744*.5,(.744*.2,.744),name='PA_cond_new (2002,vi)') # SBSS2002
   find_beta_binom(.600*.5,(.600*.2,.600),name='PA_cond_reg (2002,vi)') # SBSS2002
@@ -116,16 +109,16 @@ def condoms(plot=True):
   print(ci_fun(ss.beta_binom(p=.856,n=100))) # EswKP2014 PA_condom_new' (n adj, was 620)
   print(ci_fun(ss.beta_binom(p=.885,n=100))) # EswKP2014 PA_condom_reg' (n adj, was 595)
   print(ci_fun(ss.beta_binom(p=.806,n=100))) # EswKP2014 PA_condom_npp' (n adj, was 395) [omit]
-  find_beta_binom(.8,(.549,.95),name='PA_cond_new (2014,vi)',plot=plot) # EswKP2014 (p adj, was .884)
-  find_beta_binom(.8,(.479,.95),name='PA_cond_reg (2014,vi)',plot=plot) # EswKP2014 (p adj, was .853)
-  find_beta_binom(.8,(.647,.90),name='PA_cond_npp (2014,vi)',plot=plot) # EswKP2014 (p adj, was .801) [omit]
+  find_beta_binom(.8,(.549,.95),name='PA_cond_new (2014,vi)') # EswKP2014 (p adj, was .884)
+  find_beta_binom(.8,(.479,.95),name='PA_cond_reg (2014,vi)') # EswKP2014 (p adj, was .853)
+  find_beta_binom(.8,(.647,.90),name='PA_cond_npp (2014,vi)') # EswKP2014 (p adj, was .801) [omit]
   # wider pop
-  find_beta_binom(.023,(.004,.059),name='PA_cond_msp (1998)',plot=plot) # SFHS1988 (p adj, was .006)
-  find_beta_binom(.088,(.059,.121),name='PA_cond_cas (1998)',plot=plot) # SFHS1988 (p adj, was .073)
-  find_beta_binom(.60, (.535,.660),name='PA_cond_cas (2006)',plot=plot) # SDHS2006 Tables 14.7.1, 14.7.2
-  find_beta_binom(.693,(.649,.737),name='PA_cond_cas (2016)',plot=plot) # SHIMS2 Tables Table 15.4.A, Table 15.4.B
-  find_beta_binom(.222,(.194,.269),name='PA_cond_msp (2006)',plot=plot) # SDHS2006 Tables 14.7.1, 14.7.2
-  find_beta_binom(.414,(.308,.529),name='PA_cond_msp (2016)',plot=plot) # SHIMS2 Tables Table 15.4.A, Table 15.4.B
+  find_beta_binom(.023,(.004,.059),name='PA_cond_msp (1998)') # SFHS1988 (p adj, was .006)
+  find_beta_binom(.088,(.059,.121),name='PA_cond_cas (1998)') # SFHS1988 (p adj, was .073)
+  find_beta_binom(.60, (.535,.660),name='PA_cond_cas (2006)') # SDHS2006 Tables 14.7.1, 14.7.2
+  find_beta_binom(.693,(.649,.737),name='PA_cond_cas (2016)') # SHIMS2 Tables Table 15.4.A, Table 15.4.B
+  find_beta_binom(.222,(.194,.269),name='PA_cond_msp (2006)') # SDHS2006 Tables 14.7.1, 14.7.2
+  find_beta_binom(.414,(.308,.529),name='PA_cond_msp (2016)') # SHIMS2 Tables Table 15.4.A, Table 15.4.B
 
 def cascade_theo():
   section('cascade: 90-90-90 / 95-95-95')
@@ -166,19 +159,18 @@ def incidence_esw():
   find_gamma(m=.0199,ci=(.0109,.0288),name='2016 Women Overall')
   find_gamma(m=.0099,ci=(.0032,.0166),name='2016 Men Overall')
 
-def prevalence_esw(plot=False):
+def prevalence_esw():
   section('prevalence')
   # prevalence ratios
-  find_gamma(m=1.46,ci=(1.30,1.63),name='2011 FSW.H / FSW.L',plot=plot)
-  find_gamma(m=2.3,ci=(1.92,2.75),name='2011 FSW.H / FSW.L',plot=plot)
-  exit()
+  find_gamma(m=1.46,ci=(1.30,1.63),name='2011 FSW.H / FSW.L')
+  find_gamma(m=2.3,ci=(1.92,2.75),name='2011 FSW.H / FSW.L')
   # FSW
-  find_beta_binom(m=.61,ci=(.514,.705),name='2011 FSW',plot=plot) # Baral2014
+  find_beta_binom(m=.61,ci=(.514,.705),name='2011 FSW') # Baral2014
   # find_beta_binom(.605,(.521,.690),name='FSW 2011') # ??? [same]
-  find_beta_binom(m=.588,ci=(.40,.76),name='2021 FSW',plot=plot) # EswCOP21 Table 2.1.1; CI assume
-  find_beta_binom(m=.311,ci=(.294,.329), name='2006 Women Overall',plot=plot) # SDHS2006
-  find_beta_binom(m=.197,ci=(.179,.2141),name='2006 Men Overall',  plot=plot) # SDHS2006
-  find_beta_binom(m=.259,ci=(.244,.273), name='2006 All Overall',  plot=plot) # SDHS2006
+  find_beta_binom(m=.588,ci=(.40,.76),name='2021 FSW') # EswCOP21 Table 2.1.1; CI assume
+  find_beta_binom(m=.311,ci=(.294,.329), name='2006 Women Overall') # SDHS2006
+  find_beta_binom(m=.197,ci=(.179,.2141),name='2006 Men Overall') # SDHS2006
+  find_beta_binom(m=.259,ci=(.244,.273), name='2006 All Overall') # SDHS2006
   # SHIMS1 Bicego2013 (Table 3)
   dist_str('beta_binom',[.388, 9843],                               '2011 Overall')
   dist_str('beta_binom',[.241, 8329],                               '2011 Women Overall')
@@ -198,52 +190,49 @@ def circumcision():
   section('circumcision')
   dist_str('beta_binom',[.171,8329],'2011') # SHIMS1 Bicego2013
   dist_str('beta_binom',[.300,3988],'2016') # SHIMS2
-  find_beta_binom(.6,(.5,.9),name='circum 2050',plot=plot) # assume
+  find_beta_binom(.6,(.5,.9),name='circum 2050') # assume
 
-def cascade_rates(plot=True):
-  find_gamma(m=.26,ci=(.10,.50), name='dx_2010 (wqq)',plot=plot) # assume
-  find_gamma(m=.52,ci=(.25,.90), name='Rdx_mqq',plot=plot) # assume
-  find_gamma(m=.72,ci=(.50,1.0), name='Rdx_cli',plot=plot) # assume
-  find_gamma(m=2.6,ci=(1.0,5.0), name='Rdx_fsw',plot=plot) # assume
-  find_gamma(m=3.0,ci=(1.0,6.0), name='tx',plot=plot) # assume
-  find_gamma(m=.16,ci=(.01,.50), name='1+Rtx 2017/2010',plot=plot) # assume
-  find_gamma(m=.45,ci=(.25,.70), name='tx',plot=plot) # assume [OLD]
-  find_gamma(m=.30,ci=(.01,1.0), name='1+Rdx 2017/2010',plot=plot) # assume [OLD]
+def cascade_rates():
+  section('cascade rates')
+  dist_str('beta_binom',[-np.log(1-.473),4688],'dx 2010 women')
+  dist_str('beta_binom',[-np.log(1-.322),4179],'dx 2010 men')
+  find_gamma(m=.26,ci=(.10,.50), name='dx_2010 (wqq)') # assume
+  find_gamma(m=.52,ci=(.25,.90), name='Rdx_mqq') # assume
+  find_gamma(m=.72,ci=(.50,1.0), name='Rdx_cli') # assume
+  find_gamma(m=2.6,ci=(1.0,5.0), name='Rdx_fsw') # assume
+  find_gamma(m=3.0,ci=(1.0,6.0), name='tx') # assume
+  find_gamma(m=.16,ci=(.01,.50), name='1+Rtx 2017/2010') # assume
+  find_gamma(m=.45,ci=(.25,.70), name='tx') # assume [OLD]
+  find_gamma(m=.30,ci=(.01,1.0), name='1+Rdx 2017/2010') # assume [OLD]
+
+def CF():
+  section('sex work: C, F, dur')
+  find_gamma(m=4.1*12,ci=(2.5*12,6.0*12),name='C_swo_fsw_l') # Baral2014,EswKP2014
+  find_gamma(m=2.0,ci=(1.6,2.5),name='RC_swo_fsw_h:l') # Baral2014,EswKP2014
+  find_gamma(m=5.7,ci=(2.7,9.7),name='C_swr_fsw_l') # Baral2014,EswKP2014
+  find_gamma(m=1.5,ci=(1.3,1.7),name='RC_swr_fsw_h:l') # Baral2014,EswKP2014
+  find_gamma(m=60,ci=(35,90),name='CF_swq_cli') # assume
+  find_gamma(m=2.0,ci=(1.6,2.5),name='RCF_swq_cli_h:l') # assume
+  find_beta_binom(.1,(.006,.292),name='PF_ai_swq') # Owen2017
+  section('wider pop: C, F, dur, mix')
+  find_gamma(m=78,ci=(26,156),name='F_mcq') # TODO
+  find_gamma(m=18,ci=(12,25),name='dur_msp') # TODO
+  find_gamma(m=3/12,ci=(1/12,6/12),name='dur_cas') # TODO
+  find_gamma(m=2,ci=(1.2,3),name='C_cas_am') # assume
+  find_gamma(m=2,ci=(1.2,3),name='pref_msp_al') # assume
+  find_gamma(m=3,ci=(1.5,5),name='pref_msp_asw') # assume
+  find_beta_binom(.1,(.006,.165),name='PF_ai_mcq') # Owen2017
+
+def PX():
+  section('pop sizes: PX, dur')
+  find_beta_binom(m=.029,ci=(.006,.065),name='PX_w_fsw',n0=300) # EswKP2014 Table 4
+  find_beta_binom(m=.17,ci=(.10,.27),name='PX_w_h')   # thesis W2+
+  find_beta_binom(m=.26,ci=(.15,.44),name='PX_m_h')   # thesis M2+ [omit]
+  find_beta_binom(m=.13,ci=(.10,.17),name='PX_m_m')   # thesis M2+ - cli
+  find_beta_binom(m=.13,ci=(.021,.385),name='PX_cli') # thesis [omit]
+  find_gamma(m= 3.6,ci=(2.0, 5.8),name='dur_fsw_l') # Baral2014,EswKP2014
+  find_gamma(m=10.0,ci=(9.0,11.0),name='dur_fsw_h') # Baral2014,EswKP2014
+  find_gamma(m=10,ci=(6,15.0),name='dur_cli') # assume
 
 # MAIN ---------------------------------------------------------------------------------------------
 
-
-find_beta_binom(.16,(.13,.21),name='dx 2020 ssa-lowest',plot=True)
-find_beta_binom(.46,(.39,.54),name='tx 2020 ssa-lowest',plot=True)
-find_beta_binom(.72,(.61,.84),name='tx 2020 ssa-lowest',plot=True)
-
-# A()
-# condoms()
-# exit()
-# find_gamma(m= 4.9,ci=(4.0, 5.8),name='dur_fsw_l',plot=True)
-# find_gamma(m=10.0,ci=(9.0,11.0),name='dur_fsw_h',plot=True)
-# find_gamma(m=10,ci=(6,15.0),name='dur_cli',plot=True)
-# find_beta_binom(m=.7,ci=(.5,.9),name='Pturn_h:m',plot=True)
-# prevalence_esw()
-# cascade_rates()
-
-# TODO
-# def PX(plot=False):
-  # find_beta_binom(m=.7,ci=(.5,.95),name='turnover FSW -> med',plot=True)
-  # find_beta_binom(m=.029,ci=(.006,.065),name='PX_fsw',n0=300,plot=True) # EswKP2014 Table 4
-  # find_beta_binom(m=.07,ci=(.02,.15),name='PX_*m (JK)',plot=True)
-  # find_beta_binom(m=.1,ci=(.023,.229),name='PX_*m (SDHS2006)',plot=True)
-  # find_beta_binom(m=.1,ci=(.038,.182),name='PX_*m (SHIMS1)',plot=True) # Table 3
-  # find_beta_binom(m=.1,ci=(.048,.195),name='PX_*m (SHIMS2)',plot=True) # Table 15.3.A
-  # find_beta_binom(m=.,ci=(.,.),         name='C_ms (SDHS2006)',plot=True) # Table 14.7.1-2
-  # find_beta_binom(m=.665,ci=(.492,.765),name='C_ms (SHIMS1)',plot=True) # Table 3
-  # find_beta_binom(m=.720,ci=(.648,.841),name='C_ms (SHIMS2)',plot=True) # Table 15.3.A
-  # find_gamma(m=4.1,ci=(2.5,6),name='C_new_fswl',  plot=True)
-  # find_gamma(m=8.4,ci=(6,11), name='C_reg_fswl',  plot=True)
-  # find_gamma(m=2.0,ci=(1.6,2.5),name='C_new_fsw_hl',plot=True)
-  # find_gamma(m=1.5,ci=(1.3,1.7), name='C_reg_fsw_hl',plot=True)
-  # find_gamma(m=2,ci=(1.2,3), name='C_reg_cli',plot=True)
-  # find_gamma(m=2,ci=(1.2,3), name='A_reg',plot=True)
-  # find_gamma(m=3.5,ci=(2,6),name='DX_fsw')
-  # find_gamma(m=2.8,ci=(1.2,5), name='C_reg_cli',plot=True)
-# find_gamma(m=2.8,ci=(1.2,5), name='A_swq_cli',plot=True)

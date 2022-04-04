@@ -4,14 +4,14 @@ from utils import _,deco,linear_comb,nan_to_value
 #@profile
 def f_lambda_p(P,t):
   # return.shape = (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-  RbA_condom = linear_comb(P['PA_condom_t'](t) * P['RPA_condom_s'], P['Rbeta_condom'], 1)
-  RbA_circum = linear_comb(P['PA_circum_t'](t), P['Rbeta_circum'], 1)
+  RbA_condom = linear_comb(P['PF_condom_t'](t) * P['RPF_condom_a'], P['Rbeta_condom'], 1)
+  RbA_circum = linear_comb(P['PF_circum_t'](t), P['Rbeta_circum'], 1)
   P_gud_t   = P['P_gud_t'](t) * P['P_gud']
   Rbeta_gud_sus = linear_comb(P_gud_t,P['Rbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
   Rbeta_gud_inf = linear_comb(P_gud_t,P['Rbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
   beta_a = P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf
   beta_a = np.minimum(beta_a,.5)
-  return np.sum(beta_a * P['A_ap'] * RbA_condom * RbA_circum,axis=0)
+  return np.sum(beta_a * P['F_ap'] * RbA_condom * RbA_circum,axis=0)
 
 @deco.nowarn
 #@profile
@@ -26,6 +26,7 @@ def f_mix(P,X):
   # print(m1 / XC[:,1,:]) # DEBUG == 1, unless XC unbalanced
   # print(m2 / XC[:,0,:]) # DEBUG == 1, unless XC unbalanced
   M = M0 * np.exp(P['pref_pii'])
+  # iterative proportional fitting
   for k in range(100):
     r1 = m1 / M.sum(axis=1)
     M *= r1[:,_,:]

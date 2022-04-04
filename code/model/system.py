@@ -30,7 +30,7 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
 
 def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = f_t()
-  if RPts is None: RPts = ['PA_condom_t','PA_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
+  if RPts is None: RPts = ['PF_condom_t','PF_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
   log(3,str(P['seed']).rjust(6))
   R = solve(P,t)
   if not R:
@@ -53,9 +53,9 @@ def solve(P,t):
     # Ri = f_dX(X[i-1],t[i-1],P) # DEBUG: Euler
     X[i] = X[i-1] + (t[i] - t[i-1]) * Ri['dX']
     inc[i] = Ri['inc']
-    if t[i] == t0_hiv:
+    if t[i] == t0_hiv: # introduce HIV
       X[i] = X[i,:,:,_,0,:] * P['PX_h_hiv']
-    if t[i] == t0_tpaf:
+    if t[i] == t0_tpaf: # start accumulating tPAF
       P['mix_mask'] = P['mix_mask_tpaf']
     if np.any(X[i] < 0): # abort / fail
       return False
