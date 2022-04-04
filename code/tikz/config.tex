@@ -1,6 +1,13 @@
-\usepackage[charter]{mathdesign}
-\usepackage{CrimsonPro}
-\usepackage[italic]{mathastext}
+\ifthesis
+  \usepackage{newtxsf}
+  \usepackage[tabular,osf,sfdefault]{gandhi}
+  \usepackage{microtype}\DisableLigatures{shape=sc}
+  \usepackage[italic,basic]{mathastext}
+\else
+  \usepackage[charter]{mathdesign}
+  \usepackage{CrimsonPro}
+  \usepackage[italic]{mathastext}
+\fi
 \usepackage{tikz}
 \pgfdeclarelayer{back}
 \pgfdeclarelayer{fore}
@@ -25,6 +32,9 @@
     #3
   \end{scope}}
 \definecolor  {all}{rgb}{.40,.00,.40}
+\definecolor   {al}{rgb}{1.0,.40,1.0}
+\definecolor   {am}{rgb}{.80,.20,.80}
+\definecolor   {ah}{rgb}{.60,.00,.60}
 \definecolor   {aq}{rgb}{.60,.20,.60}
 \definecolor    {w}{rgb}{.80,.20,.20}
 \definecolor   {wq}{rgb}{1.0,.60,.60}

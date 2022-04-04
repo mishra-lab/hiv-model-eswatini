@@ -1,0 +1,18 @@
+\begin{tikzpicture}[x=10em,y=5em,state/.append style={minimum width=5em}]
+  \node[state=wl]  (X0)  at (0,2) {W0};
+  \node[state=wm]  (Xs1) at (0,1) {Ws1};
+  \node[state=fsw] (Xs2) at (0,0) {Ws2+};
+  \node[state=wm]  (Xu1) at (1,1) {Wu1};
+  \node[state=fsw] (Xu2) at (1,0) {Wu2+};
+  \draw[arrow,->] (X0) edge[bend left=30] node[above right]{$\varphi_{u1:0}$} (Xu1);
+  \draw[arrow,->] (X0)  edge[bend right=75] node[left]{$\varphi_{s1:0}$} (Xs1);
+  \draw[arrow,->] (Xs1) edge[bend right=75] node[left]{$\varphi_{s2+:s1}$} (Xs2);
+  \draw[arrow,->] (Xu1) edge[bend left=75] node[right]{$\varphi_{u2+:u1}$} (Xu2);
+  \draw[arrow,->] (Xs1) edge node[above]{$\varphi_{u1:s1}$} (Xu1);
+  \draw[arrow,->] (Xs2) edge node[above]{$\varphi_{u2+:s2+}$} (Xu2);
+  \node[font=\itshape,anchor=west] at (1.7,2) {0 partners p12m};
+  \node[font=\itshape,anchor=west] at (1.7,1) {1 partners p12m};
+  \node[font=\itshape,anchor=west] at (1.7,0) {2 partners p12m};
+  \node[font=\itshape,anchor=north] at (0,2.8) {single};
+  \node[font=\itshape,anchor=north] at (1,2.8) {in a union};
+\end{tikzpicture}
