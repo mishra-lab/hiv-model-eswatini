@@ -54,40 +54,40 @@ def solve(P,t):
     X[i] = X[i-1] + (t[i] - t[i-1]) * Ri['dX']
     inc[i] = Ri['inc']
     if t[i] == t0_hiv: # introduce HIV
-      X[i] = X[i,:,:,_,0,:] * P['PX_h_hiv']
+      X[i,:,:,0,:,0] = X[i,:,:,0,0,0,_] * P['PX_h_hiv'][_,_,:]
     if t[i] == t0_tpaf: # start accumulating tPAF
       P['mix_mask'] = P['mix_mask_tpaf']
-    if np.any(X[i] < 0): # abort / fail
+    if np.any(X[i] < 0): # abort / fail TODO: update for pda
       return False
     # check.all(P,X[i],t[i])
   return {
     'P': P,
-    'X': X,
+    'X': X.sum(axis=3), # sum_k
     't': t,
     'inc': inc,
   }
 
 #@profile
 def f_dX(X,t,P):
-  P['lambda_p'] = foi.f_lambda_p(P,t)
-  P['mix']  = foi.f_mix(P,X) * P['mix_mask']
   # initialize
   dX = 0*X
   # force of infection
-  inc = foi.f_lambda(P,X)
-  dXi = X[:,:,0,0] * inc.sum(axis=(0,3,4))
-  dX[:,:,0,0] -= dXi # sus
-  dX[:,:,1,0] += dXi # acute undiag
+  P['lambda_pp'] = foi.f_lambda_pp(P,t)
+  # (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
+  inc = foi.f_lambda(P,X) # TODO: * P['mix_mask']
+  dXi = inc.sum(axis=(0,3,4,5,6))
+  dX[:,:,0,0,0] -= dXi
+  dX[:,:,0,1,0] += dXi
   # HIV transitions
-  dXi = X[:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
-  dX[:,:,1:5,0:3] -= dXi
-  dX[:,:,2:6,0:3] += dXi
+  dXi = X[:,:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
+  dX[:,:,:,1:5,0:3] -= dXi
+  dX[:,:,:,2:6,0:3] += dXi
   # CD4 recovery
-  dXi = X[:,:,3:6,3:5] * P['unprog_h']
-  dX[:,:,3:6,3:5] -= dXi
-  dX[:,:,2:5,3:5] += dXi
+  dXi = X[:,:,:,3:6,3:5] * P['unprog_h']
+  dX[:,:,:,3:6,3:5] -= dXi
+  dX[:,:,:,2:5,3:5] += dXi
   # births & deaths
-  dX[:,:,0,0] += X.sum() * P['PX_si'] * P['birth_t'](t)
+  dX[:,:,0,0,0] += X.sum() * P['PX_si'] * P['birth_t'](t)
   dX -= X * P['death']
   dX -= X * P['death_hc']
   # turnover
@@ -95,26 +95,26 @@ def f_dX(X,t,P):
   dX -= dXi.sum(axis=2)
   dX += dXi.sum(axis=1)
   # cascade: diagnosis
-  dXi = X[:,:,1:6,0] * P['dx_t'](t) * P['Rdx_si'] * P['Rdx_scen']
-  dX[:,:,1:6,0] -= dXi # undiag
-  dX[:,:,1:6,1] += dXi # diag
+  dXi = X[:,:,:,1:6,0] * P['dx_t'](t) * P['Rdx_si'] * P['Rdx_scen']
+  dX[:,:,:,1:6,0] -= dXi # undiag
+  dX[:,:,:,1:6,1] += dXi # diag
   # cascade: treatment
-  dXi = X[:,:,1:6,1] * P['tx_t'](t) * P['Rtx_ht'](t) * P['Rtx_scen']
-  dX[:,:,1:6,1] -= dXi # diag
-  dX[:,:,1:6,3] += dXi # treat
+  dXi = X[:,:,:,1:6,1] * P['tx_t'](t) * P['Rtx_ht'](t) * P['Rtx_si'] * P['Rtx_scen']
+  dX[:,:,:,1:6,1] -= dXi # diag
+  dX[:,:,:,1:6,3] += dXi # treat
   # cascade: VLS
-  dXi = X[:,:,1:6,3] * P['vx']
-  dX[:,:,1:6,3] -= dXi # treat
-  dX[:,:,1:6,4] += dXi # vls
+  dXi = X[:,:,:,1:6,3] * P['vx']
+  dX[:,:,:,1:6,3] -= dXi # treat
+  dX[:,:,:,1:6,4] += dXi # vls
   # cascade: unlink
-  dXi = X[:,:,1:6,4] * P['unvx_t'](t) * P['Rux_scen']
-  dX[:,:,1:6,4] -= dXi # vls
-  dX[:,:,1:6,2] += dXi # unlink
+  dXi = X[:,:,:,1:6,4] * P['unvx_t'](t) * P['Rux_scen']
+  dX[:,:,:,1:6,4] -= dXi # vls
+  dX[:,:,:,1:6,2] += dXi # unlink
   # cascade: relink
-  dXi = X[:,:,1:6,2] * P['retx']
-  dX[:,:,1:6,2] -= dXi # unlink
-  dX[:,:,1:6,4] += dXi # vls
+  dXi = X[:,:,:,1:6,2] * P['retx']
+  dX[:,:,:,1:6,2] -= dXi # unlink
+  dX[:,:,:,1:6,4] += dXi # vls
   return {
     'dX': dX,
-    'inc': inc,
+    'inc': inc.sum(axis=(5,6)) / X[:,:,0,0,0,_,_],
   }

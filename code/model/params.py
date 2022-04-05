@@ -186,11 +186,13 @@ def print_sampled_distrs(Ps,fmt='{:6.3f}',interval=.95,keys=None):
 
 def get_PX(P): # [OK]
   # population size
+  # PX.shape = (s:2, i:4, k:5, h:6, c:5)
   NX0   = np.array(243) # REF: WorldBank
-  PX0_h = np.array([1,0,0,0,0,0]).reshape([1,1,6,1])
-  PX0_c  = np.array([1,0,0,0,0]).reshape([1,1,1,5])
-  PX_h_hiv = np.array([0,5,65,30,0,0]).reshape([1,1,6,1])*1e-6 # REF: assume
-  PX_h_hiv[:,:,0,:] = 1 - PX_h_hiv.sum()
+  PX0_k = np.array([1,0,0,0,0]).reshape([1,1,5,1,1])
+  PX0_h = np.array([1,0,0,0,0,0]).reshape([1,1,1,6,1])
+  PX0_c  = np.array([1,0,0,0,0]).reshape([1,1,1,1,5])
+  PX_h_hiv = np.array([0,5,65,30,0,0])*1e-6 # REF: assume
+  PX_h_hiv[0] = 1 - PX_h_hiv.sum()
   P = get_PX_fsw_cli(P)
   PX_si = np.zeros((2,4))
   # FSW
@@ -210,7 +212,7 @@ def get_PX(P): # [OK]
     'PX_s':  PX_si.sum(axis=1),
     'PX_si': PX_si,
     'PX_si_s': PX_si / PX_si.sum(axis=1)[:,_],
-    'X0': NX0 * PX_si[:,:,_,_] * PX0_h * PX0_c,
+    'X0': NX0 * PX_si[:,:,_,_,_] * PX0_k * PX0_h * PX0_c,
     'PX_h_hiv': PX_h_hiv,
   }
 
@@ -235,6 +237,7 @@ def get_birth_death(P): # [OK]
   }
 
 def get_turnover(P): # [OK]
+  # turn_sii.shape = (s:2, i:4, i':4)
   t_fsw_l = 1/P['dur_fsw_l'] - P['death']
   t_fsw_h = 1/P['dur_fsw_h'] - P['death']
   t_cli   = 1/P['dur_cli'] - P['death']
@@ -264,7 +267,7 @@ def get_turnover(P): # [OK]
 # FOI ----------------------------------------------------------------------------------------------
 
 def get_beta_a(P): # [OK]
-  # beta_a dimensions: a,p,s,i,s',i',h',c',(t)
+  # beta_a.shape = (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5, (t))
   Rbeta_ar = 10
   Rbeta_as = np.array([[P['Rbeta_vi_rec'],1],[Rbeta_ar,1]]).reshape([2,1,2,1,1,1,1,1])
   Rbeta_as = Rbeta_as / Rbeta_as[0,:].mean()
@@ -300,7 +303,7 @@ def check_gud(P):
   )
 
 def get_F(P): # [OK]
-  # dimensions: a,p
+  # F_ap.shape = (a:2, p:4)
   F_p   = np.array([ P['F_mcq'], P['F_mcq'], 1, P['F_swr'] ])
   PF_ai = np.array([ P['PF_ai_mcq'],P['PF_ai_mcq'],P['PF_ai_swq'],P['PF_ai_swq'] ])
   F_ap  = F_p.reshape([1,4,1,1,1,1,1,1]) * np.array([1-PF_ai,PF_ai]).reshape([2,4,1,1,1,1,1,1])
@@ -314,6 +317,7 @@ def check_F(P):
   )
 
 def get_C(P): # [OK]
+  # .shape = (p:4, s:2, i:4)
   PX_si = P['PX_si']
   F = np.squeeze(P['F_ap'].sum(axis=0))
   # dimensions: p,s,i
@@ -347,8 +351,10 @@ def get_C(P): # [OK]
   C_psi[ 2, 1, 3] = P['CF_swo_total'] / F[2] / wPX * P['RCF_swq_cli_h:l']
   C_psi[ 3, 1, 2] = P['CF_swr_total'] / F[3] / wPX
   C_psi[ 3, 1, 3] = P['CF_swr_total'] / F[3] / wPX * P['RCF_swq_cli_h:l']
+  aC_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape((4,1,1,5))
   return {
     'C_psi': C_psi,
+    'C_psik': C_psi[:,:,:,_] - aC_pk,
   }
 
 def get_condom(P): # [OK]
@@ -384,6 +390,7 @@ def check_condom(P):
   )
 
 def get_circumcision(P): # [OK]
+  # Rbeta_circum.shape = (a:2, s:2)
   # (SHIMS2), SDHS2006, Bicego2013, MICS2014, SHIMS2, "COP20", assume
   PF_circum_t = ta.tarray(
      [1980.0,2006.5,2011.0,2014.8,2016.5,2020.0,2050,2051],
@@ -399,6 +406,7 @@ def get_circumcision(P): # [OK]
   }
 
 def get_mix(P): # [OK]
+  # pref_pii.shape = (p:4, i:4, i':4)
   pref_pii = np.zeros((4,4,4))
   pref_pii[0,0,0] = P['pref_msp_al']
   pref_pii[0,2,2] = P['pref_msp_asw']
@@ -408,7 +416,7 @@ def get_mix(P): # [OK]
   return {
     'pref_pii': pref_pii,
     'mix': np.zeros((4,2,4,2,4)), # initialize
-    'mix_mask': np.ones((4,2,4,2,4)),
+    'mix_mask': np.ones((4,2,4,2,4)), # TODO
     't0_tpaf': -1,
   }
 
@@ -425,14 +433,13 @@ def get_mix_mask(mask=None,p=None,sfr=None,ifr=None,sto=None,ito=None):
 # HIV ----------------------------------------------------------------------------------------------
 
 def get_hiv_prog(P): # [OK]
-  # dimensions: s,i,h,c
   # h: sus, acute, >500, <500, <350, <200 (AIDS)
   # c: undiag, diag, unlinked, on art, vls
-  dur_h  = np.array([P['dur_acute'],3.5-P['dur_acute'],3.74,5.26]).reshape([1,1,4,1]) # Lodi2011,Mangal2017
+  dur_h  = np.array([P['dur_acute'],3.5-P['dur_acute'],3.74,5.26]).reshape([1,1,1,4,1]) # Lodi2011,Mangal2017
   prog_h = 1/dur_h
-  unprog_h = np.array([[2.5,.15],[2.5,.15],[2,.15]]).reshape([1,1,3,2]) # Battegay2006,Lawn2006
-  death_h = np.array([0,0,.004,.02,.04,.20]).reshape([1,1,6,1]) # Badri2006,Anglaret2012,Mangal2017
-  Rdeath_c = np.array([1,1,1,.25,.5]).reshape([1,1,1,5]) # Gabillard2013,Lundgren2015
+  unprog_h = np.array([[2.5,.15],[2.5,.15],[2,.15]]).reshape([1,1,1,3,2]) # Battegay2006,Lawn2006
+  death_h = np.array([0,0,.004,.02,.04,.20]).reshape([1,1,1,6,1]) # Badri2006,Anglaret2012,Mangal2017
+  Rdeath_c = np.array([1,1,1,.25,.5]).reshape([1,1,1,1,5]) # Gabillard2013,Lundgren2015
   return {
     'dur_h': dur_h,
     'prog_h': prog_h,
@@ -452,14 +459,13 @@ def Rmr(r0,*iRrs,replast=True):
   return np.cumprod([r0,*Rrs])
 
 def get_diag(P):
-  # dimensions: s,i,h
   # TODO: reduce sex differences after a time?
   dx_t = ta.tarray([1980,2000,2010,2020,2050,2051],
       [0,0,*Rmr(P['dx_2010'],P['aRdx_2020'],P['aRdx_2050'])])
   Rdx_si = np.array(
     [[           1,           1,P['Rdx_fsw'],P['Rdx_fsw']],
-     [P['Rdx_mqq'],P['Rdx_mqq'],P['Rdx_cli'],P['Rdx_cli']]]).reshape([2,4,1])
-  Rdx_scen  = np.ones((2,4,1))
+     [P['Rdx_mqq'],P['Rdx_mqq'],P['Rdx_cli'],P['Rdx_cli']]]).reshape([2,4,1,1])
+  Rdx_scen  = np.ones((2,4,1,1))
   return {
     'dx_t': dx_t,
     'Rdx_si': Rdx_si,
@@ -467,13 +473,12 @@ def get_diag(P):
   }
 
 def get_treat(P):
-  # dimensions: s,i,h
   # TODO: reduce sex differences after a time?
   tx_t = ta.tarray([1980,2004,2010,2020,2050,2051],
       [0,0,*Rmr(P['tx_2010'],P['aRtx_2020'],P['aRtx_2050'])])
   Rtx_si = np.array(
     [[           1,           1,P['Rtx_fsw'],P['Rtx_fsw']],
-     [P['Rtx_mqq'],P['Rtx_mqq'],P['Rtx_cli'],P['Rtx_cli']]]).reshape([2,4,1])
+     [P['Rtx_mqq'],P['Rtx_mqq'],P['Rtx_cli'],P['Rtx_cli']]]).reshape([2,4,1,1])
   Rtx_ht = ta.tarray(
      [1980,2004,2010,2015,2017,2019,2050,2051], [
      [   0,   0,   0,   0,  .1,   1,   1,   1],   # acute:           scale-up 2017-2019
@@ -481,12 +486,12 @@ def get_treat(P):
      [   0,   0,  .1,  .1,   1,   1,   1,   1],   # 350 < cd4 < 500: scale-up 2015-2017
      [   0,   0,   1,   1,   1,   1,   1,   1],   # 200 < cd4 < 350: scale-up 2004-2010
      [   0,   0,   1,   1,   1,   1,   1,   1],   # cd4 < 200:       scale-up 2004-2010
-  ]).reshape([1,1,5]) 
+  ]).reshape([1,1,1,5]) 
   vx   = np.array(1/.36) # median 3 months -> mean ~ 4 months
-  unvx_t = ta.tarray([1980,2000,2009,2050,2051],[.2,.2,.1,.04,.04]).reshape([1,1,1]) # NERCHA2014 Figure 15
+  unvx_t = ta.tarray([1980,2000,2009,2050,2051],[.2,.2,.1,.04,.04]) # NERCHA2014 Figure 15
   retx = np.array(1) # TODO
-  Rtx_scen = np.ones((2,4,1))
-  Rux_scen = np.ones((2,4,1))
+  Rtx_scen = np.ones((2,4,1,1))
+  Rux_scen = np.ones((2,4,1,1))
   return {
     'tx_t': tx_t,
     'Rtx_ht': Rtx_ht,
