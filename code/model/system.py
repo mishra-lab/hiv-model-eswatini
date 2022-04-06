@@ -2,7 +2,7 @@ import numpy as np
 from model import foi,target
 from utils import _,rk4step,deco,parallel,log
 
-def f_t(t0=1980,tf=2050,dt=0.1):
+def f_t(t0=1980,tf=2050,dt=0.05):
   return np.round(np.arange(t0,tf+dt,dt),9)
 
 @deco.nowarn
@@ -57,7 +57,7 @@ def solve(P,t):
       X[i,:,:,0,:,0] = X[i,:,:,0,0,0,_] * P['PX_h_hiv'][_,_,:]
     if t[i] == t0_tpaf: # start accumulating tPAF
       P['mix_mask'] = P['mix_mask_tpaf']
-    if np.any(X[i] < 0): # abort / fail TODO: update for pda
+    if np.any(X[i].sum(axis=2) < 0): # abort / fail
       return False
     # check.all(P,X[i],t[i])
   return {
@@ -75,15 +75,24 @@ def f_dX(X,t,P):
   P['lambda_pp'] = foi.f_lambda_pp(P,t)
   # (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
   inc = foi.f_lambda(P,X) # TODO: * P['mix_mask']
-  dXi = inc.sum(axis=(0,3,4,5,6))
-  dX[:,:,0,0,0] -= dXi
-  dX[:,:,0,1,0] += dXi
+  # acquisition & pda
+  dXi = inc.sum(axis=(3,4,5,6)) # (p:4, s:2, i:4)
+  dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
+  dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
+  # transmission pda
+  dXi = inc.sum(axis=(1,2)) # (p:4, s':2, i':4, h':6, c':5)
+  dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
+  dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
+  # forming new partnerships
+  dXi = dX[:,:,1:,:,:] / P['dur_k']
+  dX[:,:,1:,:,:] -= dXi
+  dX[:,:,0 ,:,:] += dXi.sum(axis=2)
   # HIV transitions
   dXi = X[:,:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
   dX[:,:,:,1:5,0:3] -= dXi
   dX[:,:,:,2:6,0:3] += dXi
   # CD4 recovery
-  dXi = X[:,:,:,3:6,3:5] * P['unprog_h']
+  dXi = X[:,:,:,3:6,3:5] * P['unprog_h'] # low CD4 & treated
   dX[:,:,:,3:6,3:5] -= dXi
   dX[:,:,:,2:5,3:5] += dXi
   # births & deaths

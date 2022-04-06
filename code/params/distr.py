@@ -218,6 +218,7 @@ def CF():
   find_gamma(m=78,ci=(26,156),name='F_mcq') # TODO
   find_gamma(m=18,ci=(12,25),name='dur_msp') # TODO
   find_gamma(m=3/12,ci=(1/12,6/12),name='dur_cas') # TODO
+  find_gamma(m=10/12,ci=(2/12,2),name='dur_swr') # TODO
   find_gamma(m=2,ci=(1.2,3),name='C_cas_am') # assume
   find_gamma(m=2,ci=(1.2,3),name='pref_msp_al') # assume
   find_gamma(m=3,ci=(1.5,5),name='pref_msp_asw') # assume

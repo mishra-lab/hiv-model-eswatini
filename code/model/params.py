@@ -113,6 +113,7 @@ def def_sample_distrs():
   'F_mcq':                stats.gamma_p(p=78,v=1130),
   'dur_msp':              stats.gamma_p(p=18,v=11),
   'dur_cas':              stats.gamma_p(p=.25,v=1.16e-2),
+  'dur_swr':              stats.gamma_p(p=.833,v=.23),
   'F_swr':                stats.uniform(l=12,h=48),
   'PF_ai_mcq':            stats.beta_binom(p=.059,n=30),
   'PF_ai_swq':            stats.beta_binom(p=.097,n=14),
@@ -304,11 +305,13 @@ def check_gud(P):
 
 def get_F(P): # [OK]
   # F_ap.shape = (a:2, p:4)
-  F_p   = np.array([ P['F_mcq'], P['F_mcq'], 1, P['F_swr'] ])
+  F_p   = np.array([ P['F_mcq'], P['F_mcq'], 12, P['F_swr'] ])
   PF_ai = np.array([ P['PF_ai_mcq'],P['PF_ai_mcq'],P['PF_ai_swq'],P['PF_ai_swq'] ])
   F_ap  = F_p.reshape([1,4,1,1,1,1,1,1]) * np.array([1-PF_ai,PF_ai]).reshape([2,4,1,1,1,1,1,1])
+  dur_k = np.array([ P['dur_msp'], P['dur_cas'], 1/12, P['dur_swr'] ]).reshape([1,1,4,1,1])
   return {
     'F_ap': F_ap,
+    'dur_k': dur_k,
   }
 
 def check_F(P):
