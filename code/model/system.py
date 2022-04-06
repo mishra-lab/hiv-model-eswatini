@@ -1,12 +1,12 @@
 import numpy as np
 from model import foi,target
-from utils import _,rk4step,deco,parallel,log
+from utils import _,deco,parallel,log,rk4step,nan_to_value
 
-def f_t(t0=1980,tf=2050,dt=0.05):
+def get_t(t0=1980,tf=2050,dt=0.05):
   return np.round(np.arange(t0,tf+dt,dt),9)
 
 @deco.nowarn
-def f_X(X0,t):
+def get_X(X0,t):
   X = np.nan * np.ndarray([*t.shape,*X0.shape])
   X[0] = X0
   return X
@@ -29,10 +29,10 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
   return Rs
 
 def run(P,t=None,T=None,RPts=None,interval=None):
-  if t is None: t = f_t()
+  if t is None: t = get_t()
   if RPts is None: RPts = ['PF_condom_t','PF_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
-  log(3,str(P['seed']).rjust(6))
   R = solve(P,t)
+  log(3,str(P['seed']).rjust(6)+(' ' if R else '!'))
   if not R:
     return R
   if T is not None:
@@ -44,13 +44,13 @@ def run(P,t=None,T=None,RPts=None,interval=None):
   return R
 
 def solve(P,t):
-  X   = f_X(P['X0'],t)
-  inc = f_X(np.zeros([4,2,4,2,4]),t)
+  X   = get_X(P['X0'],t)
+  inc = get_X(np.zeros([4,2,4,2,4]),t)
   t0_hiv = int(P['t0_hiv'])
   t0_tpaf = int(P['t0_tpaf'])
   for i in range(1,t.size):
-    Ri = rk4step(X[i-1],t[i-1],(t[i]-t[i-1]),f_dX,P=P)
-    # Ri = f_dX(X[i-1],t[i-1],P) # DEBUG: Euler
+    # Ri = rk4step(X[i-1],t[i-1],(t[i]-t[i-1]),get_dX,P=P)
+    Ri = get_dX(X[i-1],t[i-1],P) # DEBUG: Euler
     X[i] = X[i-1] + (t[i] - t[i-1]) * Ri['dX']
     inc[i] = Ri['inc']
     if t[i] == t0_hiv: # introduce HIV
@@ -68,19 +68,19 @@ def solve(P,t):
   }
 
 #@profile
-def f_dX(X,t,P):
+def get_dX(X,t,P):
   # initialize
   dX = 0*X
   # force of infection
-  P['lambda_pp'] = foi.f_lambda_pp(P,t)
+  P['foi_pp'] = foi.get_foi_pp(P,t)
   # (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-  inc = foi.f_lambda(P,X) # TODO: * P['mix_mask']
+  foi_full = foi.get_foi_full(P,X) # TODO: * P['mix_mask']
   # acquisition & pda
-  dXi = inc.sum(axis=(3,4,5,6)) # (p:4, s:2, i:4)
+  dXi = foi_full.sum(axis=(3,4,5,6)) # (p:4, s:2, i:4)
   dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
   dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
   # transmission pda
-  dXi = inc.sum(axis=(1,2)) # (p:4, s':2, i':4, h':6, c':5)
+  dXi = foi_full.sum(axis=(1,2)) # (p:4, s':2, i':4, h':6, c':5)
   dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
   dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
   # forming new partnerships
@@ -100,9 +100,9 @@ def f_dX(X,t,P):
   dX -= X * P['death']
   dX -= X * P['death_hc']
   # turnover
-  dXi = foi.f_turnover(P,X)
-  dX -= dXi.sum(axis=2)
-  dX += dXi.sum(axis=1)
+  dXi = get_turnover(P,X)
+  dX -= dXi.sum(axis=2) # (s:2, i:4, k:5, h:6, c:5)
+  dX += dXi.sum(axis=1) # (s:2, i':4, k:5, h:6, c:5)
   # cascade: diagnosis
   dXi = X[:,:,:,1:6,0] * P['dx_t'](t) * P['Rdx_si'] * P['Rdx_scen']
   dX[:,:,:,1:6,0] -= dXi # undiag
@@ -125,5 +125,21 @@ def f_dX(X,t,P):
   dX[:,:,:,1:6,4] += dXi # vls
   return {
     'dX': dX,
-    'inc': inc.sum(axis=(5,6)) / X[:,:,0,0,0,_,_],
+    'inc': foi_full.sum(axis=(5,6)) / X[:,:,0,0,0,_,_],
   }
+
+@deco.nowarn
+#@profile
+def get_turnover(P,X):
+  # return.shape = (s:2, i:4, i':4, k:5, h:6, c:5)
+  turn = P['turn_sii'][:,:,:,_,_,_] * X[:,:,_,:,:,:]
+  # P['ORturn_sus:hiv'] = 0 # DEBUG
+  if np.any(X[:,:,:,1:,:]): # HIV introduced
+    Xhiv = X[:,:,:,1:,:].sum(axis=(2,3,4))
+    # odds of turnover aomng sus vs hiv (source-group-specific)
+    Osus = P['ORturn_sus:hiv'] * nan_to_value(X[:,:,0,0,0] / Xhiv, 1)[:,:,_]
+    Phc_hiv = nan_to_value(X[:,:,:,1:,:] / Xhiv[:,:,_,_,_], 0)
+    turn_hiv = turn.sum(axis=(3,4,5)) / (1 + Osus)
+    turn[:,:,:,:,1:,:] = turn_hiv[:,:,:,_,_,_] * Phc_hiv[:,:,_,:,:,:]
+    turn[:,:,:,0,0,0]  = turn_hiv * Osus
+  return turn

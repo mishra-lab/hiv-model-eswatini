@@ -1,11 +1,10 @@
 import numpy as np
-from utils import _,deco,linear_comb,nan_to_value
-
-# TODO: merge foi.py with system.py
+from utils import _,deco,linear_comb
 
 #@profile
-def f_lambda_pp(P,t):
+def get_foi_pp(P,t):
   # return.shape = (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
+  # TODO: compute this once in RK4 ? (no X)
   # compute some stratified effect modifiers
   RbA_condom = linear_comb(P['PF_condom_t'](t) * P['RPF_condom_a'], P['Rbeta_condom'], 1)
   RbA_circum = linear_comb(P['PF_circum_t'](t), P['Rbeta_circum'], 1)
@@ -20,7 +19,7 @@ def f_lambda_pp(P,t):
 
 @deco.nowarn
 #@profile
-def f_lambda(P,X):
+def get_foi_full(P,X):
   # return.shape = (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
   tol = 1e-7
   # total partners offered
@@ -46,20 +45,4 @@ def f_lambda(P,X):
   P['mix'][:,0,:,1,:] = M
   P['mix'][:,1,:,0,:] = M.swapaxes(1,2)
   # per-partner rate * mixing * susceptible * infectious
-  return P['lambda_pp'] * P['mix'][:,:,:,:,:,_,_] * PXC_hc[:,:,:,0,0,_,_,_,_] * PXC_hc[:,_,_,:,:,:,:]
-
-@deco.nowarn
-#@profile
-def f_turnover(P,X):
-  # return.shape = (s:2, i:4, i':4, k:5, h:6, c:5)
-  turn = P['turn_sii'][:,:,:,_,_,_] * X[:,:,_,:,:,:]
-  # P['ORturn_sus:hiv'] = 0 # DEBUG
-  if np.any(X[:,:,:,1:,:]): # HIV introduced
-    Xhiv = X[:,:,:,1:,:].sum(axis=(2,3,4))
-    # odds of turnover aomng sus vs hiv (source-group-specific)
-    Osus = P['ORturn_sus:hiv'] * nan_to_value(X[:,:,0,0,0] / Xhiv, 1)[:,:,_]
-    Phc_hiv = nan_to_value(X[:,:,:,1:,:] / Xhiv[:,:,_,_,_], 0)
-    turn_hiv = turn.sum(axis=(3,4,5)) / (1 + Osus)
-    turn[:,:,:,:,1:,:] = turn_hiv[:,:,:,_,_,_] * Phc_hiv[:,:,_,:,:,:]
-    turn[:,:,:,0,0,0]  = turn_hiv * Osus
-  return turn
+  return P['foi_pp'] * P['mix'][:,:,:,:,:,_,_] * PXC_hc[:,:,:,0,0,_,_,_,_] * PXC_hc[:,_,_,:,:,:,:]
