@@ -41,8 +41,6 @@ def run(P,t=None,T=None,RPts=None,interval=None):
   if RPts:
     for RPt in RPts:
       R[RPt] = np.rollaxis(P[RPt](t),-1)
-  R['P'].pop('inc')
-  R['P'].pop('beta')
   return R
 
 def solve(P,t):
@@ -72,16 +70,9 @@ def solve(P,t):
 #@profile
 def get_dX(X,t,P):
   # initialize
-  dX = 0*X
+  dX = 0*X # (s:2, i:4, k:4, h:6, c:5)
   # force of infection
-  # ([a:2], p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-  P['beta'] = foi.get_beta(P,t)
-  P['inc']  = foi.get_inc(P,X,t) # TODO: * P['mix_mask']
-  foi.apply_inc(dX,P['inc'],X)
-  # forming new partnerships [foi.mode = 'fpe' only]
-  dXi = X[:,:,1:,:,:] / P['dur_p'][_,_,:,_,_]
-  dX[:,:,1:,:,:] -= dXi
-  dX[:,:,0 ,:,:] += dXi.sum(axis=2)
+  inc = foi.get_apply_inc(dX,X,t,P) # (p:4, s:2, i:4, s':2, i':4)
   # HIV transitions
   dXi = X[:,:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
   dX[:,:,:,1:5,0:3] -= dXi
@@ -120,7 +111,7 @@ def get_dX(X,t,P):
   dX[:,:,:,1:6,4] += dXi # vls
   return {
     'dX': dX,
-    'inc': foi.aggr_inc(P['inc'],axis=(5,6)),
+    'inc': inc,
   }
 
 @deco.nowarn

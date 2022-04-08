@@ -47,36 +47,60 @@ def get_mix(XC,P):
 
 @deco.nowarn
 #@profile
-def get_inc(P,X,t):
-  # return.shape = (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-  # NOTE: if mode in ['lin','fpe','bpy','bpd']: return absolute infections
-  #       if mode in ['bmy','bmd']: return *probability* of infection (aggr must be deferred)
+def get_apply_inc(dX,X,t,P):
+  # return.shape = (p:4, s:2, i:4, s':2, i':4)
+  # NOTE: if mode in ['lin','fpe','bpd','bpy']: return absolute infections
+  #       if mode in ['bmd','bmy']: return *probability* of infection (aggr must be deferred)
   # define partner numbers (C) / rates (Q) for mixing, + total acts (A) for binomial models
   if mode in ['fpe']: # C
     C_psik = P['C_psi'] - P['aC_pk']
-  if mode in ['lin','bpy','bmy']: # C, Q, Q
+  elif mode in ['lin','bpy','bmy']: # C, Q, Q
     C_psik = P['C_psi']
     A_ap = P['F_ap']
-  if mode in ['bpd','bmd']: # Q, Q
+  elif mode in ['bpd','bmd']: # Q, Q
     C_psik = P['C_psi'] / P['dur_p'][:,_,_,_]
     A_ap = P['F_ap'] * P['dur_p'][_,:]
   # compute the mixing
   XC = (X[_,:,:,:,:,:] * C_psik[:,:,:,:,_,_]).sum(axis=3)
   SXC = XC.sum(axis=(3,4))  # shape = (p:4, s:2, i:4)
   PXC_hc = XC / (SXC[:,:,:,_,_] + tol/10) # shape = (p:4, s:2, i:4, h:6, c:5)
-  PXC_SI = PXC_hc[:,:,:,0,0,_,_,_,_] * PXC_hc[:,_,_,:,:,:,:]
-  P['mix'] = get_mix(SXC,P)
-  # force of infection
-  if mode in ['lin','fpe']: # linear & partner exclusion -> absolute infections
-    Fbeta = np.sum(P['beta'] * P['F_ap'][:,:,_,_,_,_,_,_], axis=0)
-    return Fbeta * P['mix'][:,:,:,:,:,_,_] * PXC_SI
-  if mode in ['bpy','bpd']: # binomial per-partnership prob -> absolute infections
-    Abeta = 1 - np.prod((1 - P['beta'])**A_ap[:,:,_,_,_,_,_,_], axis=0)
-    return Abeta * P['mix'][:,:,:,:,:,_,_] * PXC_SI
-  if mode in ['bmy','bmd']: # binomial per-time prob -> probability of infection
-    mix_pp = P['mix'][:,:,:,:,:,_,_] * PXC_SI / X[_,:,:,0,0,0,_,_,_,_]
-    # NOTE: due to many stratifications, most of A*mix << 1, yielding *increased* FOI (is this right?)
-    return 1 - np.prod((1 - P['beta'])**(A_ap[:,:,_,_,_,_,_,_] * mix_pp[_,:,:,:,:,:,:,:]), axis=0)
+  mix = get_mix(SXC,P) * PXC_hc[:,:,:,0,0,_,_] * P['mix_mask']
+  # compute per-act probability
+  beta = get_beta(P,t)
+  # force of infection: linear vs binomial
+  if mode in ['lin','fpe']:
+    Fbeta = np.sum(beta * P['F_ap'][:,:,_,_,_,_,_,_], axis=0)
+    inc = Fbeta * mix[:,:,:,:,:,_,_] * PXC_hc[:,_,_,:,:,:,:] # absolute infections
+  elif mode in ['bpd','bpy','bmd','bmy']:
+    Abeta = 1 - np.prod((1 - beta) ** A_ap[:,:,_,_,_,_,_,_], axis=0)
+    XAbeta = np.sum(Abeta * PXC_hc[:,_,_,:,:,:,:], axis=(5,6))
+    if mode in ['bpd','bpy']:
+      inc = XAbeta * mix # absolute infections
+    elif mode in ['bmd','bmy']:
+      inc = 1 - (1 - XAbeta) ** (mix / X[_,:,:,0,0,0,_,_]) # probability of infection
+  # aggregating & applying to dX
+  if mode in ['fpe']:
+    dXi = inc.sum(axis=(3,4,5,6)) # acquisition: (p:4, s:2, i:4)
+    dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
+    dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
+    dXi = inc.sum(axis=(1,2)) # transmission: (p:4, s':2, i':4, h':6, c':5)
+    dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
+    dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
+    dXi = X[:,:,1:,:,:] / P['dur_p'][_,_,:,_,_] # new partnerships: (s:2, i:4, k:4, h:6, c:5)
+    dX[:,:,1:,:,:] -= dXi
+    dX[:,:,0 ,:,:] += dXi.sum(axis=2)
+    return inc.sum(axis=(5,6))
+  # all other models don't use dimension "k" in X
+  elif mode in ['lin']:
+    inc = inc.sum(axis=(5,6))
+    dXi = aggr_inc(inc,axis=(0,3,4))
+  elif mode in ['bpd','bpy']:
+    dXi = aggr_inc(inc,axis=(0,3,4))
+  elif mode in ['bmd','bmy']:
+    dXi = aggr_inc(inc,axis=(0,3,4),Xsus=X[:,:,0,0,0])
+  dX[:,:,0,0,0] -= dXi
+  dX[:,:,0,1,0] += dXi
+  return inc
 
 #@profile
 def aggr_inc(inc,axis,Xsus=1.,keepdims=False):
@@ -85,22 +109,4 @@ def aggr_inc(inc,axis,Xsus=1.,keepdims=False):
   if mode in ['lin','fpe','bpy','bpd']:
     return inc.sum(axis=axis,keepdims=keepdims)
   if mode in ['bmy','bmd']:
-    return (1 - (1 - inc).prod(axis=axis,keepdims=keepdims)) * Xsus
-
-#@profile
-def apply_inc(dX,inc,X=None):
-  # update dX given "inc"; again, X only needed if mode in ['bmy','bmd']
-  if mode in ['fpe']:
-    # acquisition & fpe
-    dXi = inc.sum(axis=(3,4,5,6)) # (p:4, s:2, i:4)
-    dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
-    dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
-    # transmission pda
-    dXi = inc.sum(axis=(1,2)) # (p:4, s':2, i':4, h':6, c':5)
-    dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
-    dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
-  else:
-    # all other modes: don't bother using (p > 0) strata in X (axis=2)
-    dXi = aggr_inc(inc,axis=(0,3,4,5,6),Xsus=X[:,:,0,0,0])
-    dX[:,:,0,0,0] -= dXi
-    dX[:,:,0,1,0] += dXi
+    return (1 - np.prod(1 - inc,axis=axis,keepdims=keepdims)) * Xsus
