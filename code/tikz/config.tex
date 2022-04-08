@@ -25,7 +25,26 @@
   arrow/.style = {
     line width = .5mm,
     draw = #1,
-  }
+  },
+  circ/.style = {
+    circle,
+    minimum height = #1,
+    minimum width = #1,
+    inner sep = 0pt,
+  },
+  ipair/.style = {
+    color = #1,
+    draw = #1,
+    fill = #1!10!white,
+    circ = 1.5em,
+  },
+  opair/.style = {
+    ipair = #1,
+    circ = 1.75em,
+    fill = none,
+    dashed,
+    thick,
+  },
 }
 \newcommand{\shiftscope}[3]{%
   \begin{scope}[transform canvas={xshift=#1,yshift=#2}]
