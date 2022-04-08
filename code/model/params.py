@@ -307,11 +307,11 @@ def get_F(P): # [OK]
   # F_ap.shape = (a:2, p:4)
   F_p   = np.array([ P['F_mcq'], P['F_mcq'], 12, P['F_swr'] ])
   PF_ai = np.array([ P['PF_ai_mcq'],P['PF_ai_mcq'],P['PF_ai_swq'],P['PF_ai_swq'] ])
-  F_ap  = F_p.reshape([1,4,1,1,1,1,1,1]) * np.array([1-PF_ai,PF_ai]).reshape([2,4,1,1,1,1,1,1])
-  dur_k = np.array([ P['dur_msp'], P['dur_cas'], 1/12, P['dur_swr'] ]).reshape([1,1,4,1,1])
+  F_ap  = F_p.reshape([1,4]) * np.array([1-PF_ai,PF_ai])
+  dur_p = np.array([ P['dur_msp'], P['dur_cas'], 1/12, P['dur_swr'] ])
   return {
     'F_ap': F_ap,
-    'dur_k': dur_k,
+    'dur_p': dur_p,
   }
 
 def check_F(P):
@@ -324,7 +324,7 @@ def get_C(P): # [OK]
   PX_si = P['PX_si']
   F = np.squeeze(P['F_ap'].sum(axis=0))
   # dimensions: p,s,i
-  C_psi = np.zeros((4,2,4))
+  C_psi = np.zeros((4,2,4,1))
   # main / spousal
   C_psi[ 0, 0, 0] = .38
   C_psi[ 0, 0, 1] = .32
@@ -357,7 +357,7 @@ def get_C(P): # [OK]
   aC_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape((4,1,1,5))
   return {
     'C_psi': C_psi,
-    'C_psik': C_psi[:,:,:,_] - aC_pk,
+    'aC_pk': aC_pk,
   }
 
 def get_condom(P): # [OK]

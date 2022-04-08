@@ -41,12 +41,14 @@ def run(P,t=None,T=None,RPts=None,interval=None):
   if RPts:
     for RPt in RPts:
       R[RPt] = np.rollaxis(P[RPt](t),-1)
+  R['P'].pop('inc')
+  R['P'].pop('beta')
   return R
 
 def solve(P,t):
   X   = get_X(P['X0'],t)
   inc = get_X(np.zeros([4,2,4,2,4]),t)
-  t0_hiv = int(P['t0_hiv'])
+  t0_hiv = int(P['t0_hiv']) # TODO: avoid int here
   t0_tpaf = int(P['t0_tpaf'])
   for i in range(1,t.size):
     # Ri = rk4step(X[i-1],t[i-1],(t[i]-t[i-1]),get_dX,P=P)
@@ -72,19 +74,12 @@ def get_dX(X,t,P):
   # initialize
   dX = 0*X
   # force of infection
-  P['foi_pp'] = foi.get_foi_pp(P,t)
-  # (p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-  foi_full = foi.get_foi_full(P,X) # TODO: * P['mix_mask']
-  # acquisition & pda
-  dXi = foi_full.sum(axis=(3,4,5,6)) # (p:4, s:2, i:4)
-  dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
-  dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
-  # transmission pda
-  dXi = foi_full.sum(axis=(1,2)) # (p:4, s':2, i':4, h':6, c':5)
-  dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
-  dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
-  # forming new partnerships
-  dXi = dX[:,:,1:,:,:] / P['dur_k']
+  # ([a:2], p:4, s:2, i:4, s':2, i':4, h':6, c':5)
+  P['beta'] = foi.get_beta(P,t)
+  P['inc']  = foi.get_inc(P,X,t) # TODO: * P['mix_mask']
+  foi.apply_inc(dX,P['inc'],X)
+  # forming new partnerships [foi.mode = 'fpe' only]
+  dXi = X[:,:,1:,:,:] / P['dur_p'][_,_,:,_,_]
   dX[:,:,1:,:,:] -= dXi
   dX[:,:,0 ,:,:] += dXi.sum(axis=2)
   # HIV transitions
@@ -125,7 +120,7 @@ def get_dX(X,t,P):
   dX[:,:,:,1:6,4] += dXi # vls
   return {
     'dX': dX,
-    'inc': foi_full.sum(axis=(5,6)) / X[:,:,0,0,0,_,_],
+    'inc': foi.aggr_inc(P['inc'],axis=(5,6)),
   }
 
 @deco.nowarn

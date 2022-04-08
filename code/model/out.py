@@ -1,5 +1,6 @@
 import numpy as np
 from utils import _,deco,dtfun
+from model import foi # TODO
 
 labels = {
   'NX':         'Population Size, Absolute (\'000s)',
@@ -61,7 +62,7 @@ def vs_R(ofun,R1,R2,vsop='1-2',aggr=True,**kwds):
   O2 = ofun(R2,**kwds,aggr=aggr)
   return vs_fun(O1,O2,vsop)
 
-# X dimensions: t,s,i,h,c
+# X.shape: (t:*, s:2, i:4, h:6, c:5)
 
 def aggratio(X1,X2,aggr,axis=None):
   if axis is None: axis = (1,2)
@@ -111,15 +112,15 @@ def whoinfectwhom(X,inc,p=None,fpop=None,tpop=None,aggr=True):
   fi = None if fpop is None else fpop.get('i')
   ts = None if tpop is None else tpop.get('s')
   ti = None if tpop is None else tpop.get('i')
-  X = X[:,:,:,0,0] # only susceptible
-  inc = inc.sum(axis=1,keepdims=True) if p is None \
+  # aggregating non-self dimensions: (p[1], s'[4], i'[5])
+  inc = foi.aggr_inc(inc,axis=1,keepdims=True) if p is None \
         else inc[:,_,p] if isinstance(p,int) else inc[:,p]
-  inc = inc.sum(axis=4,keepdims=True) if fs is None \
+  inc = foi.aggr_inc(inc,axis=4,keepdims=True) if fs is None \
         else inc[:,:,:,:,_,fs] if isinstance(fs,int) else inc[:,:,:,:,fs]
-  inc = inc.sum(axis=5,keepdims=True) if fi is None \
+  inc = foi.aggr_inc(inc,axis=5,keepdims=True) if fi is None \
         else inc[:,:,:,:,:,_,fi] if isinstance(fi,int) else inc[:,:,:,:,:,fi]
-  inc = inc.sum(axis=(1,4,5),keepdims=True) if aggr else inc
-  inf = X[:,_,:,:,_,_] * inc
+  inf = foi.aggr_inc(inc,axis=(1,4,5),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_]) if aggr \
+        else foi.aggr_inc(inc,axis=(),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_])
   inf = inf.sum(axis=2,keepdims=True) if ts is None \
         else inf[:,:,_,ts] if isinstance(ts,int) else inf[:,:,ts]
   inf = inf.sum(axis=3,keepdims=True) if ti is None \
@@ -130,22 +131,20 @@ def whoinfectwhom(X,inc,p=None,fpop=None,tpop=None,aggr=True):
 @deco.rmap(args=['X','inc'])
 @deco.tslice(targs=['X','inc'])
 def incidence(X,inc,s=None,i=None,aggr=True):
-  X = X[:,:,:,0,0] # only susceptible
-  inc = np.sum(inc,axis=(1,4,5))
-  Xinc = X_by_si(X*inc,s=s,i=i)
-  Xsus = X_by_si(X,s=s,i=i)
-  return aggratio(Xinc,Xsus,aggr)
+  inf = foi.aggr_inc(inc,axis=(1,4,5),Xsus=X[:,:,:,0,0])
+  inf_si = X_by_si(inf,s=s,i=i)
+  sus_si = X_by_si(X[:,:,:,0,0],s=s,i=i)
+  return aggratio(inf_si,sus_si,aggr)
 
 @deco.rmap(args=['X','inc'])
 def cuminfect(X,inc,tvec,s=None,i=None,aggr=True,t0=None):
-  X  = X[:,:,:,0,0] # only susceptible
-  inc = np.sum(inc,axis=(1,4,5))
   dt = dtfun(tvec)
-  Xinc = X_by_si(X*inc,s=s,i=i)
-  inf = Xinc.sum(axis=(1,2)) * dt if aggr else Xinc * dt[:,_,_]
+  inf = foi.aggr_inc(inc,axis=(1,4,5),Xsus=X[:,:,:,0,0])
+  inf_si = X_by_si(inf,s=s,i=i)
+  inf_dt = inf_si.sum(axis=(1,2)) * dt if aggr else inf_si * dt[:,_,_]
   if t0:
-    inf[tvec < t0] = 0
-  return np.cumsum(inf, axis=0)
+    inf_dt[tvec < t0] = 0
+  return np.cumsum(inf_dt,axis=0)
 
 @deco.nanzero
 @deco.rmap(args=['X'])
@@ -236,6 +235,7 @@ def gud(P_gud_t,aggr=None):
   return np.squeeze(P_gud_t)[:]
 
 def get_infections(R1s,tvec,t,aggrop=None,R2s=None,vsop='1-2'):
+  # TODO: upddate for foi edits
   # get fully stratified infection counts by partnership/group for plotting alluvial diagram in R
   if aggrop is None: aggrop = lambda inf: np.median(inf,axis=0)
   if isinstance(R1s,dict): R1s = [R1s]
