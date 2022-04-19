@@ -1,0 +1,13 @@
+\colorlet{S}{sus}%
+\colorlet{I}{hiv.2}%
+\newcommand{\ipair}[4][ipair]{\node[#1=#2] (#2#3#4) at (#3,#4) {$#2$};}
+\begin{tikzpicture}[x=2.5em,y=2.5em]
+  \ipair S14 \ipair S24 \ipair S34 \ipair S44 \ipair S54 \ipair I64 \ipair S74 \ipair I84
+  \ipair S13 \ipair I23 \ipair S33 \ipair S43 \ipair S53 \ipair I63 \ipair S73 \ipair S83
+  \ipair S12 \ipair S22 \ipair S32 \ipair I42 \ipair S52 \ipair S62 \ipair S72 \ipair S82
+  \ipair I11 \ipair S21 \ipair I31 \ipair S41 \ipair S51 \ipair S61 \ipair I71 \ipair S81
+  \node[opair=S!75!I,fit=(I11)(I84),rectangle,inner sep=.75em,rounded corners=1.5em] (p) {};
+  \node[opair=I] at (8,1) {};
+  \node[opair=I] at (8,4) {};
+  \draw[thick] (p.20) edge[->,bend left=120,looseness=1.5] node[right,I] {$\beta$} (p.340);
+\end{tikzpicture}

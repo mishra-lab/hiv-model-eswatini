@@ -1,0 +1,39 @@
+\def\k{\bar{k}}
+\begin{tikzpicture}[x=8em,y=6em,state/.append style={minimum width=4em}]
+  \node[state=  sus] (sus) at (0,2) {$S$};
+  \foreach \i in {3,2,1,0}{
+    \begin{scope}[xshift=\i mm,yshift=\i mm]
+      \node[state=  ahi!33!white] (e0) at (0,1) {$I_{1\k}$};
+      \node[state=hiv.1!33!white] (e1) at (1,1) {$I_{2\k}$};
+      \node[state=hiv.2!33!white] (e2) at (2,1) {$I_{3\k}$};
+      \node[state=hiv.3!33!white] (e3) at (3,1) {$I_{4\k}$};
+      \node[state= aids!33!white] (e4) at (4,1) {$I_{5\k}$};
+    \end{scope}
+  }
+  \node[state=  ahi] (h0)  at (0,0) {$I_1$};
+  \node[state=hiv.1] (h1)  at (1,0) {$I_2$};
+  \node[state=hiv.2] (h2)  at (2,0) {$I_3$};
+  \node[state=hiv.3] (h3)  at (3,0) {$I_4$};
+  \node[state= aids] (h4)  at (4,0) {$I_5$};
+  \draw[arrow,->] (sus) -- node[right=1mm]{$\lambda_k$}  (e0);
+  \draw[arrow,->] (e0)  -- node[above=1mm]{~~~$\eta_1$} (e1);
+  \draw[arrow,->] (e1)  -- node[above=1mm]{~~~$\eta_2$} (e2);
+  \draw[arrow,->] (e2)  -- node[above=1mm]{~~~$\eta_3$} (e3);
+  \draw[arrow,->] (e3)  -- node[above=1mm]{~~~$\eta_4$} (e4);
+  \draw[arrow,->] (h0)  -- node[above=1mm]{$\eta_1$} (h1);
+  \draw[arrow,->] (h1)  -- node[above=1mm]{$\eta_2$} (h2);
+  \draw[arrow,->] (h2)  -- node[above=1mm]{$\eta_3$} (h3);
+  \draw[arrow,->] (h3)  -- node[above=1mm]{$\eta_4$} (h4);
+  \draw[arrow,->] (e0.300) -- node[right=1mm]{$\delta_k^{-1}$} (h0.60);
+  \draw[arrow,->] (e1.300) -- node[right=1mm]{$\delta_k^{-1}$} (h1.60);
+  \draw[arrow,->] (e2.300) -- node[right=1mm]{$\delta_k^{-1}$} (h2.60);
+  \draw[arrow,->] (e3.300) -- node[right=1mm]{$\delta_k^{-1}$} (h3.60);
+  \draw[arrow,->] (e4.300) -- node[right=1mm]{$\delta_k^{-1}$} (h4.60);
+  \draw[arrow,->] (h0.120) -- node[left =1mm]{$\lambda_k'$} (e0.240);
+  \draw[arrow,->] (h1.120) -- node[left =1mm]{$\lambda_k'$} (e1.240);
+  \draw[arrow,->] (h2.120) -- node[left =1mm]{$\lambda_k'$} (e2.240);
+  \draw[arrow,->] (h3.120) -- node[left =1mm]{$\lambda_k'$} (e3.240);
+  \draw[arrow,->] (h4.120) -- node[left =1mm]{$\lambda_k'$} (e4.240);
+  \node[anchor=west] at (4.5,1) {$\k > 0$};
+  \node[anchor=west] at (4.5,0) {$\k = 0$};
+\end{tikzpicture}

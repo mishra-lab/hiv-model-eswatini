@@ -5,10 +5,11 @@
   \usepackage[italic,basic]{mathastext}
 \else
   \usepackage[charter]{mathdesign}
-  \usepackage{CrimsonPro}
+  \usepackage[lf]{CrimsonPro}
   \usepackage[italic]{mathastext}
 \fi
 \usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,fit}
 \pgfdeclarelayer{back}
 \pgfdeclarelayer{fore}
 \pgfsetlayers{back,main,fore}
@@ -45,11 +46,28 @@
     dashed,
     thick,
   },
+  plot/.style 2 args = {
+    thick,
+    variable=\x,
+    samples=128,
+    domain=#1:#2,
+  },
+  tangent/.style 2 args = {
+    plot={#1}{#2},
+    samples=2,
+    mark=*,
+    mark size=.3mm,
+  },
+  brace/.style = {
+    decorate,
+    decoration = {brace},
+  }
 }
 \newcommand{\shiftscope}[3]{%
   \begin{scope}[transform canvas={xshift=#1,yshift=#2}]
     #3
   \end{scope}}
+\definecolor    {g}{rgb}{.60,.60,.60}
 \definecolor  {all}{rgb}{.40,.00,.40}
 \definecolor   {al}{rgb}{1.0,.40,1.0}
 \definecolor   {am}{rgb}{.80,.20,.80}

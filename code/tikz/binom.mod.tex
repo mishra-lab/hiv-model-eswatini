@@ -1,0 +1,31 @@
+\def\brate{300} % 1/beta
+\pgfmathsetmacro{\xscale}{\brate*2/100}
+\begin{tikzpicture}[x=.25mm,y=30mm]
+  \draw[->] (0,0) -- (0,1.1);
+  \draw[->] (0,0) -- (120,0);
+  \node[left=3mm] at (0,0.5) {$B(A)$};
+  \node[below=3mm] at (50,0) {$A$};
+  \draw[w,dashed] (  0,1.0) -- (100,1.0);
+  \draw[w,dashed] ( 50,0.0) -- ( 50,1.0);
+  \draw[w,dashed] (100,0.0) -- (100,1.0);
+  \node[w,below] at (25,0) {\scriptsize$1-\alpha$};
+  \node[w,below] at (75,0) {\scriptsize$\alpha$};
+  \draw[w, plot={ 0}{ 50}] plot ({\x},{1-(1-1/\brate)^(\x*\xscale)}) coordinate (b11);
+  \draw[wl,plot={50}{100}] plot ({\x},{1-(1-1/\brate)^(50*\xscale)*(1-0.3/\brate)^((\x-50)*\xscale)}) coordinate (b12);
+  \draw[w, brace] (b11 -| {(105,1)}) -- (105,0);
+  \draw[wl,brace] (b12 -| {(105,1)}) -- (b11 -| {(105,0)});
+\begin{scope}[xshift=40mm]
+  \draw[->] (0,0) -- (0,1.1);
+  \draw[->] (0,0) -- (120,0);
+  \node[below=3mm] at (50,0) {$A$};
+  \draw[m,dashed] (  0,1.0) -- (100,1.0);
+  \draw[m,dashed] (  0,0.5) -- (100,0.5);
+  \draw[m,dashed] (100,0.0) -- (100,1.0);
+  \node[m,left] at (0,0.25) {\scriptsize$1-\alpha$};
+  \node[m,left] at (0,0.75) {\scriptsize$\alpha$};
+  \draw[m, plot={0}{100}] plot ({\x},{.5*(1-(1-1/\brate)^(\x*\xscale))}) coordinate (b21);
+  \draw[ml,plot={0}{100}] plot ({\x},{0.5+0.5*(1-(1-0.3/\brate)^(\x*\xscale))}) coordinate (b22);
+  \draw[m, brace] (b21 -| {(105,1)}) -- (105,0);
+  \draw[ml,brace] (b22 -| {(105,1)}) -- (105,0.5);
+\end{scope}
+\end{tikzpicture}
