@@ -1,0 +1,33 @@
+% fonts
+\usepackage[charter]{mathdesign}
+\usepackage{CrimsonPro}
+\usepackage[italic]{mathastext}
+\usepackage[scale=.7]{FiraMono}
+\usepackage[bottom,marginal]{footmisc}
+\usepackage{microtype,ragged2e}
+\usepackage{bm,mathtools}
+% hyperref & bib
+\usepackage{xcolor}
+\usepackage[
+  colorlinks,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=purple,
+]{hyperref}
+\newcommand{\hreftt}[2][https://]{\href{#1#2}{\texttt{#2}}}
+\addbibresource{/home/jesse/refs/library.bib}
+% float stuff
+\usepackage{graphicx,subcaption}
+\captionsetup{labelfont=bf}
+\newlength{\widefig}\setlength{\widefig}{1.333\linewidth}
+\newcommand{\tn}[1]{\rlap{\textsuperscript{~#1}}}
+\newcommand{\tnt}[2][]{\textsuperscript{#1~}#2}
+\newcommand{\floatfoot}{\par\addvspace{1ex}\justifying\footnotesize}
+\graphicspath{{fig/}}
+% misc formatting
+\newcommand{\sref}[1]{\S~\ref{#1}}
+\newcommand{\case}[1]{\ensuremath{\langle\liningnums{#1}\rangle}}
+\newcommand{\tsub}[1]{\textsubscript{#1}}
+\newcommand{\tsup}[1]{\textsuperscript{#1}}
+\renewcommand{\k}{{\smash{\bar{k}}\vphantom{k}}}
+\addtolength{\skip\footins}{2ex}

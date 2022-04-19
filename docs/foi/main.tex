@@ -1,0 +1,18 @@
+% !TeX root = main.tex
+% !TeX TS-program = pdflatex
+% !BIB TS-program = bibtex
+\documentclass{ms}
+\input{config}
+\input{meta}
+\begin{document}
+  \maketitle
+  \input{intro}\clearpage
+  \input{model.prior}
+  \input{model.prop}\clearpage
+  \input{experiment}
+  \clearpage
+  \printbibliography
+  \appendix
+  \input{appendix}
+  \printbibliography
+\end{document}
