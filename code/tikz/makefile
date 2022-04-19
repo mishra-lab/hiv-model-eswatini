@@ -2,11 +2,13 @@ all:
 	for fig in \
 		model.risk\
 		model.hiv\
-		model.hiv.pda\
+		model.hiv.fpe\
+		binom.lin\
+		binom.mod\
 		model.cascade\
 		model.wp.adj\
-		eg.pairs\
-		eg.freq\
-		; do \
+		tx.pairs\
+		tx.freq\
+	; do \
 	  ./maketikz.sh $$fig ;\
 	done
