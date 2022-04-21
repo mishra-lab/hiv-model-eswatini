@@ -2,15 +2,13 @@ import sys,os
 os.environ['MPLCONFIGDIR'] = os.path.join('.tmp',sys.argv[1])
 
 from utils import parallel
-from model import scenario
+import model.scenario
+from model.scenario import calibrate
 
 parallel.cpus = 80
-scenario.uid = '2022-02-20'
-scenario.N['b'] = int(sys.argv[1])
+model.scenario.uid = '2022-04-20'
+model.scenario.N['b'] = int(sys.argv[1])
 
-# scenario.run_calibrate()
-# scenario.merge_calibrate()
-scenario.run_refit()
-# scenario.merge_refit()
-# scenario.expo_refit()
-# scenario.run_sens()
+calibrate.run()
+# calibrate.merge()
+# calibrate.rerun()
