@@ -1,15 +1,12 @@
 import sys
-from utils import parallel
-from model import scenario
-import numpy as np
+import model.scenario
+from model.scenario import calibrate
 
-scenario.uid = '2022-02-20'
-# scenario.N['cal'] = 1000 # DEBUG
-scenario.N['b'] = int(sys.argv[1])
+model.scenario.uid = '2022-04-20'
+# model.scenario.N['cal'] = 1000 # DEBUG
+model.scenario.N['b'] = int(sys.argv[1])
 
-scenario.run_calibrate()
-scenario.merge_calibrate()
-scenario.run_refit()
-scenario.merge_refit()
-scenario.expo_refit()
-scenario.run_sens()
+calibrate.run()
+# calibrate.merge()
+# calibrate.rerun()
+
