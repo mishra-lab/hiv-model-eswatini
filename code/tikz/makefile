@@ -1,14 +1,14 @@
+figs =
+figs += model.risk
+figs += model.hiv
+figs += model.hiv.fpe
+figs += binom.lin
+figs += binom.mod 
+figs += model.cascade
+figs += model.wp.adj
+figs += tx.pairs
+figs += tx.freq
 all:
-	for fig in \
-		model.risk\
-		model.hiv\
-		model.hiv.fpe\
-		binom.lin\
-		binom.mod\
-		model.cascade\
-		model.wp.adj\
-		tx.pairs\
-		tx.freq\
-	; do \
+	for fig in $(figs); do \
 	  ./maketikz.sh $$fig ;\
 	done
