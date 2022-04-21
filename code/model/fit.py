@@ -12,7 +12,7 @@ def plot_cal(t,Rs,T,fname,tops=(1.,.1,.01),drop=True,merge=True):
   tfnames = [
     # param histograms
     plot_param(Rss,'PX_si',    dstr='si'),
-    plot_param(Rss,'A_ap',     dstr='ap'),
+    plot_param(Rss,'F_ap',     dstr='ap'),
     plot_param(Rss,'C_psi',    dstr='psi'),
     plot_param(Rss,'Rbeta_as', dstr='as'),
     plot_param(Rss,'Rbeta_h',  dstr='h'),

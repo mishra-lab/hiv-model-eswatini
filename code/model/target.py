@@ -72,12 +72,12 @@ def get_model_ll(T,R,t,interval=None):
 
 def top_ll(Rs,top=.1,ll='ll'):
   if isinstance(top,int): top = top / len(Rs)
-  # replace -np.inf with (lowest value - 1e-6)
+  # replace -np.inf with (lowest value - 1)
   # as np.quantile has undefined behaviour (bug) for +/-infs
   # https://github.com/numpy/numpy/issues/21091
   Rll = np.array([R[ll] for R in Rs])
   iRll = Rll == -np.inf
-  Rll[iRll] = Rll[~iRll].min() - 1e6
+  Rll[iRll] = Rll[~iRll].min() - 1
   llcut = np.nanquantile(Rll,1-top)
   return [R for R in Rs if R[ll] >= llcut]
 

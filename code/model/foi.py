@@ -1,7 +1,7 @@
 import numpy as np
 from utils import _,deco,linear_comb
 
-tol = 1e-7
+tol = 1e-8
 modes = [
   'lin', # no consideration of partnership duration
   'bpd', # binomial per-partnership-duration
@@ -62,6 +62,7 @@ def get_apply_inc(dX,X,t,P):
     A_ap = P['F_ap'] * P['dur_p'][_,:]
   # compute the mixing
   XC = (X[_,:,:,:,:,:] * C_psik[:,:,:,:,_,_]).sum(axis=3)
+  XC[XC<0] = 0 # TODO: double check this is safe
   SXC = XC.sum(axis=(3,4))  # shape = (p:4, s:2, i:4)
   PXC_hc = XC / (SXC[:,:,:,_,_] + tol/10) # shape = (p:4, s:2, i:4, h:6, c:5)
   mix = get_mix(SXC,P) * PXC_hc[:,:,:,0,0,_,_] * P['mix_mask']

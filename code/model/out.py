@@ -215,7 +215,8 @@ def tx_rate(X,tx,Rtx_ht,s=None,i=None,aggr=True):
 @deco.rmap(args=['X','P'])
 @deco.tslice(targs=['X'])
 def X_rate(X,P,rate,s=None,i=None,aggr=True):
-  Xrate = X_by_si(X*P[rate][_,],s=s,i=i).sum(axis=(3,4))
+  Prate = P[rate][:,:,0,:,:] if P[rate].ndim == 5 else P[rate] # kinda dangerous
+  Xrate = X_by_si(X*Prate[_,],s=s,i=i).sum(axis=(3,4))
   XS    = X_by_si(X,s=s,i=i).sum(axis=(3,4))
   return aggratio(Xrate,XS,aggr)
 

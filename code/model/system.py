@@ -57,7 +57,7 @@ def solve(P,t):
       X[i,:,:,0,:,0] = X[i,:,:,0,0,0,_] * P['PX_h_hiv'][_,_,:]
     if t[i] == t0_tpaf: # start accumulating tPAF
       P['mix_mask'] = P['mix_mask_tpaf']
-    if np.any(X[i].sum(axis=2) < 0): # abort / fail
+    if np.any(X[i].sum(axis=2) < 0) or np.any(inc[i] < 0): # abort / fail
       return False
     # check.all(P,X[i],t[i])
   return {
