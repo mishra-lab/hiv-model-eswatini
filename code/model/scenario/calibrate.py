@@ -1,3 +1,4 @@
+import numpy as np
 from utils import log
 from model import target,params,system,fit,out
 from model.scenario import *
