@@ -106,7 +106,7 @@ def def_sample_distrs():
   'RC_swr_fsw_h:l':       stats.gamma_p(p=1.5,v=.01),
   'CF_swq_cli':           stats.gamma_p(p=60,v=197),
   'RCF_swq_cli_h:l':      stats.gamma_p(p=2.0,v=.05),
-  'C_cas_am':             stats.gamma_p(p=2.0,v=.213),
+  'C_cas_am':             stats.gamma_p(p=1.5,v=.213),
   'RC_cas_fsw:am':        stats.uniform(l=.25,h=1),
   'RC_cas_cli:am':        stats.uniform(l=.25,h=1),
   # F
@@ -136,7 +136,7 @@ def def_sample_distrs():
   'PF_condom_swr_2014':   stats.beta_binom(p=.759,n=11),
   'PF_circum_2050':       stats.beta_binom(p=.724,n=18),
   # beta
-  'beta_0':               stats.gamma_p(p=.00075,v=4.2e-8),
+  'beta_0':               stats.gamma_p(p=.00095,v=4.2e-8),
   'Rbeta_acute':          stats.gamma_p(p=5.3,v=10),
   'Rbeta_350':            stats.gamma_p(p=1.6,v=.0233),
   'Rbeta_200':            stats.gamma_p(p=8.3,v=4.71),
@@ -355,6 +355,7 @@ def get_C(P): # [OK]
   C_psi[ 3, 1, 2] = P['CF_swr_total'] / F[3] / wPX
   C_psi[ 3, 1, 3] = P['CF_swr_total'] / F[3] / wPX * P['RCF_swq_cli_h:l']
   aC_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape((4,1,1,5))
+  aC_pk = aC_pk * (C_psi > 0)
   return {
     'C_psi': C_psi,
     'aC_pk': aC_pk,
