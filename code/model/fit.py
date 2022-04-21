@@ -5,6 +5,24 @@ from model import slicers,system,out,target,plot
 plotsize = 3 # inches
 ttfname = fio.tmpfile('fit-{}.pdf')
 
+def plot_debug(t,Rs,T,fname='tmp.pdf',tops=(1.,.2,.04),drop=True):
+  if drop: Rs = system.drop_fails(Rs)[0]
+  Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
+  kwds = dict(T=T,tfname=None)
+  tfnames = [
+    plot_output(t,Rss,'NX', ['all'],**kwds),
+    plot_output(t,Rss,'X_rate', ['all'],rate='death_hc',**kwds),
+    plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
+    plot_output(t,Rss,'prevalence',
+      [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
+      vsop='1/2',**kwds,ylim=(1,5)),
+    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds),
+  ]
+  fio.pdfmerge(fname,tfnames,rm=True)
+
 def plot_cal(t,Rs,T,fname,tops=(1.,.1,.01),drop=True,merge=True):
   if drop: Rs = system.drop_fails(Rs)[0]
   Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
