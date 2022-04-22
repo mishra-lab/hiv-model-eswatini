@@ -2,12 +2,7 @@ library('gifski')
 source('post/config.r')
 
 # --------------------------------------------------------------------------------------------------
-load.data = function(diff=FALSE){
-  if (diff){
-    X = load.csvs('fit','infs-diff',cases[1:4])
-  } else {
-    X = load.csvs('fit','infs')
-  }
+clean.data = function(X){
   # X = load.csvs('sens','infs',cases.sens[1],b=seq(N$batch)-1) # DEBUG: obj 2
   # X = aggregate(infections~t+fs+fi+ts+ti+p,X,median) # DEBUG: obj 2
   X = X[X$infections>0,] # for speed
@@ -38,8 +33,7 @@ alluvial = function(X,fill='part',norm=FALSE){
     theme_light()
   return(g)
 }
-do.alluvial.facet = function(X){
-  tvec = seq(1990,2040,10)
+do.alluvial.facet = function(X,tvec=seq(1990,2040,10)){
   g = alluvial(X[X$t %in% tvec,],norm=TRUE) +
     facet_wrap(~factor(t)) +
     theme(legend.position='top')
@@ -84,17 +78,17 @@ do.margin = function(X,margin,rel=TRUE){
   if (rel){ g = g + facet_wrap(vars(scale),scales='free_y') }
   return(g)
 }
-
+# TEMP
+uid = '2022-04-20'
+N$cal = 100000
 # --------------------------------------------------------------------------------------------------
-X = load.data()
-X.base = X[X$case=='base',]
-do.ratio(X.base);          fig.save(uid,'inf-base-ratio',w=5,h=4)
-do.margin(X.base,'part');  fig.save(uid,'inf-base-part',w=8,h=4)
-do.margin(X.base,'to');    fig.save(uid,'inf-base-to'  ,w=8,h=4)
-do.margin(X.base,'from');  fig.save(uid,'inf-base-from',w=8,h=4)
-do.alluvial.facet(X.base); fig.save(uid,'inf-base-alluvial',w=12,h=16)
-# do.alluvial.gif(X.base)
-X.diff = load.data(diff=TRUE)
-do.margin(X.diff,'part',rel=FALSE) + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-part',w=10,h=3)
-do.margin(X.diff,'to',  rel=FALSE) + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-to',  w=10,h=3)
-do.margin(X.diff,'from',rel=FALSE) + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-from',w=10,h=3)
+X = clean.data(load.csvs('fit','infs',case.base))
+do.margin(X,'part');  fig.save(uid,paste0('inf-base-part'),w=8,h=4)
+do.margin(X,'to');    fig.save(uid,paste0('inf-base-to')  ,w=8,h=4)
+do.margin(X,'from');  fig.save(uid,paste0('inf-base-from'),w=8,h=4)
+# for (id in case.ids){
+#   X.id = X[X$case==id,]
+#   do.margin(X.id,'part');  fig.save(uid,paste0('inf-',id,'-part'),w=8,h=4)
+#   do.margin(X.id,'to');    fig.save(uid,paste0('inf-',id,'-to')  ,w=8,h=4)
+#   do.margin(X.id,'from');  fig.save(uid,paste0('inf-',id,'-from'),w=8,h=4)
+# }

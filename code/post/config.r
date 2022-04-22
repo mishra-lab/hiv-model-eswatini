@@ -1,7 +1,7 @@
 source('utils/ops.r')
 source('utils/plot.r')
 
-uid = '2022-02-20'
+uid = '2022-04-20'
 N = list(cal=100000,batchs=10,sens=10,topfit=.01)
 pops = list(
   'wl'    = list(clr=rgb(1.,.6,.6),lab='Women Low'),
@@ -22,6 +22,10 @@ groups = list(
   'aq'  = list(clr=rgb(.9,.7,.0),lab='Lower Risk'),
   'fsw' = list(clr=rgb(.6,.0,.0),lab='FSW'),
   'cli' = list(clr=rgb(.0,.0,.6),lab='Clients'))
+years = list(
+  '2020' = list(clr=rgb(.26,.04,.41),lab='2020'),
+  '2030' = list(clr=rgb(.69,.20,.35),lab='2030'),
+  '2040' = list(clr=rgb(.98,.55,.04),lab='2040'))
 steps = list(
   'diagnosed' = list(clr=rgb(.0,.0,.0),lab='Diagnosed among HIV+'),
   'treated.c' = list(clr=rgb(.0,.0,.0),lab='Treated among diagnosed'),
@@ -36,7 +40,9 @@ cases = list(
   'base'     = list(clr=rgb(.4,.4,.4),id='bc',lab='Base Case'))
 cases.sens = list(
   'sens' = list(id='rl',lab='Random Lower'),
-  'base' = list(id='bc',lab='Base Case')
+  'base' = list(id='bc',lab='Base Case'))
+case.base = list(
+  'base' = list(clr=rgb(.4,.4,.4),id='bc',lab='Base Case')
 )
 cget = function(defs,key){
   return(unname(sapply(defs,function(def){def[[key]]})))
@@ -48,22 +54,25 @@ clr = list(
   part   = cget(parts,'clr'),
   groups = cget(groups,'clr'),
   steps  = cget(steps,'clr'),
-  case   = cget(cases,'clr'))
+  years  = cget(years,'clr'),
+  case   = cget(cases,'clr'),
+  ' '    = rgb(.26,.04,.41))
 lab = list(
   pop    = cget(pops,'lab'),
   part   = cget(parts,'lab'),
   part   = cget(parts,'lab'),
   groups = cget(groups,'lab'),
   steps  = cget(steps,'lab'),
+  years  = cget(years,'lab'),
   case   = cget(cases,'lab'))
-csv.name = function(phase,key,case,b){
-  return(root.path('data','mid',uid,sprintf('%d',N$cal),paste0(phase,'_',key,'_',case,'_',b,'.csv')))
+gen.name = function(phase,key,case,b,ext='.csv'){
+  return(root.path('data','mid',uid,sprintf('%d',N$cal),paste0(phase,'_',key,'_',case,'_',b,ext)))
 }
 load.csvs = function(phase,key,cases.alt,b='all'){
   if (missing(cases.alt)){ cases.alt = cases }
   X = do.call(rbind,lapply(names(cases.alt),function(case){
     X.i = do.call(rbind,lapply(b,function(bi){
-      return(read.csv(csv.name(phase,key,case,b=bi)))
+      return(read.csv(gen.name(phase,key,case,b=bi)))
     }))
     X.i$case = case
     return(X.i)
