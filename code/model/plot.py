@@ -82,14 +82,15 @@ def ribbon(t,x,taxis=0,interval=.9,alpha=.2,median=True,**kwds):
     if median:
       plt.plot(t,np.nanquantile(x3[:,:,i],.5,axis=0),label=label,**kwds)
 
-def boxplot(t,x,dt=5,tb=None,taxis=0,alpha=.2,**kwds):
+def boxplot(t,x,dt=5,tb=None,taxis=0,alpha=.2,width=.6,**kwds):
   # x is a list of ndarrays, with time along taxis
-  # TODO: support multiple x with offsets?
   if tb is None:
     tb = tdt(t,dt)
   else:
     dt = min(np.diff(dt))
   it = itslice(tb,t)
+  g,Ng = kwds.pop('dodge',(0,1))
+  tbd = np.array(tb) + dt * width * (g/Ng - .5 * (Ng-1)/Ng)
   x3 = np.stack([np.moveaxis(xi,taxis,0).reshape((len(t),-1)) for xi in x])
   label = kwds.pop('label',None)
   color = kwds.pop('color',(0,0,0))
@@ -101,11 +102,16 @@ def boxplot(t,x,dt=5,tb=None,taxis=0,alpha=.2,**kwds):
     flierprops   = dict(lw=.5,mec=color,marker='+',mew=.5,ms=3),
   ))
   for i in range(x3.shape[2]):
-    plt.boxplot(x3[:,it,i],positions=tb,widths=.4*dt,patch_artist=True,**kwds)
-    if dt < 10: plt.xticks(tdt(t,10),tdt(t,10))
+    plt.plot(np.nan,np.nan,color=color,label=label) # for legend
+    plt.boxplot(x3[:,it,i],positions=tbd,widths=width*.8*dt/Ng,patch_artist=True,**kwds)
+  if dt < 10:
+    plt.xticks(tdt(t,10),tdt(t,10))
+  else:
+    plt.xticks(tb,tb)
 
 def ribbon_or_box(t,x,box=False,**kwds):
   if box:
+    kwds.pop('ls')
     boxplot(t,x,dt=box,**kwds)
   else:
     ribbon(t,x,**kwds)
