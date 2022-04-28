@@ -111,9 +111,10 @@ def boxplot(t,x,dt=5,tb=None,taxis=0,alpha=.2,width=.6,**kwds):
 
 def ribbon_or_box(t,x,box=False,**kwds):
   if box:
-    kwds.pop('ls')
+    kwds.pop('ls',None)
     boxplot(t,x,dt=box,**kwds)
   else:
+    kwds.pop('dodge',None)
     ribbon(t,x,**kwds)
 
 def target(Ti,interval=.95,**kwds):

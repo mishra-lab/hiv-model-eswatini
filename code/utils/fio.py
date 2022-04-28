@@ -17,13 +17,13 @@ def genpath(fname):
 
 def save(fname,obj):
   # save obj to file via numpy, ensuring the path exists
-  log(2,'fio.save: '+fname)
+  log(2,'fio.save: '+fname+'.npy')
   np.save(genpath(fname),obj)
   return obj
 
 def load(fname):
   # load obj from file via numpy & avoid 0-dimensional array obj for dict and other obj types
-  log(2,'fio.load: '+fname)
+  log(2,'fio.load: '+fname+'.npy')
   obj = np.load(fname+'.npy',allow_pickle=True)
   if not obj.shape: # dict etc.
     return obj[()]
