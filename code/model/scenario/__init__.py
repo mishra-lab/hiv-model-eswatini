@@ -14,6 +14,7 @@ tvec = dict(
   cal  = system.get_t(tf=2021),
   main = system.get_t(tf=2050),
   infs = system.get_t(tf=2050,dt=1),
+  outs = system.get_t(tf=2050,t0=2000,dt=5),
 )
 
 def fname(ftype,phase,key,case='base',b=None):
