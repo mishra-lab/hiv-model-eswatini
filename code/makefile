@@ -1,10 +1,16 @@
 export PYTHONPATH := .:$$PYTHONPATH
+do.debug:
+	python3.8 model/debug.py && echo [OK]
 do.model:
 	python3.8 model/main.py 0 && echo [OK]
+do.model.foi:
+	python3.8 model/scenario/foi.py && echo [OK]
 do.params.distr:
 	python3.8 params/distr.py && echo [OK]
 do.profile:
 	./profile/run.sh && echo [OK]
+do.posterior:
+	Rscript post/posterior.r && echo [OK]
 do.infections:
 	Rscript post/infections.r && echo [OK]
 do.obj.1:
@@ -15,8 +21,8 @@ do.tikz:
 	cd tikz && make all
 do.params.fsw:
 	Rscript params/fsw/main.r && echo [OK]
-do.params.np-gp:
-	Rscript params/np-gp/main.r && echo [OK]
+do.params.wp:
+	Rscript params/wp/main.r && echo [OK]
 do.model.batch:
 	python3.8 model/main.py 0 && \
 	python3.8 model/main.py 1 && \
