@@ -1,6 +1,7 @@
 import numpy as np
 from utils import _,deco,dtfun
-from model import foi
+from model import foi,slicers
+# TODO: integrate slicers fully?
 
 labels = {
   'NX':         'Population Size, Absolute (\'000s)',
@@ -255,3 +256,15 @@ def get_infections(R1s,tvec,t,aggrop=None,R2s=None,vsop='1-2'):
                                    whoinfectwhom(R2,**kwds),vsop) for R1,R2 in zip(R1s,R2s)])
             data += [[tk,p,fs,fi,ts,ti,infk] for tk,infk in zip(t,inf)]
   return data
+
+def expo(onames,Rs,tvec,t,snames,qs=None):
+  if qs is None: qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
+  sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
+  E = dict(out=og,pop=sg,t=tg,**{k:[] for k in ['q'+str(q) for q in qs]})
+  for oname in onames:
+    fun = by_name(oname)
+    for sname in snames:
+      osq = np.nanquantile([fun(R,**slicers[sname].pop,tvec=tvec,t=t) for R in Rs],qs,axis=0)
+      for i,q in enumerate(qs):
+        E['q'+str(q)] += osq[i,:].tolist()
+  return E
