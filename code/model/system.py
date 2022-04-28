@@ -28,14 +28,14 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
   log(1)
   return Rs
 
-def run(P,t=None,T=None,RPts=None,mode=None,interval=None):
+def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = get_t()
   if RPts is None: RPts = ['PF_condom_t','PF_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
-  if mode is not None: foi.mode = mode
   R = solve(P,t)
   log(3,str(P['seed']).rjust(6)+(' ' if R else '!'))
   if not R:
     return R
+  R['foi_mode'] = R['P']['foi_mode']
   if T is not None:
     R['ll'] = target.get_model_ll(T,R,t,interval=interval)
     R['P']['ll'] = R['ll']

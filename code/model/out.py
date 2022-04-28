@@ -1,6 +1,6 @@
 import numpy as np
 from utils import _,deco,dtfun
-from model import foi # TODO
+from model import foi
 
 labels = {
   'NX':         'Population Size, Absolute (\'000s)',
@@ -103,9 +103,9 @@ def prevalence(X,s=None,i=None,aggr=True):
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
   return aggratio(Xhiv,XS,aggr)
 
-@deco.rmap(args=['X','inc'])
+@deco.rmap(args=['X','inc','foi_mode'])
 @deco.tslice(targs=['X','inc'])
-def whoinfectwhom(X,inc,p=None,fpop=None,tpop=None,aggr=True):
+def whoinfectwhom(X,inc,foi_mode,p=None,fpop=None,tpop=None,aggr=True):
   # total infections between pop1 & pop2 along partnership type p
   # TODO: implement cumulative?
   fs = None if fpop is None else fpop.get('s')
@@ -113,14 +113,14 @@ def whoinfectwhom(X,inc,p=None,fpop=None,tpop=None,aggr=True):
   ts = None if tpop is None else tpop.get('s')
   ti = None if tpop is None else tpop.get('i')
   # aggregating non-self dimensions: (p[1], s'[4], i'[5])
-  inc = foi.aggr_inc(inc,axis=1,keepdims=True) if p is None \
+  inc = foi.aggr_inc(inc,foi_mode,axis=1,keepdims=True) if p is None \
         else inc[:,_,p] if isinstance(p,int) else inc[:,p]
-  inc = foi.aggr_inc(inc,axis=4,keepdims=True) if fs is None \
+  inc = foi.aggr_inc(inc,foi_mode,axis=4,keepdims=True) if fs is None \
         else inc[:,:,:,:,_,fs] if isinstance(fs,int) else inc[:,:,:,:,fs]
-  inc = foi.aggr_inc(inc,axis=5,keepdims=True) if fi is None \
+  inc = foi.aggr_inc(inc,foi_mode,axis=5,keepdims=True) if fi is None \
         else inc[:,:,:,:,:,_,fi] if isinstance(fi,int) else inc[:,:,:,:,:,fi]
-  inf = foi.aggr_inc(inc,axis=(1,4,5),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_]) if aggr \
-        else foi.aggr_inc(inc,axis=(),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_])
+  inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_]) if aggr \
+        else foi.aggr_inc(inc,foi_mode,axis=(),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_])
   inf = inf.sum(axis=2,keepdims=True) if ts is None \
         else inf[:,:,_,ts] if isinstance(ts,int) else inf[:,:,ts]
   inf = inf.sum(axis=3,keepdims=True) if ti is None \
@@ -128,18 +128,18 @@ def whoinfectwhom(X,inc,p=None,fpop=None,tpop=None,aggr=True):
   inf = inf.sum(axis=(2,3),keepdims=True) if aggr else inf
   return np.squeeze(inf) if aggr else inf
 
-@deco.rmap(args=['X','inc'])
+@deco.rmap(args=['X','inc','foi_mode'])
 @deco.tslice(targs=['X','inc'])
-def incidence(X,inc,s=None,i=None,aggr=True):
-  inf = foi.aggr_inc(inc,axis=(1,4,5),Xsus=X[:,:,:,0,0])
+def incidence(X,inc,foi_mode,s=None,i=None,aggr=True):
+  inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
   inf_si = X_by_si(inf,s=s,i=i)
   sus_si = X_by_si(X[:,:,:,0,0],s=s,i=i)
   return aggratio(inf_si,sus_si,aggr)
 
-@deco.rmap(args=['X','inc'])
-def cuminfect(X,inc,tvec,s=None,i=None,aggr=True,t0=None):
+@deco.rmap(args=['X','inc','foi_mode'])
+def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
   dt = dtfun(tvec)
-  inf = foi.aggr_inc(inc,axis=(1,4,5),Xsus=X[:,:,:,0,0])
+  inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
   inf_si = X_by_si(inf,s=s,i=i)
   inf_dt = inf_si.sum(axis=(1,2)) * dt if aggr else inf_si * dt[:,_,_]
   if t0:

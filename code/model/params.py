@@ -8,6 +8,7 @@ from utils import tarray as ta
 def get_all(P,seed=None,**kwds):
   P = P if P is not None else \
       get_sample_random(seed=seed)
+  P['foi_mode'] = 'fpe'
   P.update(kwds)
   # order matters for some dependencies
   P.update(get_F(P))

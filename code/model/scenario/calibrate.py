@@ -5,12 +5,12 @@ from model.scenario import N,tvec,fname,batch_select
 
 case = 'base'
 
-def run():
+def run(**kwds):
   log(0,'scenario.calibrate.run')
   # get targets (T), seeds, params (P0s)
   T = target.get_all_esw()
   seeds = batch_select(range(N['cal']))
-  P0s = params.get_n_all(len(seeds),seeds=seeds)
+  P0s = params.get_n_all(len(seeds),seeds=seeds,**kwds)
   keys = ['seed']+list(params.def_sample_distrs().keys())
   fio.save(fname('npy','sam','Ps',case=case),[{k:P[k] for k in keys} for P in P0s])
   # run & save all ll (nan for fails)
