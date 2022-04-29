@@ -252,19 +252,25 @@ def get_infections(R1s,tvec,t,aggrop=None,R2s=None,vsop='1-2'):
             if R2s is None:
               inf = aggrop([whoinfectwhom(R1,**kwds) for R1 in R1s])
             else:
-              inf = aggrop([vs_fun(whoinfectwhom(R1,**kwds),
-                                   whoinfectwhom(R2,**kwds),vsop) for R1,R2 in zip(R1s,R2s)])
+              inf = aggrop([vs_fun(whoinfectwhom(R1,**kwds),whoinfectwhom(R2,**kwds),vsop)
+                for R1,R2 in zip(R1s,R2s)])
             data += [[tk,p,fs,fi,ts,ti,infk] for tk,infk in zip(t,inf)]
   return data
 
-def expo(onames,Rs,tvec,t,snames,qs=None):
+def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',qs=None):
   if qs is None: qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
+  aggrop = lambda os: np.nanquantile(os,qs,axis=0)
   sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
-  E = dict(out=og,pop=sg,t=tg,**{k:[] for k in ['q'+str(q) for q in qs]})
+  E = dict(out=og,pop=sg,t=tg,op=[vsop]*len(tg),**{k:[] for k in ['q'+str(q) for q in qs]})
   for oname in onames:
     fun = by_name(oname)
     for sname in snames:
-      osq = np.nanquantile([fun(R,**slicers[sname].pop,tvec=tvec,t=t) for R in Rs],qs,axis=0)
+      kwds = dict(**slicers[sname].pop,tvec=tvec,t=t)
+      if R2s is None:
+        osq = np.nanquantile([fun(R,**kwds) for R in R1s],qs,axis=0)
+      else:
+        osq = np.nanquantile([vs_fun(fun(R1,**kwds),fun(R2,**kwds),vsop)
+          for R1,R2 in zip(R1s,R2s)],qs,axis=0)
       for i,q in enumerate(qs):
         E['q'+str(q)] += osq[i,:].tolist()
   return E
