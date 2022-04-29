@@ -1,11 +1,16 @@
 \def\brate{300} % 1/beta
 \pgfmathsetmacro{\xscale}{\brate*2/100}
+\newcommand{\slice}[5]{
+  \ifx#3#4\draw[draw=#5,fill=#5!20!white] ({#1},{#2}) circle (.5em);
+  \else\draw[draw=#5,fill=#5!20!white] ({#1},{#2}) --
+      ++ ({#3*360+90}:.5em) arc ({#3*360+90}:{#4*360+90}:.5em) -- cycle;
+  \fi}%
 \begin{tikzpicture}[x=.25mm,y=30mm]
   \draw[->] (0,0) -- (0,1.1);
   \draw[->] (0,0) -- (120,0);
   \node[left=3mm] at (0,0.5) {$B(A)$};
   \node[below=3mm] at (50,0) {$A$};
-  \node[above=3mm] at (50,1) {SCAP};
+  \node[above=3mm] at (50,1.3) {SCAP};
   \draw[w,dashed] (  0,1.0) -- (100,1.0);
   \draw[w,dashed] ( 50,0.0) -- ( 50,1.0);
   \draw[w,dashed] (100,0.0) -- (100,1.0);
@@ -15,11 +20,17 @@
   \draw[wl,plot={50}{100}] plot ({\x},{1-(1-1/\brate)^(50*\xscale)*(1-0.3/\brate)^((\x-50)*\xscale)}) coordinate (b12);
   \draw[w, brace] (b11 -| {(105,1)}) -- (105,0);
   \draw[wl,brace] (b12 -| {(105,1)}) -- (b11 -| {(105,0)});
+  \slice{13}{1.3}{0.5}{1.0}{wl} \slice{13}{1.3}{0.0}{0.5}{w}
+  \slice{28}{1.2}{0.5}{1.0}{wl} \slice{28}{1.2}{0.0}{0.5}{w}
+  \slice{43}{1.3}{0.5}{1.0}{wl} \slice{43}{1.3}{0.0}{0.5}{w}
+  \slice{57}{1.2}{0.5}{1.0}{wl} \slice{57}{1.2}{0.0}{0.5}{w}
+  \slice{72}{1.3}{0.5}{1.0}{wl} \slice{72}{1.3}{0.0}{0.5}{w}
+  \slice{87}{1.2}{0.5}{1.0}{wl} \slice{87}{1.2}{0.0}{0.5}{w}
 \begin{scope}[xshift=40mm]
   \draw[->] (0,0) -- (0,1.1);
   \draw[->] (0,0) -- (120,0);
   \node[below=3mm] at (50,0) {$A$};
-  \node[above=3mm] at (50,1) {ACSP};
+  \node[above=3mm] at (50,1.3) {ACSP};
   \draw[m,dashed] (  0,1.0) -- (100,1.0);
   \draw[m,dashed] (  0,0.5) -- (100,0.5);
   \draw[m,dashed] (100,0.0) -- (100,1.0);
@@ -29,5 +40,11 @@
   \draw[ml,plot={0}{100}] plot ({\x},{0.5+0.5*(1-(1-0.3/\brate)^(\x*\xscale))}) coordinate (b22);
   \draw[m, brace] (b21 -| {(105,1)}) -- (105,0);
   \draw[ml,brace] (b22 -| {(105,1)}) -- (105,0.5);
+  \slice{13}{1.3}{0}{0}{ml}
+  \slice{28}{1.2}{0}{0}{m}
+  \slice{43}{1.3}{0}{0}{ml}
+  \slice{57}{1.2}{0}{0}{m}
+  \slice{72}{1.3}{0}{0}{ml}
+  \slice{87}{1.2}{0}{0}{m}
 \end{scope}
 \end{tikzpicture}
