@@ -1,5 +1,6 @@
 import numpy as np
-from utils import log,fio,itslice
+from copy import copy
+from utils import log,fio,itslice,dict_list_update
 from model import target,system,fit,out,slicers,params
 from model.scenario import tvec,fname
 import model.scenario
@@ -7,13 +8,7 @@ import model.scenario
 model.scenario.uid = '2022-04-20'
 model.scenario.N['cal'] = 100000
 
-cases = dict(
-  # bpd  = dict(mode='bpd',plotkwds=dict(color=(0.267,0.005,0.329),ls=':', label='$\\langle1a\\rangle$')),
-  bpy  = dict(mode='bpy',plotkwds=dict(color=(0.23 ,0.322,0.546),ls='-.',label='$\\langle1b\\rangle$')),
-  bmy  = dict(mode='bmy',plotkwds=dict(color=(0.128,0.567,0.551),ls='--',label='$\\langle2b\\rangle$')),
-  # lin  = dict(mode='lin',plotkwds=dict(color=(0.369,0.789,0.383),ls='-', label='$\\langle3\\rangle$')),
-  base = dict(mode='fpe',plotkwds=dict(color=(0.993,0.906,0.144),ls='-', label='$\\langle4\\!*\\!\\rangle$')),
-)
+cases = dict(base='fpe',bpd='bpd',bpy='bpy',bmy='bmy')
 
 def get_expo_data(R,t,case):
   pops = ['all','w','m','aq','wq','mq','fsw','cli']
@@ -40,7 +35,21 @@ def run_fit(case):
   fio.save_csv(fname('csv','fit','expo',case=case,b='all'),
     [get_expo_data(R,tvec['main'],case) for R in Rs])
   fio.save_csv(fname('csv','fit','infs',case=case,b='all'),
-    out.get_infections(Rs,tvec['main'],tvec['infs']))
+    out.get_infections(Rs,tvec['main'],tvec['plot']))
 
-run_fit('base')
+def run_ep(top=1.):
+  log(0,'scenario.foi.run_ep: '+', '.join(cases))
+  onames = ['incidence','prevalence']
+  ekwds = dict(tvec=tvec['main'],t=tvec['plot'],snames=['all','w','m','aq','cli','fsw'])
+  Ps = target.top_ll(fio.load(fname('npy','fit','Ps',case='base',b='all')),top)
+  for case in cases:
+    R1s = system.run_n(dict_list_update(Ps,foi_mode=cases[case]),t=tvec['main'])
+    E = out.expo(onames,R1s,**ekwds)
+    if case == 'base':
+      R2s = copy(R1s)
+    else:
+      E_vs = out.expo(onames,R1s,R2s=R2s,vsop='1-2',**ekwds)
+      E = {k:E[k]+E_vs[k] for k in E}
+    fio.save_csv(fname('csv','foi','ep',case=case,b='all'),E)
 
+run_ep()
