@@ -11,7 +11,7 @@ def run(**kwds):
   T = target.get_all_esw()
   seeds = batch_select(range(N['cal']))
   P0s = params.get_n_all(len(seeds),seeds=seeds,**kwds)
-  keys = ['seed']+list(params.def_sample_distrs().keys())
+  keys = ['seed','foi_mode']+list(params.def_sample_distrs().keys())
   fio.save(fname('npy','sam','Ps',case=case),[{k:P[k] for k in keys} for P in P0s])
   # run & save all ll (nan for fails)
   R0s = system.run_n(P0s,t=tvec['cal'],T=T)
