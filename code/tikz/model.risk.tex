@@ -14,8 +14,8 @@
           \draw[arrow=msp] (\wi.south) -- (\mi.north);
     }}}
     \shiftscope{-1mm}{0mm}{
-      \foreach \wi in {wm,fl,fh}{
-        \foreach \mi in {mm,cl,ch}{
+      \foreach \wi in {wl,wm,fl,fh}{
+        \foreach \mi in {ml,mm,cl,ch}{
           \draw[arrow=cas] (\wi.south) -- (\mi.north);
     }}}
     \shiftscope{+1mm}{0mm}{
@@ -30,7 +30,7 @@
     }}}
   \end{pgfonlayer}
   \draw[arrow=msp] (3.6,1.0) -- ++(.2,0) node[anchor=west,black]{Long-Term / Spousal};
-  \draw[arrow=cas] (3.6,0.8) -- ++(.2,0) node[anchor=west,black]{Short-Term};
-  \draw[arrow=swo] (3.6,0.6) -- ++(.2,0) node[anchor=west,black]{Sex Work Occasional};
-  \draw[arrow=swr] (3.6,0.4) -- ++(.2,0) node[anchor=west,black]{Sex Work Regular};
+  \draw[arrow=cas] (3.6,0.8) -- ++(.2,0) node[anchor=west,black]{Casual};
+  \draw[arrow=swo] (3.6,0.6) -- ++(.2,0) node[anchor=west,black]{Occas. Sex Work};
+  \draw[arrow=swr] (3.6,0.4) -- ++(.2,0) node[anchor=west,black]{Regular Sex Work};
 \end{tikzpicture}
