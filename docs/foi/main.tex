@@ -1,6 +1,6 @@
 % !TeX root = main.tex
 % !TeX TS-program = pdflatex
-% !BIB TS-program = bibtex
+% !BIB TS-program = biber
 \documentclass{ms}
 \input{config}
 \input{meta}
@@ -9,10 +9,11 @@
   \input{intro}\clearpage
   \input{model.prior}
   \input{model.prop}\clearpage
-  \input{experiment}
+%  \input{experiment}
   \clearpage
   \printbibliography
   \appendix
-  \input{appendix}
+  \input{app.sup}\clearpage
+  \input{app.esw}\clearpage
   \printbibliography
 \end{document}

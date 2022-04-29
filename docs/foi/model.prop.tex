@@ -1,6 +1,6 @@
 \section{Proposed Model}\label{prop}
-We developed a new model for the force of infection in compartmental models
-which aims to overcome the limitations of models \case{1-3}.
+We propose a new model for the force of infection in compartmental transmission models of HIV,
+that overcomes the limitations of models \case{1-3}.
 Below we describe the conceptual basis for the model, followed by the equations.
 \subsection{Conceptual Development}\label{prop.cd}
 Consider a population of 32 individuals in 16 partnerships with 25\% infection prevalence,
@@ -57,7 +57,8 @@ to progress as usual through different stages of infection, aging, etc.
 \par
 Using this conceptual basis,
 we propose a new stratification of modelled population, denoted $\k$.
-The stratum $\k = 0$ corresponds to no recent transmission, or all ``new'' partners.
+The stratum $\k = 0$ corresponds to no recent transmission,
+or all ``new'' (potentially discordant) partners.
 Other strata $\k > 0$ correspond to recent transmission via (to or from) partnership type $k$.
 Figure~\ref{fig:model.hk} illustrates the new stratification
 for an system with 5 modelled infection stages.
@@ -99,7 +100,9 @@ track the rate of transmission \emph{from} risk groups $j$ and infection stages 
 We begin by defining $M_{ijk}$ as the absolute (not per-person) number of
 type-$k$ partnerships between group~$i$ and group~$j$.
 We assume that $M_{ijk}$ can be defined by an arbitrary function $f$,
-with inputs $M_{ik}$, $M_{jk}$, and some parameter(s) $\theta_{ijk}$ specifying mixing patterns:
+with inputs $M_{ik}$, $M_{jk}$, and some parameter(s) $\theta_{ijk}$ specifying mixing patterns:%
+\footnote{A popular simple method to specify mixing is given in \cite{Garnett1994},
+  although other more interesting approaches are possible \cite{Morris1991}.}
 \begin{equation}
   M_{ijk} = f(M_{ik}, M_{jk}, \theta_{ijk})
 \end{equation}
@@ -118,11 +121,12 @@ We define $M_{S,ik}$ and $M_{I,ihk}$ as follows:
     I_{ih,\,\k=k} (C_{ik}-1) + \textstyle\sum_{\k\ne k} I_{ih,\k} C_{ik}
   \end{alignat}
 \end{subequations}
-The definition \eqref{eq:M.S} is hopefully familiar,
-while \eqref{eq:M.I} can be described as the sum of partnerships ``offered'' across states $\k$,
+Equation \eqref{eq:M.S} is the total number of partnerships ``offered'' by susceptible individuals,
+while \eqref{eq:M.I} is the equivalent sum of partnerships offered across states $\k$,
 where the partnership numbers $C_{ik}$ of infected individuals in state $\k=k$ are reduced by 1.
 \par
-Next, we define the absolute (not per-person) rate of transmission
+Next, drawing loosely on \eqref{eq:foi.3} with the $CF$ parameterization,
+we define the absolute (not per-person) rate of transmission
 from group $j$ and infection stage $h$ to group $i$ via type-$k$ partnerships as:
 \begin{equation}
   \Lambda_{ijhk} = F_k \beta_{hk} M_{ijk} \frac{M_{S,ik}}{M_{ik}} \frac{M_{I,jhk}}{M_{jk}}
@@ -142,30 +146,35 @@ For the purposes of solving the model,
 we can even skip division by $S_i$ and $I_{jh}$ in \eqref{eq:foi.i}~and~\eqref{eq:foi.jh},
 since $\lambda'_{ik}$ and $\lambda'_{jhk}$ are immediately multiplied by $S_i$ and $I_{jh}$,
 respectively, in the system of differential equations.
-\subsection{Comment}
+\subsection{Transmission via Multiple Partnerships}\label{prop.mp}
 In the proposed approach, we do not explicitly model the proportion of infected individuals
 who recently transmitted or acquired infection via two \emph{different} partnership types,
 (or two partnerships of the same type).
-If we did, the required size of the new dimension $\k$ would be $2^{K}$, not $K+1$.
+If we did, the required size of the new dimension $\k$ would be at least $2^{K}$, not $K+1$
+--- an exponential relationship that is related to the challenge of
+specifying all combinations of partnership states in pair-based models \cite{Kretzschmar2017}.
 However, under frequentist assumptions, we can equivalently model
 two transmissions by one individual as one transmission each by two individuals,
 and thus allocate two proportions of $I_{jh\k=0}$ to $I_{jh\k=k_1}$ and $I_{jh\k=k_2}$ (one each),
-instead of just one proportion to $I_{jh\k={(k_1k_2)}}$.
+instead of just one proportion to $I_{jh\k={\textnormal{``}k_1k_2\textnormal{''}}}$.
 \par
 In fact, $I_{jh\k=0}$ can be \emph{negative},
 because the dimension $\k$ is only relevant to \eqref{eq:M.I},
 and in all other contexts and equations,
-we first sum $I_{jh\k}$ across $\k$ to yield $I_{hj}$, which should be positive.
+we first sum $I_{jh\k}$ across $\k$ to yield $I_{hj}$, which must be positive.
 Moreover, we can also have $I_{jh\k} > I_{jh}$, provided that $I_{jh\k} \le I_{jh} C_{jk}$,
-reflecting the situation when more than 100\% of $I_{jh}$
-have recently transmitted or acquired infection via at least one type-$k$ partnership.
-This situation can only arise in the context of concurrent partnerships, $C_{jk} > 1$.
+reflecting the situation when 100\% of $I_{jh}$
+have recently transmitted or acquired infection via at least one type-$k$ partnership,
+or 50\% via at least two, etc.
+This situation can therefore only arise in the context of
+concurrent type-$k$ partnerships, $C_{jk} > 1$.
 In this case $I_{jh\k=0}$ \emph{must} be negative,
 but it can be shown that \eqref{eq:M.I} still yields the correct value of $M_{I,ihk}$.
 With this perspective, the constraint $I_{jh\k} \le I_{jh} C_{jk}$ may be intuitive,
 and it should be possible to guarantee for small enough timesteps,
 because $M_{I,ihk}$ approaches zero as $I_{jh\k}$ approaches $I_{jh} C_{jk}$
---- i.e. all partnerships become concordant.
+--- i.e. all partnerships become concordant,
+and no more transmission can occur before partners change.
 % TODO: discuss the possibility of being in multiple seroconcordant partnerships following transmission
 % slightly more complicated modelling of transitions within "k" dimension,
 % with main risk if we don't being: run out of people in k=0 (fully discordant)

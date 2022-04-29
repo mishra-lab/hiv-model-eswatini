@@ -25,9 +25,11 @@
 \newcommand{\floatfoot}{\par\addvspace{1ex}\justifying\footnotesize}
 \graphicspath{{fig/}}
 % misc formatting
-\newcommand{\sref}[1]{\S~\ref{#1}}
+\newcommand{\sref}[1]{\S\,\ref{#1}}
 \newcommand{\case}[1]{\ensuremath{\langle\liningnums{#1}\rangle}}
 \newcommand{\tsub}[1]{\textsubscript{#1}}
 \newcommand{\tsup}[1]{\textsuperscript{#1}}
 \renewcommand{\k}{{\smash{\bar{k}}\vphantom{k}}}
 \addtolength{\skip\footins}{2ex}
+% TEMP
+\DeclareSourcemap{\maps{\map{\step[fieldset=abstract,null]}}}

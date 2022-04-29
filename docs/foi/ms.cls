@@ -15,7 +15,7 @@
   isbn=false,
   eprint=false,
   natbib=true,
-  backend=bibtex,
+  backend=biber,
   sorting=none,
   maxbibnames=3,
   minbibnames=3,

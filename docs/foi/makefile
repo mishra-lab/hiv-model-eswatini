@@ -5,7 +5,7 @@ tex:
 	pdflatex main
 
 bib:
-	bibtex main
+	biber main
 
 clean:
 	texclean .
