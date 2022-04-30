@@ -46,3 +46,4 @@ X$facet = factor(X$facet,
   levels=c('aq.raw','cli.raw','fsw.raw','aq.1-2','cli.1-2','fsw.1-2'),
   labels=c(pops$aq,pops$cli,pops$fsw,'Difference',' Difference ','  Difference  '))
 plot.ep(X,'incidence',pops); fig.save(uid,paste0('foi.ep.incidence'),w=12,h=7)
+plot.ep(X,'prevalence',pops); fig.save(uid,paste0('foi.ep.prevalence'),w=12,h=7)
