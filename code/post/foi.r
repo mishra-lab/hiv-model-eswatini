@@ -8,12 +8,23 @@ q.aes = function(q,g='case.lab',...){
     return(aes_string(ymin=qq('pmin'),ymax=qq('pmax'),fill=g,...))
   }
 }
+make.y.max = function(X.,q,m=.55){
+  ystr = paste0('q',1-(1-q)/2)
+  y.max = aggregate(formula(paste(ystr,'~pop')),X.[X.$op=='raw',],max)
+  y.max$t = 2000
+  y.max$facet = unique(X.$facet[X.$op=='1-2'])
+  y.max = rbind(y.max,y.max)
+  y.max[[ystr]] = y.max[[ystr]] * rep(c(-m,m),each=nrow(y.max)/2)
+  return(y.max)
+}
 plot.ep = function(X,out,pops){
   X. = X[X$out==out,]
   X.$pop.lab = factor(X.$pop,levels=names(pops),labels=unname(pops))
   X. = X.[!is.na(X.$pop.lab),]
+  y.max = make.y.max(X.,.9)
   lab = list(foi='FOI Model',incidence='HIV Incidence (per person-year)',prevalence='HIV Prevalence')
   g = ggplot(X.,aes(x=t)) +
+    geom_point(data=y.max,aes(x=t,y=q0.95),color=NA) +
     geom_ribbon(q.aes(.9),alpha=.25) +
     geom_line(q.aes(.5)) +
     scale_color_manual(values=sget('cases.foi','clr')) +
@@ -34,4 +45,4 @@ X$facet = interaction(X$pop,X$op)
 X$facet = factor(X$facet,
   levels=c('aq.raw','cli.raw','fsw.raw','aq.1-2','cli.1-2','fsw.1-2'),
   labels=c(pops$aq,pops$cli,pops$fsw,'Difference',' Difference ','  Difference  '))
-plot.ep(X,'incidence',pops); fig.save(uid,paste0('ep-incidence'),w=12,h=7)
+plot.ep(X,'incidence',pops); fig.save(uid,paste0('foi.ep.incidence'),w=12,h=7)
