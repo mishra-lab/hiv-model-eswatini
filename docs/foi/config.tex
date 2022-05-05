@@ -17,7 +17,7 @@
 \newcommand{\hreftt}[2][https://]{\href{#1#2}{\texttt{#2}}}
 \addbibresource{/home/jesse/refs/library.bib}
 % float stuff
-\usepackage{graphicx,subcaption}
+\usepackage{graphicx,subcaption,booktabs}
 \captionsetup{labelfont=bf}
 \newlength{\widefig}\setlength{\widefig}{1.333\linewidth}
 \newcommand{\tn}[1]{\rlap{\textsuperscript{~#1}}}
@@ -25,7 +25,7 @@
 \newcommand{\floatfoot}{\par\addvspace{1ex}\justifying\footnotesize}
 \graphicspath{{fig/}}
 % misc formatting
-\newcommand{\sref}[1]{\S\,\ref{#1}}
+\newcommand{\sref}[1]{\raisebox{-.3ex}{\S}\,\ref{#1}}
 \newcommand{\case}[1]{\ensuremath{\langle\liningnums{#1}\rangle}}
 \newcommand{\tsub}[1]{\textsubscript{#1}}
 \newcommand{\tsup}[1]{\textsuperscript{#1}}
