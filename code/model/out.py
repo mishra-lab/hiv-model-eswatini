@@ -1,5 +1,5 @@
 import numpy as np
-from utils import _,deco,dtfun
+from utils import _,deco,dtfun,itslice
 from model import foi,slicers
 # TODO: integrate slicers fully?
 
@@ -26,6 +26,7 @@ def by_name(name):
   # get a function in this module by its name
   return globals()[name]
 
+@deco.nanzero
 def vs_fun(O1,O2,vsop):
   if   vsop=='1/2':    return (O1/O2)
   elif vsop=='2/1':    return (O2/O1)
@@ -257,20 +258,27 @@ def get_infections(R1s,tvec,t,aggrop=None,R2s=None,vsop='1-2'):
             data += [[tk,p,fs,fi,ts,ti,infk] for tk,infk in zip(t,inf)]
   return data
 
-def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',qs=None):
-  if qs is None: qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
-  aggrop = lambda os: np.nanquantile(os,qs,axis=0)
+def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',case=None,mode='q',**kwds):
+  if mode == 'q':
+    qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
+    aggrop = lambda os: np.nanquantile(os,qs,axis=0)
+    cols = ['q'+str(q) for q in qs]
+  if mode == 'seed':
+    aggrop = lambda os: np.array(os)
+    cols = ['s'+str(R['P']['seed']) for R in R1s]
   sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
-  E = dict(out=og,pop=sg,t=tg,op=[vsop]*len(tg),**{k:[] for k in ['q'+str(q) for q in qs]})
+  E = dict(out=og,pop=sg,t=tg,op=[vsop]*len(tg),case=[case]*len(tg),**{k:[] for k in cols})
   for oname in onames:
     fun = by_name(oname)
     for sname in snames:
-      kwds = dict(**slicers[sname].pop,tvec=tvec,t=t)
-      if R2s is None:
-        osq = np.nanquantile([fun(R,**kwds) for R in R1s],qs,axis=0)
+      if oname == 'cuminfect': # special case as we cannot use @deco.tslice
+        sfun = lambda R: fun(R,**slicers[sname].pop,tvec=tvec,**kwds)[itslice(t,tvec)]
       else:
-        osq = np.nanquantile([vs_fun(fun(R1,**kwds),fun(R2,**kwds),vsop)
-          for R1,R2 in zip(R1s,R2s)],qs,axis=0)
-      for i,q in enumerate(qs):
-        E['q'+str(q)] += osq[i,:].tolist()
+        sfun = lambda R: fun(R,**slicers[sname].pop,tvec=tvec,t=t,**kwds)
+      if R2s is None:
+        osk = aggrop([sfun(R) for R in R1s])
+      else:
+        osk = aggrop([vs_fun(sfun(R1),sfun(R2),vsop) for R1,R2 in zip(R1s,R2s)])
+      for i,col in enumerate(cols): # TODO: is this slow? if so, vectorize with np?
+        E[col] += osk[i,:].tolist()
   return E
