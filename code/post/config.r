@@ -30,12 +30,11 @@ cases.art = list(
   'fsw+cli+' = list(clr=rgb(.9,.7,.0),id='++',lab='Left Behind: Neither'),
   'base'     = list(clr=rgb(.4,.4,.4),id='bc',lab='Base Case')),
 cases.foi = list(
-  # 'bpd'  = list(clr=rgb(.267,.005,.329),id='bpd',lab='<1a>'),
-  # 'bpy'  = list(clr=rgb(.230,.322,.546),id='bpy',lab='<1b>'),
-  'bpy'  = list(clr=rgb(.267,.005,.329),id='bpy',lab='<1b>'),
-  'bmy'  = list(clr=rgb(.128,.567,.551),id='bmy',lab='<2b>'),
-  # 'lin'  = list(clr=rgb(.369,.789,.383),id='lin',lab='<3>'),
-  'base' = list(clr=rgb(.993,.906,.144),id='fpe',lab='<4*>')))
+  # 'lin'  = list(clr=rgb(.500,.500,.500),id='lin',lab='<3>'),
+  'bpd'  = list(clr=rgb(.267,.005,.329),id='bpd',lab='<1a>'),
+  'bpy'  = list(clr=rgb(.191,.407,.556),id='bpy',lab='<1b>'),
+  'bmy'  = list(clr=rgb(.208,.719,.473),id='bmy',lab='<2b>'),
+  'base' = list(clr=rgb(.993,.906,.144),id='base',lab='<4*>')))
 sget = function(name,subname){
   return(unname(sapply(spec[[name]],function(def){def[[subname]]})))
 }
@@ -43,7 +42,7 @@ gen.name = function(phase,key,case,b,ext='.csv'){
   return(root.path('data','mid',uid,sprintf('%d',N$cal),
     paste0( phase,'_',key,'_',case,'_',b,ext)))
 }
-load.csvs = function(phase,key,name,b='all',ext='.csv'){
+read.csvs = function(phase,key,name,b='all',ext='.csv'){
   cases = spec[[name]]
   X = do.call(rbind,lapply(names(cases),function(case){
     X.i = do.call(rbind,lapply(b,function(bi){

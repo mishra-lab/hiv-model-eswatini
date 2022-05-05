@@ -32,11 +32,11 @@ plot.ep = function(X,out,pops){
     facet_wrap(.~facet,scales='free_y',drop=TRUE) +
     lims(x=c(1980,2030)) +
     labs(x='Year',y=lab[[out]],color=lab$foi,fill=lab$foi,linetype=lab$foi) +
-    theme_light()
+    theme_light() + theme(legend.position='top')
   return(g)
 }
 
-X = load.csvs('foi','ep','cases.foi')
+X = read.csvs('foi-ep','expo','cases.foi')
 pops = list(
   aq  = 'Non-Sex Work Women & Men',
   cli = 'Clients',
@@ -44,6 +44,6 @@ pops = list(
 X$facet = interaction(X$pop,X$op)
 X$facet = factor(X$facet,
   levels=c('aq.raw','cli.raw','fsw.raw','aq.1-2','cli.1-2','fsw.1-2'),
-  labels=c(pops$aq,pops$cli,pops$fsw,'Difference',' Difference ','  Difference  '))
-plot.ep(X,'incidence',pops); fig.save(uid,paste0('foi.ep.incidence'),w=12,h=7)
-plot.ep(X,'prevalence',pops); fig.save(uid,paste0('foi.ep.prevalence'),w=12,h=7)
+  labels=c(pops$aq,pops$cli,pops$fsw,paste0(c('',' ','  '),'Difference vs <4*>',c('',' ','  '))))
+plot.ep(X,'incidence',pops); fig.save(uid,paste0('foi.ep.incidence'),w=10,h=7)
+plot.ep(X,'prevalence',pops); fig.save(uid,paste0('foi.ep.prevalence'),w=10,h=7)
