@@ -1,4 +1,3 @@
-import gc
 import numpy as np
 from copy import copy
 from utils import log,fio,itslice,dict_list_update
@@ -63,7 +62,24 @@ def run_ep(top=1.):
       E = {k:E[k]+E_vs[k] for k in E}
     fio.save_csv(fname('csv','foi-ep','expo',case=case,b='all'),E)
 
+def run_tpaf(case,top=1.):
+  log(0,'scenario.foi.run_tpaf: '+case)
+  P1s = target.top_ll(fio.load(fname('npy','fit','Ps',case=case,b='all')),top)
+  R1s = system.run_n(P1s,t=tvec['main'])
+  ekwds = dict(R1s=R1s,tvec=tvec['main'],t=tvec['plot'],snames=['all','w','m','aq','cli','fsw'],vsop='1-2/1')
+  tpafs = dict(swq=dict(p=(2,3)),fswfr=dict(sfr=0,ifr=(2,3)),clifr=dict(sfr=1,ifr=(2,3)))
+  t0s   = [1990,2000,2010]
+  E = out.expo([],[],[],[],[])
+  for tpaf,spec in tpafs.items():
+    for t0 in t0s:
+      P2s = dict_list_update(P1s,mix_mask_tpaf=params.get_mix_mask(**spec),t0_tpaf=t0)
+      R2s = system.run_n(P2s,t=tvec['main'])
+      E1 = out.expo(['cuminfect'],**ekwds,R2s=R2s,case=tpaf+'_'+str(t0))
+      E = {k:E[k]+E1[k] for k in E}
+  fio.save_csv(fname('csv','foi-tpaf','expo',case=case,b='all'),E)
+
 if __name__ == '__main__':
   # run_fit()
   # run_ep()
+  run_tpaf('bpy')
   pass
