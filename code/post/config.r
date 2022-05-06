@@ -42,9 +42,10 @@ gen.name = function(phase,key,case,b,ext='.csv'){
   return(root.path('data','mid',uid,sprintf('%d',N$cal),
     paste0( phase,'_',key,'_',case,'_',b,ext)))
 }
-read.csvs = function(phase,key,name,b='all',ext='.csv'){
+read.csvs = function(phase,key,name,b='all',ext='.csv',skip=NULL){
   cases = spec[[name]]
   X = do.call(rbind,lapply(names(cases),function(case){
+    if (case %in% skip){ return(NULL) }
     X.i = do.call(rbind,lapply(b,function(bi){
       return(read.csv(gen.name(phase,key,case,b=bi,ext=ext)))
     }))
