@@ -25,7 +25,7 @@ different risk groups and/or partnership types throughout the epidemic; and
 3)~transmission population attributable fraction \cite{Mishra2014}
 of different risk groups and partnership types.
 \subsection{Equal Parameters}\label{exp.ep}
-First, to illustrate fundamental differences in epidemic dynamics under each model,
+First, to explore fundamental differences in epidemic dynamics under each model,
 we simulated the Eswatini HIV epidemic under each model with identical parameter values.
 Parameter values were taken from
 the top 1000 of 100,000 model \case{4*} fits (highest likelihood).
@@ -78,8 +78,11 @@ rather than just per-partnership as in \case{1a} and \case{1b}.
 % TODO: mid/late epidemic
 \clearpage
 \subsection{Distribution of Infections}\label{exp.inf}
-Next, to illustrate differences in epidemic drivers under each model,
-we explored the distributions of yearly infections after calibrating each model.
+% JK: honestly, this section feels repetitive with / similar to {exp.tpaf}
+%     I would be open to dropping (into appendix) one of the two sections
+Next, to explore differences in transmission networks under each model,
+we computed the distributions of yearly infections
+after calibrating each model to the same targets.
 As before, the top 1000 of 100,000 model fits were used in each case.
 Figure~\ref{fig:inf.part} illustrates the proportions of yearly infections
 transmitted via each partnership type under each calibrated model;
@@ -116,3 +119,43 @@ Most differences in who transmitted infection (Figure~\ref{fig:inf.from}) were m
 as were differences in who acquired infection (Figure~\ref{fig:inf.to}).
 The only notable difference was that the lowest risk women and men
 transmitted fewer infections under models \case{1a} and \case{4*} vs under \case{1b} and \case{2b}.
+\subsection{Transmission Population Attributable Fractions}\label{exp.tpaf}
+Finally, to explore differences in epidemic drivers under each model,
+we computed the transmission population attributable fraction (tPAF) \cite{Mishra2014}
+for different partnership types and risk groups,
+and compared across calibrated models.
+Each tPAF reflects the proportion of all future infections attributable to
+unmet prevention needs of risk groups or partnership types,
+considering nonlinear benefits of preventing onward transmission.
+We computed tPAFs over 1, 2, 5, and 10-year time horizons from $t_0 = 2000$.
+Figure~\ref{fig:tpaf.3} illustrates the tPAFs of
+partnership types (\subref{fig:tpaf.3.parts}) and risk groups (\subref{fig:tpaf.3.popto})
+under each model.
+Relative differences between models were similar across other $t_0$
+(Figures~\ref{fig:tpaf.33.parts} and \ref{fig:tpaf.33.popto}).
+\begin{figure}[h]
+  \begin{subfigure}{\linewidth}
+    \centerline{\includegraphics[width=\widefig]{foi.tpaf.3.parts}}
+    \caption{Partnership types}
+    \label{fig:tpaf.3.parts}
+  \end{subfigure}
+  \begin{subfigure}{\linewidth}
+    \centerline{\includegraphics[width=\widefig]{foi.tpaf.3.popto}}
+    \caption{Acquisition among risk groups}
+    \label{fig:tpaf.3.popto}
+  \end{subfigure}
+  \caption{Comparison of tPAFs of different partnership types and risk groups
+    under calibrated force of infection models \case{1a}, \case{1b}, \case{2b}, and \case{4*}}
+  \label{fig:tpaf.3}
+  \floatfoot
+  tPAF: transmission population attributable fraction \cite{Mishra2014}, from $t_0 = 2000$ onward.
+  FOI Model names:
+  \case{1a} binomial per-partnership;
+  \case{1b} binomial per-partnership-year;
+  \case{2b} binomial per-year;
+  \case{4*} partnership exclusion (proposed).
+  Parameters were re-calibrated for each FOI model,
+  and box plots reflect the median (horizontal bar),
+  plus 90\% (whiskers) and 50\% (box) confidence intervals from
+  the top 1000 of 100,000 model fits in each case.
+\end{figure}
