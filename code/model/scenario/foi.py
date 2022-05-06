@@ -67,14 +67,25 @@ def run_tpaf(case,top=1.):
   P1s = target.top_ll(fio.load(fname('npy','fit','Ps',case=case,b='all')),top)
   R1s = system.run_n(P1s,t=tvec['main'])
   ekwds = dict(R1s=R1s,tvec=tvec['main'],t=tvec['plot'],snames=['all','w','m','aq','cli','fsw'],vsop='1-2/1')
-  tpafs = dict(swq=dict(p=(2,3)),fswfr=dict(sfr=0,ifr=(2,3)),clifr=dict(sfr=1,ifr=(2,3)))
-  t0s   = [1990,2000,2010]
-  E = out.expo([],[],[],[],[])
+  tpafs = dict(
+    msp   = dict(p=0),
+    cas   = dict(p=1),
+    swq   = dict(p=(2,3)),
+    aqfr  = dict(sfr=(0,1),ifr=(0,1)),
+    fswfr = dict(sfr=0,ifr=(2,3)),
+    clifr = dict(sfr=1,ifr=(2,3)),
+    aqto  = dict(sto=(0,1),ito=(0,1)),
+    fswto = dict(sto=0,ito=(2,3)),
+    clito = dict(sto=1,ito=(2,3)),
+  )
+  t0s = [1990,1995,2000,2005,2010,2015,2020,2025,2030]
+  E = out.expo([],[],[],[],[],ecols=dict(tpaf=None))
   for tpaf,spec in tpafs.items():
     for t0 in t0s:
+      log(1,tpaf+'_'+str(t0))
       P2s = dict_list_update(P1s,mix_mask_tpaf=params.get_mix_mask(**spec),t0_tpaf=t0)
       R2s = system.run_n(P2s,t=tvec['main'])
-      E1 = out.expo(['cuminfect'],**ekwds,R2s=R2s,case=tpaf+'_'+str(t0))
+      E1 = out.expo(['cuminfect'],**ekwds,R2s=R2s,ecols=dict(tpaf=tpaf+'_'+str(t0)))
       E = {k:E[k]+E1[k] for k in E}
   fio.save_csv(fname('csv','foi-tpaf','expo',case=case,b='all'),E)
 
