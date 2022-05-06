@@ -1,6 +1,6 @@
 import numpy as np
 from utils import _,deco,dtfun,itslice
-from model import foi,slicers
+from model import foi,slicers,system
 # TODO: integrate slicers fully?
 
 labels = {
@@ -258,7 +258,10 @@ def get_infections(R1s,tvec,t,aggrop=None,R2s=None,vsop='1-2'):
             data += [[tk,p,fs,fi,ts,ti,infk] for tk,infk in zip(t,inf)]
   return data
 
-def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',case=None,mode='q',**kwds):
+def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',ecols=None,mode='q',drop=True,**kwds):
+  if drop:
+    if R2s: R1s,R2s = system.drop_fails(R1s,R2s)
+    else: R1s = system.drop_fails(R1s)[0]
   if mode == 'q':
     qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
     aggrop = lambda os: np.nanquantile(os,qs,axis=0)
@@ -267,7 +270,9 @@ def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',case=None,mode='q',**kwds)
     aggrop = lambda os: np.array(os)
     cols = ['s'+str(R['P']['seed']) for R in R1s]
   sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
-  E = dict(out=og,pop=sg,t=tg,op=[vsop]*len(tg),case=[case]*len(tg),**{k:[] for k in cols})
+  if ecols is None: ecols = {}
+  ecols.update(op=vsop)
+  E = dict(out=og,pop=sg,t=tg,**{k:[v]*len(tg) for k,v in ecols.items()},**{k:[] for k in cols})
   for oname in onames:
     fun = by_name(oname)
     for sname in snames:
