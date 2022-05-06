@@ -36,6 +36,12 @@ def dict_str(d):
   # print a dictionary "pretty"
   return ', '.join([ '{}={}'.format(k,v) for k,v in d.items() ])
 
+def dict_list_update(ds,**kwds):
+  # update every dict in ds with kwds
+  for d in ds:
+    d.update(**kwds)
+  return ds
+
 def squarish(n):
   # how many rows,cols sould we use to arrange subplots, given n
   # usually "squarish", except for some special cases (fixed)
