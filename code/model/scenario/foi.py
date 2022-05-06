@@ -85,7 +85,7 @@ def run_tpaf(case,top=1.):
       log(1,tpaf+'_'+str(t0))
       P2s = dict_list_update(P1s,mix_mask_tpaf=params.get_mix_mask(**spec),t0_tpaf=t0)
       R2s = system.run_n(P2s,t=tvec['main'])
-      E1 = out.expo(['cuminfect'],**ekwds,R2s=R2s,ecols=dict(tpaf=tpaf+'_'+str(t0)))
+      E1 = out.expo(['cuminfect'],**ekwds,R2s=R2s,ecols={'tpaf.pop':tpaf,'tpaf.t0':str(t0)})
       E = {k:E[k]+E1[k] for k in E}
   fio.save_csv(fname('csv','foi-tpaf','expo',case=case,b='all'),E)
 
