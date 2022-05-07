@@ -19,7 +19,7 @@ def get_keyout_data(R,t,case):
   pops = ['all','w','m','aq','wq','mq','fsw','cli']
   to = tvec['outs'].tolist()
   Pkeys = ['seed','foi_mode'] + list(params.def_sample_distrs().keys()) + ['PX_fsw','PX_cli','EHY_acute']
-  return dict(case=case,ll=R.pop('ll',np.nan),
+  return dict(case=case,ll=R.get('ll',np.nan),
     **{key:R['P'][key] for key in Pkeys},
     **{'cuminf_'+pop+'_'+str(toi):oi for pop in pops
         for toi,oi in zip(to,out.cuminfect(R,**slicers[pop].pop,tvec=t)[itslice(to,t)])},
