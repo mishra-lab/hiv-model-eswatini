@@ -51,7 +51,8 @@ def run_refit(case):
 def merge_refit():
   log(0,'scenario.merge_refit')
   for case in cases:
-    Ps = [P for b in range(N['batch']) for P in fio.load(fname('npy','fit','Ps',case=case,b=b))]
+    Ps = [P for b in range(model.scenario.N['batch']) for P in
+      fio.load(fname('npy','fit','Ps',case=case,b=b))]
     fio.save(fname('npy','fit','Ps',case=case,b='all'),Ps)
 
 def rerun_refit():
