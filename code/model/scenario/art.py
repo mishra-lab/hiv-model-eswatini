@@ -59,9 +59,8 @@ def rerun_refit():
   for case in ['base']+cases:
     log(1,case)
     T = target.get_all_esw() if case=='base' else get_refit_T_PD(case)[0]
-    Ps = fio.load(fname('npy','fit','Ps',case=case,b='all'))[0:7]
+    Ps = fio.load(fname('npy','fit','Ps',case=case,b='all'))
     Rs = system.run_n(Ps,t=tvec['main'],T=T)
-    print(Rs[0].keys())
     fio.save_csv(fname('csv','fit','keyout',case=case,b='all'),
       [get_keyout_data(R,tvec['main'],case) for R in Rs])
     fio.save_csv(fname('csv','fit','infs',case=case,b='all'),
