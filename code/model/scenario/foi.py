@@ -6,9 +6,9 @@ from model.scenario import tvec,fname
 import model.scenario
 
 model.scenario.uid = '2022-04-20'
-model.scenario.N['cal'] = 100000
+model.scenario.N['sam'] = 100000
 
-cases = dict(
+cases = dict( # TODO: rename foi_mode 'fpe' -> 'base'
   base = 'fpe',
   bpd  = 'bpd',
   bpy  = 'bpy',
@@ -34,25 +34,25 @@ def get_keyout_data(R,t,case):
 def run_fit(case):
   log(0,'scenario.foi.run_fit: '+case)
   T = target.get_all_esw()
-  Ps = fio.load(fname('npy','fit','Ps',case=case,b='all'))
+  Ps = fio.load(fname('npy','fit','Ps',case=case))
   Rs = system.run_n(Ps,t=tvec['main'],T=T)
-  fit.plot_cal(tvec['main'],Rs,T,fname=fname('fig','fit','plot',case=case,b='all'))
-  fio.save_csv(fname('csv','fit','keyout',case=case,b='all'),
+  fit.plot_cal(tvec['main'],Rs,T,fname=fname('fig','foi','cal',case=case))
+  fio.save_csv(fname('csv','foi-fit','keyout',case=case),
     [get_keyout_data(R,tvec['main'],case) for R in Rs])
-  fio.save_csv(fname('csv','fit','infs',case=case,b='all'),
+  fio.save_csv(fname('csv','foi-fit','infs',case=case),
     out.get_infections(Rs,tvec['main'],tvec['plot']))
 
 def run_ep(top=1.):
   log(0,'scenario.foi.run_ep: '+', '.join(cases))
   onames = ['incidence','prevalence']
   ekwds = dict(tvec=tvec['main'],t=tvec['plot'],snames=['all','w','m','aq','cli','fsw'])
-  Ps = target.top_ll(fio.load(fname('npy','fit','Ps',case='base',b='all')),top)
+  Ps = target.top_ll(fio.load(fname('npy','fit','Ps',case='base')),top)
   for case in cases:
     log(1,case)
     R1s = system.run_n(dict_list_update(Ps,foi_mode=cases[case]),t=tvec['main'])
-    fio.save_csv(fname('csv','foi-ep','keyout',case=case,b='all'),
+    fio.save_csv(fname('csv','foi-ep','keyout',case=case),
       [get_keyout_data(R,tvec['main'],case) for R in R1s])
-    fio.save_csv(fname('csv','foi-ep','infs',case=case,b='all'),
+    fio.save_csv(fname('csv','foi-ep','infs',case=case),
       out.get_infections(R1s,tvec['main'],tvec['plot']))
     E = out.expo(onames,R1s,**ekwds)
     if case == 'base':
@@ -60,11 +60,11 @@ def run_ep(top=1.):
     else:
       E_vs = out.expo(onames,R1s,R2s=R2s,vsop='1-2',**ekwds)
       E = {k:E[k]+E_vs[k] for k in E}
-    fio.save_csv(fname('csv','foi-ep','expo',case=case,b='all'),E)
+    fio.save_csv(fname('csv','foi-ep','expo',case=case),E)
 
 def run_tpaf(case,top=1.):
   log(0,'scenario.foi.run_tpaf: '+case)
-  P1s = target.top_ll(fio.load(fname('npy','fit','Ps',case=case,b='all')),top)
+  P1s = target.top_ll(fio.load(fname('npy','fit','Ps',case=case)),top)
   R1s = system.run_n(P1s,t=tvec['main'])
   ekwds = dict(R1s=R1s,tvec=tvec['main'],t=tvec['plot'],snames=['all','w','m','aq','cli','fsw'],vsop='1-2/1')
   tpafs = dict(
@@ -87,10 +87,10 @@ def run_tpaf(case,top=1.):
       R2s = system.run_n(P2s,t=tvec['main'])
       E1 = out.expo(['cuminfect'],**ekwds,R2s=R2s,ecols={'tpaf.pop':tpaf,'tpaf.t0':str(t0)})
       E = {k:E[k]+E1[k] for k in E}
-  fio.save_csv(fname('csv','foi-tpaf','expo',case=case,b='all'),E)
+  fio.save_csv(fname('csv','foi-tpaf','expo',case=case),E)
 
 if __name__ == '__main__':
   # run_fit()
   # run_ep()
-  run_tpaf('bpy')
+  # run_tpaf()
   pass

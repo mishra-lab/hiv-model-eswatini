@@ -4,11 +4,10 @@ from model import system
 uid = fio.datestamp()
 
 N = dict(
-  cal    = 100000, # total samples
+  sam    = 100000, # total samples
   topcal = .1,     # top fraction to save from each cal batch
   topfit = .01,    # top fraction to save & use from all batches
   batch  = 10,     # how many batches
-  b      = 0,      # index of current batch
 )
 tvec = dict(
   cal  = system.get_t(tf=2021),
@@ -17,13 +16,12 @@ tvec = dict(
   outs = system.get_t(tf=2050,t0=2000,dt=5),
 )
 
-def fname(ftype,phase,key,case='base',b=None):
-  if b is None: b = N['b']
-  subdirs = [uid,str(N['cal'])]
+def fname(ftype,phase,key,case='base',b='all'):
+  subdirs = [uid,str(N['sam'])]
   if ftype=='npy':
     path,ext = ['data','npy',*subdirs],''
   if ftype=='csv':
-    path,ext = ['data','mid',*subdirs],'.csv'
+    path,ext = ['data','csv',*subdirs],'.csv'
   if ftype=='fig':
     path,ext = ['out','fig',*subdirs],'.pdf'
   # e.g. data/npy/2022-01-01/1000/fit_Ps_base_3.npy
