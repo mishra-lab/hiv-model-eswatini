@@ -5,6 +5,8 @@ do.model:
 	python3.8 model/main.py 0 && echo [OK]
 do.model.foi:
 	python3.8 model/scenario/foi.py && echo [OK]
+do.model.art:
+	python3.8 model/scenario/art.py && echo [OK]
 do.params.distr:
 	python3.8 params/distr.py && echo [OK]
 do.profile:
@@ -13,10 +15,12 @@ do.posterior:
 	Rscript post/posterior.r && echo [OK]
 do.infections:
 	Rscript post/infections.r && echo [OK]
+do.post.foi:
+	Rscript post/foi.r && echo [OK]
 do.obj.1:
-	Rscript post/main_obj_1.r && echo [OK]
+	Rscript post/art_obj_1.r && echo [OK]
 do.obj.2:
-	Rscript post/main_obj_2.r && echo [OK]
+	Rscript post/art_obj_2.r && echo [OK]
 do.tikz:
 	cd tikz && make all
 do.params.fsw:
