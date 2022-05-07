@@ -11,7 +11,7 @@ def plot_debug(t,Rs,T,fname='tmp.pdf',tops=(1.,.2,.04),drop=True):
   kwds = dict(T=T,tfname=None)
   tfnames = [
     plot_output(t,Rss,'NX', ['all'],**kwds),
-    plot_output(t,Rss,'X_rate', ['all'],rate='death_hc',**kwds),
+    # plot_output(t,Rss,'X_rate', ['all'],rate='death_hc',**kwds), # TODO
     plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
     plot_output(t,Rss,'prevalence',
       [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
@@ -40,7 +40,7 @@ def plot_cal(t,Rs,T,fname,tops=(1.,.1,.01),drop=True,merge=True):
     # output projections
     plot_output(t,Rss,'NX',        ['all'],**kwds),
     plot_output(t,Rss,'Ph',        ['ahi','>500','<500','<350','<200'],**kwds),
-    plot_output(t,Rss,'X_rate',    ['all'],rate='death_hc',ylab='HIV Mortality',**kwds),
+    # plot_output(t,Rss,'X_rate',    ['all'],rate='death_hc',ylab='HIV Mortality',**kwds), # TODO
     plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
     plot_output(t,Rss,'prevalence',
       [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
