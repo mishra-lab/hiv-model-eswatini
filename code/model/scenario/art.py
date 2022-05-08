@@ -144,8 +144,8 @@ def Rqx_by_group(Rqx=None,**kwds):
 # --------------------------------------------------------------------------------------------------
 # objective 2: sensitivity
 
-def run_sens(b,N=10):
-  P0s = batch_select(fio.load(fname('npy','fit','Ps',b='all')),b)
+def run_sens(N=10):
+  P0s = fio.load(fname('npy','fit','Ps',b='all'))
   Ps = get_sens_sample(P0s,N)
   Rs = system.run_n(Ps,t=tvec['main'])
   fio.save_csv(fname('csv','art','keyout',case='sens'),
@@ -166,4 +166,4 @@ def get_sens_sample(Ps,N):
 
 if __name__ == '__main__':
   # rerun_refit()
-  run_sens(0)
+  run_sens()

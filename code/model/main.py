@@ -21,3 +21,4 @@ model.scenario.uid = '2022-04-20'
 #   art.run_refit(case,int(sys.argv[1]))
 # art.merge_refit()
 # art.rerun_refit()
+art.run_sens()
