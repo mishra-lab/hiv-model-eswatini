@@ -8,12 +8,12 @@ import model.scenario
 model.scenario.uid = '2022-04-20'
 model.scenario.N['sam'] = 100000
 
-cases = dict( # TODO: rename foi_mode 'fpe' -> 'base'
-  base = 'fpe',
-  bpd  = 'bpd',
-  bpy  = 'bpy',
-  bmy  = 'bmy',
-)
+cases = [
+  'base',
+  'bpd',
+  'bpy',
+  'bmy',
+]
 
 def get_keyout_data(R,t,case):
   pops = ['all','w','m','aq','wq','mq','fsw','cli']
@@ -49,7 +49,7 @@ def run_ep(top=1.):
   Ps = target.top_ll(fio.load(fname('npy','fit','Ps',case='base')),top)
   for case in cases:
     log(1,case)
-    R1s = system.run_n(dict_list_update(Ps,foi_mode=cases[case]),t=tvec['main'])
+    R1s = system.run_n(dict_list_update(Ps,foi_mode=case),t=tvec['main'])
     fio.save_csv(fname('csv','foi-ep','keyout',case=case),
       [get_keyout_data(R,tvec['main'],case) for R in R1s])
     fio.save_csv(fname('csv','foi-ep','infs',case=case),

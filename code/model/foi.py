@@ -8,7 +8,7 @@ foi_modes = [
   'bpy', # binomial per-partnership-year
   'bmd', # binomial concurrent partnership-duration
   'bmy', # binomial concurrent partnership-year
-  'fpe', # force of infection partnership exclusion
+  'base', # proposed model (partnership exclusion)
 ]
 
 #@profile
@@ -48,10 +48,10 @@ def get_mix(XC,P):
 #@profile
 def get_apply_inc(dX,X,t,P):
   # return.shape = (p:4, s:2, i:4, s':2, i':4)
-  # NOTE: if foi_mode in ['lin','fpe','bpd','bpy']: return absolute infections
+  # NOTE: if foi_mode in ['lin','base','bpd','bpy']: return absolute infections
   #       if foi_mode in ['bmd','bmy']: return *probability* of infection (aggr must be deferred)
   # define partner numbers (C) / rates (Q) for mixing, + total acts (A) for binomial models
-  if P['foi_mode'] in ['fpe']: # C
+  if P['foi_mode'] in ['base']: # C
     C_psik = P['C_psi'] - P['aC_pk']
   elif P['foi_mode'] in ['lin','bpy','bmy']: # C, Q, Q
   # TODO: is this representative of what is done in the literature?
@@ -69,7 +69,7 @@ def get_apply_inc(dX,X,t,P):
   # compute per-act probability
   beta = get_beta(P,t)
   # force of infection: linear vs binomial
-  if P['foi_mode'] in ['lin','fpe']:
+  if P['foi_mode'] in ['lin','base']:
     Fbeta = np.sum(beta * P['F_ap'][:,:,_,_,_,_,_,_], axis=0)
     inc = Fbeta * mix[:,:,:,:,:,_,_] * PXC_hc[:,_,_,:,:,:,:] # absolute infections
   elif P['foi_mode'] in ['bpd','bpy','bmd','bmy']:
@@ -80,7 +80,7 @@ def get_apply_inc(dX,X,t,P):
     elif P['foi_mode'] in ['bmd','bmy']:
       inc = 1 - (1 - XAbeta) ** (mix / X[_,:,:,0,0,0,_,_]) # probability of infection
   # aggregating & applying to dX
-  if P['foi_mode'] in ['fpe']:
+  if P['foi_mode'] in ['base']:
     dXi = inc.sum(axis=(3,4,5,6)) # acquisition: (p:4, s:2, i:4)
     dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
     dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
@@ -107,7 +107,7 @@ def get_apply_inc(dX,X,t,P):
 def aggr_inc(inc,foi_mode,axis,Xsus=1.,keepdims=False):
   # returns absolute infections after appropriately aggregating "inc"
   # Xsus only needed if 'foi_mode' in ['bmy','bmd']
-  if foi_mode in ['lin','fpe','bpy','bpd']:
+  if foi_mode in ['lin','base','bpy','bpd']:
     return inc.sum(axis=axis,keepdims=keepdims)
   if foi_mode in ['bmy','bmd']:
     return (1 - np.prod(1 - inc,axis=axis,keepdims=keepdims)) * Xsus
