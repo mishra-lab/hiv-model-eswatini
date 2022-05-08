@@ -42,7 +42,7 @@ def get_keyout_data(R,t,case):
 
 def run_refit(case,b):
   log(0,'scenario.run_refit: '+case)
-  P0s = batch_select(fio.load(fname('npy','fit','Ps',case='base')))
+  P0s = batch_select(fio.load(fname('npy','fit','Ps',case='base')),b)
   T,PD = get_refit_T_PD(case)
   fun = lambda P: refit_cascade(P,PD,T,tvec['cal'],ftol=.1)
   Ps = parallel.ppool(len(P0s)).map(fun,P0s); log(1)
@@ -144,19 +144,17 @@ def Rqx_by_group(Rqx=None,**kwds):
 # --------------------------------------------------------------------------------------------------
 # objective 2: sensitivity
 
-# TODO: not yet revised (including fname)
-
-def run_sens(expo=True,infs=True,plot=True):
-  P0s = batch_select(fio.load(fname('npy','top','Ps',b='all')))
-  Ps = get_sens_sample(P0s)
-  fio.save(fname('npy','sens','Ps'),Ps)
+def run_sens(b,N=10):
+  P0s = batch_select(fio.load(fname('npy','fit','Ps',b='all')),b)
+  Ps = get_sens_sample(P0s,N)
   Rs = system.run_n(Ps,t=tvec['main'])
-  # TODO: clean up
-  if infs: fio.save_csv(fname('csv','sens','infs',case='sens'),out.get_infections(Rs,tvec['main'],tvec['infs']))
-  if expo: fio.save_csv(fname('csv','sens','expo',case='sens'),[get_expo_data(R,tvec['main'],'sens') for R in Rs])
-  if plot: fit.plot_refit(tvec['main'],Rs,T=None,fname=fname('fig','sens','Ps',case='sens'))
+  fio.save_csv(fname('csv','art','keyout',case='sens'),
+    [get_keyout_data(R,tvec['main'],'sens') for R in Rs])
+  fio.save_csv(fname('csv','art','infs',case='sens'),
+    out.get_infections(Rs,tvec['main'],tvec['plot']))
+  fit.plot_refit(tvec['main'],Rs,T=None,fname=fname('fig','art','refit',case='sens'))
 
-def get_sens_sample(Ps):
+def get_sens_sample(Ps,N):
   PDs = {
     'd': stats.beta_binom(p=.6,n=3),
     't': stats.beta_binom(p=.6,n=3),
@@ -164,7 +162,8 @@ def get_sens_sample(Ps):
   }
   PD = {'R'+step+'x:'+pop: PDs[step] for pop in ('fsw','cli','aq') for step in 'dtu' }
   return [P_update_Rqx_by_group(deepcopy(P),Pu)
-    for P in Ps for Pu in params.get_n_sample_lhs(N['sens'],PD,seed=P['seed'])]
+    for P in Ps for Pu in params.get_n_sample_lhs(N,PD,seed=P['seed'])]
 
 if __name__ == '__main__':
-  rerun_refit()
+  # rerun_refit()
+  run_sens(0)

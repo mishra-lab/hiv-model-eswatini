@@ -9,7 +9,7 @@ def run(b,**kwds):
   log(0,'scenario.calibrate.run: '+str(b))
   # get targets (T), seeds, params (P0s)
   T = target.get_all_esw()
-  seeds = batch_select(range(N['sam']))
+  seeds = batch_select(range(N['sam']),b)
   P0s = params.get_n_all(len(seeds),seeds=seeds,**kwds)
   keys = ['seed','foi_mode']+list(params.def_sample_distrs().keys())
   fio.save(fname('npy','sam','Ps',case=case,b=b),[{k:P[k] for k in keys} for P in P0s])

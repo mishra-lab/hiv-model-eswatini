@@ -27,8 +27,8 @@ def fname(ftype,phase,key,case='base',b='all'):
   # e.g. data/npy/2022-01-01/1000/fit_Ps_base_3.npy
   return genpath(rootpath(*path,'{}_{}_{}_{}{}'.format(phase,key,case,b,ext)))
 
-def batch_select(objs):
+def batch_select(objs,b):
   nb = int(len(objs) / N['batch'])
-  return objs[slice(nb*N['b'],nb*(N['b']+1))]
+  return objs[slice(nb*b,nb*(b+1))]
 
 
