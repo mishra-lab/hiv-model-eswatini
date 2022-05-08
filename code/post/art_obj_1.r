@@ -2,9 +2,9 @@ source('post/config.r')
 
 # --------------------------------------------------------------------------------------------------
 # load & process data
-load.expo.data = function(t.hors){
+load.keyout.data = function(t.hors){
   if (missing(t.hors)){ t.hors = seq(2000,2050,5) }
-  X.raw = load.csvs('fit','expo')
+  X.raw = read.csvs('art','keyout','cases.art')
   vars = c('cuminf_all','inc_all','prev_all')
   X = reshape(X.raw,idvar=c('seed','case'),direction='long',times=t.hors,timevar='year',
     v.names=vars,varying=lapply(vars,function(v){ grepl(v,names(X.raw)) }))
@@ -29,8 +29,8 @@ plot.out = function(X,ylist,ylab,scale=1,tlims=NULL,...){
     labs(x='Year',y=ylab) +
     theme_light()
   if (length(ylist) > 1){ g = g + facet_wrap(vars(variable),nrow=1,scales='free_y') }
-  if ('color' %in% names(args)){ g = g + scale_color_manual(values=clr$case) }
-  if ('fill' %in% names(args)){ g = g + scale_fill_manual(values=clr$case) }
+  if ('color' %in% names(args)){ g = g + scale_color_manual(values=sget('cases.art','clr')) }
+  if ('fill' %in% names(args)){ g = g + scale_fill_manual(values=sget('cases.art','clr')) }
   return(g)
 }
 plot.obj.1 = function(X,y='100*inf.red',ylab='Infections averted (%)',yl,tlims=c(2005,2040),...){
@@ -40,8 +40,8 @@ plot.obj.1 = function(X,y='100*inf.red',ylab='Infections averted (%)',yl,tlims=c
     geom_boxplot(aes(color=case.lab),outlier.size=.5,lwd=.0,width=.6,position=position_dodge(.8)) +
     geom_boxplot(aes(fill=case.lab),outlier.color=NA,lwd=.3,width=.6,position=position_dodge(.8)) +
     labs(x='Year',y=ylab,color='Left Behind:',fill='Left Behind:') + lims(y=yl) +
-    scale_fill_manual(values=clr$case) +
-    scale_color_manual(values=clr$case) +
+    scale_fill_manual(values=sget('cases.art','clr')) +
+    scale_color_manual(values=sget('cases.art','clr')) +
     theme_light() +
     theme(legend.position=c(.01,.99),legend.justification=c(0,1))
   return(g)
@@ -63,9 +63,11 @@ numeric.obj.1 = function(X){
     if (is.null(year)){ Xi = X } else { Xi = X[X$year==year,] }
     return(Xi[Xi$case.id==case.id,][[col]])
   }
-  save.tex(N$cal,'n.cal',dec=0)
+  X$prev_ratio_fsw.wq_2020 = X$prev_fsw_2020 / X$prev_wq_2020
+  X$prev_ratio_cli.mq_2020 = X$prev_cli_2020 / X$prev_mq_2020
+  save.tex(N$sam,'n.sam',dec=0)
   save.tex(100*N$topfit,'top.pct.fit',dec=0)
-  save.tex(N$cal*N$topfit,'n.fit',dec=0)
+  save.tex(N$sam*N$topfit,'n.fit',dec=0)
   save.tex(N$sens,'n.sens.per',dec=0) # obj.2
   save.tex(N$sens*N$topfit,'n.sens',dec=0) # obj.2
   save.med.ci(X.fun('bc','PX_fsw'),'px.fsw',per=100)
@@ -74,7 +76,7 @@ numeric.obj.1 = function(X){
   save.med.ci(X.fun('bc','Rdx_cli'),'Rdx.cli',dec=2)
   save.med.ci(X.fun('bc','Rtx_fsw'),'Rtx.fsw',dec=2)
   save.med.ci(X.fun('bc','Rtx_cli'),'Rtx.cli',dec=2)
-  for (cid in case.ids){
+  for (cid in sget('cases.art','id')){
     save.med.ci(X.fun(cid,'prev_all',year=2020),    paste0(cid,'/prev.all.2020'),per=100)
     save.med.ci(X.fun(cid,'inc_all',year=2020),     paste0(cid,'/inc.all.2020'),per=1000)
     save.med.ci(X.fun(cid,'prev_ratio_fsw.wq_2020'),paste0(cid,'/pr.fsw.2020'),dec=2)
@@ -92,10 +94,10 @@ numeric.obj.1 = function(X){
 # ylist = list('Overall'='inc_all.mu','Lower Risk'='inc_aq.mu','FSW'='inc_fsw.mu','Clients'='inc_cli.mu')
 # g = plot.out(X.out,ylist,ylab='HIV Incidence (per 1000 PY)',scale=1000,color='case.lab',tlims=c(2000,2050)) +
 #   labs(color='Left Behind:') + theme(legend.position='top'); fig.save(uid,'obj_1_inc',w=10,h=3)
-X = load.expo.data()
+X = load.keyout.data()
 numeric.obj.1(X)
-plot.obj.1(X,y='100*inf.red',ylab='Infections averted (%)',      yl=c(0, 60)); fig.save(uid,'obj_1_inf_red',w=8,h=4)
-plot.obj.1(X,y='100*inf.add',ylab='Additional infections (%)',   yl=c(0,130)); fig.save(uid,'obj_1_inf_add',w=8,h=4)
-plot.obj.1(X,y='100*inc.red',ylab='Incidence reduction (%)',     yl=c(0,100)); fig.save(uid,'obj_1_inc_red',w=8,h=4)
-plot.obj.1(X,y='  1*inc.add',ylab='Additional incidence (times)',yl=c(0, 30)); fig.save(uid,'obj_1_inc_add',w=8,h=4)
+plot.obj.1(X,y='100*inf.red',ylab='Infections averted (%)',      yl=c(0, 60)); fig.save(uid,'art_1_inf_red',w=8,h=4)
+plot.obj.1(X,y='100*inf.add',ylab='Additional infections (%)',   yl=c(0,130)); fig.save(uid,'art_1_inf_add',w=8,h=4)
+plot.obj.1(X,y='100*inc.red',ylab='Incidence reduction (%)',     yl=c(0,100)); fig.save(uid,'art_1_inc_red',w=8,h=4)
+plot.obj.1(X,y='  1*inc.add',ylab='Additional incidence (times)',yl=c(0, 30)); fig.save(uid,'art_1_inc_add',w=8,h=4)
 

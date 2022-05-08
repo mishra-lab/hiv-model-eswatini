@@ -2,7 +2,7 @@ source('utils/ops.r')
 source('utils/plot.r')
 
 uid = '2022-04-20'
-N = list(cal=100000,batchs=10,sens=10,topfit=.01)
+N = list(sam=100000,batchs=10,sens=10,topfit=.01)
 spec = list(
 pops = list(
   'wl'    = list(clr=rgb(1.,.6,.6),lab='Women Low'),
@@ -39,7 +39,7 @@ sget = function(name,subname){
   return(unname(sapply(spec[[name]],function(def){def[[subname]]})))
 }
 gen.name = function(phase,key,case,b,ext='.csv'){
-  return(root.path('data','mid',uid,sprintf('%d',N$cal),
+  return(root.path('data','csv',uid,sprintf('%d',N$sam),
     paste0( phase,'_',key,'_',case,'_',b,ext)))
 }
 read.csvs = function(phase,key,name,b='all',ext='.csv',skip=NULL){

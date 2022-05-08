@@ -11,7 +11,7 @@ lab = list(
   clifr = 'Clients',                  clito = 'Clients',
   foi = 'FOI Model')
 
-q.aes = function(q,g='case.lab',t='t.hor',...){
+q.aes = function(q,g='case.lab',t='t',...){
   if (q == 0){
     return(aes_string(y='q0.5',color=g,linetype=g,...))
   } else {
@@ -93,4 +93,5 @@ main.tpaf = function(){
   g = plot.tpaf(X,t=t,tpaf.pop=c('aqto','clito','fswto'),tpaf.t0=t0); fig.save(uid,'foi.tpaf.33.popto',w=10,h=8)
   g = plot.tpaf(X,t=t,tpaf.pop=c('msp','cas','swq'),     tpaf.t0=t0); fig.save(uid,'foi.tpaf.33.parts',w=10,h=8)
 }
+main.ep()
 main.tpaf()
