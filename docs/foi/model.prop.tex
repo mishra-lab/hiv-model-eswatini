@@ -1,8 +1,10 @@
 \section{Proposed Model}\label{prop}
-We propose a new model for the force of infection in compartmental transmission models of HIV,
+We propose a new model for the force of infection in
+classic compartmental transmission models of HIV,
 that overcomes the limitations of models \case{1-3}.
 Below we describe the conceptual basis for the model, followed by the equations.
 \subsection{Conceptual Development}\label{prop.cd}
+% JK: maybe this scenario (paragraph) can be moved to the appendix ?
 Consider a population of 32 individuals in 16 partnerships with 25\% infection prevalence,
 at the moment of one transmission (Figure~\ref{fig:tx.pairs}).
 Initially, infection prevalence among partners
@@ -21,6 +23,7 @@ but this assumption may be invalid, especially for long-duration partnerships.
 Other partnerships may begin/end too before (a) or (b),
 but the proportions of discordant partnerships would remain unchanged, on average.
 \begin{figure}[h]
+  % JK: maybe this can be moved to appendix too
   \begin{subfigure}{\textwidth}
     % TODO: draw grey box here too? gets confusing after transmission as we need fractions
     \centerline{\includegraphics[scale=1]{tx.freq}}
@@ -151,7 +154,7 @@ In the proposed approach, we do not explicitly model the proportion of infected 
 who recently transmitted or acquired infection via two \emph{different} partnership types,
 (or two partnerships of the same type).
 If we did, the required size of the new dimension $\k$ would be at least $2^{K}$, not $K+1$
---- an exponential relationship that is related to the challenge of
+--- an exponential term that is related to the challenge of
 specifying all combinations of partnership states in pair-based models \cite{Kretzschmar2017}.
 However, under frequentist assumptions, we can equivalently model
 two transmissions by one individual as one transmission each by two individuals,

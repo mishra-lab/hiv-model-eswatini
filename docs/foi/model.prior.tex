@@ -3,7 +3,8 @@
 %     I think it could be helpful for the readers, esp. for <2b>
 %     but don't want to be calling anyone out :\
 \paragraph{\case{1} Binomial Per-Partnership}
-Perhaps the most common model for the force of infection in HIV transmission models is currently:
+Perhaps the most common model for the force of infection
+in classic compartmental HIV transmission models is currently:
 \begin{equation}\label{eq:foi.1}
   \lambda_i^{\case{1}}(t) =
   \sum_{jhk} Q_{ijk} \left(1 - {\left(1 - \beta_{hk}\right)}^{A_k}\right) \frac{I_{jh}(t)}{N_j}
@@ -23,6 +24,7 @@ the probability of transmission per-partnership, which we denote $B$
 (Figure~\ref{fig:binom.lin}, purple).
 This probability is derived from the binomial distribution
 for $n$ transmissions after $A$ independent, equal probability contacts:
+% JK: should add footnote + cite about the debate around even this approach
 \begin{equation}
   P(n) = {A \choose n}\,\beta^n\,{(1 - \beta)}^{A-n}
 \end{equation}
@@ -67,7 +69,7 @@ total contacts $A = F$ (yearly contact frequency per-partnership),
 and partnership formation rate $Q \ge 1$,
 even for long-duration partnerships.
 We denote the model allowing $\delta > 1$ as \case{1a}
-and that with $\delta = 1$ as \case{1b}, which appears to be more common.
+and that with $\delta = 1$ as \case{1b}, which appears to be more common for HIV.
 As the ``true'' values of $\delta$, $F$, and/or $\beta$ increase,
 model \case{1b} can be substantially different from \case{1a}. % as explored in \sref{sup.bin}.
 Figure~\ref{fig:binom.lin} further illustrates two tangents,
@@ -146,8 +148,8 @@ are considered in one binomial model.
 \par
 In \eqref{eq:foi.2a}, the prevalence of infection $I_{jh}/N_j$ is modelled as ACSP, not SCAP,
 % JK: not sure whether the phrasing below helps or is just confusing.
-reflecting ``homogeneous'' partnerships with a heterogeneous pool of partners, rather than
-``heterogeneous'' partnerships with a homogeneous pool of partners.
+reflecting homogeneous partnerships with a heterogeneous pool of partners, rather than
+heterogeneous partnerships with a homogeneous pool of partners.
 As with transmission modifiers, this distinction is often ignored,
 and using SCAP allows the following simplification of \eqref{eq:foi.2a}:%
 %\footnote{Since multiplication/exponentiation of many small numbers is
@@ -205,7 +207,8 @@ and a small delay in transmission.
 Furthermore, as noted above,
 applying model \case{2} as a rate over smaller timesteps but using $\Delta_t = 1$
 can substantially underestimate incidence among higher risk groups,
-due to the probability constraint: (\ref{eq:foi.2a}--\ref{eq:foi.2b}) $\le$ 1.
+due to the probability constraint: $\lambda^{\case{2}} \le 1$.
+%(\ref{eq:foi.2a}--\ref{eq:foi.2b}) $\le$ 1.
 \par
 A final and critical limitation affecting all models \case{1-3}
 is that partnerships are ``instantaneous''.
