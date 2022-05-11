@@ -1,0 +1,42 @@
+\section{Purpose}
+Classic compartmental models of sexually transmitted infections
+model sexual partnerships as ``instantaneous'',
+applying the cumulative risk of transmission per-partnership
+to the fraction of people forming new partnerships per unit time.
+This approach can bias the model-estimated contribution of
+long-term partnerships and partnership concurrency to overall transmission.
+We sought to develop a new model of sexual partnerships in classic compartmental models,
+which better reflects dynamics related to partnership duration and concurrency.
+\section{Methods}
+In the proposed model, we parameterize partnerships using:
+the number of concurrent partnerships per-person, frequency of sex per-partnership, and partnership duration;
+rather than the usual: rate of partnership change, and total sex per-partnership.
+We introduce a new population stratification to track the proportions of people
+who recently transmitted or acquired infection via each partnership type,
+and who have not yet formed a new partnership of that type.
+Then, in the incidence equation, the effective numbers of
+partnerships of that type among those people are reduced by one.
+We integrated the proposed model, and a popular instantaneous partnership model,
+into an existing model of heterosexual HIV transmission in Eswatini,
+and compared overall HIV incidence in each model with the same parameters.
+Parameters were drawn from the top 1000 of 100,000 model fits by likelihood under the proposed model.
+\section{Results}
+Incidence in the proposed model increased faster initially, but then slowed and was surpassed by
+incidence in the instantaneous model of sexual partnerships (Figure).
+% this finding can be explained as follows.
+Initially, transmission is lower in the instantaneous model,
+because the \emph{probability} of transmission per-partnership-year in the instantaneous model
+is less than the \emph{rate} of transmission in the proposed model,
+due to survival effects (HIV transmission can only occur once per-partnership).
+Later, as the proportion of people who already transmitted to their current partner grows
+(a dynamic only captured in the proposed model),
+the potential for onward transmission from each new infection in the proposed model declines,
+while this potential remains unchanged in the instantaneous model.
+Thus, incidence in the proposed model becomes lower, and remains lower,
+than in the instantaneous model.
+\section{Conclusions}
+The proposed model moves beyond ``instantaneous'' partnerships
+within compartmental models of sexually transmitted infections,
+and captures key epidemic dynamics related to partnership duration and concurrency.
+Future work should explore differences in inferred epidemic drivers under
+the proposed and other models of sexual partnerships.
