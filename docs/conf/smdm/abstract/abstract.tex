@@ -3,11 +3,10 @@ Classic compartmental models of sexually transmitted infections
 simulate sexual partnerships as ``instantaneous'' by
 applying the cumulative risk of transmission per-partnership
 to the fraction of people forming new partnerships per unit time. 
-Thus, the usual partnership model does not account for partnership duration %SM: usual or traditioanl and same term throughout
-and concurrancy, and could lead to biased estimates of the contribution of
+Thus, the usual partnership model does not account for partnership duration, %SM: usual or traditioanl and same term throughout
+and could lead to biased estimates of the contribution of
 long-term partnerships to overall transmission.
-We developed a new partnership model for classic compartmental models to address this methodological gap, without 
-having to use an individual-based or pair-based model.
+We developed a new partnership model to address this methodological gap in compartmental models.
 \section{Methods}
 In the proposed model, we parameterize different partnerships types using:
 number of concurrent partnerships per-person, frequency of sex per-partnership, partnership duration;
@@ -27,24 +26,27 @@ At the start of the epidemic, HIV incidence increased earlier and faster with th
 then slowed and peaked at a lower magnitude, as compared with the ``instantaneous'  model (Figure). 
 % this finding can be explained as follows.
 The difference can be explained mechanistically as follows.
-The transmission potential is lower in the instantaneous model
+Early in the epidemic, the transmission potential is lower in the instantaneous model
 because the \emph{probability} of transmission per-partnership-year in the instantaneous model
 is less than the \emph{rate} of transmission in the proposed model,
-due to survival effects (HIV transmission can only occur once per-partnership). %SM: am confused by the sentence. "due to survival effects" applies to which model? suggest rephrase for clarity
-Later, as the proportion of people who already transmitted to their current partner grows
-(a dynamic only captured in the proposed model),
-the potential for onward transmission from each new infection in the proposed model declines,
-while this potential remains unchanged in the instantaneous model.  
-Thus, incidence in the proposed model becomes lower, and remains lower,
-than in the instantaneous model.
+due to survival effects (HIV transmission can only occur once per-partnership). %SM: am confused by the full sentence. "due to survival effects" applies to which model? suggest rephrase for clarity
+
+Over time there is an accrual of individuals who already transmitted to their current partner. 
+In the proposed model, such individuals are tracked and thus cannot pass on infections unless they explicitly form new parnterships, whereas 
+the instantaneous model has no such restriction. Thus, the potential for onward transmission at a population-level declines faster in the proposed model, 
+leading to lower HIV incidence after the growth phase of the epidemic.
+
+%SM: not entirely true as currently written, so tried to edit a bit. i.e. still have herd effects with instantansouse model. so the latter part of the phrase might be misleading b/c we do still see the peak and fall due to natural dynamics too in an instantaneous partnership model.
+
 \section{Conclusions}
-The proposed model moves beyond ``instantaneous'' partnerships
-within compartmental models of sexually transmitted infections,
-and captures key epidemic dynamics related to partnership duration and concurrency.
-Future work should explore differences in inferred epidemic drivers under
-the proposed versus other models of sexual partnerships.
+Asusmptions of instananeous partnerships could lead compartmental models of HIV transmission to
+underestimate early epidemic dynamics, and overestimate
+HIV incidence in mature and declining HIV epidemics.
+The proposed model offers a methodological solution to move beyond ``instantaneous'' partnerships
+within compartmental models of sexually transmitted infections by
+capturing key epidemic dynamics related to partnership duration without having to use an individual-based or pair-based model.
 % JK: I mention "concurrency" in the intro & conclusion,
 %     as the model really does capture these dynamics,
 %     but clearly don't really get into those details due to the space,
 %     plus, I know there are stigma issues potentially related to that word,
-%     so maybe just better to leave it out?
+%     so maybe just better to leave it out? SM: agree with leaviing out the term concurrency 
