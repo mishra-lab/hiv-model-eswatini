@@ -1,54 +1,98 @@
-\section{Purpose} %SM: great abstract! tough to convey easily and edits suggested largely to make it easier for reader (who may not be super super familiar with STI modeling). minor point == lots of "this" used and its a bit hard to follow what "this" refers to at times :) 
+\section{Purpose}
+% SM: great abstract! tough to convey easily and edits suggested largely
+% to make it easier for reader (who may not be super super familiar with STI modeling).
+% minor point == lots of "this" used and its a bit hard to follow what "this" refers to at times :)
 Classic compartmental models of sexually transmitted infections
 simulate sexual partnerships as ``instantaneous'' by
 applying the cumulative risk of transmission per-partnership
-to the fraction of people forming new partnerships per unit time. 
-Thus, the usual partnership model does not account for partnership duration, %SM: usual or traditioanl and same term throughout
-and could lead to biased estimates of the contribution of
-long-term partnerships to overall transmission.
-We developed a new partnership model to address this methodological gap in compartmental models.
+to the fraction of people forming new partnerships per unit time.
+This ``instananeous'' approach can bias model outputs, like
+% JK: was: "the usual partnership model does not account for partnership duration"
+%     Maybe we avoid saying this? As the usual approach does account for duration,
+%     in terms of transmission probability, but not in terms of temporal dynamics.
+%     Also, the "thus," implied that it is clear how the "instananeous" approach described
+%     biases estimates of the contribution of long-term partnerships to overall transmission,
+%     but I don't think we've described in enough detail why that bias would arise.
+overestimating the contribution of long-term partnerships to overall transmission.
+% JK: was: "could lead to biased" --- at Johnson (2016) showed this overestimation specifically,
+%     so I think we can strengthen the language to "can bias"?
+We developed a new approach to modelling sexual partnerships in compartmental models,
+and explored differences in epidemic dynamics
+under the new (proposed) versus old (instananeous) approach.
+% JK: I changed all mentions of "partnership model" to "approach"
+%     to help distinguish from the broader transmission model.
 \section{Methods}
-In the proposed model, we parameterize different partnerships types using:
-number of concurrent partnerships per-person, frequency of sex per-partnership, partnership duration;
-versus the ``instantaneous'' approach: rate of partnership change, and total sex per-partnership. %SM: do we mean total sex acts?
-For each type of partnership, we introduce a new strata to track individuals %SM: I know strictly its proporotions, but might be eaiser re: language/clarity to say people?
-who recently transmitted or acquired infection via the partnership type and 
-have not yet formed a new partnership of the same type.
-Then, in the incidence equation for each partnersthip type, we reduce by one
-the effective numbers of partnerships of among those who recently acquired/transmitted. %SM: define "those people"
-We compared the influence of the``instantaneous' partnership model vs the proposed model by using each 
-approach separately in an existing, data-driven model of heterosexual HIV transmission in Eswatini. 
-We fit the Eswatini model using the proposed approach, 
-and used the fitted paramters to simulate the HIV epidemic (overall HIV incidence) with the ``instantaneous''  approach.
-
-\section{Results}  %SM: past tense or present? 
-At the start of the epidemic, HIV incidence increased earlier and faster with the proposed model, but
-then slowed and peaked at a lower magnitude, as compared with the ``instantaneous'  model (Figure). 
-% this finding can be explained as follows.
-The difference can be explained mechanistically as follows.
-Early in the epidemic, the transmission potential is lower in the instantaneous model
-because the \emph{probability} of transmission per-partnership-year in the instantaneous model
-is less than the \emph{rate} of transmission in the proposed model,
-due to survival effects (HIV transmission can only occur once per-partnership). %SM: am confused by the full sentence. "due to survival effects" applies to which model? suggest rephrase for clarity
-
-Over time there is an accrual of individuals who already transmitted to their current partner. 
-In the proposed model, such individuals are tracked and thus cannot pass on infections unless they explicitly form new parnterships, whereas 
-the instantaneous model has no such restriction. Thus, the potential for onward transmission at a population-level declines faster in the proposed model, 
-leading to lower HIV incidence after the growth phase of the epidemic.
-
-%SM: not entirely true as currently written, so tried to edit a bit. i.e. still have herd effects with instantansouse model. so the latter part of the phrase might be misleading b/c we do still see the peak and fall due to natural dynamics too in an instantaneous partnership model.
-
+In the proposed approach, we parameterize sexual partnerships using:
+% JK: was: "we parameterize different partnership types"
+%     but the parameterization includes risk-group-level parameters,
+%     e.g. number of concurrent parnterships per-person,
+%     which is kind of beyond just different "types"
+%     --- so I opted to revert to "sexual partnerships" more generally?
+the number of concurrent partnerships per-person, frequency of sex per-partnership, and partnership duration;
+whereas the instantaneous approach uses:
+rate of partnership change, and total sex acts per-partnership.
+We track the numbers of people
+who recently transmitted or acquired infection via each partnership type, and
+who have not yet formed a new partnership of that type.
+% SM: I know strictly its proporotions, but might be eaiser re: language/clarity to say people?
+% JK: initially I thought no problem, but actually I think it's important to say something similar,
+%     as tracking "proportion" vs "individuals" is a key distinction b/w compartmental models
+%     and the current solution of moving to individual-based models.
+%     I opted for "numbers" instead though, as that's a) more accurate, and b) more accessible?
+%     However, I removed the "stratification" detail as I think this is less important
+Then, in the incidence equation, we reduce by one
+the effective numbers of partnerships of that type among those people.
+% SM: define "those people"
+% JK: "those people" is refering to the "proportions of people" above -- does that work?
+We integrated the proposed approach, and the instananeous approach,
+into a calibrated model of heterosexual HIV transmission in Eswatini,
+and compared modelled HIV incidence under the proposed versus the instananeous approach.
+% JK: I removed any mention of "model fitting", instead just mentioning "calibrated".
+%     I think we can get into these details in the oral/poster, but risks adding confusion
+%     here in the abstract for audience without modelling background?
+%     Similarly, I don't mention that the "parameters are the same" anymore for the same reason.
+\section{Results}
+% SM: past tense or present?
+% JK: The dual tenses was originally intended, and I still kind of prefer it -- what do you think?
+%     - past tense to describe what we observed in the incidence plot,
+%     - but present tense to describe the mechanistic descriptions,
+%       as these are generalizable insights that are "true then and now and forever"
+%     Something about writing the second part in past tense sounds wrong
+Incidence under the proposed approach increased faster initially,
+but was later surpassed by incidence under the instantaneous approach (Figure).
+This difference can be explained mechanistically as follows.
+Initially, transmission is faster under the proposed approach
+because the \emph{rate} of transmission per-partnership-year (proposed approach)
+is greater than the \emph{probability} of transmission per-partnership-year (instantaneous approach),
+due to survival effects in the latter (HIV transmission can only occur once per-partnership).
+As prevalence increases, both approaches capture population-level herd effects:
+reduced onward transmission from each infection due to
+new parnterships forming between two infected people (assumed to be at random).
+However, the proposed approach also captures partnership-level herd effects:
+existing partnerships continuing between two infected people following transmission.
+Thus, the proposed approach yields lower incidence versus the instananeous approach,
+after initial epidemic growth.
+% SM: not entirely true as currently written, so tried to edit a bit.
+%     i.e. still have herd effects with instantansouse model.
+%     so the latter part of the phrase might be misleading b/c we do still see
+%     the peak and fall due to natural dynamics too in an instantaneous partnership model.
+% JK: excellent point! I have revised substantially to introduce / distinguish between
+%     "population-level" herd effects and "partnership-level" herd effects to clarify this point
+%     (and even included the latter in the title) --- what do you think?
 \section{Conclusions}
-Asusmptions of instananeous partnerships could lead compartmental models of HIV transmission to
-underestimate early epidemic dynamics, and overestimate
-HIV incidence in mature and declining HIV epidemics.
-The proposed model offers a methodological solution to move beyond ``instantaneous'' partnerships
-within compartmental models of sexually transmitted infections by
-capturing key epidemic dynamics related to partnership duration without having to use an individual-based or pair-based model.
-% JK: I mention "concurrency" in the intro & conclusion,
-%     as the model really does capture these dynamics,
-%     but clearly don't really get into those details due to the space,
-%     plus, I know there are stigma issues potentially related to that word,
-%     so maybe just better to leave it out? SM: agree with leaviing out the term concurrency 
-
-%SM: figure - I don't understand the 2nd panel re: what "differnce vs. proposed" means. Could quite follow what the 2nd panel was trying to tell me...?
+Modelling sexual partnerships as instananeous can cause
+compartmental models of HIV transmission to
+underestimate early epidemic growth, and
+overestimate HIV incidence in mature and declining epidemics.
+% JK: Ooh, much better summary!
+The proposed approach offers a generalizable solution to move beyond ``instantaneous'' partnerships
+in compartmental models of sexually transmitted infections,
+and captures key epidemic dynamics related to ``partnership-level'' herd effects.
+% JK: was: "without having to use an individual-based or pair-based model."
+%     I might avoid introducing this idea here (for the first time in the abstract)
+%     as I don't think most readers would know about these different types of modles
+%     and/or how they also solve the instananeous partnership problem.
+% SM: figure - I don't understand the 2nd panel re: what "differnce vs. proposed" means.
+%     Could quite follow what the 2nd panel was trying to tell me...?
+% JK: Sorry, it's just the difference in incidence between the two models
+%     I've revised the labels a bit & updated the colours to hopefully clarify.
