@@ -14,10 +14,9 @@
 \frenchspacing
 \emergencystretch=2em
 % meta-data
-\renewcommand{\title}[1]{\gdef\@title{#1}}
+\renewcommand{\title}[2][]{\gdef\@maxtitle{#1}\gdef\@title{#2}}
 \newcommand{\conference}[2][]{\gdef\@conference{#2 #1}}
-\renewcommand{\abstract}[1]{\gdef\@abstract{#1}}
-\newcommand{\maxwords}[1]{\gdef\@maxwords{#1}}
+\renewcommand{\abstract}[2][]{\gdef\@maxwords{#1}\gdef\@abstract{#2}}
 \newcommand{\keywords}[1]{\gdef\@keywords{\ignorespaces#1}}
 \newcommand{\float}[3][Figure]{\gdef\@floatlab{#1}\gdef\@floatcap{#2}\gdef\@float{#3}}
 % helpers
@@ -28,15 +27,18 @@
 \def\sep{\unskip\hskip.4em\raisebox{.5ex}{\textbf.}\hskip.4em}
 % maketitle
 \renewcommand{\maketitle}{%
-  \immediate\write18{detex \@abstract.tex | wc -w > words.tex}
+  \immediate\write18{detex \@abstract.tex | wc -w > .tmp/abswords.tex}
+  \immediate\write18{detex \@title.tex | wc -c > .tmp/titchars.tex}
   \thispagestyle{empty}
-  \tpart{Title}{\@title}
+  \tpart{Title}{\input\@title\ignorespaces}
   \tpart{Authors}{\@author}
   \tpart{Conference}{\@conference}
   \tpart{Submitted}{\@date}
   \tpart{Abstract}{\vspace{-\parskip}\vspace{-\baselineskip}%
     \input\@abstract\ignorespaces\par\bigskip}
-  \tpart{Words}{\input{words}\unskip\,/\,\@maxwords}
+  \tpart{Limits}{%
+    \input{.tmp/titchars}\unskip\,/\,\@maxtitle\ \ title characters\par
+    \input{.tmp/abswords}\unskip\,/\,\@maxwords\ \ abstract words}
   \tpart{Keywords}{\@keywords}
   \pagebreak
   \tpart{\@floatlab}{\@floatcap\par
