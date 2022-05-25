@@ -13,6 +13,7 @@
 \def\@parboxrestore{\setlength{\parskip}{1ex}}
 \frenchspacing
 \emergencystretch=2em
+\hyphenpenalty=10000
 % meta-data
 \renewcommand{\title}[2][]{\gdef\@maxtitle{#1}\gdef\@title{#2}}
 \newcommand{\conference}[2][]{\gdef\@conference{#2 #1}}
