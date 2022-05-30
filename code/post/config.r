@@ -23,6 +23,16 @@ parts = list(
   'cas' = list(clr=rgb(.58,.15,.40),lab='Casual'),
   'swo' = list(clr=rgb(.87,.32,.23),lab='Occas. Sex Work'),
   'swr' = list(clr=rgb(.99,.65,.04),lab='Regular Sex Work')),
+t.hors = list(
+  '2020' = list(clr=rgb(.26,.04,.41),lab='2020'),
+  '2030' = list(clr=rgb(.69,.20,.35),lab='2030'),
+  '2040' = list(clr=rgb(.98,.55,.04),lab='2040')),
+cascade = list(
+  'diagnosed' = list(clr=rgb(.0,.0,.0),lab='Diagnosed among HIV+'),
+  'treated.c' = list(clr=rgb(.0,.0,.0),lab='Treated among diagnosed'),
+  'vls.c'     = list(clr=rgb(.0,.0,.0),lab='VLS among treated'),
+  'treated.u' = list(clr=rgb(.0,.0,.0),lab='Treated among HIV+'),
+  'vls.u'     = list(clr=rgb(.0,.0,.0),lab='VLS among HIV+')),
 cases.art = list(
   'fsw-cli+' = list(clr=rgb(.9,.3,.3),id='-+',lab='Left Behind: FSW'),
   'fsw+cli-' = list(clr=rgb(.3,.3,.9),id='+-',lab='Left Behind: Clients'),
@@ -38,7 +48,7 @@ cases.foi = list(
 sget = function(name,subname){
   return(unname(sapply(spec[[name]],function(def){def[[subname]]})))
 }
-gen.name = function(phase,key,case,b,ext='.csv'){
+gen.name = function(phase,key,case,b='all',ext='.csv'){
   return(root.path('data','csv',uid,sprintf('%d',N$sam),
     paste0( phase,'_',key,'_',case,'_',b,ext)))
 }
