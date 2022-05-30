@@ -129,17 +129,22 @@ $R_d, R_t \sim \mathrm{Beta}(\alpha=1.8,\beta=1.2)$, and
 $R_f \sim \mathrm{Gamma}(\alpha=1.33,\beta=3)$ for each of:
 FSW, clients, and the remaining lower risk population (9 total values).
 Sampling distributions were chosen to obtain cascades in 2020 spanning
-approximately 25-50-75 through 95-95-95.
-We sampled \x{n.sens.per} sets of $R$ for each model fit using Latin hypercube sampling.
-For each $R$ sample and model fit (\x{n.sens} total parameter sets), we computed:
-the relative CAI and AI versus the base case, as in Objective~\ref{obj:1};
-the proportion virally suppressed ($VS$) among people living with HIV in all 3 groups by 2020,
-as a summary measure of ART cascade; and 
-the absolute difference in $VS$ versus the base case scenari, $dVS$.
+approximately 75-80-95 through 95-95-95.
+We sampled $N_k = \x{n.sens.per}$ sets of $R$ for each model fit using Latin hypercube sampling.
 \par
-Next, we defined the following key measures of epidemic conditions ($EC$) related to sex work:
+For each $R$ sample $k$ and model fit (\x{n.sens} total parameter sets), we computed
+the relative CAI and AI versus the base case, as in Objective~\ref{obj:1},
+and the proportion virally unsuppressed ($U$) among people living with HIV by 2020,
+as a summary measure of ART cascade gaps.
+Then, we defined
+$dU_k = U_k - U_0$ as the difference in virally unsuppressed for the population overall
+in sample $k \in [1,10]$ versus the base case $k = 0$, and
+$RU_{ki} = U_{ki} / U_{k,all}$ as the ratio of virally unsuppressed
+among risk group $i$ versus the population overall in sample $k$.
+\par
+Next, we defined the following key measures of epidemic conditions ($C$) related to sex work:
 FSW and client population sizes (\% population overall);
-average duration selling sex (FSW) and buying sex (clients);
+average duration selling sex (FSW) and buying sex (clients); and
 HIV prevalence ratios in 2000 among FSW vs lower risk women, and among clients vs lower risk men.
 For these measures, we combined higher and lower risk FSW, and likewise higher and lower risk clients.
 We used HIV prevalence ratios to reflect
@@ -149,15 +154,14 @@ for HIV acquisition and transmission (Table~\ref{tab.het})
 in the analysis could lead to overfitting and improper inference due to effect mediation.
 Finally, we fit a general linear model of the form:
 \begin{equation}\label{eq:obj.2}
-  CAI = \sum_i \beta_i~{dVS}_i
-      + \sum_{ij~(i \ne j)} \beta_{ij}~{dVS}_i~{dVS}_j
-      + \sum_i \sum_k \beta_{ik}~{dVS}_i~{EC}_k
+  CAI = \beta_0
+      + \beta_d dU
+      + \sum_i \beta_i~{RU}_i
+      + \sum_i \sum_j \beta_{ij}~{RU}_i~{C}_j
 \end{equation}
-and determined the significance of effects ($\beta_i$), interactions ($\beta_{ij}$),
-and effect modification by epidemic conditions ($\beta_{ik}$).
+and determined the significance of relative unsuppression effects ($\beta_i$)
+and effect modification by epidemic conditions ($\beta_{ij}$).
 We used a generalized estimating equation to control for repeated use of each model fit.
-We used standardized variables (${dVS}$ and $EC$)
+We used standardized variables (${dU}$, $RU$, $C$)
 $\hat{x}_k = (x_k - \mu_{x_k}) / \sigma_{x_k}$
 to assess the relative influence of each variable.
-We did not include an intercept because we know that if ${dVS}_1 = {dVS}_2 = {dVS}_3 = 0$, then
-the counterfactual is equal to the base case scenario, and thus $CAI = AI = 0$.
