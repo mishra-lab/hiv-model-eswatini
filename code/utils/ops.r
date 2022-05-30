@@ -11,6 +11,18 @@ quiet = function(code){
   sink()
   return(result)
 }
+read.big.csv = function(fname,fresh=FALSE,...){
+  # for big "path/file.csv", write "path/.tmp/file.csv.rds" on first run & use this thereafter
+  fname.rds = file.path(dirname(fname),'.tmp',paste0(basename(fname),'.rds'))
+  if (fresh){
+    X = read.csv(fname,...)
+    dir.create(dirname(fname.rds))
+    saveRDS(X,fname.rds)
+    return(X)
+  } else {
+    return(readRDS(fname.rds))
+  }
+}
 str.r.pad = function(s,n){
   return(sprintf(fmt=paste0('%-',n,'s'),s))
 }
