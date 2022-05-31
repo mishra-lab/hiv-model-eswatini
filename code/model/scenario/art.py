@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from copy import deepcopy
-from utils import stats,fio,parallel,flatten,minimize,itslice,log
+from utils import stats,fio,parallel,flatten,minimize,itslice,log,dict_list_update
 from model import slicers,params,system,target,fit,out
 from model.scenario import tvec,fname,batch_select
 import model.scenario
@@ -160,9 +160,11 @@ def get_sens_sample(Ps,N):
     't': stats.beta_binom(p=.6,n=3),
     'u': stats.gamma_p(p=4,v=12),
   }
+  Rx_si = np.ones([2,4,1,1])
   PD = {'R'+step+'x:'+pop: PDs[step] for pop in ('fsw','cli','aq') for step in 'dtu' }
   return [P_update_Rqx_by_group(deepcopy(P),Pu)
-    for P in Ps for Pu in params.get_n_sample_lhs(N,PD,seed=P['seed'])]
+    for P in dict_list_update(Ps,Rdx_si=Rx_si,Rtx_si=Rx_si)
+    for Pu in params.get_n_sample_lhs(N,PD,seed=P['seed'])]
 
 if __name__ == '__main__':
   # rerun_refit()
