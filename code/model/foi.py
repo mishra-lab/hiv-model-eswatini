@@ -54,9 +54,9 @@ def get_apply_inc(dX,X,t,P):
   if P['foi_mode'] in ['base']: # C
     C_psik = P['C_psi'] - P['aC_pk']
   elif P['foi_mode'] in ['lin','bpy','bmy']: # C, Q, Q
-  # TODO: is this representative of what is done in the literature?
-    C_psik = P['C_psi']
-    A_ap = P['F_ap']
+    ltp = P['dur_p'] > 1
+    C_psik = P['C_psi'] * ((ltp) + (~ltp) / P['dur_p'])[:,_,_,_]
+    A_ap = P['F_ap'] * ((ltp) + (~ltp) * P['dur_p'])[_,:]
   elif P['foi_mode'] in ['bpd','bmd']: # Q, Q
     C_psik = P['C_psi'] / P['dur_p'][:,_,_,_]
     A_ap = P['F_ap'] * P['dur_p'][_,:]

@@ -5,7 +5,7 @@ from model import target,system,fit,out,slicers,params
 from model.scenario import tvec,fname
 import model.scenario
 
-model.scenario.uid = '2022-04-20'
+model.scenario.uid = '2022-06-01'
 model.scenario.N['sam'] = 100000
 
 cases = [
