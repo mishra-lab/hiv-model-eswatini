@@ -1,29 +1,8 @@
-% JK: @SM After wrapping up your edits, I asked KB to review,
-% and she gave some great high-level comments (in person) around:
-% - intro: emphasize how long the instananeous approach has been used for ("decades")
-% - into: mention how instananeous can bias epidemic dynamics, not partnership type stuff
-%     since this is what we explore in the abstract results
-% - methods: describe how instananeous approach works within the methods (was in intro)
-% - methods: even more lay language to describe how each approach works
-% - methods: "simultaneous" partnerships more accessible than "concurrent"
-% - describe partnership stuff as "approaches" to avoid confusion with the transmission "model" itself
-% I also completely omit certain ideas to try to keep the methods / message clear:
-% - model fitting detais: just say "calibrated" now
-% - partnership types: I think the methods and mechanism can be explained without this idea
-% I'm thinking we can always add back these details in the oral / poster
 \section{Purpose}
 For decades, standard compartmental models of sexually transmitted infections
 have simulated sexual partnerships as ``instantaneous''.
-% LW: Is this a new terminology we created or normally used in the literature?
-%     If the former – I would add explanation earlier here instead of in the methods section.
-% JK: Heh, that's how it was originally! I think I prefer to keep how it is now though
-%     for consistency in where the approaches are described
 However, this instananeous approach can bias model dynamics and outputs, such as
 underestimating the impact of preventing transmission in sex work.
-% LW: Why/how? Can u explicitly list 1-2 limitations of the instantaneous approach?
-%     And then followed by the obj statement – that we developed a new approach
-%     to address these limitations (to justify moves beyond this approach).
-% JK: done.
 We developed a new approach to simulating sexual partnerships in compartmental models
 which moves beyond the instananeous paradigm, and avoids these biases.
 \section{Methods}
@@ -32,31 +11,13 @@ or faster for shorter and/or simultaneous partnerships per-person.
 Then, a fraction of people changing partners become infected,
 reflecting the cumulative probability of transmission per-partnership/year (Figure~a,~left).
 In the proposed approach, we define a rate of transmission per-partnership, reflecting sex frequency;
-% LW: Are u explicitly model number of sex acts +  prob of transmission per act + skip pattern?
-%     As it is quite a method piece- wonder if helpful to actually include
-%     equations for both approaches – and e.g., embed them into the Figure.
-%     For modelers – they would want to see the equations to really understand
-%     what are the two approaches – especially ur proposed one
-% JK: I've made an attempt, but a bit worried that it could be overcomplicating things,
-%     plus, the equations are quite simplified, almost to the point of being wrong
-%     e.g. most models using instananeous use an effective maximum partnership duration of 1 year,
-%     but do allow shorter durations, which there isn't space to communicate here,
-%     and similarly, "mixing" is completely missing from the figure, even though it intersects with
-%     how parnterships are formed under the proposed approach.
-%     Anyways, maybe the diagram of compartments is worth keeping, maybe not even that.
 such rates can be summed across simultaneous partnerships per-person.
-% LW: For these part – I think I have seen other studies/papers doing it
 Then, we track the number of people who recently transmitted or acquired infection;
-% LW: This part is new – some how explicitly highlight this
-%     as key innovation for your proposed approach?
-% JK: Fair enough, though I think trying to emphasize while explaining could add confusion.
 we decrease by one the effective numbers of partners among these people,
 until they form a new partnership, determined by partnership duration (Figure~a,~right).
 We integrated the proposed approach, and the instananeous approach, separately,
 into a model of heterosexual HIV transmission in Eswatini.
 After calibrating the model under the proposed approach,
-% LW: Did we recalibrate each model ?
-% JK: No - I added back some details around this.
 we compared modelled HIV incidence under the proposed versus the instananeous approach,
 with the same model parameters.
 \section{Results}
@@ -70,58 +31,21 @@ Incidence under the instananeous approach was
 consistently greater than under the proposed approach,
 with relative differences growing over time (Figure~b).
 These differences can be explained mechanistically as follows.
-% LW: Curious how these data are parameterized – not for the abstract but in general.
-%     Did u use the same source of evidence and parametrize differently?
-%     Also – a bit puzzled as how rate and probability – as they are two different quantity
-%     – can we say one is larger than the other? Can they be compared as such?
-%     They also must be treated differently in the formula => can we simply say 
-%     the value of one is larger than the other - thus transmission is faster at the beginning?
-% JK: Actually, the original mechanistic explanation did not fully explain these findings;
-%     the diffrences were more attributable to treating all partnerships
-%     (including short-term) as year-long in the instananeous approach.
-%     The revised approach (see 95b71c5) now only enforces *maximum* duration of 1-year
-%     and we no longer observe higher incidence under the proposed at the beginning.
-%     Re. comparing rates & probability -- I agree it seems funny, but since
-%     many modellers are "fast and loose" with the distinction in force of infection equation,
-%     it is reasonable to compare them (could also get into details of numerical solving...)
 As prevalence increases, both approaches capture population-level herd effects:
 reduced onward transmission from each infection due to
 \emph{new} parnterships forming between two infected people (assumed to be at random).
 However, the proposed approach also captures partnership-level herd effects:
 reduced transmission due to \emph{existing} partnerships
 continuing between two infected people following transmission.
-% LW: Can we explain this more intuitively?
-%     So in contrast – the old approach did not capture partnership-level herd effects
-%     but only population-level herd effects?
-%     So how did old approach treat existing partnerships continuing between two infected people?
-% JK: They don't exist! (in the instananeous approach) Kinda crazy to say it like that ...
-%     Have added the sentence below
 These continuing partnerships cannot be modelled in the instananeous approach,
 and so infected individuals are assumed to be immediately at risk of onward transmission.
 Thus, as partnership-level herd effects accumulate over time,
 relative differences in incidence under the instananeous versus the proposed approach
 also grow over time.
-% JK: previous comments on ^ below:
-% SM: not entirely true as currently written, so tried to edit a bit.
-%     i.e. still have herd effects with instantansouse model.
-%     so the latter part of the phrase might be misleading b/c we do still see
-%     the peak and fall due to natural dynamics too in an instantaneous partnership model.
-% JK: excellent point! I have revised substantially to introduce / distinguish between
-%     "population-level" herd effects and "partnership-level" herd effects to clarify this point
-%     (and even included the latter in the title) --- what do you think?
 \section{Conclusions}
 Modelling sexual partnerships as instananeous can cause
 compartmental models of HIV transmission to overestimate HIV incidence,
 especially in mature and declining epidemics.
-% JK: Ooh, much better summary!
 The proposed approach offers a generalizable solution to move beyond instantaneous partnerships
 in compartmental models of sexually transmitted infections,
 and captures key epidemic dynamics related to partnership-level herd effects.
-% JK: was: "without having to use an individual-based or pair-based model."
-%     I might avoid introducing this idea here (for the first time in the abstract)
-%     as I don't think most readers would know about these different types of modles
-%     and/or how they also solve the instananeous partnership problem.
-% SM: figure - I don't understand the 2nd panel re: what "differnce vs. proposed" means.
-%     Could quite follow what the 2nd panel was trying to tell me...?
-% JK: Sorry, it's just the difference in incidence between the two models
-%     I've revised the labels a bit & updated the colours to hopefully clarify.
