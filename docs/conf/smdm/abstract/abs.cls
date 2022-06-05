@@ -30,7 +30,6 @@
 \renewcommand{\maketitle}{%
   \immediate\write18{detex \@abstract.tex | wc -w > .tmp/abswords.tex}
   \immediate\write18{detex \@title.tex | wc -c > .tmp/titchars.tex}
-  \thispagestyle{empty}
   \tpart{Title}{\input\@title\ignorespaces}
   \tpart{Authors}{\@author}
   \tpart{Conference}{\@conference}
@@ -44,3 +43,4 @@
   \pagebreak
   \tpart{\@floatlab}{\@floatcap\par
     \hskip-10mm\parbox{\linewidth}{\@float}}}
+\pagenumbering{gobble}

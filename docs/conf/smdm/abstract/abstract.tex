@@ -1,12 +1,12 @@
 \section{Purpose}
 For decades, standard compartmental models of sexually transmitted infections
 have simulated sexual partnerships as ``instantaneous''.
-However, this instananeous approach may bias model dynamics and outputs, such as %SM: just a minor question re: "may" in intro b/c we show the results that it "can"...? 
-underestimating the impact of preventing transmission in the conext of sex work.
+However, this instantaneous approach may bias model dynamics,
+especially those related to partnership duration.
 We developed a new approach to simulating sexual partnerships in compartmental models
-which moves beyond the instananeous paradigm, and avoids these biases.
+which moves beyond the instantaneous paradigm, and avoids such biases.
 \section{Methods}
-In the instananeous approach, people change partners at least once per year,
+In the instantaneous approach, people change partners at least once per year,
 or more frequently for shorter and/or simultaneous partnerships per-person.
 Then, a fraction of people changing partners become infected,
 reflecting the cumulative probability of transmission per-partnership/year (Figure~a,~left).
@@ -14,39 +14,32 @@ In the proposed approach, we define a rate of transmission per-partnership, refl
 such rates can be summed across simultaneous partnerships per-person.
 Then, we track the number of people who recently transmitted or acquired infection;
 we decrease by one the effective numbers of partners among these people
-until they form a new partnership determined by partnership duration (Figure~a,~right).
-We integrated the proposed approach and the instananeous approach, separately,
-into a model of heterosexual HIV transmission in Eswatini.
+until they form a new partnership, determined by partnership duration (Figure~a,~right).
+We integrated the proposed and instantaneous approaches, separately,
+into an existing model of heterosexual HIV transmission in Eswatini.
 After calibrating the model to observed data under the proposed approach,
-we compared modelled HIV incidence under the proposed versus the instananeous approach,
+we compared modelled HIV incidence under the proposed versus the instantaneous approach,
 with the same model parameters.
 \section{Results}
-% SM: past tense or present?
-% JK: The dual tenses was originally intended, and I still kind of prefer it -- what do you think?
-%     - past tense to describe what we observed in the incidence plot,
-%     - but present tense to describe the mechanistic descriptions,
-%       as these are generalizable insights that are "true then and now and forever"
-%     Something about writing the second part in past tense sounds kinda wrong to me
-%SM: agree, i like the flow of this...
-Incidence under the instananeous approach was
+Incidence under the instantaneous approach was
 consistently greater than under the proposed approach,
 with relative differences growing over time (Figure~b).
 These differences can be explained mechanistically as follows.
 As prevalence increases, both approaches capture population-level herd effects:
 reduced onward transmission from each infection due to
-\emph{new} parnterships forming between two infected people (assumed to be at random).
+\emph{new} partnerships forming between two infected people.
 However, the proposed approach also captures partnership-level herd effects:
 reduced transmission due to \emph{existing} partnerships
 continuing between two infected people following transmission.
-These continuing partnerships cannot be modelled in the instananeous approach,
-and so infected individuals are assumed to be immediately at risk of onward transmission.
+In the instantaneous approach, these continuing partnerships cannot be modelled,
+and so infected individuals are modelled to be immediately at risk of onward transmission.
 Thus, as partnership-level herd effects accumulate over time,
-relative differences in incidence under the instananeous versus the proposed approach
-also grow over time.  %SM: love this explanationa and mechanistic framing and terminology!
+relative differences in incidence under the instantaneous versus the proposed approach
+also grow over time.
 \section{Conclusions}
-Modelling sexual partnerships as instananeous can cause  %SM: and in conclusion, say "can",... b/c have shown that in the results?
+Modelling sexual partnerships as instantaneous can cause
 compartmental models of HIV transmission to overestimate HIV incidence,
 especially in mature and declining epidemics.
 The proposed approach offers a generalizable solution to move beyond instantaneous partnerships
 in compartmental models of sexually transmitted infections,
-and captures key epidemic dynamics related to partnership-level herd effects.  %SM: LOVE THIS!!!
+and captures key epidemic dynamics related to partnership-level herd effects.

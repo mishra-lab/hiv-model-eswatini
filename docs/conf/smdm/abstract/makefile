@@ -3,4 +3,4 @@ do.all:
 do.abstract:
 	pdflatex -shell-escape main
 do.fig:
-	cd fig && pdflatex main
+	cd fig && pdflatex main && convert -density 600 -flatten main.pdf main.png
