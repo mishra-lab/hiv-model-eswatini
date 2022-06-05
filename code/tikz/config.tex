@@ -2,14 +2,14 @@
   \usepackage{newtxsf}
   \usepackage[tabular,osf,sfdefault]{gandhi}
   \usepackage{microtype}\DisableLigatures{shape=sc}
-  \usepackage[italic,basic]{mathastext}
+  \usepackage[italic]{mathastext}
 \else
   \usepackage[charter]{mathdesign}
   \usepackage[lf]{CrimsonPro}
   \usepackage[italic]{mathastext}
 \fi
 \usepackage{tikz}
-\usetikzlibrary{decorations.pathreplacing,fit}
+\usetikzlibrary{decorations.pathreplacing,fit,arrows.meta}
 \pgfdeclarelayer{back}
 \pgfdeclarelayer{fore}
 \pgfsetlayers{back,main,fore}
@@ -60,8 +60,8 @@
   },
   brace/.style = {
     decorate,
-    decoration = {brace},
-  }
+    decoration = {brace,amplitude=.5em},
+  },
 }
 \newcommand{\shiftscope}[3]{%
   \begin{scope}[transform canvas={xshift=#1,yshift=#2}]
