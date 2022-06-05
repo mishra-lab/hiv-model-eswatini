@@ -1,0 +1,25 @@
+\def\k{\bar{k}}
+\begin{tikzpicture}[x=7em,y=6em,state/.append style={minimum width=3em}]
+  \node[state=  sus] (sus) at (-1,1) {$S$};
+  \foreach \i in {2,1,0}{
+    \begin{scope}[xshift=\i mm,yshift=\i mm]
+      \node[state=hiv.2!33!white] (e0) at (0,1) {$I_{1\k}$};
+      \node[state=hiv.3!33!white] (e1) at (1,1) {$I_{2\k}$};
+      \node[state=white]          (e2) at (2,1) {$\dots$};
+    \end{scope}
+  }
+  \node[state=hiv.2] (h0)  at (0,0) {$I_{1,0}$};
+  \node[state=hiv.3] (h1)  at (1,0) {$I_{2,0}$};
+  \node[state=white] (h2)  at (2,0) {$\dots$};
+  \draw[arrow,-latex] (sus) -- node[above=1mm]{$\lambda_k$} (e0);
+  \draw[arrow,-latex] (e0)  -- node[above=1mm]{~~~$\eta_1$} (e1);
+  \draw[arrow,-latex] (e1)  -- node[above=1mm]{~~~$\eta_2$} (e2);
+  \draw[arrow,-latex] (h0)  -- node[above=1mm]{$\eta_1$} (h1);
+  \draw[arrow,-latex] (h1)  -- node[above=1mm]{$\eta_2$} (h2);
+  \draw[arrow,-latex] (e0.290) -- node[right=1mm]{$\delta_k^{-1}$} (h0.070);
+  \draw[arrow,-latex] (e1.290) -- node[right=1mm]{$\delta_k^{-1}$} (h1.070);
+  \draw[arrow,-latex] (h0.110) -- node[left =1mm]{$\lambda_k'$} (e0.250);
+  \draw[arrow,-latex] (h1.110) -- node[left =1mm]{$\lambda_k'$} (e1.250);
+  \node[anchor=west] at (2.25,1) {$\k > 0$};
+  \node[anchor=west] at (2.25,0) {$\k = 0$};
+\end{tikzpicture}
