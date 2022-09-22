@@ -3,7 +3,7 @@ import sys
 import model.scenario
 from model.scenario import calibrate,foi,art
 
-model.scenario.uid = '2022-06-01'
+model.scenario.uid = '2022-09-22'
 # model.scenario.N['sam'] = 1000 # DEBUG
 
 # calibrate ---------------------------
@@ -21,4 +21,4 @@ model.scenario.uid = '2022-06-01'
 #   art.run_refit(case,int(sys.argv[1]))
 # art.merge_refit()
 # art.rerun_refit()
-art.run_sens()
+# art.run_sens()

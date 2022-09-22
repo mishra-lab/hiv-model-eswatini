@@ -6,12 +6,12 @@ from model import slicers,params,system,target,fit,out
 from model.scenario import tvec,fname,batch_select
 import model.scenario
 
-model.scenario.uid = '2022-04-20'
+model.scenario.uid = '2022-09-22'
 model.scenario.N['sam'] = 100000
 
 cascade = dict( # 2020 cascade targets
-  low  = (.40,.60,.80),
-  mid  = (.60,.80,.80),
+  low  = (.60,.40,.80),
+  mid  = (.80,.60,.80),
   high = (.95,.95,.95),
 )
 cases = [
@@ -62,6 +62,9 @@ def rerun_refit():
     T = target.get_all_esw() if case=='base' else get_refit_T_PD(case)[0]
     Ps = fio.load(fname('npy','fit' if case=='base' else 'art','Ps',case=case))
     Rs = system.run_n(Ps,t=tvec['main'],T=T)
+    fio.save_csv(fname('csv','art','expo',case=case),
+      out.expo(R1s=Rs,tvec=tvec['main'],t=tvec['plot'],snames=['all','w','m','aq','cli','fsw'],
+        onames=['incidence','prevalence','diagnosed','treated_c','vls_c','treated_u','vls_u']))
     fio.save_csv(fname('csv','art','keyout',case=case),
       [get_keyout_data(R,tvec['main'],case) for R in Rs])
     fio.save_csv(fname('csv','art','infs',case=case),
