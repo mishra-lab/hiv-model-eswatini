@@ -16,7 +16,7 @@ read.big.csv = function(fname,fresh=FALSE,...){
   fname.rds = file.path(dirname(fname),'.tmp',paste0(basename(fname),'.rds'))
   if (fresh){
     X = read.csv(fname,...)
-    dir.create(dirname(fname.rds))
+    if (!dir.exists(dirname(fname.rds))) { dir.create(dirname(fname.rds)) }
     saveRDS(X,fname.rds)
     return(X)
   } else {

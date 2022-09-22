@@ -9,10 +9,11 @@ from model import _,dimkeys,dimensions,slicers,out
 # TODO: labeling & colors for vsop
 
 # HELPERS ----------------------------------------------------------------------
+# TODO: some of these should go in utils
 
-def cmap(N,trim=False):
+def cmap(N,trim=False,option='inferno'):
   if trim: N += 2
-  cmfun = cm.get_cmap('inferno',N)
+  cmfun = cm.get_cmap(option,N)
   cmlist = [cmfun(i) for i in range(N)]
   return cmlist[1:-1] if trim else cmlist
 

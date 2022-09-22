@@ -2,7 +2,6 @@ from model.slicer import slicers
 
 _ = None
 
-dimkeys = 'apsihc*'
 dims = {
   'a': ['V','A'],
   'p': ['L','S','N','R'],
@@ -12,6 +11,7 @@ dims = {
   'c': ['U','D','X','T','V'],
   '*': [''],
 }
+dimkeys = ''.join(dims.keys())
 dimensions = {
   'act':      ['Vaginal','Anal'],
   'partner':  ['Main/Spousal','Casual','New SW','Regular SW'],
