@@ -6,7 +6,7 @@ import model.scenario
 from model.scenario import calibrate,foi,art
 
 parallel.cpus = 80
-model.scenario.uid = '2022-04-20'
+model.scenario.uid = '2022-09-22'
 
 # calibrate ---------------------------
 # calibrate.run(int(sys.argv[1]))
@@ -23,4 +23,4 @@ model.scenario.uid = '2022-04-20'
 #   art.run_refit(case,int(sys.argv[1]))
 # art.merge_refit()
 # art.rerun_refit()
-art.run_sens()
+# art.run_sens()
