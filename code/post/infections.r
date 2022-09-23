@@ -66,7 +66,6 @@ do.ratio = function(X){
   return(g)
 }
 do.margin = function(X,margin,type='both',strat='case.lab'){
-  # partnership types
   X.abs = aggregate(formula(paste('infections ~ t + ',margin,' + ',strat)),X,sum)
   X.rel = do.norm(X.abs,margin=margin,strat=strat)
   X.abs$scale = 'Absolute (\'000s)'
@@ -74,19 +73,17 @@ do.margin = function(X,margin,type='both',strat='case.lab'){
   if (margin == 'part'){ print(X.rel[X.rel$t %in% seq(1990,2040,5),]) }
   if (margin == 'part'){ print(aggregate(infections~part+case.lab,X.rel,max)) }
   if (margin %in% c('from','to')){
-    i.men = grepl('Men\\s|\\sClients',X.abs[[margin]])
-    X.abs$infections[i.men] = -X.abs$infections[i.men]
+    i.wom = grepl('Women\\s|\\sFSW',X.abs[[margin]])
+    X.abs$scale[i.wom] = paste('',X.abs$scale[i.wom],'')
   }
   X.long = switch(type,abs=X.abs,rel=X.rel,both=rbind(X.abs,X.rel))
-  ylab   = switch(type,abs='(\'000s)',rel='(%)','')
   g = ggplot(X.long,aes_string(x='t',y='infections',color=margin,fill=margin)) +
     geom_area(alpha=.7,size=.1) +
     scale_color_manual(values=clr[[margin]]) +
     scale_fill_manual(values=clr[[margin]]) +
-    labs(x='Year',y=paste('Infections',ylab),color='',fill='') +
+    facet_grid('scale~.',scales='free_y') +
+    labs(x='Year',y='Infections',color='',fill='') +
     theme_light()
-  if (margin %in% c('from','to')){ g = g + scale_y_continuous(labels=abs) }
-  if (type=='both'){ g = g + facet_wrap(vars(scale),scales='free_y') }
   return(g)
 }
 # --------------------------------------------------------------------------------------------------
@@ -114,18 +111,17 @@ main.art = function(){
   X = clean.data(read.csvs('art','infs','cases.art'))
   X = X[X$t>=1985 & X$t<=2040,]
   X.base = X[X$case=='base',]
-  do.margin(X.base,'part'); fig.save(uid,'inf-base-part-both',w=7,h=3);
-  q()
-  do.margin(X.base,'from'); fig.save(uid,'inf-base-from-both',w=7,h=3);
-  do.margin(X.base,'to');   fig.save(uid,'inf-base-to-both',w=7,h=3);
+  do.margin(X.base,'part'); fig.save(uid,'inf-base-part-both',w=5,h=5);
+  do.margin(X.base,'from'); fig.save(uid,'inf-base-from-both',w=5,h=7);
+  do.margin(X.base,'to');   fig.save(uid,'inf-base-to-both',  w=5,h=7);
   do.ratio(X.base);         fig.save(uid,'inf-base-ratio',w=5,h=3.5)
   do.alluvial.facet(X.base,seq(1990,2040,10)) + theme(legend.position='top'); fig.save(uid,'inf-base-alluvial',w=8,h=10)
   # infs-diff
   X.diff = clean.data(read.csvs('art','infs-diff','cases.art',skip='base'))
   X.diff = X.diff[X.diff$t>=2005 & X.diff$t<=2040,]
-  do.margin(X.diff,'part','abs') + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-part-abs',w=10,h=3);
-  do.margin(X.diff,'from','abs') + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-from-abs',w=10,h=3);
-  do.margin(X.diff,'to','abs')   + facet_grid(cols=vars(case.lab)); fig.save(uid,'inf-diff-to-abs',w=10,h=3);
+  do.margin(X.diff,'part','abs') + facet_grid('scale~case.lab'); fig.save(uid,'inf-diff-part-abs',w=10,h=2.75);
+  do.margin(X.diff,'from','abs') + facet_grid('scale~case.lab'); fig.save(uid,'inf-diff-from-abs',w=10,h=5);
+  do.margin(X.diff,'to','abs')   + facet_grid('scale~case.lab'); fig.save(uid,'inf-diff-to-abs',w=10,h=5);
 }
 # --------------------------------------------------------------------------------------------------
 # main.ims.poster()
