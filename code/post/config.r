@@ -1,9 +1,10 @@
 source('utils/ops.r')
 source('utils/plot.r')
 
-uid = '2022-06-01'
+uid = '2022-09-24'
 N = list(sam=100000,batchs=10,sens=10,topfit=.01)
 spec = list(
+base = list('base'=list(clr=rgb(.69,.20,.35),lab='')),
 pops = list(
   'wl'    = list(clr=rgb(1.,.6,.6),lab='Women Low'),
   'wm'    = list(clr=rgb(.8,.4,.4),lab='Women Med'),
@@ -43,7 +44,7 @@ cases.foi = list(
   # 'lin'  = list(clr=rgb(.500,.500,.500),id='lin',lab='<3>'),
   'bpd'  = list(clr=rgb(.267,.005,.329),lt='22',   id='bpd', lab='<1a>'),
   'bpy'  = list(clr=rgb(.191,.407,.556),lt='52',   id='bpy', lab='<1b>'),
-  'bmy'  = list(clr=rgb(.208,.719,.473),lt='82', id='bmy', lab='<2b>'),
+  'bmy'  = list(clr=rgb(.208,.719,.473),lt='82',   id='bmy', lab='<2b>'),
   'base' = list(clr=rgb(.993,.906,.144),lt='solid',id='base',lab='<4*>')))
 sget = function(name,subname){
   return(unname(sapply(spec[[name]],function(def){def[[subname]]})))

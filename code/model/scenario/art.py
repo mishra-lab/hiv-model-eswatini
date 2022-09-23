@@ -6,12 +6,12 @@ from model import slicers,params,system,target,fit,out
 from model.scenario import tvec,fname,batch_select
 import model.scenario
 
-model.scenario.uid = '2022-09-22'
+model.scenario.uid = '2022-09-24'
 model.scenario.N['sam'] = 100000
 
 cascade = dict( # 2020 cascade targets
   low  = (.60,.40,.80),
-  mid  = (.80,.60,.80),
+  mid  = (.80,.80,.80),
   high = (.95,.95,.95),
 )
 cases = [
