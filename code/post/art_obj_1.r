@@ -18,34 +18,52 @@ load.keyout.data = function(t.hors){
   X$prev.add = (X$prev_all   - X.base$prev_all)   / X.base$prev_all
   return(X)
 }
-plot.out = function(X,ylist,ylab,scale=1,tlims=NULL,...){
-  args = list(...)
-  X = aggregate(.~case+t+case.lab+case.id,X,median) # if >1 batches
-  X.long = melt(X,m=unlist(ylist))
-  levels(X.long$variable) = names(ylist)
-  if (!is.null(tlims)){ t = X.long$t; X.long = X.long[t>=tlims[1] & t<=tlims[2],] }
-  g = ggplot(X.long,aes_string(x='t',y=paste(scale,'*value'),...)) +
-    geom_line() +
-    labs(x='Year',y=ylab) +
-    theme_light()
-  if (length(ylist) > 1){ g = g + facet_wrap(vars(variable),nrow=1,scales='free_y') }
-  if ('color' %in% names(args)){ g = g + scale_color_manual(values=sget('cases.art','clr')) }
-  if ('fill' %in% names(args)){ g = g + scale_fill_manual(values=sget('cases.art','clr')) }
-  return(g)
+load.expo.data = function(){
+  E = read.csvs('art','expo','cases.art')
+  E = E[E$pop %in% names(spec$groups),]
+  E$out = gsub('_c','.c',gsub('_u','.u',E$out))
+  E$step = factor(E$out,levels=names(spec$cascade),labels=sget('cascade','lab'))
+  E$groups = factor(E$pop,levels=names(spec$groups),labels=sget('groups','lab'))
+  return(E)
 }
-plot.obj.1 = function(X,y='100*inf.red',ylab='Infections averted (%)',yl,tlims=c(2005,2040),...){
+# --------------------------------------------------------------------------------------------------
+# plot stuff
+plot.out = function(E,outs,color=NULL,scale=1){
+  g = ggplot(E[E$out %in% outs,],aes_string(x='t',color=color,fill=color)) +
+    geom_ribbon(aes(ymin=scale*q0.05,ymax=scale*q0.95),alpha=.2,color=NA) +
+    geom_line(aes(y=scale*q0.5)) +
+    scale_color_manual(values=sget('cases.art','clr')) +
+    scale_fill_manual(values=sget('cases.art','clr')) +
+    theme_light()
+}
+plot.cascade = function(E,steps,y.lab='Cascade step (%)'){
+  g = plot.out(E,steps,color='case.lab',scale=100) +
+    facet_grid('step ~ groups') +
+    labs(x='Year',y=y.lab,color='',fill='') +
+    scale_x_continuous(limits=c(2000,2040),breaks=c(2010,2020,2030,2040)) +
+    theme(legend.position='top')
+}
+plot.incidence = function(E){
+  g = plot.out(E,'incidence',color='case.lab',scale=1000) +
+    facet_wrap('.~groups',ncol=4,scales='free_y') +
+    labs(x='Year',y='HIV Incidence (per 1000 PY)',color='',fill='') +
+    theme(legend.position='top')
+}
+plot.obj.1 = function(X,y,y.lab,y.lims,t.lims=c(2005,2040),...){
   X$case.lab = factor(X$case.lab,labels=gsub('Left Behind: ','',levels(X$case.lab)))
-  if (!is.null(tlims)){ t = as.numeric(X$year); X = X[t>=tlims[1] & t<=tlims[2],] }
+  if (!is.null(t.lims)){ t = as.numeric(X$year); X = X[t>=t.lims[1] & t<=t.lims[2],] }
   g = ggplot(X[X$case.id!='bc',],aes_string(x='factor(year)',y=y,...)) +
     geom_boxplot(aes(color=case.lab),outlier.size=.5,lwd=.0,width=.6,position=position_dodge(.8)) +
     geom_boxplot(aes(fill=case.lab),outlier.color=NA,lwd=.3,width=.6,position=position_dodge(.8)) +
-    labs(x='Year',y=ylab,color='Left Behind:',fill='Left Behind:') + lims(y=yl) +
+    labs(x='Year',y=y.lab,color='Left Behind:',fill='Left Behind:') + lims(y=y.lims) +
     scale_fill_manual(values=sget('cases.art','clr')) +
     scale_color_manual(values=sget('cases.art','clr')) +
     theme_light() +
     theme(legend.position=c(.01,.99),legend.justification=c(0,1))
   return(g)
 }
+# --------------------------------------------------------------------------------------------------
+# numeric stuff - TODO: check
 save.tex = function(value,...,dec=3,per=1){
   value = value * per
   dec = dec - log10(per)
@@ -89,15 +107,15 @@ numeric.obj.1 = function(X){
   }
 }
 # --------------------------------------------------------------------------------------------------
-# TODO: do we really need this ... ? maybe just plot in python
-# X.out = load.csvs('outs')
-# ylist = list('Overall'='inc_all.mu','Lower Risk'='inc_aq.mu','FSW'='inc_fsw.mu','Clients'='inc_cli.mu')
-# g = plot.out(X.out,ylist,ylab='HIV Incidence (per 1000 PY)',scale=1000,color='case.lab',tlims=c(2000,2050)) +
-#   labs(color='Left Behind:') + theme(legend.position='top'); fig.save(uid,'obj_1_inc',w=10,h=3)
-X = load.keyout.data()
-numeric.obj.1(X)
-plot.obj.1(X,y='100*inf.red',ylab='Infections averted (%)',      yl=c(0, 60)); fig.save(uid,'art_1_inf_red',w=8,h=4)
-plot.obj.1(X,y='100*inf.add',ylab='Additional infections (%)',   yl=c(0,130)); fig.save(uid,'art_1_inf_add',w=8,h=4)
-plot.obj.1(X,y='100*inc.red',ylab='Incidence reduction (%)',     yl=c(0,100)); fig.save(uid,'art_1_inc_red',w=8,h=4)
-plot.obj.1(X,y='  1*inc.add',ylab='Additional incidence (times)',yl=c(0, 30)); fig.save(uid,'art_1_inc_add',w=8,h=4)
-
+if (sys.nframe() == 0){
+  E = load.expo.data()
+  g = plot.incidence(E);                                    fig.save(uid,'ar_1_inc',w=12,h=4)
+  g = plot.cascade(E,c('diagnosed','treated.c','vls.c'));   fig.save(uid,'art_1_cascade',w=8,h=6)
+  g = plot.cascade(E,'vls.u',y.lab=spec$cascade$vls.u$lab); fig.save(uid,'art_1_vls',w=8,h=3)
+  X = load.keyout.data()
+  # numeric.obj.1(X) # TODO
+  plot.obj.1(X,y='100*inf.red',y.lab='Infections averted (%)',      y.lims=c(0, 60)); fig.save(uid,'art_1_inf_red',w=8,h=4)
+  plot.obj.1(X,y='100*inf.add',y.lab='Additional infections (%)',   y.lims=c(0,130)); fig.save(uid,'art_1_inf_add',w=8,h=4)
+  plot.obj.1(X,y='100*inc.red',y.lab='Incidence reduction (%)',     y.lims=c(0,100)); fig.save(uid,'art_1_inc_red',w=8,h=4)
+  plot.obj.1(X,y='  1*inc.add',y.lab='Additional incidence (times)',y.lims=c(0, 30)); fig.save(uid,'art_1_inc_add',w=8,h=4)
+}
