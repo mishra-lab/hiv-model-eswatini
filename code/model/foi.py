@@ -1,13 +1,13 @@
 import numpy as np
 from utils import _,deco,linear_comb
+np.set_printoptions(linewidth=200)
+# TODO: explore np.einsum
 
 tol = 1e-8
 foi_modes = [
   'lin', # no consideration of partnership duration
   'bpd', # binomial per-partnership-duration
   'bpy', # binomial per-partnership-year
-  'bmd', # binomial concurrent partnership-duration
-  'bmy', # binomial concurrent partnership-year
   'base', # proposed model (partnership exclusion)
 ]
 
@@ -20,6 +20,7 @@ def get_beta(P,t):
   Rbeta_gud_sus = linear_comb(P_gud_t,P['Rbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
   Rbeta_gud_inf = linear_comb(P_gud_t,P['Rbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
   return P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf * RbA_condom * RbA_circum
+  # TODO: maybe just cap beta ~<= .2 ???
 
 @deco.nowarn
 #@profile
@@ -49,15 +50,18 @@ def get_mix(XC,P):
 def get_apply_inc(dX,X,t,P):
   # return.shape = (p:4, s:2, i:4, s':2, i':4)
   # NOTE: if foi_mode in ['lin','base','bpd','bpy']: return absolute infections
-  #       if foi_mode in ['bmd','bmy']: return *probability* of infection (aggr must be deferred)
+  #       if foi_mode in [TODO]: return *probability* of infection (aggr must be deferred)
   # define partner numbers (C) / rates (Q) for mixing, + total acts (A) for binomial models
-  if P['foi_mode'] in ['base']: # C
+  if P['foi_mode'] in ['base']:
     C_psik = P['C_psi'] - P['aC_pk']
-  elif P['foi_mode'] in ['lin','bpy','bmy']: # C, Q, Q
-    ltp = P['dur_p'] > 1
-    C_psik = P['C_psi'] * ((ltp) + (~ltp) / P['dur_p'])[:,_,_,_]
-    A_ap = P['F_ap'] * ((ltp) + (~ltp) * P['dur_p'])[_,:]
-  elif P['foi_mode'] in ['bpd','bmd']: # Q, Q
+  elif P['foi_mode'] in ['lin']:
+    C_psik = P['C_psi']
+    A_ap = P['F_ap']
+  elif P['foi_mode'] in ['bpy']:
+    dur_p_1 = np.minimum(P['dur_p'],1)
+    C_psik = P['C_psi'] / dur_p_1[:,_,_,_]
+    A_ap = P['F_ap'] * dur_p_1[_,:]
+  elif P['foi_mode'] in ['bpd']:
     C_psik = P['C_psi'] / P['dur_p'][:,_,_,_]
     A_ap = P['F_ap'] * P['dur_p'][_,:]
   # compute the mixing
@@ -67,18 +71,14 @@ def get_apply_inc(dX,X,t,P):
   PXC_hc = XC / (SXC[:,:,:,_,_] + tol/10) # shape = (p:4, s:2, i:4, h:6, c:5)
   mix = get_mix(SXC,P) * PXC_hc[:,:,:,0,0,_,_] * P['mix_mask']
   # compute per-act probability
-  beta = get_beta(P,t)
+  beta = get_beta(P,t) # shape: (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5)
   # force of infection: linear vs binomial
   if P['foi_mode'] in ['lin','base']:
     Fbeta = np.sum(beta * P['F_ap'][:,:,_,_,_,_,_,_], axis=0)
     inc = Fbeta * mix[:,:,:,:,:,_,_] * PXC_hc[:,_,_,:,:,:,:] # absolute infections
-  elif P['foi_mode'] in ['bpd','bpy','bmd','bmy']:
-    Abeta = 1 - np.prod((1 - beta) ** A_ap[:,:,_,_,_,_,_,_], axis=0)
-    XAbeta = np.sum(Abeta * PXC_hc[:,_,_,:,:,:,:], axis=(5,6))
-    if P['foi_mode'] in ['bpd','bpy']:
-      inc = XAbeta * mix # absolute infections
-    elif P['foi_mode'] in ['bmd','bmy']:
-      inc = 1 - (1 - XAbeta) ** (mix / X[_,:,:,0,0,0,_,_]) # probability of infection
+  elif P['foi_mode'] in ['bpd','bpy']:
+    B_p = 1 - np.prod((1 - beta) ** A_ap[:,:,_,_,_,_,_,_], axis=0)
+    inc = np.sum(B_p * PXC_hc[:,_,_,:,:,:,:], axis=(5,6)) * mix # absolute infections
   # aggregating & applying to dX
   if P['foi_mode'] in ['base']:
     dXi = inc.sum(axis=(3,4,5,6)) # acquisition: (p:4, s:2, i:4)
@@ -97,17 +97,16 @@ def get_apply_inc(dX,X,t,P):
     dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
   elif P['foi_mode'] in ['bpd','bpy']:
     dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
-  elif P['foi_mode'] in ['bmd','bmy']:
-    dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4),Xsus=X[:,:,0,0,0])
   dX[:,:,0,0,0] -= dXi
   dX[:,:,0,1,0] += dXi
   return inc
 
 #@profile
 def aggr_inc(inc,foi_mode,axis,Xsus=1.,keepdims=False):
+  # TODO:
   # returns absolute infections after appropriately aggregating "inc"
-  # Xsus only needed if 'foi_mode' in ['bmy','bmd']
+  # Xsus only needed if 'foi_mode' in ['bmy']
   if foi_mode in ['lin','base','bpy','bpd']:
     return inc.sum(axis=axis,keepdims=keepdims)
-  if foi_mode in ['bmy','bmd']:
+  if foi_mode in []: # TODO
     return (1 - np.prod(1 - inc,axis=axis,keepdims=keepdims)) * Xsus

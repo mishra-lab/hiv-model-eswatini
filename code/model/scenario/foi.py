@@ -5,14 +5,13 @@ from model import target,system,fit,out,slicers,params
 from model.scenario import tvec,fname
 import model.scenario
 
-model.scenario.uid = '2022-06-01'
+model.scenario.uid = '2022-09-24'
 model.scenario.N['sam'] = 100000
 
 cases = [
   'base',
   'bpd',
   'bpy',
-  'bmy',
 ]
 
 def get_keyout_data(R,t,case):
@@ -41,6 +40,9 @@ def run_fit(case):
     [get_keyout_data(R,tvec['main'],case) for R in Rs])
   fio.save_csv(fname('csv','foi-fit','infs',case=case),
     out.get_infections(Rs,tvec['main'],tvec['plot']))
+  ekwds = dict(tvec=tvec['main'],t=tvec['plot'],snames=['all','w','m','aq','cli','fsw'])
+  fio.save_csv(fname('csv','foi-fit','expo',case=case),
+    out.expo(['incidence','prevalence'],Rs,**ekwds))
 
 def run_ep(top=1.):
   log(0,'scenario.foi.run_ep: '+', '.join(cases))
@@ -58,8 +60,9 @@ def run_ep(top=1.):
     if case == 'base':
       R2s = copy(R1s)
     else:
-      E_vs = out.expo(onames,R1s,R2s=R2s,vsop='1-2',**ekwds)
-      E = {k:E[k]+E_vs[k] for k in E}
+      E_vs_abs = out.expo(onames,R1s,R2s=R2s,vsop='1-2',**ekwds)
+      E_vs_rel = out.expo(onames,R1s,R2s=R2s,vsop='1-2/2',**ekwds)
+      E = {k:E[k]+E_vs_abs[k]+E_vs_rel[k] for k in E}
     fio.save_csv(fname('csv','foi-ep','expo',case=case),E)
 
 def run_tpaf(case,top=1.):
@@ -79,7 +82,7 @@ def run_tpaf(case,top=1.):
     clito = dict(sto=1,ito=(2,3)),
   )
   t0s = [1990,1995,2000,2005,2010,2015,2020,2025,2030]
-  E = out.expo([],[],[],[],[],ecols=dict(tpaf=None))
+  E = out.expo([],[],[],[],[],ecols={'tpaf.pop':None,'tpaf.t0':None})
   for tpaf,spec in tpafs.items():
     for t0 in t0s:
       log(1,tpaf+'_'+str(t0))
