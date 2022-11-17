@@ -1,0 +1,50 @@
+\documentclass[aspectratio=169]{beamer}
+\input{config}
+\input{../poster/tikz/config}
+\tikzset{state/.append style={fill=#1!20!C1}}
+\setlength\xp{5mm}
+\begin{document}
+  \begin{frame}\raggedleft
+    \textsc{\Large
+      beyond instantaneous partnerships:\\
+      capturing partnership-level herd effects\\
+      \rlap{in compartmental models of sexually transmitted infections}}
+    \vfill
+    Jesse Knight~~and~~Sharmistha Mishra
+    \bigskip\par
+    \textsc{pp-110~~{\footnotesize @}~~smdm~44}\par
+    \textsc{2022 oct 23-26}
+  \end{frame}
+  \begin{frame}\vfill
+    \begin{minipage}[t]{.5\linewidth}\centering
+      \textbf{Instantaneous Partnerships}
+      \bigskip\par
+      \input{../poster/tikz/model.inst}
+      \bigskip\par\pause
+      \textit{biased model outputs}
+    \end{minipage}\pause
+    \begin{minipage}[t]{.5\linewidth}\centering
+      \textbf{Proposed Model}
+      \bigskip\par
+      \input{../poster/tikz/model.prop}
+      \bigskip\par\pause
+      \textit{track recent infections $~\rightarrow~$ avoid bias}
+    \end{minipage}
+  \end{frame}
+  \begin{frame}\centering
+    \includegraphics[height=.8\textheight]{obj2a}
+  \end{frame}
+  \begin{frame}\centering
+    \includegraphics[height=.8\textheight]{obj2b}
+  \end{frame}
+  \begin{frame}\raggedleft
+    \vfill
+    \textsc{poster session}\par
+    \textsc{pp-110~~{\footnotesize @}~~smdm~44}\par
+    \textsc{2022 oct 24,~~monday~~07:00-08:30}
+    \vfill
+    \textsc{data + code}\par
+    github.com/mishra-lab/hiv-fsw-art
+    \vfill
+  \end{frame}
+\end{document}
