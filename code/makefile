@@ -17,9 +17,9 @@ do.infections:
 	Rscript post/infections.r && echo [OK]
 do.post.foi:
 	Rscript post/foi.r && echo [OK]
-do.obj.1:
+do.post.art.1:
 	Rscript post/art_obj_1.r && echo [OK]
-do.obj.2:
+do.post.art.2:
 	Rscript post/art_obj_2.r && echo [OK]
 do.tikz:
 	cd tikz && make all
