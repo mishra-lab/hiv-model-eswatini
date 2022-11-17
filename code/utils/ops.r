@@ -1,3 +1,4 @@
+library('parallel')
 options(width=200)
 root.path = function(...,create=FALSE){
   root = strsplit(file.path(getwd(),''),file.path('','code',''))[[1]][1]
@@ -66,4 +67,13 @@ block.sample = function(X,id.var='id',n=NULL,replace=TRUE){
   return(do.call(rbind,lapply(ids,function(id){
     return(X[X[[id.var]]==id,])
   })))
+}
+.n.cores = 7
+par.lapply = function(...,cores=.n.cores,.par=TRUE){
+  # simple wrapper for parallel::mclapply with some default arguments
+  if (.par){
+    mclapply(...,mc.cores=cores,mc.set.seed=FALSE)
+  } else {
+    lapply(...)
+  }
 }
