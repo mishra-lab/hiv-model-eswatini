@@ -1,13 +1,20 @@
 # hidden folders
-.old/
+.b/
+.coa/
 .debug/
-.tmp/
+.old/
 .raw/
+.slurm/
+.sub/
+.tmp/
 
 # python
 __pycache__/
 npy/
 *.pyc
+
+# R
+Rplots*
 
 # tex
 *.aux
