@@ -34,7 +34,7 @@
 \clubpenalty10000
 % meta-data
 \renewcommand{\title}[2][]{\gdef\@runtitle{#1}\gdef\@title{#2}}
-\newcommand{\journal}[1]{\gdef\@journal{#1}}
+\newcommand{\journal}[2][(preprint)]{\gdef\@journal{#2 #1}}
 \newcommand{\keywords}[1]{\gdef\@keywords{#1}}
 \renewcommand{\abstract}[1]{\gdef\@abstract{#1}}
 \newcommand{\data}[1]{\gdef\@data{#1}}
@@ -53,7 +53,7 @@
   \thispagestyle{empty}
   \tpart{Title}{\@title}
   \tpart{Authors}{\@author}
-  \tpart{Journal}{\@journal\ (preprint)}
+  \tpart{Journal}{\@journal}
   \tpart{Date}{\@date}
   \clearpage
   {\centering\tstyle{Abstract}\par\bigskip\@abstract}

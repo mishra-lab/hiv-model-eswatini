@@ -39,14 +39,15 @@ Figure~\ref{fig:model} summarizes the model structure and state transitions with
 \end{figure}
 %===================================================================================================
 \subsection{Parameterization}\label{a:model.param}
-\clearpage
+* under construction *
 %===================================================================================================
+\clearpage\newgeometry{vscale=.8}
 \subsection{Calibration}\label{a:model.cal}
 Figures~\ref{fig:fit.prev}~and~\ref{fig:fit.inc} illustrate HIV prevalence and incidence
 in the base case scenario, and the associated calibration targets.
 Figure~\ref{fig:fit.pr} similarly shows prevalence ratios between selected risk groups.
 \begin{figure}[h]
-    \includegraphics[width=\linewidth]{fit-prev}
+  \includegraphics[width=\linewidth]{fit_prev}
   \caption{HIV prevalence in the base case scenario and associated calibration targets}
   \label{fig:fit.prev}
   \floatfoot{Three ribbons illustrate range of 100\%, top 20\%, and top 4\% of model fits
@@ -54,7 +55,7 @@ Figure~\ref{fig:fit.pr} similarly shows prevalence ratios between selected risk 
     points and error bars illustrate the mean and 95\% CI for each calibration target.}
 \end{figure}
 \begin{figure}[h]
-    \includegraphics[width=\linewidth]{fit-inc}
+    \includegraphics[width=\linewidth]{fit_inc}
   \caption{HIV incidence in the base case scenario and associated calibration targets}
   \label{fig:fit.inc}
   \floatfoot{Three ribbons illustrate range of 100\%, top 20\%, and top 4\% of model fits
@@ -63,37 +64,37 @@ Figure~\ref{fig:fit.pr} similarly shows prevalence ratios between selected risk 
 \end{figure}
 \begin{figure}[h]
   % TODO: wrap this like facet & deal with long titles
-  \includegraphics[width=\linewidth]{fit-pr}
+  \includegraphics[width=\linewidth]{fit_pr}
   \caption{HIV prevalence ratios in the base case scenario and associated calibration targets}
   \label{fig:fit.pr}
   \floatfoot{Three ribbons illustrate range of 100\%, top 20\%, and top 4\% of model fits
     by likelihood for all base case calibration targets;
     points and error bars illustrate the mean and 95\% CI for each calibration target.}
 \end{figure}
-\clearpage\newgeometry{top=1cm,bottom=2cm}
+\clearpage\newgeometry{vscale=.85}
 \begin{figure}[h]
   \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{fit-diag}
+    \includegraphics[width=\linewidth]{fit_diag}
     \caption{\% Diagnosed among HIV+}
     \label{fig:fit.cas.dx}
   \end{subfigure}
   \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{fit-treat-c}
+    \includegraphics[width=\linewidth]{fit_treat_c}
     \caption{\% On ART among diagnosed}
     \label{fig:fit.cas.treat-c}
   \end{subfigure}
   \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{fit-vls-c}
+    \includegraphics[width=\linewidth]{fit_vls_c}
     \caption{\% Virally suppressed among on ART}
     \label{fig:fit.cas.vls-c}
   \end{subfigure}
   \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{fit-treat-u}
+    \includegraphics[width=\linewidth]{fit_treat_u}
     \caption{\% On ART among HIV+}
     \label{fig:fit.cas.treat-u}
   \end{subfigure}
   \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{fit-vls-u}
+    \includegraphics[width=\linewidth]{fit_vls_u}
     \caption{\% Virally suppressed HIV+}
     \label{fig:fit.cas.vls-u}
   \end{subfigure}
@@ -105,7 +106,7 @@ Figure~\ref{fig:fit.pr} similarly shows prevalence ratios between selected risk 
 \end{figure}
 \clearpage\restoregeometry
 \begin{figure}[h]
-  \includegraphics[width=\linewidth]{fit-condom}
+  \includegraphics[width=\linewidth]{fit_condom}
   \caption{Condom use by partnership type in the base case scenario and associated calibration targets}
   \label{fig:fit.condom}
   \floatfoot{Three ribbons illustrate range of 100\%, top 20\%, and top 4\% of model fits

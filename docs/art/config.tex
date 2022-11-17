@@ -16,8 +16,9 @@
   citecolor=purple,
 ]{hyperref}
 \addbibresource{/home/jesse/refs/library.bib}
+\renewcommand*{\multicitedelim}{\addcomma\,}
 % outputs
-\def\uid{2022-02-20}
+\def\uid{2022-09-24}
 \graphicspath{
   {fig/}
   {../../out/fig/tikz/}
@@ -26,17 +27,20 @@
 \newcommand{\x}[1]{\input{../../out/tex/\uid/#1}\unskip}
 \newcommand{\xci}[2][.md]{\x{#2#1}~(\x{#2.lo},~\x{#2.hi})}
 % float stuff
-\newlength{\bigfig}\setlength{\bigfig}{1.33\linewidth}
 \newcolumntype{C}{>{\tabularfigures\arraybackslash}c}
 \newcolumntype{R}{>{\tabularfigures\arraybackslash}r}
 \newcolumntype{L}{>{\tabularfigures\arraybackslash}l}
 \newcommand{\tn}[1]{\rlap{\textsuperscript{~#1}}}
 \newcommand{\tnt}[2][]{\textsuperscript{#1~}#2}
 \newcommand{\floatfoot}{\par\addvspace{1ex}\justifying\footnotesize}
+\renewcommand{\textfraction}{.2}
 % misc formatting
-\usepackage{pifont}
+\usepackage{pifont,xspace}
 \newcommand{\By}{{\ding{51}}}
 \newcommand{\Bn}{{\ding{55}}}
 \newcommand{\tsub}[1]{\textsubscript{#1}}
 \newcommand{\tsup}[1]{\textsuperscript{#1}}
 \newcommand{\hreftt}[2][https://]{\href{#1#2}{\texttt{#2}}}
+\newcommand{\caslow}{\mbox{60-40-80}\xspace}
+\newcommand{\casmid}{\mbox{80-80-80}\xspace}
+\newcommand{\cashigh}{\mbox{95-95-95}\xspace}

@@ -17,16 +17,16 @@ and all code is available online.%
 Our model of HIV natural history included acute infection and stages defined by CD4-count.
 We modelled relative rates of infectiousness by stage
 as an approximation of viral load \cite{Wawer2005,Boily2009,Donnell2010},
-as well as rates of HIV-attributable mortality \cite{Badri2006,Anglaret2012,Mangal2017}.
+as well as rates of HIV-attributable mortality by stage \cite{Badri2006,Anglaret2012,Mangal2017}.
 \paragraph{Risk heterogeneity}
-We captured risk heterogeneity through risk group-level factors, including
+We captured risk heterogeneity through risk-group-level factors, including
 group size, average duration in group, STI symptom prevalence,
 and numbers / types of partnerships per year;
 and partnership-level factors, including
 assortative mixing, partnership duration, frequency of vaginal / anal sex, and levels of condom use.
 Table~\ref{tab.het} summarizes key parameter values and sampling distributions
 related to risk heterogeneity.
-Only condom use varied (increased) over time (Figure~\ref{fig:fit.condom}).
+We assumed that only condom use varied (increased) over time (Figure~\ref{fig:fit.condom}).
 To parameterize higher versus lower risk FSW, we conducted exploratory analysis of
 survey data from Swazi FSW in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014} (Appendix~\ref{a:model.fsw}).
 We parameterized the remaining risk groups using reported data from national studies in
@@ -36,23 +36,26 @@ but did not model other interventions (e.g. ongoing pre-exposure prophylaxis sca
 nor non-heterosexual HIV transmission.
 \begin{table}
   \centering
-  \caption{Model parameters related to risk heterogeneity}
+  \caption{Model parameters related to risk heterogeneity (* under construction *)}
   \input{tab.het}
   \label{tab.het}
 \end{table}
 \paragraph{ART cascade}
-We modelled rates of HIV diagnosis among people living with HIV as monotonically increasing over time,
-with a base rate defined for low/medium activity women,
-and fixed relative rates for low/medium activity men ($<1$), clients ($<1$), and FSW ($>1$).
+We modelled rates of HIV diagnosis among people living with HIV as monotonically increasing over time.
+We defined a base rate for low/medium activity women,
+and constant relative rates for low/medium activity men ($<1$), clients ($<1$), and FSW ($>1$),
+reflecting increased access to HIV testing via antenatal care among women versus men,
+and enhanced screening among FSW \cite{Baral2014}.
 We modelled ART initiation similarly except:
-the relative rate for ART initiation among FSW was $<1$, and
+the relative rate for ART initiation among FSW was $<1$,
+reflecting unique barriers to uptake and engagement in care \cite{Mountain2014a}; and
 we defined an additional relative rate by CD4 count ($\le1$)
-to reflect historical ART eligibility criteria. % TODO: cite
+to reflect historical ART eligibility criteria \cite{NERCHA2018}.
 We modelled viral suppression using a fixed rate for all groups,
-corresponding to an average of 4 months on ART. % TODO: cite
+corresponding to an average of 4 months on ART \cite{Mujugira2016}.
 We modelled treatment failure / discontinuation with a single monotonically decreasing rate
 applied to all risk groups in the base case,
-reflecting improving treatment success / retention over time.
+reflecting improving treatment success / retention over time \cite{NERCHA2014}.
 Individuals with treatment failure / discontinuation could re-initiate ART at a fixed rate,
 reflecting re-engagement in care or detection of treatment failure and initiation of alternative regimens.
 We modelled rapid CD4 recovery during the first 4 months of ART,
@@ -66,11 +69,12 @@ stratified by risk groups (Appendix~\ref{a:model.cal}) \cite{SDHS2006,SHIMS1,SHI
 To reflect uncertainty in model inputs,
 we sampled 100,000 sets of parameter values from specified prior distributions % MAN \x{n.cal}
 (e.g. Table~\ref{tab.het}).
-Parameters were sampled using Latin hypercube sampling \cite{McKay1979}
+We used Latin hypercube sampling \cite{McKay1979}
 to obtain good coverage of parameter space,
 except parameters with relational constraints
 (e.g. condom use in casual partnerships must be higher than in main/spousal partnerships),
-which were sampled randomly.
+which were sampled randomly due to
+challenges of incorporating such constraints in Latin hypercube sampling.
 We computed the likelihood of each parameter set by
 comparing model projections to calibration targets,
 each target having an uncertainty distribution (Appendix~\ref{a:model.cal}).
@@ -83,25 +87,29 @@ for all subsequent analyses.
 For Objective~\ref{obj:1},
 we used calibrated model fits as the \emph{base case} scenario, reflecting
 observed ART cascade scale-up in eSwatini~\cite{SDHS2006,SHIMS1,SHIMS2},
-following WHO guidelines and reaching approximately 95-95-95 overall by 2020 \cite{AIDSinfo}.
-We also assumed that FSW specifically achieved \mbox{95-95-95} by 2020, reflecting
+following WHO guidelines and reaching approximately \cashigh overall by 2020 \cite{AIDSinfo}.
+We also assumed that FSW specifically achieved \cashigh by 2020, reflecting
 trends in available data \cite{Baral2014,EswKP2014},
 although the true FSW cascade in 2020 may have been lower.
 \par
 Next, we defined 4 \emph{counterfactual} scenarios in which
-the overall population reached 60-80-80 by 2020, % TODO: justify this choice?
-via reduced cascade progression among specific risk groups:
-FSW, clients, and/or the remaining population (``lower risk'') (Table~\ref{tab:scenarios}).
-We reduced cascade progression by applying a relative scaling factor $R$ to group-specific rates of:
+the overall population reached \casmid by 2020,
+reflecting approximate trends in SSA cascades prior to universal ART.
+In these counterfactual scenarios, we reduced cascade progression among specific risk groups:
+FSW, clients, and/or the remaining population (``lower risk'').
+We reduced cascade progression by calibrating and applying
+a constant relative scaling factor $R$ to group-specific rates of:
 diagnosis ($R_d\in[0,1]$), treatment initiation ($R_t\in[0,1]$),
 and treatment failure / discontinuation ($R_f\in[1,25]$).
 When FSW and/or clients had reduced cascade, we calibrated their $R$s so that
-they achieved approximately 40-60-80 by 2020. % TODO: and this
+they achieved approximately \caslow by 2020.
 By contrast, we calibrated $R$s for the lower risk population so that
-the population \emph{overall} achieved 60-80-80 in all counterfactual scenarios,
+the population \emph{overall} achieved \casmid in all counterfactual scenarios,
 thus ensuring that a consistent proportion of the overall population experienced reduced cascade.
+Table~\ref{tab:scenarios} summarizes these scenarios,
+and Figure~\ref{fig:obj.1.cascade} plots the modelled cascades over time.
 When cascade rates among FSW and/or clients were unchanged from the base case,
-the cascade they achieved by 2020 could be lower than 95-95-95
+the cascade they achieved by 2020 could be lower than \cashigh
 due risk group turnover and higher incidence.
 All cascades continued to increase beyond 2020 due to
 fixed rates of diagnosis, treatment initiation, and treatment failure / discontinuation thereafter.
@@ -121,6 +129,7 @@ For each scenario, we computed ART prevention impacts for each model fit,
 and reported median (95\% CI) values across model fits, reflecting uncertainty.
 %---------------------------------------------------------------------------------------------------
 \subsubsection{Objective 2: Conditions under which cascade differences matter most}\label{meth.obj.2}
+* under construction * \begingroup\color{lightgray}
 For Objective~\ref{obj:2}, we aimed to estimate the effects of
 lower ART cascades among certain risk groups on relative CAI and AI,
 and potential effect modification by epidemic conditions.
@@ -129,7 +138,7 @@ $R_d, R_t \sim \mathrm{Beta}(\alpha=1.8,\beta=1.2)$, and
 $R_f \sim \mathrm{Gamma}(\alpha=1.33,\beta=3)$ for each of:
 FSW, clients, and the remaining lower risk population (9 total values).
 Sampling distributions were chosen to obtain cascades in 2020 spanning
-approximately 75-80-95 through 95-95-95.
+approximately 75-80-95 through 95-95-95 (Figure~\ref{fig:obj.2.cascade}). % TODO
 We sampled $N_k = \x{n.sens.per}$ sets of $R$ for each model fit using Latin hypercube sampling.
 \par
 For each $R$ sample $k$ and model fit (\x{n.sens} total parameter sets), we computed
@@ -137,31 +146,40 @@ the relative CAI and AI versus the base case, as in Objective~\ref{obj:1},
 and the proportion virally unsuppressed ($U$) among people living with HIV by 2020,
 as a summary measure of ART cascade gaps.
 Then, we defined
-$dU_k = U_k - U_0$ as the difference in virally unsuppressed for the population overall
-in sample $k \in [1,10]$ versus the base case $k = 0$, and
-$RU_{ki} = U_{ki} / U_{k,all}$ as the ratio of virally unsuppressed
-among risk group $i$ versus the population overall in sample $k$.
+$D_k = U_k - U_0$ as the difference in proportion virally unsuppressed
+for the population \emph{overall} in sample $k \in [1,\x{n.sens.per}]$ versus the base case $k = 0$,
+and likewise $d_{ki} = U_{ki} - U_{k0}$ for \emph{risk group $i$} (FSW and clients)
+--- reflecting disproportionate unsuppression.
 \par
 Next, we defined the following key measures of epidemic conditions ($C$) related to sex work:
-FSW and client population sizes (\% population overall);
-average duration selling sex (FSW) and buying sex (clients); and
-HIV prevalence ratios in 2000 among FSW vs lower risk women, and among clients vs lower risk men.
+FSW and client population sizes (\% of population overall);
+average duration (years) selling sex (FSW) and buying sex (clients); and
+HIV prevalence ratios in 2010 among FSW vs other women, and among clients vs other men.
 For these measures, we combined higher and lower risk FSW, and likewise higher and lower risk clients.
-We used HIV prevalence ratios to reflect
-summary measures of risk heterogeneity under pre-ART conditions.
-By contrast, including all modelled risk factors
+We used HIV prevalence ratios to reflect summary measures of risk heterogeneity,
+whereas including all modelled risk factors
 for HIV acquisition and transmission (Table~\ref{tab.het})
 in the analysis could lead to overfitting and improper inference due to effect mediation.
-Finally, we fit a general linear model of the form:
+\par
+Using these variables, we conceptualized a general linear model for each outcome $y = \{CAI,AI\}$:
 \begin{equation}\label{eq:obj.2}
-  CAI = \beta_0
-      + \beta_d dU
-      + \sum_i \beta_i~{RU}_i
-      + \sum_i \sum_j \beta_{ij}~{RU}_i~{C}_j
+  y = \beta_0
+    + \beta_1 D
+    + \sum_i \beta_i\,d_i
+    + \sum_{ij} \beta_{ij}\,d_i\,{C}_j
 \end{equation}
-and determined the significance of relative unsuppression effects ($\beta_i$)
-and effect modification by epidemic conditions ($\beta_{ij}$).
-We used a generalized estimating equation to control for repeated use of each model fit.
-We used standardized variables (${dU}$, $RU$, $C$)
-$\hat{x}_k = (x_k - \mu_{x_k}) / \sigma_{x_k}$
-to assess the relative influence of each variable.
+Using this model, we calculated the partial rank correlation coefficients \cite{Kim2015}
+for each term $D$, $d_i$, and $d_i\,C_j$.
+Such coefficients are defined as the residual correlation between each term and the outcome $y$,
+after adjusting for all other terms;
+thus, these coefficients reflect the relative contribution of each term
+to explaining the overall variance in outcomes $CAI$ and $AI$.
+% and determined the significance of disproportionate unsuppression effects ($\beta_i$)
+% and effect modification by epidemic conditions ($\beta_{ij}$).
+% For these purposes, population-overall unsuppression $D$ can be thought of as a nuisance term.
+We used generalized estimating equations for adjustment
+to control for repeated use of each model fit \cite{Halekoh2006}.
+% We standardized variables ($D$, $d$, $C$) via
+% $\hat{x}_k = (x_k - \mu_{x_k}) / \sigma_{x_k}$
+% to assess the relative influence of each variable.
+\endgroup
