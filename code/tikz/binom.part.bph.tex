@@ -1,0 +1,11 @@
+\renewcommand{\xbeta}{.02}
+\binomdashtopfalse\input{binom.part.axes}
+\draw[BPH,dashed] ( 0, 1) -- (100, 1);
+\draw[BPH,dashed] (100,0) -- (100, 1);
+\draw[BPH,dashed] ( 0,.5) -- (100,.5);
+\node[BPH, right,axlab] at (0,.25) {$\alpha_1$};
+\node[BPHa,right,axlab] at (0,.75) {$\alpha_2$};
+\draw[BPH, plot={0}{100}] plot ({\x},{.5*(1-(1-\xbeta)^(\x))}) coordinate (b1);
+\draw[BPHa,plot={0}{100}] plot ({\x},{.5+.5*(1-(1-\xbeta/3)^(\x))}) coordinate (b2);
+\draw[BPH, brace] (b1 -| {(102,0)}) -- (102,0);
+\draw[BPHa,brace] (b2 -| {(102,0)}) -- (102,.5);

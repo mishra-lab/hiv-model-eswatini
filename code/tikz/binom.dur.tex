@@ -1,0 +1,10 @@
+\begin{tikzpicture}[x=.5mm,y=25mm]
+  \input{binom.part.axes}
+  \input{binom.part.labs}
+  \draw[dashed] (0,0) -- (1/\xbeta,1);
+  \draw[   plot   ={0}{100}] plot ({\x},{1-(1-\xbeta)^(\x)});
+  \draw[C2,tangent={0}{ 20}] plot ({\x},{1-(1-\xbeta)^(\x)});
+  \draw[C1,tangent={0}{ 80}] plot ({\x},{1-(1-\xbeta)^(\x)});
+  % \draw[C2] (20,+.02) -- (20,-.02) node[below,axlab]{20};
+  % \draw[C2] (80,+.02) -- (80,-.02) node[below,axlab]{80};
+\end{tikzpicture}
