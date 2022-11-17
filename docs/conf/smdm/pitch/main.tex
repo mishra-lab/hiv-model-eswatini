@@ -1,0 +1,29 @@
+\documentclass{standalone}
+\input{config}
+\input{../poster/tikz/config}
+\def\sep{1.5}
+\begin{document}
+\begin{tikzpicture}[x=5em,y=5em,
+    head/.style={font=\bfseries\large\strut,align=center,},
+    note/.style={font=\itshape,align=center},
+    state/.append style={minimum width=6em,minimum height=2.5em,align=center}]
+    \useasboundingbox (-4,-0.75) rectangle (+4,+3.75);
+    \draw[C1,line width=1mm,rounded corners=5mm] (-3.9,-0.65) rectangle (+3.9,+3.65);
+    \node[head] at (0,3.15) {\textsc{\MakeLowercase{STI Transmission Models}}};
+    % instantaneous
+    \node[head] at (-\sep,2.65) {Instantaneous Partnerships};
+    \node[state=S] (Si) at (-\sep,2) {susceptible};
+    \node[state=I] (Ii) at (-\sep,1) {infectious};
+    \draw[->] (Si) -- (Ii);
+    % proposed
+    \node[head] at (+\sep,2.65) {Proposed};
+    \node[state=S] (Si) at (+\sep,2) {susceptible};
+    \node[state=Y] (Yi) at (+\sep,1) {infectious\\still with\\old partner};
+    \node[state=I] (Ii) at (+\sep,0) {infectious};
+    \draw[->] (Si) -- (Yi);
+    \shiftscope{-.5em}{0em}{\draw[->] (Yi) -- (Ii);}
+    \shiftscope{+.5em}{0em}{\draw[<-] (Yi) -- (Ii);}
+    % notes
+    \node[note] at (-\sep,0) {overestimates incidence};
+\end{tikzpicture}
+\end{document}
