@@ -1,3 +1,5 @@
+TODO: needs major update
+
 # Notation Conventions
 - dimensions: see __init__.py
 - variables:
@@ -18,7 +20,7 @@
   - __init__: common stuff for slicing by name & "global" definitions of dimension stuff
   - check:    [old] model checking stuff
   - foi:      subset of system stuff just related to force of infection (incidence)
-  - handfit:  easily create many plots for debugging model parameters
+  - fit:      easily create many plots for debugging model parameters
   - main:     where everything starts
   - out:      main & supporting functions for calculating outputs from the model
   - params:   functions for defining & sampling parameters
@@ -46,9 +48,12 @@
 
 # Platform
 everything built & tested on:
+
 - linux mint 20.1
 - python 3.8.10
+  - we depend on ordered dicts (3.7+)
 - R 3.6.3
 - atom 1.57.0
-no guarantees things will run elsewhere
+
+... no guarantees things will run elsewhere
 
