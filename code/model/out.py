@@ -237,13 +237,15 @@ def circum(PF_circum_t,aggr=None):
 def gud(P_gud_t,aggr=None):
   return np.squeeze(P_gud_t)[:]
 
-def get_infections(R1s,tvec,t,aggrop=None,R2s=None,vsop='1-2'):
+def get_infections(R1s,tvec,t,R2s=None,vsop='1-2'):
   # TODO: upddate for foi edits
   # get fully stratified infection counts by partnership/group for plotting alluvial diagram in R
-  if aggrop is None: aggrop = lambda inf: np.median(inf,axis=0)
   if isinstance(R1s,dict): R1s = [R1s]
   if isinstance(R2s,dict): R2s = [R2s]
-  data = [['t','p','fs','fi','ts','ti','infections']]
+  qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
+  aggrop = lambda inf: np.nanquantile(inf,qs,axis=0)
+  cols = ['q'+str(q) for q in qs]
+  data = [['t','p','fs','fi','ts','ti']+cols]
   for p in range(4):
     for fs in range(2):
       for fi in range(4):
@@ -255,7 +257,7 @@ def get_infections(R1s,tvec,t,aggrop=None,R2s=None,vsop='1-2'):
             else:
               inf = aggrop([vs_fun(whoinfectwhom(R1,**kwds),whoinfectwhom(R2,**kwds),vsop)
                 for R1,R2 in zip(R1s,R2s)])
-            data += [[tk,p,fs,fi,ts,ti,infk] for tk,infk in zip(t,inf)]
+            data += [[tk,p,fs,fi,ts,ti]+inf[:,k].tolist() for k,tk in enumerate(t)]
   return data
 
 def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',ecols=None,mode='q',drop=True,**kwds):
