@@ -1,0 +1,20 @@
+\vskip3.5\xp
+\begin{tikzpicture}[x=5\xp,y=5\xp,line/.append style={>=Latex}]
+  % idea
+  \shiftscope{2.5\xp}{3.5\xp}{
+  \node[state=S] (S) at (0,0) {$S$};
+  \node[state=I] (I) at (1,0) {$I$};
+  \fill[state=Y] (0.06,-.06) rectangle (0.2,-.2);
+  \fill[state=Y] (0.94,-.06) rectangle (0.8,-.2);
+  \draw[->] (S) -- node[axlab,above] {$\lambda$} (I);
+  \draw[Y,dashed] (.2,-.2) edge[bend left =45,->] (.5,-.5);
+  \draw[Y,dashed] (.8,-.2) edge[bend right=45,->] (.5,-.5);
+  }
+  % proposed
+  \node[state=S] (S) at (0,0) {$S$};
+  \node[state=Y] (Y) at (1,0) {$Y$};
+  \node[state=I] (I) at (2,0) {$I$};
+  \draw[line,->] (S) -- node[axlab,above] {$\lambda$} (Y);
+  \shiftscope{0mm}{+2mm}{\draw[line,->] (Y) -- node[axlab,above] {$\delta^{-1}$} (I);}
+  \shiftscope{0mm}{-2mm}{\draw[line,->] (I) -- node[axlab,below] {$\lambda'$} (Y);}
+\end{tikzpicture}

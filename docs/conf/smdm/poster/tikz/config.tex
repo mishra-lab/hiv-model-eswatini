@@ -1,0 +1,41 @@
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\newlength\xp\setlength\xp{10mm}
+\tikzset{
+  every node/.style = {line width = .5mm},
+  every picture/.style = {line width = .5mm},
+  > = Latex,
+  state/.style = {
+    color = #1,
+    draw = #1,
+    fill = #1!20!white,
+    rounded corners = .2\xp,
+    inner sep = .2\xp,
+    minimum width = 2\xp,
+    minimum height = 2\xp,
+  },
+  plot/.style 2 args = {
+    variable=\x,
+    samples=128,
+    domain=#1:#2,
+  },
+  tangent/.style 2 args = {
+    plot={#1}{#2},
+    samples=2,
+    mark=*,
+    mark size=.3mm,
+  },
+  axlab/.style = {
+    font = \small,
+    anchor = #1,
+  },
+  axlab/.default = {mid}
+}
+\colorlet{I}{C2}
+\colorlet{Y}{C4}
+\colorlet{S}{C3}
+\colorlet{inc}{C5}
+\colorlet{ync}{C4}
+\colorlet{waste}{C4!50!C5}
+\newcommand{\shiftscope}[3]{%
+  \begin{scope}[transform canvas={xshift=#1,yshift=#2}]#3\end{scope}}

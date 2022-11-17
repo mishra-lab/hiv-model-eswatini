@@ -1,0 +1,41 @@
+\newcommand{\symdef}[2]{\parbox{1em}{\centering\ensuremath#1}: #2}
+\paragraph[]{Modelled incidence rate:}
+\vskip-1\baselineskip
+\begin{minipage}{.45\linewidth}
+  \begin{equation*}
+    \qquad
+    \lambda = [1\,-\,{\underlabel{{(1 - \beta)}^{F\delta}}{probability of escaping infection}}]\,C\,I
+    \qquad\quad\enspace\begin{cases}\\[10ex]\end{cases}
+  \end{equation*}
+\end{minipage}
+\begin{minipage}{.55\linewidth}\vskip0pt
+  \begin{itemize}
+    \item \symdef{I}{prevalence of infectious}
+    \item \symdef{C}{number of concurrent partners}
+    \item \symdef{\delta}{average partnership duration\,*}
+    \item \symdef{F}{sex frequency per-partnership}
+    \item \symdef{\beta}{transmission probability per contact}
+  \end{itemize}
+\end{minipage}
+\paragraph{How duration $\delta$ is used:}
+\begin{minipage}[t]{.52\linewidth}
+  \begin{itemize}
+    \item Contacts after transmission are \textcolor{waste}{``wasted''}
+    \item So: adjust for wasted contacts via\\
+          probability of escaping infection
+    \item However: \emph{forced to assume either}
+    \begin{itemize}
+      \item \emph{true duration} $\rightarrow$ \rlap{underestimate early transmission}
+      \item \emph{max 1-year duration} $\rightarrow$ \rlap{underestimate wasted contacts}
+    \end{itemize}
+  \end{itemize}
+\end{minipage}
+\begin{minipage}[t]{.48\linewidth}
+  \vskip-2.5\baselineskip
+  \quad\input{tikz/plot.inst}
+\end{minipage}
+\paragraph{Limitations:}
+\begin{itemize}
+  \item Partnerships are assumed instantaneous
+  \item Forced to capture either early transmission or wasted contacts
+\end{itemize}

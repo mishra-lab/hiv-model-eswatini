@@ -1,0 +1,35 @@
+\begin{minipage}{.38\linewidth}
+  \centering
+  \input{tikz/model.prop}
+\end{minipage}
+\begin{minipage}{.62\linewidth}
+  \paragraph{Core idea:}\unskip
+  \begin{itemize}
+    \item Individuals who \textcolor{Y}{recently acquired ($S$) or\\transmitted ($I$)}
+          might be \emph{still with same partner}
+    \item So: they \emph{might not contribute to incidence}
+  \end{itemize}
+  \vskip1\baselineskip
+\end{minipage}\bigskip\par
+\begin{minipage}{.67\linewidth}
+  \paragraph{The details:}\unskip
+  \begin{itemize}
+    \item New compartment (\textcolor{Y}{$Y$}) for recently \rlap{acquired or transmitted}
+    \item Remove $Y$ from incidence rate $\lambda$:
+    \begin{itemize}
+      \item until: they change partners (duration${}^{-1}$)
+      \item if $>1$ partnership types: only 1 type affected
+      \item if $>1$ concurrent   partners: only 1 partner removed
+    \end{itemize}
+  \end{itemize}
+\end{minipage}%
+\begin{minipage}{.33\linewidth}
+  \vskip2\baselineskip
+  \begin{equation*}
+    \lambda = \beta\,F\,[\underlabel{Y(C-1)}{$-1$ partners after transmission}+\,I\,C]
+  \end{equation*}
+\end{minipage}
+% \begin{itemize}
+%   \item 
+% \end{itemize}
+

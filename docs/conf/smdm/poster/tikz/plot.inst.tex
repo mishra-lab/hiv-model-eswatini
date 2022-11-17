@@ -1,0 +1,16 @@
+\begin{tikzpicture}[x=1.2mm,y=60mm]
+  \draw[->] (0,0) -- (0,1.1);
+  \draw[->] (0,0) -- (110,0);
+  \node[rotate=90,axlab] at (-5,.5) {incidence~~$\lambda$};
+  \node[rotate=00,axlab] at (55,-.1) {partnership duration~~$\delta$};
+  \node[axlab] at (110,1.1) {100\%};
+  \draw[dashed] (0,1) -- (110,1);
+  \draw[ync,plot={0}{55}] plot ({\x},{.02*\x});
+  \draw[inc,plot={0}{110}] plot ({\x},{1-(.99)^(\x*2)});
+  \coordinate (y0) at (40,.00);
+  \coordinate (y1) at (40,.55);
+  \coordinate (y2) at (40,.80);
+  \shiftscope{-1mm}{0}{\draw[ync,  <->] (y0) -- (y2) node[axlab=east]{unadjusted};}
+  \shiftscope{+1mm}{0}{\draw[inc,  <->] (y0) -- (y1) node[axlab=north west]{adjusted};}
+  \shiftscope{+1mm}{0}{\draw[waste,<->] (y1) -- (y2) node[axlab=west]{``wasted''};}
+\end{tikzpicture}
