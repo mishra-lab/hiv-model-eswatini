@@ -1,6 +1,6 @@
 import numpy as np
 from inspect import signature
-from utils import stats,flatten,dict_str
+from utils import stats,deco,flatten,dict_str
 from model import out
 
 class Target():
@@ -34,6 +34,7 @@ class Target():
     else:
       return out.vs_label(dict_str(self.pop1),dict_str(self.pop2),self.vsop)
 
+  @deco.nowarn
   def ll(self,x,interval=None):
     if self.weight:
       if interval:
@@ -98,178 +99,145 @@ def get_all_esw(T=None,**kwds):
 
 def get_prevalence_esw():
   return [
-    # Prevalence ratios
-    Target(stats.ratio_binom(p1=.61,n1=99,p2=.388,n2=9843),'prevalence',
-      dict(t=2011.0,s=0,i=(2,3)),dict(t=2011.0,s=0,i=(0,1,2,3)),vsop='1/2'), # FSW vs W
-    Target(stats.gamma_p(p=1.46,v=7.09e-3),'prevalence',
-      dict(t=2011.0,s=0,i=3),dict(t=2011.0,s=0,i=2),vsop='1/2',weight=10), # FSW.H vs FSW.L
-    Target(stats.gamma_p(p=2.3,v=4.52e-2),'prevalence',
-      dict(t=2014.0,s=0,i=3),dict(t=2014.0,s=0,i=2),vsop='1/2',weight=0), # FSW.H vs FSW.L
-    Target(stats.ratio_binom(p1=.545,n1=373,p2=.382,n2=9412),'prevalence',
-      dict(t=2011.0,s=0,i=(1,2,3)),dict(t=2011.0,s=0,i=0),vsop='1/2'), # M.2+ vs M.0-1
-    Target(stats.ratio_binom(p1=.281,n1=1515,p2=.232,n2=6733),'prevalence',
-      dict(t=2011.0,s=1,i=(1,2,3)),dict(t=2011.0,s=1,i=0),vsop='1/2'), # W.2+ vs W.0-1
-    # Baral2014
-    Target(stats.beta_binom(p=.61 ,n=   99),'prevalence',dict(t=2011.0,s=0,    i=(2,3)),weight=10),
-    Target(stats.beta_binom(p=.94, n=   65),'prevalence',dict(t=2011.0,s=0,    i=(2)),weight=10), # JK
-    Target(stats.beta_binom(p=.64, n=  260),'prevalence',dict(t=2011.0,s=0,    i=(3)),weight=10), # JK
-    # EswKP2014
-    Target(stats.beta_binom(p=.38, n=  781),'prevalence',dict(t=2014.0,s=0,    i=(2,3)),weight=0), # SR
-    Target(stats.beta_binom(p=.71, n=  114),'prevalence',dict(t=2014.0,s=0,    i=(2)),  weight=0), # SR,JK
-    Target(stats.beta_binom(p=.31, n=  454),'prevalence',dict(t=2014.0,s=0,    i=(3)),  weight=0), # SR,JK
-    # EswCOP21
-    Target(stats.beta_binom(p=.588,n=   27),'prevalence',dict(t=2021.0,s=0,    i=(2,3))),
-    # SDHS2006 (Table B.2) - TODO: include FSW
-    Target(stats.beta_binom(p=.311,n= 2688),'prevalence',dict(t=2006.5,s=0,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.196,n= 1966),'prevalence',dict(t=2006.5,s=1,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.258,n= 3499),'prevalence',dict(t=2006.5,s=(0,1),i=(0,1,2,3))),
-    # SHIMS1 Bicego2013 (Table 3) - TODO: include FSW
-    Target(stats.beta_binom(p=.321,n=18172),'prevalence',dict(t=2011.0,s=(0,1),i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.388,n= 9843),'prevalence',dict(t=2011.0,s=0,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.241,n= 8329),'prevalence',dict(t=2011.0,s=1,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.319,n=16145),'prevalence',dict(t=2011.0,s=(0,1),i=(0))),
-    Target(stats.beta_binom(p=.333,n= 1887),'prevalence',dict(t=2011.0,s=(0,1),i=(1,2,3))),
-    Target(stats.beta_binom(p=.382,n= 9412),'prevalence',dict(t=2011.0,s=0,    i=(0))),
-    Target(stats.beta_binom(p=.545,n=  373),'prevalence',dict(t=2011.0,s=0,    i=(1,2,3))),
-    Target(stats.beta_binom(p=.232,n= 6733),'prevalence',dict(t=2011.0,s=1,    i=(0))),
-    Target(stats.beta_binom(p=.281,n= 1515),'prevalence',dict(t=2011.0,s=1,    i=(1,2,3))),
-    # SHIMS2 (Table 6.3.B) - TODO: include FSW
-    Target(stats.beta_binom(p=.272,n= 8533),'prevalence',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.343,n= 4878),'prevalence',dict(t=2016.5,s=0,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.189,n= 3655),'prevalence',dict(t=2016.5,s=1,    i=(0,1,2,3))),
+    # TODO - check
+    # prevalence ratios
+    Target(stats.ratio_binom(p1=.605,n1=127,p2=.388,n2=6015),'prevalence',dict(t=2011.0,s=0,i=(2,3)),dict(t=2011.0,s=0,i=(0,1,2,3)),vsop='1/2'), # FSW vs W
+    Target(stats.gamma(m=1.46,sd=.0842),'prevalence',dict(t=2011.0,s=0,i=3),dict(t=2011.0,s=0,i=2),vsop='1/2',weight=10), # FSW.H vs FSW.L JK
+    # W.2+ vs W.0-1 & M.2+ vs M.0-1 JK
+    Target(stats.skewnorm(m=2.01,sd=.131,a=10),'prevalence',dict(t=2006.5,s=0,i=(1,2,3)),dict(t=2006.5,s=0,i=0),vsop='1/2'), # SDHS20067 (JK)
+    Target(stats.skewnorm(m=2.95,sd=.844,a=10),'prevalence',dict(t=2006.5,s=1,i=(1,2,3)),dict(t=2006.5,s=1,i=0),vsop='1/2'), # SDHS20067 (JK)
+    Target(stats.skewnorm(m=1.54,sd=.052,a=10),'prevalence',dict(t=2011.0,s=0,i=(1,2,3)),dict(t=2011.0,s=0,i=0),vsop='1/2'), # Bicego2013 (JK)
+    Target(stats.skewnorm(m=1.25,sd=.037,a=10),'prevalence',dict(t=2011.0,s=1,i=(1,2,3)),dict(t=2011.0,s=1,i=0),vsop='1/2'), # Bicego2013 (JK)
+    Target(stats.skewnorm(m=1.42,sd=.037,a=10),'prevalence',dict(t=2016.5,s=0,i=(1,2,3)),dict(t=2016.5,s=0,i=0),vsop='1/2'), # SHIMS2 (JK)
+    Target(stats.skewnorm(m=1.32,sd=.052,a=10),'prevalence',dict(t=2016.5,s=1,i=(1,2,3)),dict(t=2016.5,s=1,i=0),vsop='1/2'), # SHIMS2 (JK)
+    # FSW
+    Target(stats.betabin(p=.605,n=127),'prevalence',dict(t=2011.0,s=0,i=(2,3)),weight=10), # Baral2014
+    Target(stats.skewnorm(m=.546,sd=.056,a=-3),'prevalence',dict(t=2021.0,s=0,i=(2,3)),weight=10), # EswIBBS2022
+    # SDHS2006 (Table B.2)
+    Target(stats.betabin(p=.258,n=3499),'prevalence',dict(t=2006.5,s=(0,1),i=(0,1,2,3))),
+    Target(stats.betabin(p=.311,n=2688),'prevalence',dict(t=2006.5,s=0,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.196,n=1976),'prevalence',dict(t=2006.5,s=1,    i=(0,1,2,3))),
+    # SHIMS1 Bicego2013 (Table 3) - n adjusted for sampling via '06/16 - TODO: apply 15-17 adjustment
+    Target(stats.betabin(p=.321,n=7747),'prevalence',dict(t=2011.0,s=(0,1),i=(0,1,2,3))),
+    Target(stats.betabin(p=.388,n=6015),'prevalence',dict(t=2011.0,s=0,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.241,n=4977),'prevalence',dict(t=2011.0,s=1,    i=(0,1,2,3))),
+    # SHIMS2 (Table C.2)
+    Target(stats.betabin(p=.272,n=3620),'prevalence',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
+    Target(stats.betabin(p=.343,n=2994),'prevalence',dict(t=2016.5,s=0,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.189,n=2442),'prevalence',dict(t=2016.5,s=1,    i=(0,1,2,3))),
   ]
 
 def get_incidence_esw():
   return [
-    # TODO: incidence ratios!!!
-    # SHIMS1 Justman2016 (Tables 2,1) - TODO: include FSW
-    Target(stats.gamma_p(p=.0310,v=7.95e-6),'incidence',dict(t=2011.0,s=0,    i=(0,1,2,3))),
-    Target(stats.gamma_p(p=.0320,v=1.38e-5),'incidence',dict(t=2011.0,s=0,    i=(0))),
-    Target(stats.gamma_p(p=.1000,v=1.45e-3),'incidence',dict(t=2011.0,s=0,    i=(1,2,3))),
-    Target(stats.gamma_p(p=.0170,v=4.12e-6),'incidence',dict(t=2011.0,s=1,    i=(0,1,2,3))),
-    Target(stats.gamma_p(p=.0162,v=1.24e-5),'incidence',dict(t=2011.0,s=1,    i=(0))),
-    Target(stats.gamma_p(p=.0380,v=6.45e-5),'incidence',dict(t=2011.0,s=1,    i=(1,2,3))),
-    # SHIMS2 (Table 5.3.A) - TODO: include FSW
-    Target(stats.gamma_p(p=.0148,v=7.67e-6),'incidence',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
-    Target(stats.gamma_p(p=.0199,v=2.00e-5),'incidence',dict(t=2016.5,s=0,    i=(0,1,2,3))),
-    Target(stats.gamma_p(p=.0099,v=1.08e-5),'incidence',dict(t=2016.5,s=1,    i=(0,1,2,3))),
+    # TODO - check
+    # incidence ratioss
+    Target(stats.skewnorm(m=7.51,sd=3.06,a=24),'incidence',dict(t=2011.0,s=0,i=(1,2,3)),dict(t=2011.0,s=0,i=0),vsop='1/2'), # Justman2016
+    Target(stats.skewnorm(m=5.57,sd=2.74,a=37),'incidence',dict(t=2011.0,s=1,i=(1,2,3)),dict(t=2011.0,s=1,i=0),vsop='1/2'), # Justman2016
+    # EswIBBS2022 (Table 13)
+    Target(stats.skewnorm(m=.1284,sd=.0190),'incidence',dict(t=2021.0,s=0,i=(2,3))),
+    # SHIMS1 Justman2016 (Tables 2,1) - TODO: apply 15-17 adjustment
+    Target(stats.skewnorm(m=.0309,sd=.00281,a= 2),'incidence',dict(t=2011.0,s=0,i=(0,1,2,3))), # runtime div.by.zero error
+    Target(stats.skewnorm(m=.0170,sd=.00204,a= 0),'incidence',dict(t=2011.0,s=1,i=(0,1,2,3))),
+    Target(stats.skewnorm(m=.0321,sd=.00369,a= 3),'incidence',dict(t=2011.0,s=0,i=0)),
+    Target(stats.skewnorm(m=.0164,sd=.00355,a=10),'incidence',dict(t=2011.0,s=1,i=0)),
+    Target(stats.skewnorm(m=.1006,sd=.03834,a=12),'incidence',dict(t=2011.0,s=0,i=(1,2,3))),
+    Target(stats.skewnorm(m=.0387,sd=.00791,a= 2),'incidence',dict(t=2011.0,s=1,i=(1,2,3))),
+    # # SHIMS2 (Table 5.3.A, 5.3.B)
+    Target(stats.skewnorm(m=.0140,sd=.00321),'incidence',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
+    Target(stats.skewnorm(m=.0192,sd=.00390),'incidence',dict(t=2016.5,s=0,    i=(0,1,2,3))),
+    Target(stats.skewnorm(m=.0094,sd=.00370),'incidence',dict(t=2016.5,s=1,    i=(0,1,2,3))),
   ]
 
-def get_cd4_esw():
-  w = 0
+def get_cd4_esw(w=0):
+  # TODO: beta_binom
   return [
-    # Burtle2012 (Table 1) - omit: not representative sample
-    # Target(stats.beta_binom(p=.58,n=200),'Ph',dict(t=2009.2,h=(3,4,5)),weight=w),
-    # Target(stats.beta_binom(p=.61,n=771),'Ph',dict(t=2009.4,h=(3,4,5)),weight=w),
-    # Target(stats.beta_binom(p=.72,n=200),'Ph',dict(t=2010.2,h=(3,4,5)),weight=w),
-    # Target(stats.beta_binom(p=.28,n=200),'Ph',dict(t=2009.2,h=(5)),weight=w),
-    # Target(stats.beta_binom(p=.34,n=771),'Ph',dict(t=2009.4,h=(5)),weight=w),
-    # Target(stats.beta_binom(p=.45,n=200),'Ph',dict(t=2010.2,h=(5)),weight=w),
     # SHIMS2 (Table 11.3.A)
-    Target(stats.beta_binom(p=.440,n=2421),'Ph',dict(t=2016.5,h=(3,4,5)),weight=w),
-    Target(stats.beta_binom(p=.077,n=2421),'Ph',dict(t=2016.5,h=(5)),weight=w),
+    Target(stats.betabin(p=.440,n=2421),'Ph',dict(t=2016.5,h=(3,4,5)),    weight=w),
+    Target(stats.betabin(p=.077,n=2421),'Ph',dict(t=2016.5,h=(5)),        weight=w),
+    Target(stats.betabin(p=.370,n=1692),'Ph',dict(t=2016.5,s=0,h=(3,4,5)),weight=w),
+    Target(stats.betabin(p=.058,n=1692),'Ph',dict(t=2016.5,s=0,h=(5)),    weight=w),
+    Target(stats.betabin(p=.591,n= 729),'Ph',dict(t=2016.5,s=1,h=(3,4,5)),weight=w),
+    Target(stats.betabin(p=.118,n= 729),'Ph',dict(t=2016.5,s=1,h=(5)),    weight=w),
   ]
 
 def get_cascade_esw():
+  # TODO: Jobanputra2015 (or cascade)
+  # TODO: beta_binom
   return [
-    # FSW - TODO: review
-    Target(stats.beta_binom(p=.776,n= 205),'diagnosed',dict(t=2011.0,s=0,i=(2,3))), # R2P2013
-    Target(stats.beta_binom(p=.369,n= 197),'treated_u',dict(t=2011.0,s=0,i=(2,3))), # R2P2013(Adj)
-    # Target(stats.beta_binom(p=.596,n= 235),'treated-?',dict(t=2014.0,s=0,i=(2,3))), # EswKP2014(Adj) TODO
+    # FSW
+    Target(stats.betabin(p=.744,n= 127),'diagnosed',dict(t=2011.0,s=0,i=(2,3))), # R2P2013 JK
+    Target(stats.betabin(p=.369,n= 179),'treated_u',dict(t=2011.0,s=0,i=(2,3))), # R2P2013
+    # Target(stats.betabin(p=.596,n= 235),'treated-?',dict(t=2014.0,s=0,i=(2,3))), # EswKP2014(Adj) TODO
+    Target(stats.betabin(p=.883,n= 411),'diagnosed',dict(t=2021.0,s=0,i=(2,3))), # EswIBBS2022
+    Target(stats.betabin(p=.975,n= 363),'treated_c',dict(t=2021.0,s=0,i=(2,3))), # EswIBBS2022
+    Target(stats.betabin(p=.861,n= 411),'treated_u',dict(t=2021.0,s=0,i=(2,3))), # EswIBBS2022
     # SHIMS1Tables (Table 6)
-    Target(stats.beta_binom(p=.626,n=5742),'diagnosed',dict(t=2011.0,s=(0,1),i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.691,n=3810),'diagnosed',dict(t=2011.0,s=0,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.501,n=1997),'diagnosed',dict(t=2011.0,s=1,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.326,n=5742),'treated_u',dict(t=2011.0,s=(0,1),i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.332,n=3810),'treated_u',dict(t=2011.0,s=0,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.314,n=1997),'treated_u',dict(t=2011.0,s=1,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.626,n=5742),'diagnosed',dict(t=2011.0,s=(0,1),i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.691,n=3810),'diagnosed',dict(t=2011.0,s=0,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.501,n=1997),'diagnosed',dict(t=2011.0,s=1,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.326,n=5742),'treated_u',dict(t=2011.0,s=(0,1),i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.332,n=3810),'treated_u',dict(t=2011.0,s=0,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.314,n=1997),'treated_u',dict(t=2011.0,s=1,    i=(0,1,2,3))), # SR
     # Bicego2013 (SHIMS)
-    # Target(stats.beta_binom(p=.692,n=todo),'diagnosed',dict(t=2011.0,s=0,i=(0,1,2,3))), # SR [omit:dup]
-    # Target(stats.beta_binom(p=.506,n=todo),'diagnosed',dict(t=2011.0,s=1,i=(0,1,2,3))), # SR [omit:dup]
-    # Target(stats.beta_binom(p=.332,n=todo),'treated_u',dict(t=2011.0,s=0,i=(0,1,2,3))), # SR [omit:dup]
-    # Target(stats.beta_binom(p=.311,n=todo),'treated_u',dict(t=2011.0,s=1,i=(0,1,2,3))), # SR [omit:dup]
+    # Target(stats.betabin(p=.692,n=todo),'diagnosed',dict(t=2011.0,s=0,i=(0,1,2,3))), # SR [omit:dup]
+    # Target(stats.betabin(p=.506,n=todo),'diagnosed',dict(t=2011.0,s=1,i=(0,1,2,3))), # SR [omit:dup]
+    # Target(stats.betabin(p=.332,n=todo),'treated_u',dict(t=2011.0,s=0,i=(0,1,2,3))), # SR [omit:dup]
+    # Target(stats.betabin(p=.311,n=todo),'treated_u',dict(t=2011.0,s=1,i=(0,1,2,3))), # SR [omit:dup]
     # EswGARPR2014
-    Target(stats.beta_binom(p=.527,n=100),'treated_u',dict(t=2013,s=(0,1),i=(0,1,2,3)),weight=0), # Spectrum
-    Target(stats.beta_binom(p=.576,n=100),'treated_u',dict(t=2013,s=0,    i=(0,1,2,3)),weight=0), # Spectrum
-    Target(stats.beta_binom(p=.457,n=100),'treated_u',dict(t=2013,s=1,    i=(0,1,2,3)),weight=0), # Spectrum
-    # SHIMS2 (Table 10.3.A) - TODO: include FSW
-    Target(stats.beta_binom(p=.837,n=2413),'diagnosed',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.880,n=1687),'diagnosed',dict(t=2016.5,s=0,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.744,n= 726),'diagnosed',dict(t=2016.5,s=1,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.721,n=2413),'treated_u',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.757,n=1687),'treated_u',dict(t=2016.5,s=0,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.641,n= 726),'treated_u',dict(t=2016.5,s=1,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.861,n=2057),'treated_c',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.861,n=1496),'treated_c',dict(t=2016.5,s=0,    i=(0,1,2,3))), # SR
-    Target(stats.beta_binom(p=.862,n= 561),'treated_c',dict(t=2016.5,s=1,    i=(0,1,2,3))), # SR
-    # Target(stats.beta_binom(p=.722,n=2413),'treated_u',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # detect
-    # Target(stats.beta_binom(p=.755,n=1686),'treated_u',dict(t=2016.5,s=0,    i=(0,1))), # detect
-    # Target(stats.beta_binom(p=.651,n= 727),'treated_u',dict(t=2016.5,s=1,    i=(0,1,2,3))), # detect
-    Target(stats.beta_binom(p=.708,n=2423),'vls_u',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.748,n=1694),'vls_u',dict(t=2016.5,s=0,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.623,n= 729),'vls_u',dict(t=2016.5,s=1,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.909,n=1778),'vls_c',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.918,n=1292),'vls_c',dict(t=2016.5,s=0,    i=(0,1,2,3))),
-    Target(stats.beta_binom(p=.886,n= 486),'vls_c',dict(t=2016.5,s=1,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.527,n=100),'treated_u',dict(t=2013,s=(0,1),i=(0,1,2,3)),weight=0), # Spectrum
+    Target(stats.betabin(p=.576,n=100),'treated_u',dict(t=2013,s=0,    i=(0,1,2,3)),weight=0), # Spectrum
+    Target(stats.betabin(p=.457,n=100),'treated_u',dict(t=2013,s=1,    i=(0,1,2,3)),weight=0), # Spectrum
+    # SHIMS2 (Table 10.3.A)
+    Target(stats.betabin(p=.837,n=2413),'diagnosed',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.880,n=1687),'diagnosed',dict(t=2016.5,s=0,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.744,n= 726),'diagnosed',dict(t=2016.5,s=1,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.721,n=2413),'treated_u',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.757,n=1687),'treated_u',dict(t=2016.5,s=0,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.641,n= 726),'treated_u',dict(t=2016.5,s=1,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.861,n=2057),'treated_c',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.861,n=1496),'treated_c',dict(t=2016.5,s=0,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.862,n= 561),'treated_c',dict(t=2016.5,s=1,    i=(0,1,2,3))), # SR
+    # Target(stats.betabin(p=.722,n=2413),'treated_u',dict(t=2016.5,s=(0,1),i=(0,1,2,3))), # detect
+    # Target(stats.betabin(p=.755,n=1686),'treated_u',dict(t=2016.5,s=0,    i=(0,1))), # detect
+    # Target(stats.betabin(p=.651,n= 727),'treated_u',dict(t=2016.5,s=1,    i=(0,1,2,3))), # detect
+    Target(stats.betabin(p=.708,n=2423),'vls_u',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
+    Target(stats.betabin(p=.748,n=1694),'vls_u',dict(t=2016.5,s=0,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.623,n= 729),'vls_u',dict(t=2016.5,s=1,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.909,n=1778),'vls_c',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
+    Target(stats.betabin(p=.918,n=1292),'vls_c',dict(t=2016.5,s=0,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.886,n= 486),'vls_c',dict(t=2016.5,s=1,    i=(0,1,2,3))),
   ]
 
 def make_targets_2020(p,n=None,t=2020.0,s=None,i=None,w=1):
+  # DONE
   if n is None: n = [100]*len(p)
   if s is None: s = (0,1)
   if i is None: i = (0,1,2,3)
   names = ['diagnosed','treated_c','vls_c']
   pop = dict(t=t,s=s,i=i)
-  return [Target(stats.beta_binom(p=p[i],n=n[i]),names[i],pop,weight=w) for i in range(len(p))]
+  return [Target(stats.betabin(p=p[i],n=n[i]),names[i],pop,weight=w) for i in range(len(p))]
 
 def get_cascade_2020(which,w=1):
-  # if which=='90-90-90':       return make_targets_2020([.90,.90,.90],[4259,4259,4259],w=w) # AIDSinfo
-  # if which=='95-95-95':       return make_targets_2020([.95,.95,.95],[1650,1650,1650],w=w) # AIDSinfo
-  if which=='ssa':            return make_targets_2020([.847,.879,.891],[31,32,32],w=w)
-  if which=='90-90-90':       return make_targets_2020([.90,.90,.90],w=w)
-  if which=='95-95-95':       return make_targets_2020([.95,.95,.95],w=w)
-  if which=='lower-all':      return make_targets_2020([.60,.80,.80],w=w)
-  if which=='lower-fsw':      return make_targets_2020([.60,.80,.80],s=0,i=(2,3),w=w) # assume
-  if which=='90-90-90-fsw':   return make_targets_2020([.90,.90,.90],s=0,i=(2,3),w=w)
-  if which=='95-95-95-fsw':   return make_targets_2020([.95,.95,.95],s=0,i=(2,3),w=w)
+  # DONE
+  if which=='90-90-90': return make_targets_2020([.90,.90,.90],w=w)
+  if which=='95-95-95': return make_targets_2020([.95,.95,.95],w=w)
 
 def get_pop_total_esw():
-  return [
-    Target(stats.gamma_p(p=Xt/1000,v=Xt/1000),'NX',dict(t=t,s=(0,1),i=(0,1,2,3)),weight=.2)
-      for t,Xt in zip(range(1980,2020+1),[
+  return [ # ages 15-49
+    Target(stats.gamma(m=Xt/1000,sd=np.sqrt(Xt/1000)),'NX',dict(t=t,s=(0,1),i=(0,1,2,3)),weight=.1)
+      for t,Xt in zip(range(1980,2021+1),[
     243151,251090,259122,267588,276979,287513,299011,312027,326013,340165, # 1980-1989
     354047,367323,379398,390945,402993,416073,427619,440611,454193,466912, # 1990-1999
     477968,485089,489755,493025,496291,500406,505239,510583,516321,522181, # 2000-2009
     528097,533686,540179,547254,554459,561694,571423,580164,588576,597650, # 2010-2019
-    607854]) if t%5==0 # only every 5th year
+    607854,618763]) if t%5==0 # only every 5th year
   ]
 
 def get_prevalence_esw_anc():
-  return [ # UNGASS 2008 (Figure 1) - TODO: include FSW? TODO: find 2010+
-    Target(stats.beta_binom(p=Pt,n=1000),'prevalence',dict(t=t,s=0,i=(0,1,2,3)),weight=0)
-      for t,Pt in zip(range(1992,2010+1,2),[
-    .039,.161,.260,.316,.342,.386,.426,.392,np.nan,.411]) # 1992-2010
+  return [
+    Target(stats.betabin(p=Pt,n=1000),'prevalence',dict(t=t,s=0,i=(0,1,2,3)),weight=0)
+      for t,Pt in zip(# 1992-2010: UNGASS 2008, 2012-2015: EswHIVPR2015
+    [1992,1994,1996,1998,2000,2002,2004,2006,  2010,2012,2013,2014,2015],
+    [.039,.161,.260,.316,.342,.386,.426,.392,  .411,.344,.384,.350,.370])
   ]
 
-def get_spectrum_esw():
-  # from WorldBank
-  return [
-    Target(stats.beta_binom(p=Pt/100,n=1e4),'prevalence',dict(t=t,s=(0,1),i=(0,1,2,3)),weight=0)
-      for t,Pt in zip(range(1990,2020+1),[
-      1.1, 2.1, 3.8, 6.3, 9.2,12.3,15.1,17.5,19.3,20.8, # 1990-1999
-     21.9,22.9,23.6,24.3,24.8,25.3,25.8,26.2,26.7,27.1, # 2000-2009
-     27.6,27.9,28.2,28.6,28.8,28.9,28.8,28.5,28.0,27.4, # 2010-2019
-     26.8]) if t%2==0 # only every 2nd year
-  ] + [
-    Target(stats.beta_binom(p=It/1000,n=1e5),'incidence',dict(t=t,s=(0,1),i=(0,1,2,3)),weight=0)
-      for t,It in zip(range(1990,2020+1),[
-      6.28,11.60,19.34,28.72,36.85,41.92,43.95,42.80,40.69,37.85, # 1990-1999
-     35.40,33.79,32.47,31.41,31.07,30.74,30.35,29.78,29.50,29.28, # 2000-2009
-     28.97,27.70,27.46,27.17,26.05,23.30,20.23,16.80,13.48,11.96, # 2010-2019
-     10.21]) if t%2==0 # only every 2nd year
-  ] + [
-    Target(stats.beta_binom(p=Tt/100,n=100),'treated_u',dict(t=t,s=(0,1),i=(0,1,2,3)),weight=0)
-      for t,Tt in zip(range(2000,2020+1),[
-     0, 1, 2, 2, 4, 7,11,15,20,25,35,39,43,49,59,69,78,87,89,96, # 2000-2020
-    98]) if t%2==0 # only every 2nd year
-  ] 
-  

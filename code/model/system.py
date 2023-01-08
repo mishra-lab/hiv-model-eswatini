@@ -30,7 +30,8 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
 
 def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = get_t()
-  if RPts is None: RPts = ['PF_condom_t','PF_circum_t','P_gud_t','dx_t','tx_t','Rtx_ht']
+  if RPts is None:
+    RPts = ['PF_condom_t','PF_circum_t','P_gud_t','dx_sit','tx_t','Rtx_ht','unvx_t','revx_t']
   R = solve(P,t)
   log(3,str(P['seed']).rjust(6)+(' ' if R else '!'))
   if not R:
@@ -60,7 +61,6 @@ def solve(P,t):
       P['mix_mask'] = P['mix_mask_tpaf']
     if np.any(X[i].sum(axis=2) < 0) or np.any(inc[i] < 0): # abort / fail
       return False
-    # check.all(P,X[i],t[i])
   return {
     'P': P,
     'X': X.sum(axis=3), # sum_k
@@ -87,11 +87,11 @@ def get_dX(X,t,P):
   dX -= X * P['death']
   dX -= X * P['death_hc']
   # turnover
-  dXi = get_turnover(P,X)
+  dXi = P['turn_sii'][:,:,:,_,_,_] * X[:,:,_,:,:,:]
   dX -= dXi.sum(axis=2) # (s:2, i:4, k:5, h:6, c:5)
   dX += dXi.sum(axis=1) # (s:2, i':4, k:5, h:6, c:5)
   # cascade: diagnosis
-  dXi = X[:,:,:,1:6,0] * P['dx_t'](t) * P['Rdx_si'] * P['Rdx_scen']
+  dXi = X[:,:,:,1:6,0] * P['dx_sit'](t) * P['Rdx_scen']
   dX[:,:,:,1:6,0] -= dXi # undiag
   dX[:,:,:,1:6,1] += dXi # diag
   # cascade: treatment
@@ -102,31 +102,15 @@ def get_dX(X,t,P):
   dXi = X[:,:,:,1:6,3] * P['vx']
   dX[:,:,:,1:6,3] -= dXi # treat
   dX[:,:,:,1:6,4] += dXi # vls
-  # cascade: unlink
-  dXi = X[:,:,:,1:6,4] * P['unvx_t'](t) * P['Rux_scen']
+  # cascade: fail
+  dXi = X[:,:,:,1:6,4] * P['unvx_t'](t) * P['Runvx_si'] * P['Rux_scen']
   dX[:,:,:,1:6,4] -= dXi # vls
-  dX[:,:,:,1:6,2] += dXi # unlink
-  # cascade: relink
-  dXi = X[:,:,:,1:6,2] * P['retx']
-  dX[:,:,:,1:6,2] -= dXi # unlink
+  dX[:,:,:,1:6,2] += dXi # fail
+  # cascade: re-VLS
+  dXi = X[:,:,:,1:6,2] * P['revx_t'](t)
+  dX[:,:,:,1:6,2] -= dXi # fail
   dX[:,:,:,1:6,4] += dXi # vls
   return {
     'dX': dX,
     'inc': inc,
   }
-
-@deco.nowarn
-#@profile
-def get_turnover(P,X):
-  # return.shape = (s:2, i:4, i':4, k:5, h:6, c:5)
-  turn = P['turn_sii'][:,:,:,_,_,_] * X[:,:,_,:,:,:]
-  # P['ORturn_sus:hiv'] = 0 # DEBUG
-  if np.any(X[:,:,:,1:,:]): # HIV introduced
-    Xhiv = X[:,:,:,1:,:].sum(axis=(2,3,4))
-    # odds of turnover aomng sus vs hiv (source-group-specific)
-    Osus = P['ORturn_sus:hiv'] * nan_to_value(X[:,:,0,0,0] / Xhiv, 1)[:,:,_]
-    Phc_hiv = nan_to_value(X[:,:,:,1:,:] / Xhiv[:,:,_,_,_], 0)
-    turn_hiv = turn.sum(axis=(3,4,5)) / (1 + Osus)
-    turn[:,:,:,:,1:,:] = turn_hiv[:,:,:,_,_,_] * Phc_hiv[:,:,_,:,:,:]
-    turn[:,:,:,0,0,0]  = turn_hiv * Osus
-  return turn
