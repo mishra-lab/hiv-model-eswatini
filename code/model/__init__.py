@@ -14,10 +14,10 @@ dims = {
 dimkeys = ''.join(dims.keys())
 dimensions = {
   'act':      ['Vaginal','Anal'],
-  'partner':  ['Main/Spousal','Casual','New SW','Regular SW'],
+  'partner':  ['Main/Spousal','Casual','Occasional SW','Regular SW'],
   'sex':      ['Women','Men'],
-  'activity': ['Lowest Risk','Medium Risk','Lower Risk Sex Work','Higher Risk Sex Work'],
-  'health':   ['Susceptible','Acute HIV','CD4 > 500','350 < CD4 < 500','CD4 < 350','AIDS'],
-  'care':     ['Undiagnosed','Diagnosed','Lost Contact','Treated','Virally Suppressed'],
+  'activity': ['Lowest Activity','Medium Activity','Lower Risk Sex Work','Higher Risk Sex Work'],
+  'health':   ['Susceptible','Acute HIV','CD4 > 500','350 < CD4 < 500','200 < CD4 < 350','CD4 < 200 (AIDS)'],
+  'care':     ['Undiagnosed','Diagnosed','Virally Unsuppressed','On ART','Virally Suppressed'],
   '*':        [''],
 }

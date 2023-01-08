@@ -1,12 +1,12 @@
 \begin{tikzpicture}[x=11em,y=6em]
   \node[state=udx] (udx) at (0,1) {Undiagnosed};
   \node[state=dx]  (dx)  at (0,0) {Diagnosed};
-  \node[state=ulx] (ulx) at (2,1) {Unlinked};
+  \node[state=fx]  (fx)  at (2,1) {Virally Unsuppr.};
   \node[state=tx]  (tx)  at (1,0) {On ART};
   \node[state=vx]  (vx)  at (2,0) {Virally Suppr.};
   \draw[arrow,->] (udx) -- node[right]{$\delta$}  (dx);
   \draw[arrow,->] (dx)  -- node[above]{$\tau$}    (tx);
   \draw[arrow,->] (tx)  -- node[above]{$\sigma$}  (vx);
-  \draw[arrow,->] (ulx.240) -- node[left] {$\sigma'$} (vx.120);
-  \draw[arrow,->] (vx.060)  -- node[right]{$\varsigma$} (ulx.300);
+  \draw[arrow,->] (fx.240) -- node[left]{$\sigma'$} (vx.120);
+  \draw[arrow,->] (vx.060) -- node[right]{$\varsigma$} (fx.300);
 \end{tikzpicture}
