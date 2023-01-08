@@ -3,13 +3,23 @@ from scipy.stats.qmc import LatinHypercube
 from numpy.random import permutation
 import numpy as np
 
-def beta_binom(p,n):
+def betabin(p,n):
   # beta approximation of binomial
   return ss.beta(a=p*n, b=(1-p)*n)
 
-def gamma_p(p,v):
-  # gamma distribution using 
-  return ss.gamma(a=p*p/v,scale=v/p)
+def gamma(m,sd):
+  # gamma distribution using mean & sd
+  return ss.gamma(a=m*m/sd/sd,scale=sd*sd/m)
+
+def lnorm(m,sd,loc=0):
+  # lognormal distribution
+  q = 1+sd*sd/m/m
+  return ss.lognorm(s=np.sqrt(np.log(q)),scale=m/np.sqrt(q),loc=loc)
+
+def skewnorm(m,sd,a=0):
+  d = a/np.sqrt(1+a*a)
+  w = sd/np.sqrt(1-2*d*d/np.pi)
+  return ss.skewnorm(a=a,loc=m-w*d*np.sqrt(2/np.pi),scale=w)
 
 def uniform(l,h):
   return ss.uniform(loc=l,scale=h-l)
