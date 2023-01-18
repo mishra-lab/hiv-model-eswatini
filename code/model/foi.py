@@ -1,9 +1,8 @@
 import numpy as np
 from utils import _,deco,linear_comb
+from model import tol
 np.set_printoptions(linewidth=200)
-# TODO: explore np.einsum
 
-tol = 1e-8
 foi_modes = [
   'lin', # no consideration of partnership duration
   'bpd', # binomial per-partnership-duration
@@ -16,11 +15,10 @@ def get_beta(P,t):
   # return.shape = (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5)
   RbA_condom = linear_comb(P['PF_condom_t'](t) * P['RPF_condom_a'], P['Rbeta_condom'], 1)
   RbA_circum = linear_comb(P['PF_circum_t'](t), P['Rbeta_circum'], 1)
-  P_gud_t = P['P_gud_t'](t) * P['P_gud']
-  Rbeta_gud_sus = linear_comb(P_gud_t,P['Rbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
-  Rbeta_gud_inf = linear_comb(P_gud_t,P['Rbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
-  return P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf * RbA_condom * RbA_circum
-  # TODO: maybe just cap beta ~<= .2 ???
+  P_gud_t = P['P_gud'] * P['RP_gud_t'](t)
+  Rbeta_gud_sus = linear_comb(P_gud_t,1+P['aRbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
+  Rbeta_gud_inf = linear_comb(P_gud_t,1+P['aRbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
+  return np.minimum(.5, P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf * RbA_condom * RbA_circum)
 
 @deco.nowarn
 #@profile
@@ -81,7 +79,7 @@ def get_apply_inc(dX,X,t,P):
     dXi = inc.sum(axis=(1,2)) # transmission: (p:4, s':2, i':4, h':6, c':5)
     dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
     dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
-    dXi = X[:,:,1:,:,:] / P['dur_p'][_,_,:,_,_] # new partnerships: (s:2, i:4, k:4, h:6, c:5)
+    dXi = X[:,:,1:,:,:] * P['pcr_p'][_,_,:,_,_] # new partnerships: (s:2, i:4, k:4, h:6, c:5)
     dX[:,:,1:,:,:] -= dXi
     dX[:,:,0 ,:,:] += dXi.sum(axis=2)
     return inc.sum(axis=(5,6))

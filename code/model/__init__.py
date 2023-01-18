@@ -1,6 +1,6 @@
 from model.slicer import slicers
 
-_ = None
+tol = 1e-8
 
 dims = {
   'a': ['V','A'],

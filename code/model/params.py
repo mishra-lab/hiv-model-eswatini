@@ -1,11 +1,13 @@
 import numpy as np
 from copy import copy
-from utils import _,NAN,stats,flatten,dict_split,linear_comb,interval_qs,log
+from scipy.optimize import nnls
+from utils import _,NAN,log,stats,flatten,dict_split,linear_comb,interval_qs
 from utils import tarray as ta
+from model import tol
 
 # main -------------------------------------------------------------------------
 
-def get_all(P,seed=None,**kwds):
+def get_all(P=None,seed=None,**kwds):
   P = P if P is not None else \
       get_sample_random(seed=seed)
   P['foi_mode'] = 'base'
@@ -14,6 +16,7 @@ def get_all(P,seed=None,**kwds):
   P.update(get_F(P))
   P.update(get_PX(P))
   P.update(get_birth_death(P))
+  # P.update(get_turnover_old(P))
   P.update(get_turnover(P))
   P.update(get_C(P))
   P.update(get_mix(P))
@@ -23,6 +26,7 @@ def get_all(P,seed=None,**kwds):
   P.update(get_hiv_prog(P))
   P.update(get_diag(P))
   P.update(get_treat(P))
+  P.update(get_scen(P))
   return P
 
 def get_n_all(n,Ps=None,seeds=None,lhs=True,all=True,**kwds):
@@ -79,7 +83,7 @@ def resample_until(P,PD,checker,keys,log=False):
 def def_checkers():
   k = 'PF_condom_' # convenience
   return {
-    check_F:      ['PF_ai_mcx','PF_ai_swx'],
+    check_F:      ['PF_ai_mcx','PF_ai_swx','F_swr'],
     check_acute:  ['Rbeta_acute','dur_acute'],
     check_gud:    ['P_gud_fsw_l','RP_gud_fsw_h:l'],
     check_condom: [k+'msp_2006',k+'msp_2016',
@@ -95,8 +99,8 @@ def def_sample_distrs():
   'PX_w_fsw':             stats.betabin(p=.0288,n=121),
   'PX_w_h':               stats.betabin(p=.1778,n=66),
   'PX_m_m':               stats.betabin(p=.1331,n=360),
-  'dur_fsw_l':            stats.gamma(m=6.185,sd=0.869),
-  'dur_fsw_h':            stats.gamma(m=14.208,sd=2.096),
+  'dur_fsw_l':            stats.gamma(m=4.125,sd=0.644), # OK
+  'dur_fsw_h':            stats.gamma(m=9.408,sd=1.748), # OK
   'dur_cli':              stats.gamma(m=8.626,sd=2.832),
   'turn_xm_xl':           stats.gamma(m=.2156,sd=.1177),
   'Pturn_fsw_m:l':        stats.betabin(p=.724,n=18),
@@ -105,32 +109,34 @@ def def_sample_distrs():
   # C
   'C_msp_xl':             stats.betabin(p=.370,n=57),
   'C_cas_xl':             stats.betabin(p=.366,n=28),
-  'C_cas_wm':             stats.gamma(m=2.00,sd=0.461),
+  'C_cas_wm':             stats.gamma(m=1.575,sd=0.204), # OK
   'RC_cas_cli:wm':        stats.uniform(l=.25,h=1),
   'C_swo_fsw_l':          stats.gamma(m=49,sd=10.8),
-  'C_swr_fsw_l':          stats.gamma(m=5.66,sd=1.80),
+  'C_swr_fsw_l':          stats.gamma(m=7.24,sd=2.34), # OK
   'RC_swo_fsw_h:l':       stats.gamma(m=2.02,sd=0.230),
   'RC_swr_fsw_h:l':       stats.gamma(m=1.49,sd=0.102),
   'CF_swx_cli':           stats.gamma(m=59.3,sd=14.1),
   'RCF_swx_cli_h:l':      stats.gamma(m=2.03,sd=.230),
   # F
-  'F_mcx':                stats.gamma(m=77.3,sd=33.7),
+  'F_msp':                stats.gamma(m=77.3,sd=33.7), # OK
+  'RF_cas:msp':           stats.uniform(l=.25,h=1), # OK
   'qdur_msp':             stats.uniform(l=0,h=1),
   'dur_cas':              stats.gamma(m=.743,sd=0.324),
   'dur_swr':              stats.gamma(m=1.125,sd=0.386),
-  'F_swr':                stats.uniform(l=12,h=48),
-  'PF_ai_mcx':            stats.betabin(p=.058,n=30),
-  'PF_ai_swx':            stats.betabin(p=.097,n=14),
+  'F_swr':                stats.uniform(l=6,h=36), # OK
+  'PF_ai_mcx':            stats.gamma(m=.0573,sd=.0423), # OK
+  'PF_ai_swx':            stats.gamma(m=.0920,sd=.0769), # OK
   # mixing
   'pref_mcx_xl':          stats.gamma(m=2.19,sd=.384),
   'pref_mcx_swx':         stats.gamma(m=8.3,sd=4.44),
   # condoms
+  'Rbeta_condom':         stats.betabin(p=.734,n= 32), # OK
   'RPF_condom_a:v':       stats.betabin(p=.768,n= 12),
-  'PF_condom_msp_2006':   stats.betabin(p=.230,n=483),
+  'PF_condom_msp_2006':   stats.betabin(p=.230,n=100), # OK
   'PF_condom_msp_2016':   stats.betabin(p=.416,n= 75),
   'PF_condom_cas_1988':   stats.betabin(p=.042,n= 40),
-  'PF_condom_cas_2006':   stats.betabin(p=.598,n=235),
-  'PF_condom_cas_2016':   stats.betabin(p=.694,n=420),
+  'PF_condom_cas_2006':   stats.betabin(p=.598,n=100), # OK
+  'PF_condom_cas_2016':   stats.betabin(p=.694,n=100), # OK
   'PF_condom_swo_2002':   stats.betabin(p=.432,n=  9),
   'PF_condom_swo_2011':   stats.betabin(p=.777,n= 21),
   'PF_condom_swo_2014':   stats.betabin(p=.787,n= 14),
@@ -139,35 +145,37 @@ def def_sample_distrs():
   'PF_condom_swr_2014':   stats.betabin(p=.759,n= 11),
   'PF_circum_2050':       stats.betabin(p=.724,n= 18),
   # beta
-  'beta_0':               stats.skewnorm(m=.00086,sd=.00027,a=10),
+  'beta_0':               stats.gamma(m=.00093,sd=.00026), # OK
   'Rbeta_acute':          stats.gamma(m=6.015,sd=3.653),
   'Rbeta_350':            stats.gamma(m=1.586,sd=0.1532),
   'Rbeta_200':            stats.gamma(m=8.203,sd=2.182),
-  'Rbeta_vi_rec':         stats.gamma(m=1.458,sd=0.2558),
-  'Rbeta_gud_sus':        stats.skewnorm(m=6.125,sd=3.708,a=36.5),
-  'Rbeta_gud_inf':        stats.gamma(m=2.89,sd=1.207),
+  'Rbeta_vi_rec':         stats.uniform(l=1,h=2), # OK
+  'aRbeta_gud_sus':       stats.gamma(m=2.05,sd=1.546), # OK
+  'aRbeta_gud_inf':       stats.gamma(m=0.99,sd=0.577), # OK
   'dur_acute':            stats.gamma(m=.172,sd=.1285),
   'P_gud_fsw_l':          stats.betabin(p=.232,n=29),
   'RP_gud_fsw_h:l':       stats.gamma(m=3.00,sd=0.900),
   'RP_gud_2050':          stats.uniform(l=.2,h=1),
-  'iP_gud_cli_fsw:gp':    stats.uniform(l=0,h=1), # TODO: notation?
+  'iP_gud_cli_fsw:gp':    stats.uniform(l=0,h=1), # OK
   'Rbeta_uvls':           stats.betabin(p=.244,n=5),
   # diagnosis
+  'dx_reduce':            stats.uniform(l=.5,h=1), # OK
   'dx_w_2002':            stats.betabin(p=.094,n=100),
   'dx_w_2006':            stats.betabin(p=.248,n=100),
-  'Rdx_m:w_2006':         stats.betabin(p=.377,n=100),
-  'dx_wq_2011':           stats.gamma(m=.709,sd=0.1015),
-  'Rdx_m:wq_2011':        stats.gamma(m=.542,sd=.1),
-  'aRdx_fsw:wq_2011':     stats.gamma(m=.3648,sd=.2),
+  'Rdx_m:w_2006':         stats.gamma(m=.377,sd=.1), # OK
+  'dx_wq_2011':           stats.gamma(m=.637,sd=0.094), # OK
+  'Rdx_m:wq_2011':        stats.gamma(m=.529,sd=.1), # OK
+  'aRdx_fsw:wq_2011':     stats.gamma(m=.5207,sd=.2), # OK
   'aRdx_wq_16:11':        stats.gamma(m=.2035,sd=.05),
-  'Rdx_m:wq_2016':        stats.gamma(m=.770,sd=.1),
+  'Rdx_m:wq_2016':        stats.gamma(m=.529,sd=.1), # OK
   'aRdx_fsw:wq_2016':     stats.gamma(m=.619,sd=.2),
   # treatment
   'tx_2010':              stats.gamma(m=1.5,sd=0.65),
   'tx_2012':              stats.gamma(m=8.75,sd=1.53),
-  'Rtx_fsw':              stats.uniform(l=.5,h=1),
+  'Rtx_fsw:wq':           stats.uniform(l=.5,h=1), # OK
+  'ivx':                  stats.gamma(m=.62,sd=.172), # OK
   'Runvx_m':              stats.uniform(l=1,h=1.5),
-  'Runvx_fsw':            stats.uniform(l=1,h=2),
+  'Runvx_fsw':            stats.uniform(l=1,h=1.5), # OK
   'revx_2010':            stats.gamma(m=.7288,sd=.1279),
   }
 
@@ -242,7 +250,60 @@ def get_birth_death(P): # [OK]
     'death': death,
   }
 
-def get_turnover(P): # [OK]
+def get_turnover(P):
+  # turn_sii.shape = (s:2, i:4, i':4)
+  dur = np.array([[NAN,NAN,P['dur_fsw_l'],P['dur_fsw_h']],[NAN,NAN,P['dur_cli'],P['dur_cli']]])
+  PXe = np.zeros((2,4)) # s, i
+  turn = np.zeros((2,4,4)) # s, i.from, i.to
+  b4 = np.eye(4,dtype=bool) # pre-compute
+  A = np.zeros((2,16,16)) #  0, 1, 2, 3,   4,  5,  6,   7,  8,  9,  10, 11, 12,  13, 14, 15
+  b = np.zeros((2,16))    # e1,e2,e3,e4, t01,t02,t03, t10,t12,t13, t20,t21,t23, t30,t31,t32
+  for s in (0,1):
+    x = P['PX_si'][s,:]
+    b[s,0:4] = x * NAN # * birth_t (runtime)
+    A[s,0,:] = (NAN,0,0,0,-x[0],-x[0],-x[0],+x[1],    0,    0,+x[2],    0,    0,+x[3],    0,    0)
+    A[s,1,:] = (0,NAN,0,0,+x[0],    0,    0,-x[1],-x[1],-x[1],    0,+x[2],    0,    0,+x[3],    0)
+    A[s,2,:] = (0,0,NAN,0,    0,+x[0],    0,    0,+x[1],    0,-x[2],-x[2],-x[2],    0,    0,+x[3])
+    A[s,3,:] = (0,0,0,NAN,    0,    0,+x[0],    0,    0,+x[1],    0,    0,+x[2],-x[3],-x[3],-x[3])
+    A[s,4,0:4],b[s,4]   = 1, x.sum() # e.sum = x.sum
+    A[s,5,10:13],b[s,5] = 1, 1/dur[s,2] - P['death'] # dur 2
+    A[s,6,13:16],b[s,6] = 1, 1/dur[s,3] - P['death'] # dur 3
+    A[s,7,12],b[s,7] = 1, 0.0 # t23 = 0
+    A[s,8,15],b[s,8] = 1, 0.0 # t32 = 0
+    A[s,9, 7],b[s,9] = 1, P['turn_xm_xl'] # t10
+    A[s,11,1],b[s,11] = 1, x[1]*1.0 # e1 = x1*R
+    A[s,12,2],b[s,12] = 1, NAN # e2 = x2*R (runtime)
+    A[s,13,3],b[s,13] = 1, NAN # e3 = x3*R (runtime)
+    p = (P['Pturn_fsw_m:l'],P['Pturn_cli_m:l'])[s]
+    A[s,14,:] = (0,0,0,0, 0,0,0, 0,0,0, p-1,p,0, 0,0,0) # (p-1) * t20 = (p) * t21
+    A[s,15,:] = (0,0,0,0, 0,0,0, 0,0,0, 0,0,0, p-1,p,0) # (p-1) * t30 = (p) * t31
+    # print(np.array(sympy.Matrix(A[s,:,:]).rref()[0],dtype=float).round(3)) # DEBUG
+  # print(np.linalg.matrix_rank(A)) # DEBUG ~= [16,16]
+  return {
+    'dur_si': dur,
+    'PXe_si': PXe,
+    'turn_sii': turn,
+    'turn_A_s': A,
+    'turn_b_s': b,
+    'b4': b4,
+  }
+
+def solve_turnover(P,t):
+  v = P['birth_t'](t)
+  P['turn_b_s'][:,0:4]     = v * P['PX_si']
+  P['turn_A_s'][:,0:4,0:4] = v * P['b4']
+  for s in (0,1):
+    Re = np.minimum((2.0,1.5)[s], (v - P['death'] + 1/P['dur_si'][s,2:4]) / v)
+    P['turn_b_s'][s,12:14] = P['PX_si'][s,2:4] * Re
+    et,err = nnls(P['turn_A_s'][s],P['turn_b_s'][s])
+    P['PXe_si'][s] = et[0:4]
+    P['turn_sii'][s,np.logical_not(P['b4'])] = et[4:]
+    if err > tol:
+      P['PXe_si'][s] = -np.inf # fail (gracefully) in system.solve
+      # raise Exception('Cannot solve turnover (s={}) error: {}, seed: {}'.format(s,err,P['seed']))
+  return v,P['PXe_si'],P['turn_sii']
+
+def get_turnover_old(P): # [OK]
   # turn_sii.shape = (s:2, i:4, i':4)
   t_fsw_l = 1/P['dur_fsw_l'] - P['death']
   t_fsw_h = 1/P['dur_fsw_h'] - P['death']
@@ -266,7 +327,7 @@ def get_turnover(P): # [OK]
   turn[:,i[1],i[0]] += turn[:,i[0],i[1]] * P['PX_si'][:,i[0]] / P['PX_si'][:,i[1]]
   return {
     'turn_sii': turn,
-    'dur_sii': 1 / (turn.sum(axis=2) + P['death']),
+    'dur_si': 1 / (turn.sum(axis=2) + P['death']),
   }
 
 # FOI ----------------------------------------------------------------------------------------------
@@ -276,15 +337,14 @@ def get_beta_a(P): # [OK]
   Rbeta_ar = 10
   Rbeta_as = np.array([[P['Rbeta_vi_rec'],1],[Rbeta_ar,1]]).reshape([2,1,2,1,1,1,1,1])
   Rbeta_as = Rbeta_as / Rbeta_as[0,:].mean()
-  P_gud_gp = .07 # REEF: SDHS2006
-  P_sexa_l = .6  # REF: (approx) SDHS2006, SHIMS2
+  P_gud_gp = .07 # REF: SDHS2006 (adj % sex active below)
   P_gud_cli_h = linear_comb(P['iP_gud_cli_fsw:gp'],  P['P_gud_fsw_l'],P_gud_gp)
   P_gud_cli_l = linear_comb(P['iP_gud_cli_fsw:gp']/2,P['P_gud_fsw_l'],P_gud_gp)
   P_gud = np.array([
-    [P_gud_gp*P_sexa_l, P_gud_gp, P['P_gud_fsw_l'], P['P_gud_fsw_l']*P['RP_gud_fsw_h:l']],
-    [P_gud_gp*P_sexa_l, P_gud_gp, P_gud_cli_l, P_gud_cli_h],
+    [P_gud_gp*.81, P_gud_gp, P['P_gud_fsw_l'], P['P_gud_fsw_l']*P['RP_gud_fsw_h:l']], # OK
+    [P_gud_gp*.68, P_gud_gp, P_gud_cli_l, P_gud_cli_h], # OK
   ])
-  P_gud_t = ta.tarray([1980,2000,2050,2051],[1,1,*2*[P['RP_gud_2050']]])
+  RP_gud_t = ta.tarray([1980,2000,2020,2050,2051],[1,1,1,*2*[P['RP_gud_2050']]]) # OK
   Rbeta_h = np.array([0,P['Rbeta_acute'],1,1,P['Rbeta_350'],P['Rbeta_200']]).reshape([1,1,1,1,1,1,6,1])
   Rbeta_c = np.array([1,1,1-(1-P['Rbeta_uvls'])/2,P['Rbeta_uvls'],.00]).reshape([1,1,1,1,1,1,1,5])
   return {
@@ -292,7 +352,7 @@ def get_beta_a(P): # [OK]
     'Rbeta_as': Rbeta_as,
     'Rbeta_h': Rbeta_h,
     'P_gud': P_gud,
-    'P_gud_t': P_gud_t,
+    'RP_gud_t': RP_gud_t, # OK
     'EHY_acute': P['Rbeta_acute'] * P['dur_acute'],
   }
 
@@ -307,7 +367,7 @@ def check_gud(P):
 
 def get_F(P): # [OK]
   # F_ap.shape = (a:2, p:4)
-  F_p   = np.array([ P['F_mcx'], P['F_mcx'], 12, P['F_swr'] ])
+  F_p   = np.array([ P['F_msp'], P['F_msp']*P['RF_cas:msp'], 12, P['F_swr'] ])
   PF_ai = np.array([ P['PF_ai_mcx'],P['PF_ai_mcx'],P['PF_ai_swx'],P['PF_ai_swx'] ])
   F_ap  = F_p.reshape([1,4]) * np.array([1-PF_ai,PF_ai])
   dur_msp = 14.5 + 4.0 * P['qdur_msp']    # [14.5, 18.5]
@@ -322,6 +382,8 @@ def get_F(P): # [OK]
 
 def check_F(P):
   return (
+    P['F_swr']*P['C_swr_fsw_l']*P['RC_swr_fsw_h:l'] + P['C_swo_fsw_l']*P['RC_swo_fsw_h:l'] < 2*365 and
+    P['PF_ai_swx'] <= 0.5 and
     P['PF_ai_mcx'] <= P['PF_ai_swx']
   )
 
@@ -360,26 +422,27 @@ def get_C(P): # [OK]
   C_psi[ 2, 1, 3] = P['CF_swo_total'] / F[2] / wPX * P['RCF_swx_cli_h:l']
   C_psi[ 3, 1, 2] = P['CF_swr_total'] / F[3] / wPX
   C_psi[ 3, 1, 3] = P['CF_swr_total'] / F[3] / wPX * P['RCF_swx_cli_h:l']
+  FC_psi = P['F_ap'].sum(axis=0)[:,_,_] * C_psi.sum(axis=3)
   aC_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape((4,1,1,5))
   aC_pk = aC_pk * (C_psi > 0)
   return {
     'C_psi': C_psi,
+    'FC_psi': FC_psi,
     'aC_pk': aC_pk,
   }
 
 def get_condom(P): # [OK]
   k = 'PF_condom_' # convenience
   PF_condom_t = ta.tarray([1980,1988,2002,2006,2011,2014,2016,2050],
-    [[0,  0,NAN,P[k+'msp_2006'],NAN,NAN,P[k+'msp_2016'],P[k+'msp_2016'] ], # main
-     [0,  0,NAN,P[k+'cas_2006'],NAN,NAN,P[k+'cas_2016'],P[k+'cas_2016'] ], # casual
-     [0,NAN,P[k+'swo_2002'],NAN,P[k+'swo_2011'],P[k+'swo_2014'],NAN,P[k+'swo_2014'] ], # sw-new
-     [0,NAN,P[k+'swr_2002'],NAN,P[k+'swr_2011'],P[k+'swr_2014'],NAN,P[k+'swr_2014'] ]] # sw-reg
+    [[0,  0,NAN,P[k+'msp_2006'],NAN,NAN,*2*[P[k+'msp_2016']] ], # main
+     [0,  0,NAN,P[k+'cas_2006'],NAN,NAN,*2*[P[k+'cas_2016']] ], # casual
+     [0,NAN,P[k+'swo_2002'],NAN,P[k+'swo_2011'],*3*[P[k+'swo_2014']] ], # sw-new
+     [0,NAN,P[k+'swr_2002'],NAN,P[k+'swr_2011'],*3*[P[k+'swr_2014']] ]] # sw-reg
   ).reshape([1,4,1,1,1,1,1,1])
   RPF_condom_a = np.array([1,P['RPF_condom_a:v']]).reshape([2,1,1,1,1,1,1,1])
   return {
     'PF_condom_t': PF_condom_t,
     'RPF_condom_a': RPF_condom_a,
-    'Rbeta_condom': .26,
   }
 
 def check_condom(P):
@@ -424,7 +487,7 @@ def get_mix(P): # [OK]
     'pref_pii': pref_pii,
     'mix': np.zeros((4,2,4,2,4)), # initialize
     'mix_mask': np.ones((4,2,4,2,4)), # TODO
-    't0_tpaf': -1,
+    't0_tpaf': np.inf,
   }
 
 def get_mix_mask(mask=None,p=None,sfr=None,ifr=None,sto=None,ito=None):
@@ -444,7 +507,7 @@ def get_hiv_prog(P): # [OK]
   # c: undiag, diag, unlinked, on art, vls
   dur_h  = np.array([P['dur_acute'],3.5-P['dur_acute'],3.74,5.26]).reshape([1,1,1,4,1]) # Lodi2011,Mangal2017
   prog_h = 1/dur_h
-  unprog_h = np.array([[2.5,.15],[2.5,.15],[2,.15]]).reshape([1,1,1,3,2]) # Battegay2006,Lawn2006
+  unprog_h = np.array([[2,.1],[2,.1],[1.5,.1]]).reshape([1,1,1,3,2]) # Battegay2006,Lawn2006 # OK
   death_h = np.array([0,0,.004,.02,.04,.20]).reshape([1,1,1,6,1]) # Badri2006,Anglaret2012,Mangal2017
   Rdeath_c = np.array([1,1,1,.25,.5]).reshape([1,1,1,1,5]) # Gabillard2013,Lundgren2015
   return {
@@ -456,60 +519,50 @@ def get_hiv_prog(P): # [OK]
 
 # cascade ------------------------------------------------------------------------------------------
 
-def Rmr(r0,*iRrs,replast=True):
-  # helper to simplify sampling monotonic rates from non-zero distributions
-  # r0:   base rate
-  # iRrs: "incremental" relative rates -- i.e. iRr = 0.2 -> Rr 1.2
-  # e.g. Rmr(2, 0.1, 1) -> [2, 2.2, 4.4, 4.4]
-  if replast: iRrs = [*iRrs,0]
-  Rrs = [1+iRr for iRr in iRrs]
-  return np.cumprod([r0,*Rrs])
-
 def get_diag(P):
   t_dx = [1980,1990,2002,2006,2011,2016,2051]
-  dx_wq_t   = np.array([0,0,P['dx_w_2002'],P['dx_w_2006'],*Rmr(P['dx_wq_2011'],P['aRdx_wq_16:11'])]) # REF
+  dx_wq_t = np.array([0,0,P['dx_w_2002'],P['dx_w_2006'],P['dx_wq_2011'],
+    *2*[P['dx_wq_2011']*(1+P['aRdx_wq_16:11'])]])
   Rdx_wq_t  = np.array([1,1,1,1,1,1,1]) # dummy
   Rdx_fsw_t = np.array([1,1,1,1,1+P['aRdx_fsw:wq_2011'],*2*[1+P['aRdx_fsw:wq_2016']]])
   Rdx_m_t   = np.array([1,1,0.1,P['Rdx_m:w_2006'],P['Rdx_m:wq_2011'],*2*[P['Rdx_m:wq_2016']]])
-  dx_sit = ta.tarray(t_dx,dx_wq_t*np.array(
+  dx_sit = ta.tarray(t_dx,P['dx_reduce']*dx_wq_t*np.array(
     [[Rdx_wq_t,Rdx_wq_t,Rdx_fsw_t,Rdx_fsw_t],
      [ Rdx_m_t, Rdx_m_t,  Rdx_m_t,  Rdx_m_t]])).reshape((2,4,1,1))
-  Rdx_scen  = np.ones((2,4,1,1))
   return {
     'dx_sit': dx_sit,
-    'Rdx_scen': Rdx_scen,
   }
 
 def get_treat(P):
-  # TODO: reduce sex differences after a time?
-  tx_t = ta.tarray([1980,2003,2010,2012,2018,2051],[0,0,P['tx_2010'],P['tx_2012'],12,12])
-  Rtx_si = np.array([[1,1,P['Rtx_fsw'],P['Rtx_fsw']],[1,1,1,1]]).reshape([2,4,1,1])
+  Rtx_si = np.array([[1,1,P['Rtx_fsw:wq'],P['Rtx_fsw:wq']],[1,1,1,1]]).reshape([2,4,1,1,1])
+  tx_sit = ta.tarray([1980,2003,2010,2012,2018,2051],
+    Rtx_si * np.array([0,0,P['tx_2010'],P['tx_2012'],12,12]).reshape([1,1,1,1,6]))
   Rtx_ht = ta.tarray(
-    # TODO: rates < 1 too high? ("same people" every year?)
      [1980,2003,2004,2010,2011,2015,2016,2017,2018,2051], [
      [   0,   0,   0,   0,   0,   0,   0,   0,   1,   1], # acute:           scale-up 2017-2018
      [   0,   0,   0, .05, .05, .05, .05, .15,   1,   1], # cd4 > 500:       scale-up 2017-2018
      [   0,   0, .15, .15, .15, .15,   1,   1,   1,   1], # 350 < cd4 < 500: scale-up 2015-2016
      [   0,   0, .35, .35,   1,   1,   1,   1,   1,   1], # 200 < cd4 < 350: scale-up 2010-2011
      [   0,   0,   1,   1,   1,   1,   1,   1,   1,   1], # cd4 < 200:       scale-up 2003-2004
-  ]).reshape([1,1,1,5]) 
-  vx = np.array(1/.36) # median 3 months -> mean ~ 4 months
-  # TODO: connect to all states <- (?)
-  unvx_t = ta.tarray([1980,2010,2018,2051],[.1,.1,.03,.03])
+  ]).reshape([1,1,1,5])
+  vx = np.array(1/P['ivx'])
+  unvx_t = ta.tarray([1980,2010,2018,2051],[.15,.15,.05,.05]) # OK
   Runvx_si = np.array([
     [1,1,P['Runvx_fsw'],P['Runvx_fsw']],
     [P['Runvx_m'],P['Runvx_m'],P['Runvx_m'],P['Runvx_m']]]).reshape((2,4,1,1))
-  revx_t = ta.tarray([1980,2010,2018,2051],P['revx_2010']*np.array([1,1,.5,.5]))
-  Rtx_scen = np.ones((2,4,1,1))
-  Rux_scen = np.ones((2,4,1,1))
+  revx_t = ta.tarray([1980,2010,2018,2051],P['revx_2010']*np.array([1,1,1.5,1.5])) # OK
   return {
-    'tx_t': tx_t,
+    'tx_sit': tx_sit,
     'Rtx_ht': Rtx_ht,
-    'Rtx_si': Rtx_si,
     'vx': vx,
     'unvx_t': unvx_t,
     'Runvx_si': Runvx_si,
     'revx_t': revx_t,
-    'Rtx_scen': Rtx_scen,
-    'Rux_scen': Rux_scen,
+  }
+
+def get_scen(P):
+  return {
+    'Rdx_scen': np.ones((2,4,1,1)),
+    'Rtx_scen': np.ones((2,4,1,1)),
+    'Rux_scen': np.ones((2,4,1,1)),
   }

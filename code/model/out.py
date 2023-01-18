@@ -1,6 +1,6 @@
 import numpy as np
 from utils import _,deco,dtfun,itslice
-from model import foi,slicers,system
+from model import system,foi,slicers
 # TODO: integrate slicers fully?
 
 labels = {
@@ -196,31 +196,22 @@ vls_u     = lambda *a,**k: vls(*a,**k,cond=False)
 vls_c     = lambda *a,**k: vls(*a,**k,cond=True)
 
 @deco.nanzero
-@deco.rmap(args=['X','dx_t'])
-@deco.tslice(targs=['X','dx_t'])
-def dx_rate(X,dx_t,s=None,i=None,aggr=True):
+@deco.rmap(args=['X','dx_sit'])
+@deco.tslice(targs=['X','dx_sit'])
+def dx_rate(X,dx_sit,s=None,i=None,aggr=True):
   X = X[:,:,:,1:,0].sum(axis=(3)) # undiagnosed only
-  Xdx = X_by_si(X*np.squeeze(dx_t),s=s,i=i)
+  Xdx = X_by_si(X*np.squeeze(dx_sit),s=s,i=i)
   XS  = X_by_si(X,s=s,i=i)
   return aggratio(Xdx,XS,aggr)
 
 @deco.nanzero
-@deco.rmap(args=['X','tx','Rtx_ht'])
-@deco.tslice(targs=['X','tx','Rtx_ht'])
-def tx_rate(X,tx,Rtx_ht,s=None,i=None,aggr=True):
-  X = X[:,:,:,1:6,1]
-  Xtx = X_by_si(X*tx*Rtx_ht,s=s,i=i).sum(axis=3)
+@deco.rmap(args=['X','tx_sit','Rtx_ht'])
+@deco.tslice(targs=['X','tx_sit','Rtx_ht'])
+def tx_rate(X,tx_sit,Rtx_ht,s=None,i=None,aggr=True):
+  X = X[:,:,:,1:,1] # diagnosed only
+  Xtx = X_by_si(X*np.squeeze(tx_sit*Rtx_ht),s=s,i=i).sum(axis=3)
   XS  = X_by_si(X,s=s,i=i).sum(axis=3)
   return aggratio(Xtx,XS,aggr)
-
-@deco.nanzero
-@deco.rmap(args=['X','P'])
-@deco.tslice(targs=['X'])
-def X_rate(X,P,rate,s=None,i=None,aggr=True):
-  Prate = P[rate][:,:,0,:,:] if P[rate].ndim == 5 else P[rate] # kinda dangerous
-  Xrate = X_by_si(X*Prate[_,],s=s,i=i).sum(axis=(3,4))
-  XS    = X_by_si(X,s=s,i=i).sum(axis=(3,4))
-  return aggratio(Xrate,XS,aggr)
 
 @deco.rmap(args=['PF_condom_t'])
 @deco.tslice(targs=['PF_condom_t'])
@@ -231,11 +222,6 @@ def condom(PF_condom_t,p,aggr=None):
 @deco.tslice(targs=['PF_circum_t'])
 def circum(PF_circum_t,aggr=None):
   return np.squeeze(PF_circum_t)[:]
-
-@deco.rmap(args=['P_gud_t'])
-@deco.tslice(targs=['P_gud_t'])
-def gud(P_gud_t,aggr=None):
-  return np.squeeze(P_gud_t)[:]
 
 def get_infections(R1s,tvec,t,R2s=None,vsop='1-2'):
   # TODO: upddate for foi edits

@@ -1,6 +1,6 @@
 import numpy as np
-from model import foi,target
-from utils import _,deco,parallel,log,rk4step,nan_to_value
+from model import params,target,foi
+from utils import _,log,deco,parallel,rk4step
 
 def get_t(t0=1980,tf=2050,dt=0.05):
   return np.round(np.arange(t0,tf+dt,dt),9)
@@ -31,7 +31,7 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
 def run(P,t=None,T=None,RPts=None,interval=None):
   if t is None: t = get_t()
   if RPts is None:
-    RPts = ['PF_condom_t','PF_circum_t','P_gud_t','dx_sit','tx_t','Rtx_ht','unvx_t','revx_t']
+    RPts = ['PF_condom_t','PF_circum_t','dx_sit','tx_sit','Rtx_ht','unvx_t','revx_t']
   R = solve(P,t)
   log(3,str(P['seed']).rjust(6)+(' ' if R else '!'))
   if not R:
@@ -48,16 +48,17 @@ def run(P,t=None,T=None,RPts=None,interval=None):
 def solve(P,t):
   X   = get_X(P['X0'],t)
   inc = get_X(np.zeros([4,2,4,2,4]),t)
-  t0_hiv = int(P['t0_hiv']) # TODO: avoid int here
-  t0_tpaf = int(P['t0_tpaf'])
+  b_hiv,b_tpaf = True,True
   for i in range(1,t.size):
     # Ri = rk4step(X[i-1],t[i-1],(t[i]-t[i-1]),get_dX,P=P)
     Ri = get_dX(X[i-1],t[i-1],P) # DEBUG: Euler
     X[i] = X[i-1] + (t[i] - t[i-1]) * Ri['dX']
     inc[i] = Ri['inc']
-    if t[i] == t0_hiv: # introduce HIV
+    if b_hiv and t[i] >= P['t0_hiv']: # introduce HIV
+      b_hiv = False
       X[i,:,:,0,:,0] = X[i,:,:,0,0,0,_] * P['PX_h_hiv'][_,_,:]
-    if t[i] == t0_tpaf: # start accumulating tPAF
+    if b_tpaf and t[i] >= P['t0_tpaf']: # start accumulating tPAF
+      b_tpaf = False
       P['mix_mask'] = P['mix_mask_tpaf']
     if np.any(X[i].sum(axis=2) < 0) or np.any(inc[i] < 0): # abort / fail
       return False
@@ -74,6 +75,7 @@ def get_dX(X,t,P):
   dX = 0*X # (s:2, i:4, k:4, h:6, c:5)
   # force of infection
   inc = foi.get_apply_inc(dX,X,t,P) # (p:4, s:2, i:4, s':2, i':4)
+  # TODO: reorder these steps?
   # HIV transitions
   dXi = X[:,:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
   dX[:,:,:,1:5,0:3] -= dXi
@@ -83,11 +85,12 @@ def get_dX(X,t,P):
   dX[:,:,:,3:6,3:5] -= dXi
   dX[:,:,:,2:5,3:5] += dXi
   # births & deaths
-  dX[:,:,0,0,0] += X.sum() * P['PX_si'] * P['birth_t'](t)
+  birth, PXe, turn = params.solve_turnover(P,t)
+  dX[:,:,0,0,0] += X.sum() * P['birth_t'](t) * PXe
   dX -= X * P['death']
   dX -= X * P['death_hc']
   # turnover
-  dXi = P['turn_sii'][:,:,:,_,_,_] * X[:,:,_,:,:,:]
+  dXi = turn[:,:,:,_,_,_] * X[:,:,_,:,:,:]
   dX -= dXi.sum(axis=2) # (s:2, i:4, k:5, h:6, c:5)
   dX += dXi.sum(axis=1) # (s:2, i':4, k:5, h:6, c:5)
   # cascade: diagnosis
@@ -95,7 +98,7 @@ def get_dX(X,t,P):
   dX[:,:,:,1:6,0] -= dXi # undiag
   dX[:,:,:,1:6,1] += dXi # diag
   # cascade: treatment
-  dXi = X[:,:,:,1:6,1] * P['tx_t'](t) * P['Rtx_ht'](t) * P['Rtx_si'] * P['Rtx_scen']
+  dXi = X[:,:,:,1:6,1] * P['tx_sit'](t) * P['Rtx_ht'](t) * P['Rtx_scen']
   dX[:,:,:,1:6,1] -= dXi # diag
   dX[:,:,:,1:6,3] += dXi # treat
   # cascade: VLS
