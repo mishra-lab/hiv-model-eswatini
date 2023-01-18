@@ -21,6 +21,11 @@ def skewnorm(m,sd,a=0):
   w = sd/np.sqrt(1-2*d*d/np.pi)
   return ss.skewnorm(a=a,loc=m-w*d*np.sqrt(2/np.pi),scale=w)
 
+def invgauss(m,sd,z=0):
+  w = m-z
+  s = w**3/sd**2
+  return ss.invgauss(mu=w/s,loc=z,scale=s)
+
 def uniform(l,h):
   return ss.uniform(loc=l,scale=h-l)
 
