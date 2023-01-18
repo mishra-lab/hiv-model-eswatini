@@ -1,0 +1,28 @@
+\newcommand{\event}[6]{
+  \pgfmathsetmacro{\eya}{#1-2000}
+  \pgfmathsetmacro{\eyb}{#2-2000}
+  \pgfmathsetmacro{\eyc}{\eya/2+\eyb/2+#4/2}
+  \pgfmathsetmacro{\ea}{90 #3 90}
+  \ifx\eya\eyb\def\eyt{#2}\else\def\eyt{#1--#2}\fi
+  \draw[fill=#5,fill opacity=.2] (0,\eya) -- (#31,\eyc) -- (0,\eyb);
+  % \fill[#5] (#31,\eyc) circle (1pt);
+  \node[#5,event,anchor=\ea] at (#31,\eyc) {\eyt: #6};}
+\begin{tikzpicture}[x=1.67ex,y=-1.67ex,thick]
+  \event{1980}{1985}{+}{ 0}{}{HIV first imported\tn{*}}
+  \event{1986}{1986}{+}{-1}{}{First HIV case}
+  \event{1987}{1987}{+}{+1}{}{First AIDS case, SNAP founded}
+  \event{1992}{1992+}{-}{0}{}{ANC monitoring}
+  \event{1999}{1999}{+}{ 0}{}{HIV/AIDS declared national emergency}
+  \event{2003}{2003}{+}{ 0}{}{NERCHA founded, ART for CD4\,$<$\,200\tn{a}}
+  \event{2006}{2007}{-}{ 0}{}{SDHS}
+  \event{2010}{2010}{+}{ 0}{}{ART for CD4\,$<$\,350\tn{b}}
+  \event{2011}{2011}{-}{ 0}{}{SHIMS~1, IBBSS~1}
+  \event{2011}{2014}{+}{ 0}{}{MaxART phase~1}
+  \event{2015}{2015}{+}{-1}{}{ART for CD4\,$<$\,500}
+  \event{2014}{2018}{+}{ 0}{}{MaxART phase~2}
+  \event{2016}{2017}{-}{ 0}{}{SHIMS~2}
+  \event{2017}{2017}{+}{+1}{}{ART for all}
+  \event{2019}{2020}{+}{ 0}{}{Achieved 90-90-90\tn{*}}
+  \event{2021}{2021}{-}{ 0}{}{IBBSS~2}
+  \draw[->] (0,-22) -- (0,+23);
+\end{tikzpicture}

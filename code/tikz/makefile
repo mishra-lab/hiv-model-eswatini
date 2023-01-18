@@ -10,6 +10,8 @@ figs =
 # figs += dots.wph
 # figs += dots.bph
 # figs += binom.dots.xph
+# figs += esw.timeline
+# figs += tte
 all:
 	for fig in $(figs); do \
 	  ./maketikz.sh $$fig ;\

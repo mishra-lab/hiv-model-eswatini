@@ -9,10 +9,11 @@
   \usepackage[lf]{CrimsonPro}
   \usepackage[italic]{mathastext}
 \fi
-\definecolor{C0}{HTML}{001122}
+\usepackage{bm}
+\definecolor{C0}{HTML}{003366}
 \definecolor{C1}{HTML}{0099CC}
 \definecolor{C2}{HTML}{CC0033}
-\definecolor{C3}{HTML}{FFCC00}
+\definecolor{C3}{HTML}{FF9900}
 \usetikzlibrary{decorations.pathreplacing,fit,arrows.meta}
 \pgfdeclarelayer{back}
 \pgfdeclarelayer{fore}
@@ -51,7 +52,11 @@
   },
   axlab/.style = {
   },
+  event/.style = {
+  }
 }
+\newcommand{\ifempty}[3]{\if\relax\detokenize{#1}\relax#2\else#3\fi}
+\newcommand{\tn}[1]{\textsuperscript{\rlap{\,#1}}}
 \newcommand{\xbeta}{.03}
 \newcommand{\Bfun}{1-(1-\xbeta)^(\x)}
 \newcommand{\slice}[5]{
@@ -104,6 +109,9 @@
 \colorlet{C1a}{C1!50!white}
 \colorlet{C2a}{C2!50!white}
 \colorlet{C3a}{C3!50!white}
+\colorlet{C12}{C1!50!C2}
+\colorlet{C13}{C1!50!C3}
+\colorlet{C23}{C2!50!C3}
 \colorlet{WPH}{C2}\colorlet{WPHa}{C2a}
 \colorlet{BPH}{C1}\colorlet{BPHa}{C1a}
 \newcommand{\rootpath}{../..}
