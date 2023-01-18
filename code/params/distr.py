@@ -41,6 +41,7 @@ def print_distr(distr,x,name,m=None,q=None,p=p2,ok=True):
     'gamma':       'm = {:.5f}, sd = {:.5f}',
     'lnorm':       'm = {:.5f}, sd = {:.5f}',
     'skewnorm':    'm = {:.5f}, sd = {:.5f}, a = {:.4f}',
+    'invgauss':    'm = {:.5f}, sd = {:.5f}, z = {:.5f}',
     'uniform':     'l = {:.3f}, h = {:.3f}',
     'ratio_binom': 'p1 = {:.4f}, n1 = {:5.0f}, p2 = {:.4f}, n2 = {:5.0f}',
   }[distr.__name__].format(*x)
@@ -49,7 +50,7 @@ def print_distr(distr,x,name,m=None,q=None,p=p2,ok=True):
   print(s if ok else '(!) FAILED: '+s,flush=True)
   if plot: plot_distr(distr(*x),m,q,p,name)
 
-def fit_distr(distr,m,q,w=1,p=p2,name='',n0=100,sd0=1,a0=0,pwr=2):
+def fit_distr(distr,m,q,w=1,p=p2,name='',n0=100,sd0=1,a0=0,z0=0,pwr=2):
   m  = wfun(m,w)
   q = [wfun(qi,w) for qi in q]
   dname = distr.__name__
@@ -57,12 +58,14 @@ def fit_distr(distr,m,q,w=1,p=p2,name='',n0=100,sd0=1,a0=0,pwr=2):
     'betabin': [m,n0],
     'gamma': [m,sd0],
     'lnorm': [m,sd0],
+    'invgauss': [m,sd0,z0],
     'skewnorm': [m,sd0,a0],
   }[distr.__name__]
   xb = {
     'betabin': [(.001,.999),(5,1e5)],
     'gamma': None,
     'lnorm': None,
+    'invgauss': [(-1e5,+1e5),(1e-9,1e5),(1e-9,100)],
     'skewnorm': [(-1e5,+1e5),(1e-9,1e5),(-100,100)],
   }[distr.__name__]
   
@@ -96,14 +99,17 @@ def plot_distr(distrx,m=None,q=None,p=p2,name=''):
 
 def beta():
   section('beta')
-  fit_distr(ss.skewnorm,m=.00072,q=(.0005,.00072,.0015),p=p3,a0=10,pwr=1,name='beta_0') # Boily2009
+  fit_distr(ss.gamma,m=.00072,q=(.0005,.00097),sd0=.0001,name='beta_0') # Boily2009
+  fit_distr(ss.gamma,m=.0009,q=(.0005,.0015),sd0=.0001,name='beta_0_adj') # Boily2009
   fit_distr(ss.gamma,m=5.3,q=(1,5.3,15),p=p3,pwr=1,name='Rbeta_acute') # Bellan2015 (CI adj: 15 <- 56)
   fit_distr(ss.gamma,m=.1417,q=(.046,.1417,.5),p=p3,pwr=1,sd0=.1,name='dur_acute') # Bellan2015 - years (CI adj: )
   fit_distr(ss.gamma,m=1.6,q=(1.3,1.9),name='Rbeta_350') # Wawer2005, Boily2009, Donnell2010
   fit_distr(ss.gamma,m=8.3,q=(4.5,13),name='Rbeta_200') # Wawer2005, Boily2009, Donnell2010
   fit_distr(ss.gamma,m=1.45,q=(1,2),name='Rbeta_mtf') # assume
-  fit_distr(ss.skewnorm,m=5.29,q=(1.43,5.29,15),p=p3,pwr=1,a0=10,name='Rbeta_gud_s') # Boily2009
-  fit_distr(ss.gamma,m=2.9,q=(1.03,5.69),name='Rbeta_gud_i') # Gray2001
+  fit_distr(ss.gamma,m=5.29,q=(1.43,5.29,15),p=p3,name='Rbeta_gud_sus') # Boily2009
+  fit_distr(ss.gamma,m=2.9, q=(1.03,2.9,5.69),p=p3,name='Rbeta_gud_inf') # Gray2001
+  fit_distr(ss.gamma,m=2.15,q=(0.2,6.0),name='aRbeta_gud_sus_adj') # Boily2009
+  fit_distr(ss.gamma,m=0.95,q=(0.2,2.4),name='aRbeta_gud_inf_adj') # Gray2001
   fit_distr(ss.betabin,m=.2,q=(.1,.4),name='P_gud_fsw_l') # (JK) & 18/124 EswIBBS2022
   fit_distr(ss.gamma,m=3,q=(1.5,5),name='P_gud_fsw_hl') # (JK)
   # @FYI SDHS2006 Table 13.14: ~.07 GUD among wider pop P12M
@@ -121,6 +127,7 @@ def circumcision():
 
 def condoms():
   section('condoms')
+  fit_distr(ss.betabin,m=1-.26,q=(1-.43,1-.13),name='Rbeta_condom') # Giannou2016
   # ai vs vi
   fit_distr(ss.betabin,m=.540,q=(.387,.692),name='PF_condom_ai)') # Owen2020a
   fit_distr(ss.betabin,m=.684,q=(.555,.813),name='PF_condom_vi)') # Owen2020a
@@ -171,20 +178,21 @@ def CF():
   fit_distr(ss.betabin,m=.35,q=(.23,.50),name='C_msp_ml') # (JK) [omit]
   fit_distr(ss.betabin,m=.37,q=(.25,.50),name='C_msp_xl') # (JK) synthesis
   fit_distr(ss.betabin,m=.35,q=(.20,.55),name='C_cas_xl') # (JK) synthesis
-  fit_distr(ss.gamma,m=2.0,q=(1.2,3),name='C_cas_wm') # assume
+  fit_distr(ss.gamma,m=1.5,q=(1.2,2),name='C_cas_wm') # assume
   print_distr(ss.uniform,x=[.25,1],name='RC_cas_cli:wm') # assume
+  fit_distr(ss.gamma,m=8.4,q=(6,11),name='CF_swr_l') # (JK)
   fit_distr(ss.gamma,m=4.1*12,q=(2.5*12,6.0*12),name='C_swo_fsw_l') # (JK) Baral2014,EswKP2014
   fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RC_swo_fsw_h:l') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=5.7,q=(2.7,9.7),name='C_swr_fsw_l') # (JK) Baral2014,EswKP2014
+  fit_distr(ss.gamma,m=7,q=(3.4,7.0,12.5),p=p3,name='C_swr_fsw_l') # (JK) Baral2014,EswKP2014
   fit_distr(ss.gamma,m=1.5,q=(1.3,1.7),name='RC_swr_fsw_h:l') # (JK) Baral2014,EswKP2014
   fit_distr(ss.gamma,m=60,q=(35,90),name='CF_swx_cli') # assume
   fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RCF_swx_cli_h:l') # assume
   section('sex frequency')
   fit_distr(ss.gamma,m=52*1.5,q=(.5*52,3*52),name='F_mcx') # Shisana2005,Delva2013
   print_distr(ss.uniform,x=[12,48],name='F_swr') # assume
-  fit_distr(ss.betabin,m=.06,q=(.006,.165),name='PF_ai_mcx') # Owen2017
-  fit_distr(ss.betabin,m=.10,q=(.006,.292),name='PF_ai_swx') # Owen2017
-  fit_distr(ss.betabin,m=.08,q=(.024,.159),name='PF_ai_swx_alt') # Owen2020a
+  fit_distr(ss.gamma,m=.05,q=(.006,.165),sd0=.01,name='PF_ai_mcx') # Owen2017
+  fit_distr(ss.gamma,m=.08,q=(.006,.292),sd0=.01,name='PF_ai_swx_old') # Owen2017 [omit]
+  fit_distr(ss.gamma,m=.08,q=(.024,.159),sd0=.01,name='PF_ai_swx') # Owen2020
   return
 
 def mixing():
@@ -195,13 +203,14 @@ def mixing():
 
 def dur():
   section('durations: risk groups')
-  fit_distr(ss.gamma,m=2,q=(1.54,3.25),name='Rdur_fsw_hl') # (JK)
   # fit_distr(ss.betabin,m=.383,q=(.275,.383,.491),p=p3,name='dur_fsw_0-2')  # Baral2014 [prelim]
   # fit_distr(ss.betabin,m=.321,q=(.236,.321,.407),p=p3,name='dur_fsw_3-5')  # Baral2014 [prelim]
   # fit_distr(ss.betabin,m=.202,q=(.132,.202,.271),p=p3,name='dur_fsw_6-10') # Baral2014 [prelim]
   # fit_distr(ss.betabin,m=.094,q=(.044,.094,.144),p=p3,name='dur_fsw_11+')  # Baral2014 [prelim]
-  fit_distr(ss.gamma,m= 6.2,q=( 4.6, 8.0),name='dur_fsw_lr') # (JK)
-  fit_distr(ss.gamma,m=14.2,q=(10.4,18.6),name='dur_fsw_hr') # (JK)
+  fit_distr(ss.invgauss,m=2,q=(1.54,2,3.25),p=p3,name='Rdur_fsw_hl') # (JK)
+  fit_distr(ss.gamma,m=4.07,q=(2.96, 5.48),name='dur_fsw_lr') # (JK)
+  fit_distr(ss.gamma,m=9.33,q=(6.30,13.13),name='dur_fsw_hr') # (JK)
+  fit_distr(ss.betabin,m=.5,q=(.4,.6),name='Pturn_e_fsw') # assume
   # fit_distr(ss.betabin,.075,q=(.056,.075,.100),p=p3,name='ybs_ever_15-24') # Hodgins2022 [prelim]
   # fit_distr(ss.betabin,.088,q=(.065,.088,.117),p=p3,name='ybs_ever_25-34') # Hodgins2022 [prelim]
   # fit_distr(ss.betabin,.077,q=(.057,.077,.103),p=p3,name='ybs_ever_35-54') # Hodgins2022 [prelim]
@@ -223,7 +232,7 @@ def dx():
   section('HIV test p12m')
   # FSW
   fit_distr(ss.gamma,m=p2r(.617),q=(p2r(.556),p2r(.675)),name='dx_fsw_2011') # Baral2014
-  print_distr(ss.gamma,[p2r(.617)/p2r(.505)-1,.1],name='aRdx_fsw:w_2011_adj') # (JK)
+  print_distr(ss.gamma,[p2r(.617)/p2r(.468)-1,.2],name='aRdx_fsw:w_2011_adj') # (JK)
   print_distr(ss.betabin,[.746,100],name='test_fsw_2014') # EswKP2014 (adj n was 781)
   fit_distr(ss.gamma,m=p2r(.75),q=(p2r(.657),p2r(.826)),name='dx_fsw_2014_adj') # EswKP2014 (adj)
   print_distr(ss.gamma,[p2r(.746)/p2r(.571)-1,.2],name='aRdx_fsw:w_2016_adj') # (JK)
@@ -234,13 +243,15 @@ def dx():
   fit_distr(ss.betabin,m=p2r(.219),q=(p2r(.206),p2r(.233)),name='dx_w_2006') # SDHS2006
   fit_distr(ss.betabin,m=p2r(.089),q=(p2r(.078),p2r(.100)),name='dx_m_2006') # SDHS2006
   print_distr(ss.betabin,[p2r(.219),100],name='dx_w_2006_adj') # SDHS2006 (adj n)
-  print_distr(ss.gamma,[p2r(.089)/p2r(.219),.2],name='Rdx_m:w_2006_adj') # SDHS2006 (adj n)
+  print_distr(ss.gamma,[p2r(.089)/p2r(.219),.1],name='Rdx_m:w_2006_adj') # SDHS2006 (adj n)
   # SHIMS
   print_distr(ss.betabin,[.5051,100],name='test_w_2011') # SHIMS1T (adj n was 9838)
   print_distr(ss.betabin,[.3167,100],name='test_m_2011') # SHIMS1T (adj n was 8318)
-  fit_distr(ss.gamma,m=p2r(.505),q=(p2r(.408),p2r(.602)),sd0=.01,name='dx_w_2011_adj') # (JK)
-  fit_distr(ss.gamma,m=p2r(.317),q=(p2r(.230),p2r(.411)),sd0=.01,name='dx_m_2011_adj') # (JK)
-  print_distr(ss.gamma,[p2r(.317)/p2r(.505),.1],name='Rdx_m:w_2011_adj') # (JK)
+  print_distr(ss.betabin,[.468,100],name='test_w_2011_adj') # SHIMS1T (adj 15-17 & n was 9838)
+  print_distr(ss.betabin,[.284,100],name='test_m_2011_adj') # SHIMS1T (adj 15-17 & n was 8318)
+  fit_distr(ss.gamma,m=p2r(.468),q=(p2r(.372),p2r(.566)),sd0=.01,name='dx_w_2011_adj') # (JK)
+  fit_distr(ss.gamma,m=p2r(.284),q=(p2r(.200),p2r(.376)),sd0=.01,name='dx_m_2011_adj') # (JK)
+  print_distr(ss.gamma,[p2r(.284)/p2r(.468),.1],name='Rdx_m:w_2011_adj') # (JK)
   # 2016
   print_distr(ss.betabin,[.529,100],name='test_all_2016') # SHIMS2 (adj n was 9075) [omit]
   print_distr(ss.betabin,[p2r(.571),100],name='dx_w_2016') # SHIMS2 (adj n was 5127)
@@ -255,6 +266,7 @@ def tx():
   fit_distr(ss.gamma,m=1.5,q=(.5,3),name='tx_2010') # assume
   fit_distr(ss.gamma,m=9,q=(6,12),name='tx_2012') # assume
   fit_distr(ss.gamma,m=.75,q=(.5,1),name='revx_2010') # assume
+  fit_distr(ss.gamma,m=.6,q=(.33,1),sd0=.1,name='ivx') # assume
   return
 
 # TARGETS ------------------------------------------------------------------------------------------
@@ -264,14 +276,14 @@ def prevalence():
   # prevalence ratios
   print_distr(ss.ratio_binom,x=[.605,127,.280,7747],p=p3,name='prev_fsw_w_2011') # Baral2014, Bicego2013
   fit_distr(ss.gamma,m=1.46,q=(1.30,1.63),name='prev_fsw_hl_2011') # Baral2014 (JK)
-  fit_distr(ss.gamma,m=2.3, q=(1.92,2.75),name='prev_fsw_hl_2014') # EswKP2014 (JK)
-  args = dict(p=(.025,.25,.5,.75,.975),pwr=1,a0=10)
-  fit_distr(ss.skewnorm,m=1.979,q=(1.843,1.918,1.977,2.063,2.335),**args,name='prev_women_hl_2006_adj') # SDHS2006 (adj wp)
-  fit_distr(ss.skewnorm,m=2.571,q=(2.155,2.361,2.572,2.927,5.280),**args,name='prev_men_hl_2006_adj')   # SDHS2006 (adj wp)
-  fit_distr(ss.skewnorm,m=1.526,q=(1.467,1.501,1.526,1.558,1.660),**args,name='prev_women_hl_2011_adj') # Bicego2013 (adj wp & 15-17)
-  fit_distr(ss.skewnorm,m=1.236,q=(1.200,1.220,1.236,1.261,1.344),**args,name='prev_men_hl_2011_adj')   # Bicego2013 (adj wp & 15-17)
-  fit_distr(ss.skewnorm,m=1.410,q=(1.368,1.391,1.409,1.434,1.506),**args,name='prev_women_hl_2016_adj') # SHIMS2 (adj wp)
-  fit_distr(ss.skewnorm,m=1.305,q=(1.258,1.283,1.305,1.337,1.454),**args,name='prev_men_hl_2016_adj')   # SHIMS2 (adj wp)
+  fit_distr(ss.gamma,m=2.3, q=(1.92,2.75),name='prev_fsw_hl_2014') # EswKP2014 (JK) [omit] SR
+  args = dict(p=p5,pwr=2,sd0=.1)
+  fit_distr(ss.invgauss,m=1.979,q=(1.843,1.918,1.977,2.063,2.335),**args,name='prev_women_hl_2006_adj') # SDHS2006 (adj wp)
+  fit_distr(ss.invgauss,m=2.571,q=(2.155,2.361,2.572,2.927,5.280),**args,name='prev_men_hl_2006_adj')   # SDHS2006 (adj wp)
+  fit_distr(ss.invgauss,m=1.526,q=(1.467,1.501,1.526,1.558,1.660),**args,name='prev_women_hl_2011_adj') # Bicego2013 (adj wp & 15-17)
+  fit_distr(ss.invgauss,m=1.236,q=(1.200,1.220,1.236,1.261,1.344),**args,name='prev_men_hl_2011_adj')   # Bicego2013 (adj wp & 15-17)
+  fit_distr(ss.invgauss,m=1.410,q=(1.368,1.391,1.409,1.434,1.506),**args,name='prev_women_hl_2016_adj') # SHIMS2 (adj wp)
+  fit_distr(ss.invgauss,m=1.305,q=(1.258,1.283,1.305,1.337,1.454),**args,name='prev_men_hl_2016_adj')   # SHIMS2 (adj wp)
   # FSW
   fit_distr(ss.betabin,m=.605,q=(.521,.690),name='prev_fsw_2011') # Baral2014 (RDS-adj)
   fit_distr(ss.betabin,m=.588,q=(.539,.636),name='prev_fsw_2021') # EswIBBS2022 (RDS-adj)
@@ -324,28 +336,29 @@ def incidence():
   section('incidence')
   # EswIBBS2022 (Table 13)
   q = ss.betabin(p=-np.log(1-30/676)/141*365,n=676).ppf(p3) * [141/160,1,141/119]
-  fit_distr(ss.skewnorm,m=q[1],q=q,p=p3,a0=1,name='inc_all_2016')
+  fit_distr(ss.invgauss,m=q[1],q=q,p=p3,sd0=.1,name='inc_fsw_2021')
   # incidence ratios
-  args = dict(p=(.05,.25,.50,.75,.95),pwr=1,a0=10) # p != p5
-  fit_distr(ss.skewnorm,m=5.891,q=(4.398,5.088,5.891,7.310,13.394),**args,name='inc_women_hl_2011_adj') # Bicego2013 (adj wp & 15-17)
-  fit_distr(ss.skewnorm,m=3.939,q=(2.908,3.395,3.939,5.055,10.864),**args,name='inc_men_hl_2011_adj')   # Bicego2013 (adj wp & 15-17)
+  args = dict(p=(.05,.25,.50,.75,.95)) # p != p5
+  fit_distr(ss.invgauss,m=5.891,q=(4.398,5.088,5.891,7.310,13.394),**args,name='inc_women_hl_2011_adj') # Bicego2013 (adj wp & 15-17)
+  fit_distr(ss.invgauss,m=3.939,q=(2.908,3.395,3.939,5.055,10.864),**args,name='inc_men_hl_2011_adj')   # Bicego2013 (adj wp & 15-17)
   # SHIMS1 Justman2016 (Tables 2,1)
   fit_distr(ss.skewnorm,m=.031,q=(.026,.037),a0=2,name='inc_women_2011')        # (unadj 15-17)
-  fit_distr(ss.skewnorm,m=.017,q=(.013,.021),a0=0,name='inc_men_2011')          # (unadj 15-17)
+  fit_distr(ss.skewnorm,m=.017,q=(.013,.021),name='inc_men_2011')               # (unadj 15-17)
   fit_distr(ss.skewnorm,m=.0294,q=(.0252,.0347),a0=2,name='inc_women_2011_adj') # (adj 15-17)
-  fit_distr(ss.skewnorm,m=.0150,q=(.0116,.0184),a0=0,name='inc_men_2011_adj')   # (adj 15-17)
-  fit_distr(ss.skewnorm,m=[.011,.036],q=([.006,.030],[.022,.044]),w=[789,4135],a0=3,name='inc_women_lr_2011') # (unadj wp & 15-17)
+  fit_distr(ss.skewnorm,m=.0150,q=(.0116,.0184),name='inc_men_2011_adj')        # (adj 15-17)
+  fit_distr(ss.skewnorm,m=[.011,.036],q=([.006,.030],[.022,.044]),w=[789,4135],a0= 3,name='inc_women_lr_2011') # (unadj wp & 15-17)
   fit_distr(ss.skewnorm,m=[.004,.020],q=([.001,.015],[.018,.027]),w=[909,2946],a0=10,name='inc_men_lr_2011')  # (unadj wp & 15-17)
-  fit_distr(ss.skewnorm,m=.0163,q=(.0040,.0224),a0=-10,pwr=1,name='inc_women_lr_2011_adj') # (adj wp & 15-17) [omit->pr]
-  fit_distr(ss.skewnorm,m=.0084,q=(.0001,.0117),a0=-10,pwr=1,name='inc_men_lr_2011_adj')   # (adj wp & 15-17) [omit->pr]
-  fit_distr(ss.skewnorm,m=.100,q=(.050,.192),a0=10,name='inc_women_nlr_2011')        # (unadj 15-17)
-  fit_distr(ss.skewnorm,m=.038,q=(.025,.056),a0=2,name='inc_men_nlr_2011')           # (unadj 15-17)
-  fit_distr(ss.skewnorm,m=.0948,q=(.0476,.1829),a0=10,name='inc_women_nlr_2011_adj') # (adj 15-17) [omit->ir]
-  fit_distr(ss.skewnorm,m=.0339,q=(.0221,.0494),a0=2,name='inc_men_nlr_2011_adj')    # (adj 15-17) [omit->ir]
+  fit_distr(ss.skewnorm,m=.0163,q=(.0040,.0224),a0=-10,name='inc_women_lr_2011_adj')  # (adj wp & 15-17) [omit->pr]
+  fit_distr(ss.skewnorm,m=.0084,q=(.0001,.0117),a0=-10,name='inc_men_lr_2011_adj')    # (adj wp & 15-17) [omit->pr]
+  fit_distr(ss.skewnorm,m=.100,q=(.050,.192),a0=8,name='inc_women_nlr_2011')          # (unadj 15-17)
+  fit_distr(ss.skewnorm,m=.038,q=(.025,.056),a0=2,name='inc_men_nlr_2011')            # (unadj 15-17)
+  fit_distr(ss.skewnorm,m=.0948,q=(.0476,.1829),a0=8,name='inc_women_nlr_2011_adj')   # (adj 15-17) [omit->ir]
+  fit_distr(ss.skewnorm,m=.0339,q=(.0221,.0494),a0=2,name='inc_men_nlr_2011_adj')     # (adj 15-17) [omit->ir]  
+  return
   # SHIMS2 (Table C.1)
-  fit_distr(ss.skewnorm,m=.0148,q=(.0096,.0199),a0=0,name='inc_all_2016')
-  fit_distr(ss.skewnorm,m=.0199,q=(.0116,.0280),a0=0,name='inc_women_2016')
-  fit_distr(ss.skewnorm,m=.0099,q=(.0039,.0159),a0=0,name='inc_men_2016')
+  fit_distr(ss.skewnorm,m=.0148,q=(.0096,.0199),name='inc_all_2016')
+  fit_distr(ss.skewnorm,m=.0199,q=(.0116,.0280),name='inc_women_2016')
+  fit_distr(ss.skewnorm,m=.0099,q=(.0039,.0159),name='inc_men_2016')
   return
 
 def diagnosed():
