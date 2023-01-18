@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from model.target import filter_targets
-from utils import genpath,flatten,clr_interp,interval_qs,squarish,dict_split,itslice,tdt,log,globs
-from model import _,dimkeys,dimensions,slicers,out
+from utils import _,log,genpath,flatten,dict_split,interval_qs,clr_interp,squarish,itslice,tdt,globs
+from model import out,dimkeys,dimensions,slicers
 
 # TODO: labeling & colors for vsop
 
@@ -69,7 +69,7 @@ def line(t,x,taxis=0,**kwds):
   for i in range(x2.shape[1]):
     plt.plot(t,x2[:,i],**kwds)
 
-def ribbon(t,x,taxis=0,interval=.9,alpha=.2,median=True,**kwds):
+def ribbon(t,x,taxis=0,interval=.9,alpha=.3,median=True,**kwds):
   # x is a list of ndarrays, with time along taxis
   x3 = np.stack([np.moveaxis(xi,taxis,0).reshape((len(t),-1)) for xi in x])
   qs = [interval_qs(i) for i in flatten(interval)]
@@ -83,7 +83,7 @@ def ribbon(t,x,taxis=0,interval=.9,alpha=.2,median=True,**kwds):
     if median:
       plt.plot(t,np.nanquantile(x3[:,:,i],.5,axis=0),label=label,**kwds)
 
-def boxplot(t,x,dt=5,tb=None,taxis=0,alpha=.2,width=.6,**kwds):
+def boxplot(t,x,dt=5,tb=None,taxis=0,alpha=.3,width=.6,**kwds):
   # x is a list of ndarrays, with time along taxis
   if tb is None:
     tb = tdt(t,dt)
