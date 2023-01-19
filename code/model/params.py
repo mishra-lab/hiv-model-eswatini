@@ -159,7 +159,7 @@ def def_sample_distrs():
   'iP_gud_cli_fsw:gp':    stats.uniform(l=0,h=1),
   'Rbeta_uvls':           stats.betabin(p=.244,n=5),
   # diagnosis
-  'dx_reduce':            stats.uniform(l=.5,h=1),
+  'Rdx_global':           stats.uniform(l=.5,h=1),
   'dx_w_2002':            stats.betabin(p=.094,n=100),
   'dx_w_2006':            stats.betabin(p=.248,n=100),
   'Rdx_m:w_2006':         stats.gamma(m=.377,sd=.1),
@@ -167,7 +167,6 @@ def def_sample_distrs():
   'Rdx_m:wq_2011':        stats.gamma(m=.529,sd=.1),
   'aRdx_fsw:wq_2011':     stats.gamma(m=.5207,sd=.2),
   'aRdx_wq_16:11':        stats.gamma(m=.2035,sd=.05),
-  'Rdx_m:wq_2016':        stats.gamma(m=.529,sd=.1),
   'aRdx_fsw:wq_2016':     stats.gamma(m=.619,sd=.2),
   # treatment
   'tx_2010':              stats.gamma(m=1.5,sd=0.65),
@@ -525,8 +524,8 @@ def get_diag(P):
     *2*[P['dx_wq_2011']*(1+P['aRdx_wq_16:11'])]])
   Rdx_wq_t  = np.array([1,1,1,1,1,1,1]) # dummy
   Rdx_fsw_t = np.array([1,1,1,1,1+P['aRdx_fsw:wq_2011'],*2*[1+P['aRdx_fsw:wq_2016']]])
-  Rdx_m_t   = np.array([1,1,0.1,P['Rdx_m:w_2006'],P['Rdx_m:wq_2011'],*2*[P['Rdx_m:wq_2016']]])
-  dx_sit = ta.tarray(t_dx,P['dx_reduce']*dx_wq_t*np.array(
+  Rdx_m_t   = np.array([1,1,0.1,P['Rdx_m:w_2006'],*3*[P['Rdx_m:wq_2011']]])
+  dx_sit = ta.tarray(t_dx,P['Rdx_global']*dx_wq_t*np.array(
     [[Rdx_wq_t,Rdx_wq_t,Rdx_fsw_t,Rdx_fsw_t],
      [ Rdx_m_t, Rdx_m_t,  Rdx_m_t,  Rdx_m_t]])).reshape((2,4,1,1))
   return {
