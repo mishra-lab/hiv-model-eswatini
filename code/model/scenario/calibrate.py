@@ -1,6 +1,6 @@
 import numpy as np
 from utils import log,fio
-from model import target,params,system,fit
+from model import system,params,target,fit
 from model.scenario import N,tvec,fname,batch_select
 
 case = 'base'

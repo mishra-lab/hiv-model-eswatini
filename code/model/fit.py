@@ -1,25 +1,27 @@
 import numpy as np
-from utils import flatten,squarish,fio
-from model import slicers,system,out,target,plot
+from utils import fio,squarish
+from model import system,target,out,plot,slicers
 
 plotsize = 3 # inches
 ttfname = fio.tmpfile('fit-{}.pdf')
 
-def plot_debug(t,Rs,T,fname='tmp.pdf',tops=(1.,.2,.04),drop=True):
+def plot_debug(t,Rs,T=None,fname='pyplots.pdf',tops=(1.,.2,.04),drop=True):
   if drop: Rs = system.drop_fails(Rs)[0]
   Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
   kwds = dict(T=T,tfname=None)
   tfnames = [
     plot_output(t,Rss,'NX', ['all'],**kwds),
-    # plot_output(t,Rss,'X_rate', ['all'],rate='death_hc',**kwds), # TODO
+    plot_output(t,Rss,'Psi', ['fsw.h','fsw.l','cli.h','cli.l'],**kwds),
     plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'prevalence',
-      [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
+    plot_output(t,Rss,'prevalence',[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],
       vsop='1/2',**kwds,ylim=(1,5)),
     plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds),
     plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds),
     plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],**kwds),
     plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],**kwds),
   ]
   fio.pdfmerge(fname,tfnames,rm=True)
 
@@ -39,24 +41,21 @@ def plot_cal(t,Rs,T,fname,tops=(1.,.1,.01),drop=True,merge=True):
     plot_param(Rss,'t0_hiv',   dstr=''),
     # output projections
     plot_output(t,Rss,'NX',        ['all'],**kwds),
-    plot_output(t,Rss,'Ph',        ['ahi','>500','<500','<350','<200'],**kwds),
-    # plot_output(t,Rss,'X_rate',    ['all'],rate='death_hc',ylab='HIV Mortality',**kwds), # TODO
+    plot_output(t,Rss,'Ph',        ['ahi','>500','<500','<350','<200'],**kwds,ylim=(0,1)),
     plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
     plot_output(t,Rss,'prevalence',
       [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
       vsop='1/2',**kwds,ylim=(1,5)),
-    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds,ylim=(0,.2)),
+    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
+    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
+    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds,ylim=(0,1)),
+    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
+    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],**kwds,ylim=(0,1)),
     plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],**kwds),
     plot_output(t,Rss,'circum',    ['*'],**kwds),
-    plot_output(t,Rss,'gud',       ['*'],**kwds),
-    # plot_output(t,Rss,'dx_rate',   ['all','w','m','fsw'],**kwds),
-    # plot_output(t,Rss,'tx_rate',   ['all','w','m','fsw'],**kwds),
-    # plot_output(t,Rss,'tx_rate',   ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'dx_rate',   ['all','w','m','fsw'],**kwds),
+    plot_output(t,Rss,'tx_rate',   ['all','w','m','fsw'],**kwds),
   ]
   if merge:
     fio.pdfmerge(fname,tfnames,rm=True)
