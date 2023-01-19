@@ -548,7 +548,7 @@ def get_treat(P):
   unvx_t = ta.tarray([1980,2010,2018,2051],[.15,.15,.05,.05])
   Runvx_si = np.array([
     [1,1,P['Runvx_fsw:wq'],P['Runvx_fsw:wq']],
-    [P['Runvx_m:wq'],P['Runvx_m:wq'],P['Runvx_m'],:wqP['Runvx_m:wq']]]).reshape((2,4,1,1))
+    [P['Runvx_m:wq'],P['Runvx_m:wq'],P['Runvx_m:wq'],P['Runvx_m:wq']]]).reshape((2,4,1,1))
   revx_t = ta.tarray([1980,2010,2018,2051],P['revx_2010']*np.array([1,1,1.5,1.5]))
   return {
     'tx_sit': tx_sit,
