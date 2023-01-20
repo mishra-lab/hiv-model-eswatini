@@ -2,7 +2,7 @@ import os
 import csv
 import numpy as np
 from datetime import datetime
-from PyPDF2 import PdfFileMerger as pdfm
+from PyPDF2 import PdfMerger as pdfm
 from utils.log import log
 
 therootpath = os.path.abspath(__file__).replace(os.path.join('code','utils','fio.py'),'')
