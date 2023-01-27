@@ -19,23 +19,23 @@ np.set_printoptions(suppress=True)
 
 beta = .0034 # Boily2009
 
-def Bb(R,A,a):
+def Bb(R,A,a,beta=.0034):
   return (1-(1-R*beta)**A)*(a) + (1-(1-beta)**A)*(1-a)
 
-def Bw(R,A,a):
+def Bw(R,A,a,beta=.0034):
   return 1 - ((1-R*beta)**(A*(a)) * (1-beta)**(A*(1-a)))
 
-def Bratio(R,A,a):
-  return Bw(R,A,a) / Bb(R,A,a)
+def Bratio(R,A,a,beta=.0034):
+  return Bw(R,A,a,beta) / Bb(R,A,a,beta)
 
-def maxBratio(R0=.5,Rmin=.001,Rmax=100,log=True):
+def maxBratio(R0=.5,Rmin=.001,Rmax=100,beta=.0034,log=True):
   x0 = [R0,100,.5] # initial conditions
   xb = [(Rmin,Rmax),(1,10000),(0,1)] # bounds
-  jfun = lambda x: -Bratio(*np.power(10,x)) # maximize ratio
+  jfun = lambda x: -Bratio(*np.power(10,x),beta) # maximize ratio
   M = minimize(jfun,np.log10(x0),method='L-BFGS-B',bounds=np.log10(xb))
   xopt = np.power(10,M.x)
   if log: print('f = {:.3f}\n  R = {:.2f}\n  A = {:0f}\n  a = {:3f}'.format(-M.fun,*xopt)+
-    '\nB_bph = {:.4f}\nB_wph = {:.4f}'.format(Bb(*xopt),Bw(*xopt)))
+    '\nB_bph = {:.4f}\nB_wph = {:.4f}'.format(Bb(*xopt,beta),Bw(*xopt,beta)))
   return (*xopt,-M.fun)
 
 def labs(x,y,t=None):
@@ -68,17 +68,25 @@ def cbar(name,lvls,pos=None,labels=None,**kwds):
     cb.ax.set_xticklabels(labels=np.round(labels,3))
 
 def maxplot():
-  x0 = 3*[np.nan]
   fh,ah = plt.subplots(1,1,figsize=(6,4))
-  cm = plt.cm.get_cmap('viridis',10)
+  cm = plt.cm.get_cmap('viridis',10); cf = '#cccccc'
   Rv = np.round(np.arange(-2,2.02,.02),3)
-  for R in Rv:
-    if abs(R) > 1e-3: x1 = maxBratio(*3*[10**R],log=False) # discontinuity bug
-    if R in [-2,-1,0,+1,+2]:
-      plt.semilogx(x1[1],x1[2],'+',zorder=3,color='red')
-      plt.text(x1[1],x1[2],re.sub('.0 $',' ','R = {} '.format(10**R)),va='bottom',ha='right',color='red')
-    plt.semilogx((x0[1],x1[1]),(x0[2],x1[2]),color=cm(2*(x1[3]-1)),lw=4)
-    x0 = x1
+  for f in (1,0.5,2):
+    x0 = 3*[np.nan]
+    for R in Rv:
+      if abs(R) > 5e-2: x1 = maxBratio(*3*[10**R],beta=f*beta,log=False) # discontinuity bug
+      if f == 1:
+        kwds = dict(color=cm(2*(x1[3]-1)),lw=4)
+        if R == 0:
+          plt.text(x1[1]*3,.5,'$\\frac{1}{2}\\beta$',ha='center',va='top',color=cf)
+          plt.text(x1[1]/3,.5,'$2\\beta$',ha='center',va='bottom',color=cf)
+        if R in [-2,-1,0,+1,+2]:
+          plt.semilogx(x1[1],x1[2],'+',zorder=3,color='red')
+          plt.text(x1[1],x1[2],re.sub('.0 $',' ','R = {} '.format(10**R)),va='bottom',ha='right',color='red')
+      else:
+        kwds = dict(color=cf)
+      plt.semilogx((x0[1],x1[1]),(x0[2],x1[2]),**kwds)
+      x0 = x1
   labs('A','$\\alpha$')
   plt.ylim((0,1))
   plt.xticks(*2*[[10,100,1000,10000]])
