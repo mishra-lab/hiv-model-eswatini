@@ -54,19 +54,6 @@ def contour(*args,**kwds):
   for c in h.collections:
     c.set_edgecolor('face')
 
-def cbar(name,lvls,pos=None,labels=None,**kwds):
-  if pos is not None:
-    kwds.update(cax=plt.gcf().add_axes(pos))
-  cb = plt.colorbar(
-    plt.cm.ScalarMappable(
-      cmap=plt.get_cmap(name,len(lvls)-1),
-      norm=mpl.colors.Normalize(lvls[0],lvls[-1])),
-    **kwds)
-  if cb.orientation == 'vertical':
-    cb.ax.set_yticklabels(labels=np.round(labels,3))
-  if cb.orientation == 'horizontal':
-    cb.ax.set_xticklabels(labels=np.round(labels,3))
-
 def maxplot():
   fh,ah = plt.subplots(1,1,figsize=(6,4))
   cm = plt.cm.get_cmap('viridis',10); cf = '#cccccc'
@@ -76,10 +63,10 @@ def maxplot():
     for R in Rv:
       if abs(R) > 5e-2: x1 = maxBratio(*3*[10**R],beta=f*beta,log=False) # discontinuity bug
       if f == 1:
-        kwds = dict(color=cm(2*(x1[3]-1)),lw=4)
+        kwds = dict(color=cm(2*(x1[3]-1)),lw=4) # (1.0, 1.5) -> (0, 1)
         if R == 0:
-          plt.text(x1[1]*3,.5,'$\\frac{1}{2}\\beta$',ha='center',va='top',color=cf)
-          plt.text(x1[1]/3,.5,'$2\\beta$',ha='center',va='bottom',color=cf)
+          plt.text(x1[1]*3,.5,'$\\frac{1}{2}\\beta$',ha='center',va='center',color=cf)
+          plt.text(x1[1]/3,.5,'$2\\beta$',ha='center',va='center',color=cf)
         if R in [-2,-1,0,+1,+2]:
           plt.semilogx(x1[1],x1[2],'+',zorder=3,color='red')
           plt.text(x1[1],x1[2],re.sub('.0 $',' ','R = {} '.format(10**R)),va='bottom',ha='right',color='red')
@@ -90,8 +77,7 @@ def maxplot():
   labs('A','$\\alpha$')
   plt.ylim((0,1))
   plt.xticks(*2*[[10,100,1000,10000]])
-  LR = np.linspace(1,1.5,10+1)
-  cbar('viridis',LR-1,orientation='vertical',ticks=LR[::2]-1,labels=LR[::2])
+  plt.colorbar(plt.cm.ScalarMappable(cmap=cm,norm=mpl.colors.Normalize(1,1.5)),extend='max')
   plt.tight_layout()
   plt.savefig('B.xph.max.pdf')
 
@@ -104,10 +90,10 @@ def surface():
   LR = np.linspace(1,1.5,10+1)
   Rticks = lambda: plt.yticks(ticks=[-2,-1,0,1],labels=[.01,.1,1,10])
   Aticks = lambda: plt.xticks(ticks=[0,1,2,3],labels=[1,10,100,1000])
-  plotBw = lambda M1,M2,MR,MA,Ma: contour(M1,M2,np.log10(Bw(10**MR,10**MA,Ma)),levels=LB,extend='both',cmap='inferno')
-  plotBb = lambda M1,M2,MR,MA,Ma: contour(M1,M2,np.log10(Bb(10**MR,10**MA,Ma)),levels=LB,extend='both',cmap='inferno')
-  plotRB = lambda M1,M2,MR,MA,Ma: contour(M1,M2,Bratio(10**MR,10**MA,Ma),      levels=LR,extend='both',cmap='viridis')
-  fh,ah = plt.subplots(4,3,figsize=(9,13))
+  plotBw = lambda M1,M2,MR,MA,Ma: contour(M1,M2,np.log10(Bw(10**MR,10**MA,Ma)),levels=LB,extend='min',cmap='inferno')
+  plotBb = lambda M1,M2,MR,MA,Ma: contour(M1,M2,np.log10(Bb(10**MR,10**MA,Ma)),levels=LB,extend='min',cmap='inferno')
+  plotRB = lambda M1,M2,MR,MA,Ma: contour(M1,M2,Bratio(10**MR,10**MA,Ma),      levels=LR,extend='max',cmap='viridis')
+  fh,ah = plt.subplots(5,3,figsize=(9,13),gridspec_kw=dict(height_ratios=[1,1,1,1,.1]))
   tex = dict(BR = '$B_{WPH}~/~B_{BPH}$',
     Bwph = '$B_{WPH} = 1 - \\prod_f~{(1 - R_f\\,\\beta)}^{\\,A\\,\\alpha_f}$',
     Bbph = '$B_{BPH} = 1 - \\sum_f~\\alpha_f\\,{(1 - R_f\\,\\beta)}^{\\,A}$')
@@ -129,13 +115,15 @@ def surface():
   # A vs a (R > 1)
   MA,Ma = np.meshgrid(A,a); MR = np.log10(5)
   sca(ah[3][0]); plotBw(MA,Ma,MR,MA,Ma); Aticks(); labs('$A$','$\\alpha,A~(R = 5)$\n\n$\\alpha$')
-  sca(ah[3][1]); plotBb(MA,Ma,MR,MA,Ma); Aticks(); labs('$A$',None)
-  sca(ah[3][2]); plotRB(MA,Ma,MR,MA,Ma); Aticks(); labs('$A$',None)
+  sca(ah[3][1]); plotBb(MA,Ma,MR,MA,Ma); Aticks(); labs('$A$',None); aB = plt.gca()
+  sca(ah[3][2]); plotRB(MA,Ma,MR,MA,Ma); Aticks(); labs('$A$',None); aR = plt.gca()
   # clean up
   plt.tight_layout()
-  fh.subplots_adjust(bottom=.13)
-  cbar('inferno',LB,orientation='horizontal',pos=[.12,.05,.54,.03],ticks=LB[::4],labels=10**LB[::4])
-  cbar('viridis',LR,orientation='horizontal',pos=[.74,.05,.22,.03],ticks=LR[::2],labels=LR[::2])
+  plt.sca(aR); plt.colorbar(orientation='horizontal',cax=ah[4][2]);
+  plt.sca(aB); plt.colorbar(orientation='horizontal',cax=ah[4][0],ticks=LB[::4])
+  ah[4][0].set_xticklabels(10**LB[::4])
+  pos = ah[4][0].get_position(); pos.x1 = ah[4][1].get_position().x1; ah[4][0].set_position(pos)
+  plt.delaxes(ah[4][1])
   plt.savefig('B.xph.surf.pdf')
   # plt.show()
 
