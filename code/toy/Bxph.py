@@ -81,7 +81,7 @@ def maxplot():
   plt.tight_layout()
   plt.savefig('B.xph.max.pdf')
 
-def surface():
+def surface_xph():
   Ni = 32
   R = np.linspace(-2,1,Ni)
   A = np.linspace( 0,3,Ni)
@@ -120,14 +120,43 @@ def surface():
   # clean up
   plt.tight_layout()
   plt.sca(aR); plt.colorbar(orientation='horizontal',cax=ah[4][2]);
-  plt.sca(aB); plt.colorbar(orientation='horizontal',cax=ah[4][0],ticks=LB[::4])
-  ah[4][0].set_xticklabels(10**LB[::4])
+  plt.sca(aB); plt.colorbar(orientation='horizontal',cax=ah[4][0],ticks=LB[::4]).ax.set_xticklabels(10**LB[::4])
   pos = ah[4][0].get_position(); pos.x1 = ah[4][1].get_position().x1; ah[4][0].set_position(pos)
   plt.delaxes(ah[4][1])
   plt.savefig('B.xph.surf.pdf')
   # plt.show()
 
+def surface_dur():
+  Ni = 32
+  A = np.logspace(0,2.25,Ni)
+  d = np.linspace(1,30,Ni)
+  MA,Md = np.meshgrid(A,d)
+  Ld = np.logspace(0,2,5).astype(int)
+  LB = np.linspace(0,100*beta,13).round(2)
+  LR = np.linspace(0,3,13)
+  def deco(xlab,ylab,title):
+    labs(xlab,ylab,title)
+    plt.xticks(ticks=np.log10(Ld),labels=Ld)
+    plt.yticks(ticks=[5,10,15,20,25,30])
+  Bf = 100 * Bb(1,MA,0) / MA
+  Bd = 100 * Bb(1,MA*Md,0) / (MA*Md)
+  RB = np.log2(Bf/Bd)
+  fh,ah = plt.subplots(2,3,figsize=(9,4),gridspec_kw=dict(height_ratios=[1,.1]))
+  sca(ah[0][0]); contour(np.log10(MA),Md,Bf,levels=LB,cmap='inferno')
+  sca(ah[0][1]); contour(np.log10(MA),Md,Bd,levels=LB,cmap='inferno'); aB = plt.gca()
+  sca(ah[0][2]); contour(np.log10(MA),Md,RB,levels=LR,extend='max',cmap='viridis'); aR = plt.gca()
+  sca(ah[0][0]); deco('$F$','$\\delta$','$\\beta_F = \\frac{1-{(1-\\beta)}^{F}}{F}$\n');
+  sca(ah[0][1]); deco('$F$','','$\\beta_A = \\frac{1-{(1-\\beta)}^{F\\delta}}{F\\delta}$\n');
+  sca(ah[0][2]); deco('$F$','','$\\beta_F \\,/\\, \\beta_A$\n');
+  plt.tight_layout()
+  plt.sca(aB); plt.colorbar(orientation='horizontal',cax=ah[1][0])
+  plt.sca(aR); plt.colorbar(orientation='horizontal',cax=ah[1][2],ticks=LR[::4]).ax.set_xticklabels(2**LR[::4])
+  pos = ah[1][0].get_position(); pos.x1 = ah[1][1].get_position().x1; ah[1][0].set_position(pos)
+  plt.delaxes(ah[1][1])
+  plt.savefig('dur.surf.pdf')
+
 # maxBratio(*3*[2])
 # maxBratio(*3*[.5])
 maxplot()
-surface()
+surface_xph()
+surface_dur()
