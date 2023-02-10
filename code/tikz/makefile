@@ -1,6 +1,7 @@
 figs =
 # figs += model.risk
 # figs += model.hiv
+# figs += model.hiv.p
 # figs += model.cascade
 # figs += model.wp.adj
 # figs += binom.dur
@@ -10,8 +11,12 @@ figs =
 # figs += dots.wph
 # figs += dots.bph
 # figs += binom.dots.xph
+# figs += foi.toy.freq
+# figs += foi.toy.pair
 # figs += esw.timeline
-# figs += tte
+# figs += durs.partner
+# figs += durs.pop
+# figs += durs.tte
 all:
 	for fig in $(figs); do \
 	  ./maketikz.sh $$fig ;\

@@ -14,17 +14,25 @@
 \definecolor{C1}{HTML}{0099CC}
 \definecolor{C2}{HTML}{CC0033}
 \definecolor{C3}{HTML}{FF9900}
+\definecolor{C4}{HTML}{00CC99}
 \usetikzlibrary{decorations.pathreplacing,fit,arrows.meta}
 \pgfdeclarelayer{back}
 \pgfdeclarelayer{fore}
 \pgfsetlayers{back,main,fore}
 \tikzset{
   > = latex,
-  state/.style = {
-    rectangle,
-    draw = #1,
+  lwd/.style = {
     line width = .2mm,
+  },
+  df/.style = {
+    draw = #1,
     fill = #1!20!white,
+    inner sep = 0pt,
+    lwd,
+  },
+  state/.style = {
+    df = #1,
+    rectangle,
     minimum width = 8em,
     minimum height = 3em,
     rounded corners = .5em,
@@ -52,9 +60,15 @@
   },
   axlab/.style = {
   },
-  event/.style = {
-  }
+  pair/.style = {
+    df = #1,
+    circle,
+    text = #1,
+    minimum width = 1.67em,
+    minimum height = 1.67em,
+  },
 }
+\newcommand{\num}[1]{\the\numexpr#1\relax}%
 \newcommand{\ifempty}[3]{\if\relax\detokenize{#1}\relax#2\else#3\fi}
 \newcommand{\tn}[1]{\textsuperscript{\rlap{\,#1}}}
 \newcommand{\xbeta}{.03}
