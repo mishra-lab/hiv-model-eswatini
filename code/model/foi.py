@@ -1,12 +1,13 @@
 import numpy as np
 from utils import _,deco,linear_comb
 from model import tol
-np.set_printoptions(linewidth=200)
 
 foi_modes = [
-  'lin', # no consideration of partnership duration
-  'bpd', # binomial per-partnership-duration
-  'bpy', # binomial per-partnership-year
+  'lin', # linear
+  'rd', # rate duration
+  'ry', # rate year
+  'pd', # proportion duration
+  'py', # proportion year
   'base', # proposed model (partnership exclusion)
 ]
 
@@ -47,62 +48,65 @@ def get_mix(XC,P):
 #@profile
 def get_apply_inc(dX,X,t,P):
   # return.shape = (p:4, s:2, i:4, s':2, i':4)
-  # NOTE: if foi_mode in ['lin','base','bpd','bpy']: return absolute infections
-  #       if foi_mode in [TODO]: return *probability* of infection (aggr must be deferred)
-  # define partner numbers (C) / rates (Q) for mixing, + total acts (A) for binomial models
-  if P['foi_mode'] in ['base']:
-    C_psik = P['C_psi'] - P['aC_pk']
-  elif P['foi_mode'] in ['lin']:
-    C_psik = P['C_psi'] # Q
-  elif P['foi_mode'] in ['bpd']:
-    C_psik = P['C_psi'] / P['dur_p'][:,_,_,_] # Q
-    A_ap = P['F_ap'] * P['dur_p'][_,:]
-  elif P['foi_mode'] in ['bpy']:
-    dur_p_1 = np.minimum(P['dur_p'],1)
-    C_psik = P['C_psi'] / dur_p_1[:,_,_,_] # Q
-    A_ap = P['F_ap'] * dur_p_1[_,:]
-  # compute the mixing
+  # NOTE: if foi_mode in ['base','li','rd','ry']: return *absolute* infections (not per susceptible)
+  #       if foi_mode in ['pd','py']: return *probability* of infection (aggr must be deferred)
+  # partner numbers (K) or rates (Q)
+  if P['foi_mode'] in ['base']: # K
+    C_psik = P['K_psi'] - P['aK_pk']
+  elif P['foi_mode'] in ['lin']: # K
+    C_psik = P['K_psi']
+  elif P['foi_mode'] in ['rd','pd']: # Q
+    C_psik = P['K_psi'] / P['dur_p'][:,_,_,_]
+    A_ap = P['F_ap'] * P['dur_p']
+  elif P['foi_mode'] in ['ry','py']: # Q_1
+    C_psik = P['K_psi'] / P['dur_p_1'][:,_,_,_]
+    A_ap = P['F_ap'] * P['dur_p_1']
+  # compute mixing
   XC = (X[_,:,:,:,:,:] * C_psik[:,:,:,:,_,_]).sum(axis=3)
   XC[XC<0] = 0 # TODO: double check this is safe
   SXC = XC.sum(axis=(3,4))  # shape = (p:4, s:2, i:4)
   PXC_hc = XC / (SXC[:,:,:,_,_] + tol/10) # shape = (p:4, s:2, i:4, h:6, c:5)
-  mix = get_mix(SXC,P) * PXC_hc[:,:,:,0,0,_,_] * P['mix_mask']
+  # note: PXC_hc = PX_hc, i.e. X / X.sum(axis=(2,3)), unless foi_mode = 'base'
+  mix = get_mix(SXC,P) * P['mix_mask']
   # compute per-act probability
   beta = get_beta(P,t) # shape: (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-  # force of infection: cases
+  # compute & apply force of infection
   if P['foi_mode'] in ['base']:
     Fbeta = (beta * P['F_ap'][:,:,_,_,_,_,_,_]).sum(axis=0)
-    inc = Fbeta * mix[:,:,:,:,:,_,_] * PXC_hc[:,_,_,:,:,:,:]
+    inc = mix[:,:,:,:,:,_,_] * PXC_hc[:,:,:,0,0,_,_,_,_] * Fbeta * PXC_hc[:,_,_,:,:,:,:]
     dXi = inc.sum(axis=(3,4,5,6)) # acquisition: (p:4, s:2, i:4)
     dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
     dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
     dXi = inc.sum(axis=(1,2)) # transmission: (p:4, s':2, i':4, h':6, c':5)
     dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
     dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
-    dXi = X[:,:,1:,:,:] * P['pcr_p'][_,_,:,_,_] # new partnerships: (s:2, i:4, k:4, h:6, c:5)
+    dXi = X[:,:,1:,:,:] / P['dur_p'][_,_,:,_,_] # new partnerships: (s:2, i:4, k:4, h:6, c:5)
     dX[:,:,1:,:,:] -= dXi
     dX[:,:,0 ,:,:] += dXi.sum(axis=2)
     return inc.sum(axis=(5,6))
   elif P['foi_mode'] in ['lin']:
-    raise Exception('CHECK ME')
     Fbeta = (beta * P['F_ap'][:,:,_,_,_,_,_,_]).sum(axis=0)
-    inc = (Fbeta * mix[:,:,:,:,:,_,_] * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
+    inc = mix * PXC_hc[:,:,:,0,0,_,_] * (Fbeta * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
     dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
-  elif P['foi_mode'] in ['bpd','bpy']:
-    raise Exception('CHECK ME')
-    B_p = 1 - np.prod((1 - beta) ** A_ap[:,:,_,_,_,_,_,_], axis=0)
-    inc = (B_p * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6)) * mix
+  elif P['foi_mode'] in ['rd','ry']:
+    B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
+    inc = mix * PXC_hc[:,:,:,0,0,_,_] * (B_p * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
     dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
+  elif P['foi_mode'] in ['pd','py']:
+    B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
+    QA = mix[:,:,:,:,:,_,_] / X.sum(axis=(2,3,4))[_,:,:,_,_,_,_]
+    inc = 1 - ((1 - B_p * PXC_hc[:,_,_,:,:,:,:]) ** QA).prod(axis=(5,6))
+    dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4),Xsus=X[:,:,0,0,0])
   # all non-base cases
   dX[:,:,0,0,0] -= dXi
   dX[:,:,0,1,0] += dXi
   return inc
 
 #@profile
-def aggr_inc(inc,foi_mode,axis,Xsus=1.,keepdims=False):
+def aggr_inc(inc,foi_mode,axis,Xsus=None,Xinf=None,keepdims=False):
   # returns absolute infections after appropriately aggregating "inc"
-  # Xsus only needed if 'foi_mode' in ['bmy']
-  if foi_mode in ['lin','base','bpd','bpy']:
+  # Xsus only needed if 'foi_mode' in ['pd','py']
+  if foi_mode in ['base','lin','rd','ry']:
     return inc.sum(axis=axis,keepdims=keepdims)
-  if foi_mode in []: # TODO
-    return (1 - np.prod(1 - inc,axis=axis,keepdims=keepdims)) * Xsus
+  if foi_mode in ['pd','py']:
+    return (1 - (1 - inc).prod(axis=axis,keepdims=keepdims)) * Xsus

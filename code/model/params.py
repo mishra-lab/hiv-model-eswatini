@@ -18,7 +18,7 @@ def get_all(P=None,seed=None,**kwds):
   P.update(get_birth_death(P))
   # P.update(get_turnover_old(P))
   P.update(get_turnover(P))
-  P.update(get_C(P))
+  P.update(get_K(P))
   P.update(get_mix(P))
   P.update(get_beta_a(P))
   P.update(get_condom(P))
@@ -94,7 +94,7 @@ def def_checkers():
 
 def def_sample_distrs():
   return {
-  # PX
+  # pop
   't0_hiv':               stats.uniform(l=1980,h=1985),
   'PX_w_fsw':             stats.betabin(p=.0288,n=121),
   'PX_w_h':               stats.betabin(p=.1778,n=66),
@@ -106,24 +106,24 @@ def def_sample_distrs():
   'Pturn_fsw_m:l':        stats.betabin(p=.724,n=18),
   'Pturn_cli_m:l':        stats.betabin(p=.602,n=7),
   'growth_2050':          stats.uniform(l=.007,h=.015),
-  # C
-  'C_msp_xl':             stats.betabin(p=.370,n=57),
-  'C_cas_xl':             stats.betabin(p=.366,n=28),
-  'C_cas_wm':             stats.gamma(m=1.575,sd=0.204),
+  # partners
+  'C12m_msp_xl':          stats.betabin(p=.370,n=57),
+  'C12m_cas_xl':          stats.betabin(p=.366,n=28),
+  'C12m_cas_wm':          stats.gamma(m=1.575,sd=0.204),
   'RC_cas_cli:wm':        stats.uniform(l=.25,h=1),
-  'C_swo_fsw_l':          stats.gamma(m=49,sd=10.8),
-  'C_swr_fsw_l':          stats.gamma(m=7.24,sd=2.34),
+  'C1m_swo_fsw_l':        stats.gamma(m=4.06,sd=0.897),
+  'C1m_swr_fsw_l':        stats.gamma(m=6.93,sd=1.065),
   'RC_swo_fsw_h:l':       stats.gamma(m=2.02,sd=0.230),
   'RC_swr_fsw_h:l':       stats.gamma(m=1.49,sd=0.102),
-  'CF_swx_cli':           stats.gamma(m=59.3,sd=14.1),
-  'RCF_swx_cli_h:l':      stats.gamma(m=2.03,sd=.230),
-  # F
+  'KF_swx_cli':           stats.gamma(m=59.3,sd=14.1),
+  'RKF_swx_cli_h:l':      stats.gamma(m=2.03,sd=0.230),
+  # sex
   'F_msp':                stats.gamma(m=77.3,sd=33.7),
   'RF_cas:msp':           stats.uniform(l=.25,h=1),
-  'qdur_msp':             stats.uniform(l=0,h=1),
+  'dur_msp':              stats.uniform(l=14.5,h=18.5),
   'dur_cas':              stats.gamma(m=.743,sd=0.324),
   'dur_swr':              stats.gamma(m=1.125,sd=0.386),
-  'F_swr':                stats.uniform(l=6,h=36),
+  'F_swr':                stats.uniform(l=12,h=36),
   'PF_ai_mcx':            stats.gamma(m=.0573,sd=.0423),
   'PF_ai_swx':            stats.gamma(m=.0920,sd=.0769),
   # mixing
@@ -145,7 +145,7 @@ def def_sample_distrs():
   'PF_condom_swr_2014':   stats.betabin(p=.759,n= 11),
   'PF_circum_2050':       stats.betabin(p=.724,n= 18),
   # beta
-  'beta_0':               stats.gamma(m=.00093,sd=.00026),
+  'beta_0':               stats.gamma(m=.00131,sd=.00052),
   'Rbeta_acute':          stats.gamma(m=6.015,sd=3.653),
   'Rbeta_350':            stats.gamma(m=1.586,sd=0.1532),
   'Rbeta_200':            stats.gamma(m=8.203,sd=2.182),
@@ -206,7 +206,7 @@ def get_PX(P): # [OK]
   PX0_c  = np.array([1,0,0,0,0]).reshape([1,1,1,1,5])
   PX_h_hiv = np.array([0,5,65,30,0,0])*1e-6 # REF: assume
   PX_h_hiv[0] = 1 - PX_h_hiv.sum()
-  P = get_PX_fsw_cli(P)
+  P = get_PX_swx(P)
   PX_si = np.zeros((2,4))
   # FSW
   PX_si[0,2] = P['PX_fsw'] * (1-P['PX_fsw_h'])
@@ -229,16 +229,18 @@ def get_PX(P): # [OK]
     'PX_h_hiv': PX_h_hiv,
   }
 
-def get_PX_fsw_cli(P): # [OK]
+def get_PX_swx(P):
   P['PX_w']     = .52 # REF: WorldBank
   P['PX_fsw_h'] = .2  # REF: assume
   P['PX_cli_h'] = .2  # REF: assume
-  P['F_swo']    = 1   # c.f. get_f()
+  P['F_swo']    = 12  # see get_F()
   P['PX_fsw']   = P['PX_w'] * P['PX_w_fsw']
-  P['CF_swo_total'] = P['PX_fsw'] * P['F_swo'] * P['C_swo_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_swo_fsw_h:l'],1)
-  P['CF_swr_total'] = P['PX_fsw'] * P['F_swr'] * P['C_swr_fsw_l'] * linear_comb(P['PX_fsw_h'],P['RC_swr_fsw_h:l'],1)
-  P['PX_cli'] = (P['CF_swo_total'] + P['CF_swr_total']) / P['CF_swx_cli']
-  # NOTE: CF_swx_cli is true client average, not CF_swx_cli_l; see get_C()
+  P['XKF_swo']  = P['PX_fsw'] * P['C2K_p'][2] * P['C1m_swo_fsw_l'] * P['F_swo'] * \
+    linear_comb(P['PX_fsw_h'],P['RC_swo_fsw_h:l'],1)
+  P['XKF_swr']  = P['PX_fsw'] * P['C2K_p'][3] * P['C1m_swr_fsw_l'] * P['F_swr'] * \
+    linear_comb(P['PX_fsw_h'],P['RC_swr_fsw_h:l'],1)
+  P['PX_cli'] = (P['XKF_swo'] + P['XKF_swr']) / P['KF_swx_cli']
+  # NOTE: KF_swx_cli is true client average, not KF_swx_cli_l; see get_C()
   return P
 
 def get_birth_death(P): # [OK]
@@ -302,7 +304,7 @@ def solve_turnover(P,t):
       # raise Exception('Cannot solve turnover (s={}) error: {}, seed: {}'.format(s,err,P['seed']))
   return v,P['PXe_si'],P['turn_sii']
 
-def get_turnover_old(P): # [OK]
+def get_turnover_old(P): # TODO: remove
   # turn_sii.shape = (s:2, i:4, i':4)
   t_fsw_l = 1/P['dur_fsw_l'] - P['death']
   t_fsw_h = 1/P['dur_fsw_h'] - P['death']
@@ -369,65 +371,71 @@ def get_F(P): # [OK]
   F_p   = np.array([ P['F_msp'], P['F_msp']*P['RF_cas:msp'], 12, P['F_swr'] ])
   PF_ai = np.array([ P['PF_ai_mcx'],P['PF_ai_mcx'],P['PF_ai_swx'],P['PF_ai_swx'] ])
   F_ap  = F_p.reshape([1,4]) * np.array([1-PF_ai,PF_ai])
-  dur_msp = 14.5 + 4.0 * P['qdur_msp']    # [14.5, 18.5]
-  pcr_msp = .01 + .01 * (1-P['qdur_msp']) # [.01, .02] (flip direction)
-  dur_p = np.array([ dur_msp,   P['dur_cas'], 1/12,   P['dur_swr'] ])
-  pcr_p = np.array([ pcr_msp, 1/P['dur_cas'],   12, 1/P['dur_swr'] ])
+  # pcr_msp # TODO: thesis update
+  dur_p = np.array([ P['dur_msp'], P['dur_cas'], 1/12, P['dur_swr'] ])
+  dur_p_1 = np.minimum(dur_p,1)
+  C2K_p = dur_p / (dur_p + np.array([1, 1, 1/12, 1/12]))
   return {
     'F_ap': F_ap,
     'dur_p': dur_p,
-    'pcr_p': pcr_p,
+    'dur_p_1': dur_p_1,
+    'C2K_p': C2K_p,
   }
 
 def check_F(P):
+  C2K_swo = 1/2
+  C2K_swr = P['dur_swr'] / (P['dur_swr'] + 1/12)
   return (
-    P['F_swr']*P['C_swr_fsw_l']*P['RC_swr_fsw_h:l'] + P['C_swo_fsw_l']*P['RC_swo_fsw_h:l'] < 2*365 and
+    P['C1m_swo_fsw_l'] * C2K_swo * P['RC_swo_fsw_h:l'] * 12 + \
+    P['C1m_swr_fsw_l'] * C2K_swr * P['RC_swr_fsw_h:l'] * P['F_swr'] < 2*365 and
     P['PF_ai_swx'] <= 0.5 and
     P['PF_ai_mcx'] <= P['PF_ai_swx']
   )
 
-def get_C(P): # [OK]
+def get_K(P): # TODO C -> Q
   # .shape = (p:4, s:2, i:4)
   PX_si = P['PX_si']
   F = np.squeeze(P['F_ap'].sum(axis=0))
   # dimensions: p,s,i
-  C_psi = np.zeros((4,2,4,1))
+  K_psi = np.zeros((4,2,4,1))
   # main / spousal
-  C_psi[ 0, 0, 0] = P['C_msp_xl']
-  C_psi[ 0, 0, 1] = P['C_msp_xl']
-  C_psi[ 0, 0, 2] = 0.5
-  C_psi[ 0, 0, 3] = 0.5
-  C_psi[ 0, 1, 0] = P['C_msp_xl']
-  C_psi[ 0, 1, 2] = P['C_msp_xl'] * .5
-  C_psi[ 0, 1, 3] = P['C_msp_xl'] * .5
-  C_psi[ 0, 1, 1] = (C_psi[0,0,:] * PX_si[0,:,_] - C_psi[0,1,:] * PX_si[1,:,_]).sum() / PX_si[1,1]
+  K_psi[0,0,0] = P['C12m_msp_xl']
+  K_psi[0,0,1] = P['C12m_msp_xl']
+  K_psi[0,0,2] = 0.5
+  K_psi[0,0,3] = 0.5
+  K_psi[0,1,0] = P['C12m_msp_xl']
+  K_psi[0,1,2] = P['C12m_msp_xl'] * .5
+  K_psi[0,1,3] = P['C12m_msp_xl'] * .5
+  K_psi[0,1,1] = (K_psi[0,0,:] * PX_si[0,:,_] - K_psi[0,1,:] * PX_si[1,:,_]).sum() / PX_si[1,1]
+  K_psi[0] *= P['C2K_p'][0]
   # casual
-  C_psi[ 1, 0, 0] = P['C_cas_xl']
-  C_psi[ 1, 0, 1] = P['C_cas_wm']
-  C_psi[ 1, 0, 2] = 0.5
-  C_psi[ 1, 0, 3] = 1.0
-  C_psi[ 1, 1, 0] = P['C_cas_xl']
-  C_psi[ 1, 1, 2] = P['C_cas_wm'] * P['RC_cas_cli:wm']
-  C_psi[ 1, 1, 3] = P['C_cas_wm'] * P['RC_cas_cli:wm']
-  C_psi[ 1, 1, 1] = (C_psi[1,0,:] * PX_si[1,:,_] - C_psi[1,1,:] * PX_si[1,:,_]).sum() / PX_si[1,1]
+  K_psi[1,0,0] = P['C12m_cas_xl']
+  K_psi[1,0,1] = P['C12m_cas_wm']
+  K_psi[1,0,2] = 0.5
+  K_psi[1,0,3] = 1.0
+  K_psi[1,1,0] = P['C12m_cas_xl']
+  K_psi[1,1,2] = P['C12m_cas_wm'] * P['RC_cas_cli:wm']
+  K_psi[1,1,3] = P['C12m_cas_wm'] * P['RC_cas_cli:wm']
+  K_psi[1,1,1] = (K_psi[1,0,:] * PX_si[1,:,_] - K_psi[1,1,:] * PX_si[1,:,_]).sum() / PX_si[1,1]
+  K_psi[1] *= P['C2K_p'][1]
   # swx: fsw
-  C_psi[ 2, 0, 2] = P['C_swo_fsw_l']
-  C_psi[ 2, 0, 3] = P['C_swo_fsw_l'] * P['RC_swo_fsw_h:l']
-  C_psi[ 3, 0, 2] = P['C_swr_fsw_l']
-  C_psi[ 3, 0, 3] = P['C_swr_fsw_l'] * P['RC_swr_fsw_h:l']
+  K_psi[2,0,2] = P['C2K_p'][2] * P['C1m_swo_fsw_l']
+  K_psi[2,0,3] = P['C2K_p'][2] * P['C1m_swo_fsw_l'] * P['RC_swo_fsw_h:l']
+  K_psi[3,0,2] = P['C2K_p'][3] * P['C1m_swr_fsw_l']
+  K_psi[3,0,3] = P['C2K_p'][3] * P['C1m_swr_fsw_l'] * P['RC_swr_fsw_h:l']
   # swx: clients
-  wPX = (PX_si[1,2] + P['RCF_swx_cli_h:l'] * PX_si[1,3])
-  C_psi[ 2, 1, 2] = P['CF_swo_total'] / F[2] / wPX
-  C_psi[ 2, 1, 3] = P['CF_swo_total'] / F[2] / wPX * P['RCF_swx_cli_h:l']
-  C_psi[ 3, 1, 2] = P['CF_swr_total'] / F[3] / wPX
-  C_psi[ 3, 1, 3] = P['CF_swr_total'] / F[3] / wPX * P['RCF_swx_cli_h:l']
-  FC_psi = P['F_ap'].sum(axis=0)[:,_,_] * C_psi.sum(axis=3)
-  aC_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape((4,1,1,5))
-  aC_pk = aC_pk * (C_psi > 0)
+  wPX = (PX_si[1,2] + P['RKF_swx_cli_h:l'] * PX_si[1,3])
+  K_psi[2,1,2] = P['XKF_swo'] / F[2] / wPX
+  K_psi[2,1,3] = P['XKF_swo'] / F[2] / wPX * P['RKF_swx_cli_h:l']
+  K_psi[3,1,2] = P['XKF_swr'] / F[3] / wPX
+  K_psi[3,1,3] = P['XKF_swr'] / F[3] / wPX * P['RKF_swx_cli_h:l']
+  KF_psi = K_psi.sum(axis=3) * F[:,_,_]
+  aK_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape((4,1,1,5))
+  aK_pk = aK_pk * (K_psi > 0)
   return {
-    'C_psi': C_psi,
-    'FC_psi': FC_psi,
-    'aC_pk': aC_pk,
+    'K_psi': K_psi,
+    'KF_psi': KF_psi,
+    'aK_pk': aK_pk,
   }
 
 def get_condom(P): # [OK]

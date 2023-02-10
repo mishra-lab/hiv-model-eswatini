@@ -100,7 +100,7 @@ def plot_distr(distrx,m=None,q=None,p=p2,name=''):
 def beta():
   section('beta')
   fit_distr(ss.gamma,m=.00072,q=(.0005,.00097),sd0=.0001,name='beta_0') # Boily2009
-  fit_distr(ss.gamma,m=.0009,q=(.0005,.0015),sd0=.0001,name='beta_0_adj') # Boily2009
+  fit_distr(ss.gamma,m=.0013,q=(.0005,.0025),sd0=.0005,name='beta_0_adj') # Boily2009
   fit_distr(ss.gamma,m=5.3,q=(1,5.3,15),p=p3,pwr=1,name='Rbeta_acute') # Bellan2015 (CI adj: 15 <- 56)
   fit_distr(ss.gamma,m=.1417,q=(.046,.1417,.5),p=p3,pwr=1,sd0=.1,name='dur_acute') # Bellan2015 - years (CI adj: )
   fit_distr(ss.gamma,m=1.6,q=(1.3,1.9),name='Rbeta_350') # Wawer2005, Boily2009, Donnell2010
@@ -181,12 +181,13 @@ def CF():
   fit_distr(ss.gamma,m=1.5,q=(1.2,2),name='C_cas_wm') # assume
   print_distr(ss.uniform,x=[.25,1],name='RC_cas_cli:wm') # assume
   fit_distr(ss.gamma,m=8.4,q=(6,11),name='CF_swr_l') # (JK)
-  fit_distr(ss.gamma,m=4.1*12,q=(2.5*12,6.0*12),name='C_swo_fsw_l') # (JK) Baral2014,EswKP2014
+  fit_distr(ss.gamma,m=4.1,q=(2.5,6.0),name='C_swo_fsw_l') # (JK) Baral2014,EswKP2014
   fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RC_swo_fsw_h:l') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=7,q=(3.4,7.0,12.5),p=p3,name='C_swr_fsw_l') # (JK) Baral2014,EswKP2014
+  fit_distr(ss.gamma,m=8.4,q=(6.0,11.0),name='C_swr_fsw_l') # (JK) Baral2014,EswKP2014
+  fit_distr(ss.gamma,m=8.4*5/6,q=(6.0*5/6,11.0*5/6),name='C_swr_fsw_l_adj') # (JK) Baral2014,EswKP2014
   fit_distr(ss.gamma,m=1.5,q=(1.3,1.7),name='RC_swr_fsw_h:l') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=60,q=(35,90),name='CF_swx_cli') # assume
-  fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RCF_swx_cli_h:l') # assume
+  fit_distr(ss.gamma,m=60,q=(35,90),name='KF_swx_cli') # assume
+  fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RKF_swx_cli_h:l') # assume
   section('sex frequency')
   fit_distr(ss.gamma,m=52*1.5,q=(.5*52,3*52),name='F_mcx') # Shisana2005,Delva2013
   print_distr(ss.uniform,x=[12,48],name='F_swr') # assume
