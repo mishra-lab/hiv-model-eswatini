@@ -6,7 +6,7 @@ import model.scenario
 from model.scenario import calibrate,foi,art
 
 parallel.cpus = 80
-model.scenario.uid = '2023-01-20'
+model.scenario.uid = '2023-02-22'
 # model.scenario.N['sam'] = 1000 # DEBUG
 
 # calibrate ---------------------------
