@@ -10,7 +10,7 @@ N = dict(
   batch  = 10,     # how many batches
 )
 tvec = dict(
-  cal  = system.get_t(tf=2021),
+  cal  = system.get_t(tf=2025),
   main = system.get_t(tf=2050),
   plot = system.get_t(tf=2050,dt=1),
   outs = system.get_t(tf=2050,t0=2000,dt=5),
