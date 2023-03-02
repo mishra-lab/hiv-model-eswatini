@@ -3,7 +3,7 @@ import sys
 import model.scenario
 from model.scenario import calibrate,foi,art
 
-model.scenario.uid = '2023-02-22'
+model.scenario.uid = '2023-03-03'
 # model.scenario.N['sam'] = 1000 # DEBUG
 
 # calibrate ---------------------------
