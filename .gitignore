@@ -2,19 +2,20 @@
 .b/
 .coa/
 .debug/
+.private/
 .old/
 .raw/
 .slurm/
 .sub/
 .tmp/
 
-# python
+# code
 __pycache__/
 npy/
 *.pyc
-
-# R
+pyplots*
 Rplots*
+code/tikz/main.pdf
 
 # tex
 *.aux
