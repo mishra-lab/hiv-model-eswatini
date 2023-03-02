@@ -133,7 +133,7 @@ def surface_dur():
   MA,Md = np.meshgrid(A,d)
   Ld = np.logspace(0,2,5).astype(int)
   LB = np.linspace(0,100*beta,13).round(2)
-  LR = np.linspace(0,3,13)
+  LR = np.linspace(0,3,7)
   def deco(xlab,ylab,title):
     labs(xlab,ylab,title)
     plt.xticks(ticks=np.log10(Ld),labels=Ld)
@@ -145,12 +145,12 @@ def surface_dur():
   sca(ah[0][0]); contour(np.log10(MA),Md,Bf,levels=LB,cmap='inferno')
   sca(ah[0][1]); contour(np.log10(MA),Md,Bd,levels=LB,cmap='inferno'); aB = plt.gca()
   sca(ah[0][2]); contour(np.log10(MA),Md,RB,levels=LR,extend='max',cmap='viridis'); aR = plt.gca()
-  sca(ah[0][0]); deco('$F$','$\\delta$','$\\beta_F = \\frac{1-{(1-\\beta)}^{F}}{F}$\n');
-  sca(ah[0][1]); deco('$F$','','$\\beta_A = \\frac{1-{(1-\\beta)}^{F\\delta}}{F\\delta}$\n');
-  sca(ah[0][2]); deco('$F$','','$\\beta_F \\,/\\, \\beta_A$\n');
+  sca(ah[0][0]); deco('$F$','$\\delta$','$\\beta^\\prime_1 = \\frac{1-{(1-\\beta)}^{F}}{F}$\n');
+  sca(ah[0][1]); deco('$F$','','$\\beta^\\prime_\\delta = \\frac{1-{(1-\\beta)}^{F\\delta}}{F\\delta}$\n');
+  sca(ah[0][2]); deco('$F$','','$\\beta^\\prime_1 \\,/\\, \\beta^\\prime_\\delta$\n');
   plt.tight_layout()
   plt.sca(aB); plt.colorbar(orientation='horizontal',cax=ah[1][0])
-  plt.sca(aR); plt.colorbar(orientation='horizontal',cax=ah[1][2],ticks=LR[::4]).ax.set_xticklabels(2**LR[::4])
+  plt.sca(aR); plt.colorbar(orientation='horizontal',cax=ah[1][2],ticks=LR[::2]).ax.set_xticklabels(2**LR[::2])
   pos = ah[1][0].get_position(); pos.x1 = ah[1][1].get_position().x1; ah[1][0].set_position(pos)
   plt.delaxes(ah[1][1])
   plt.savefig('dur.surf.pdf')
