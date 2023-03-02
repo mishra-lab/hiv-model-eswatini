@@ -6,12 +6,13 @@ import model.scenario
 from model.scenario import calibrate,foi,art
 
 parallel.cpus = 80
-model.scenario.uid = '2023-02-22'
+model.scenario.uid = '2023-03-03'
 # model.scenario.N['sam'] = 1000 # DEBUG
 
 # calibrate ---------------------------
 # calibrate.run(int(sys.argv[1]))
 # calibrate.merge()
+# calibrate.rerun()
 # foi ---------------------------------
 # calibrate.case =
 # calibrate.run(int(sys.argv[1]),foi_mode=calibrate.case)
