@@ -1,6 +1,6 @@
 import numpy as np
 from utils import log,fio
-from model import system,params,target,fit
+from model import system,params,target,fit,out
 from model.scenario import N,tvec,fname,batch_select
 
 case = 'base'
@@ -36,3 +36,11 @@ def merge():
     for ll in fio.load_csv(fname('csv','sam','ll',case=case,b=b),fmt='dict'):
       P0s[seeds.index(int(ll['seed']))].update(ll=ll['ll'])
   fio.save_csv(fname('csv','sam','Ps',case=case),P0s)
+
+def rerun():
+  log(0,'scenario.calibrate.rerun')
+  T = target.get_all_esw()
+  Ps = fio.load(fname('npy','fit','Ps',case=case))
+  Rs = system.run_n(Ps,t=tvec['main'])
+  fit.plot_sets(t=tvec['main'],Rs=Rs,T=T,fname=fname('fig','fit','{}',case=case),debug=False)
+  fio.save_csv(fname('csv','fit','wiw',case=case),out.wiw(Rs,tvec['main'],tvec['plot']))

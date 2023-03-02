@@ -9,6 +9,7 @@ model.scenario.uid = '2023-02-22'
 # calibrate ---------------------------
 # calibrate.run(int(sys.argv[1]))
 # calibrate.merge()
+# calibrate.rerun()
 # foi ---------------------------------
 # calibrate.case =
 # calibrate.run(int(sys.argv[1]),foi_mode=calibrate.case)
