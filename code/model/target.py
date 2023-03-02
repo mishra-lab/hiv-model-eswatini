@@ -36,6 +36,7 @@ class Target():
 
   @deco.nowarn
   def ll(self,x,interval=None):
+    # TODO: describe weights in thesis
     if self.weight:
       if interval:
         xlo,xhi = self.dist.interval(interval)
@@ -94,7 +95,7 @@ def get_prevalence_esw():
   return [
     # TODO - check
     # prevalence ratios
-    Target(stats.ratio_binom(p1=.605,n1=127,p2=.388,n2=6015),'prevalence',dict(t=2011.0,s=0,i=(2,3)),dict(t=2011.0,s=0,i=(0,1,2,3)),vsop='1/2',weight=2), # FSW vs W
+    Target(stats.ratio_binom(p1=.605,n1=127,p2=.388,n2=6015),'prevalence',dict(t=2011.0,s=0,i=(2,3)),dict(t=2011.0,s=0,i=(0,1,2,3)),vsop='1/2',weight=10), # FSW vs W
     Target(stats.gamma(m=1.46,sd=.0842),'prevalence',dict(t=2011.0,s=0,i=3),dict(t=2011.0,s=0,i=2),vsop='1/2',weight=10), # FSW.H vs FSW.L JK
     # W.2+ vs W.0-1 & M.2+ vs M.0-1 JK
     Target(stats.invgauss(m=2.01,sd=.129,z=1.76),'prevalence',dict(t=2006.5,s=0,i=(1,2,3)),dict(t=2006.5,s=0,i=0),vsop='1/2'), # SDHS20067 (JK)
