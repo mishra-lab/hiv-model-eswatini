@@ -5,22 +5,22 @@ from model import system,foi,slicers
 # TODO: integrate slicers fully?
 
 labels = {
-  'NX':         'Population Size, Absolute (\'000s)',
-  'Psi':        'Population Size, Relative',
+  'NX':         'Population size, absolute (\'000s)',
+  'Psi':        'Population size, relative',
   'Ph':         'Proportion of HIV+',
   'prevalence': 'Prevalence',
   'incidence':  'Incidence (per person-year)',
-  'cuminfect':  'Cumulative Infections (\'000s)',
+  'cuminfect':  'Cumulative infections (\'000s)',
   'diagnosed':  'Diagnosed among HIV+',
   'treated_u':  'Treated among HIV+',
-  'treated_c':  'Treated among Diagnosed',
-  'vls_u':      'Virally Suppressed among HIV+',
-  'vls_c':      'Virally Suppressed among Treated',
+  'treated_c':  'Treated among diagnosed',
+  'vls_u':      'Virally suppressed among HIV+',
+  'vls_c':      'Virally suppressed among treated',
   'dx_rate':    'Diagnosis rate (per person-year)',
   'tx_rate':    'Treatment rate (per person-year)',
-  'condom':     'Condom Use (Proportion of Acts)',
-  'circum':     'Proportion of Men Circumcised',
-  'gud':        'Relative GUD Prevalence',
+  'condom':     'Condom use (proportion of acts)',
+  'circum':     'Proportion of men circumcised',
+  'gud':        'Relative GUD prevalence',
 }
 
 def by_name(name):

@@ -48,8 +48,8 @@ slicers = {Si.key:Si for Si in [
   Slicer('ux',    dict(c=(2)),              (.00,.60,.60),'Unlinked'),
   Slicer('tx',    dict(c=(3)),              (.40,.80,.00),'On ART'),
   Slicer('vx',    dict(c=(4)),              (.80,.80,.00),'Virally Suppressed'),
-  Slicer('msp',   dict(p=(0)),              (.30,.00,.40),'Main / Spousal'),
-  Slicer('cas',   dict(p=(1)),              (.50,.15,.30),'Casual'),
-  Slicer('swo',   dict(p=(2)),              (.70,.30,.20),'Sex Work Occasional'),
-  Slicer('swr',   dict(p=(3)),              (.90,.45,.10),'Sex Work Regular'),
+  Slicer('msp',   dict(p=(0)),              (.26,.04,.41),'Main / Spousal'),
+  Slicer('cas',   dict(p=(1)),              (.58,.15,.40),'Casual'),
+  Slicer('swo',   dict(p=(2)),              (.87,.32,.23),'Sex Work Occasional'),
+  Slicer('swr',   dict(p=(3)),              (.99,.65,.04),'Sex Work Regular'),
 ]}
