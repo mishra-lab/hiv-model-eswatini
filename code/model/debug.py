@@ -9,4 +9,4 @@ N = 70
 T  = target.get_all_esw()
 Ps = params.get_n_all(N,seeds=range(N))
 Rs = system.run_n(Ps,t,T,para=True)
-fit.plot_debug(t,Rs,T,tops=(.2,.05,1))
+fit.plot_sets(t,Rs,T)

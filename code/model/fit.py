@@ -1,115 +1,68 @@
 import numpy as np
-from utils import fio,squarish
+from utils import fio,squarish,flatten
 from model import system,target,out,plot,slicers
 
 plotsize = 3 # inches
 ttfname = fio.tmpfile('fit-{}.pdf')
+groups = ['all','w','m','fsw']
+specs = dict(
+  NX            = dict(oname='NX',snames=['all']),
+  Psi           = dict(oname='Psi',snames=['fsw.h','fsw.l','cli.h','cli.l']),
+  Ph            = dict(oname='Ph',snames=['ahi','>500','<500','<350','<200'],ymax=1),
+  prevalence    = dict(oname='prevalence',snames=groups,ymax=[.5,.5,.5,1]),
+  prevalence1v2 = dict(oname='prevalence',snames=[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],vsop='1/2',ymax=5),
+  incidence     = dict(oname='incidence',snames=groups,ymax=[.1,.1,.1,3]),
+  incidence1v2  = dict(oname='incidence',snames=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
+  diagnosed     = dict(oname='diagnosed',snames=groups,ymax=1),
+  treated_c     = dict(oname='treated_c',snames=groups,ymax=1),
+  treated_u     = dict(oname='treated_u',snames=groups,ymax=1),
+  vls_c         = dict(oname='vls_c',snames=groups,ymax=1),
+  vls_u         = dict(oname='vls_u',snames=groups,ymax=1),
+  condom        = dict(oname='condom',snames=['msp','cas','swo','swr'],ymax=1),
+  circum        = dict(oname='circum',snames=['*']),
+  dx_rate       = dict(oname='dx_rate',snames=groups),
+  tx_rate       = dict(oname='tx_rate',snames=groups),
+)
+specsets = dict(
+  hiv     = ['prevalence','prevalence1v2','incidence','incidence1v2'],
+  cascade = ['diagnosed','treated_c','treated_u','vls_c','vls_u'],
+  extra   = ['NX','Psi','Ph','condom','circum'],
+  rates   = ['dx_rate','tx_rate'],
+)
 
-def plot_debug(t,Rs,T=None,fname='pyplots.pdf',tops=(1.,.2,.04),drop=True):
-  if drop: Rs = system.drop_fails(Rs)[0]
-  Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
-  kwds = dict(T=T,tfname=None)
-  tfnames = [
-    plot_output(t,Rss,'NX', ['all'],**kwds),
-    plot_output(t,Rss,'Psi', ['fsw.h','fsw.l','cli.h','cli.l'],**kwds),
-    plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'prevalence',[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],
-      vsop='1/2',**kwds,ylim=(1,5)),
-    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],**kwds),
-  ]
-  fio.pdfmerge(fname,tfnames,rm=True)
+def plot_sets(t,Rs,T=None,fname='pyplots.pdf',debug=True,sets=None):
+  if sets is None: sets = specsets.keys()
+  if debug: # best 100%, 10%, 1% fits as ribbons; then merge 
+    Rs = system.drop_fails(Rs)[0]
+    Rss = [target.top_ll(Rs,top) for top in (1.,.1,.01)]
+    kwds = dict(T=T)
+  else: # 100% fits as ribbon + median; no merge
+    Rss = [Rs]
+    kwds = dict(T=T,tfname=fname)
+  tfnames = [plot_output(t,Rss,**specs[name],**kwds) \
+    for set in flatten(sets) for name in specsets[set]]
+  if debug: fio.pdfmerge(fname,tfnames)
 
-def plot_cal(t,Rs,T,fname,tops=(1.,.1,.01),drop=True,merge=True):
-  if drop: Rs = system.drop_fails(Rs)[0]
-  Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
-  kwds = dict(T=T,tfname=(None if merge else fname))
-  tfnames = [
-    # param histograms
-    plot_param(Rss,'PX_si',    dstr='si'),
-    plot_param(Rss,'F_ap',     dstr='ap'),
-    plot_param(Rss,'K_psi',    dstr='psi'),
-    plot_param(Rss,'Rbeta_as', dstr='as'),
-    plot_param(Rss,'Rbeta_h',  dstr='h'),
-    plot_param(Rss,'P_gud',    dstr='si'),
-    plot_param(Rss,'EHY_acute',dstr=''),
-    plot_param(Rss,'t0_hiv',   dstr=''),
-    # output projections
-    plot_output(t,Rss,'NX',        ['all'],**kwds),
-    plot_output(t,Rss,'Ph',        ['ahi','>500','<500','<350','<200'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'prevalence',['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'prevalence',
-      [('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('cli.h','cli.l'),('cli','m'),('mh','ml')],
-      vsop='1/2',**kwds,ylim=(1,5)),
-    plot_output(t,Rss,'incidence', ['all','w','m','fsw'],**kwds,ylim=(0,.2)),
-    plot_output(t,Rss,'diagnosed', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'treated_c', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'vls_c',     ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'treated_u', ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'vls_u',     ['all','w','m','fsw'],**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'condom',    ['msp','cas','swo','swr'],**kwds),
-    plot_output(t,Rss,'circum',    ['*'],**kwds),
-    plot_output(t,Rss,'dx_rate',   ['all','w','m','fsw'],**kwds),
-    plot_output(t,Rss,'tx_rate',   ['all','w','m','fsw'],**kwds),
-  ]
-  if merge:
-    fio.pdfmerge(fname,tfnames,rm=True)
-
-def plot_refit(t,Rs,T,fname,tops=(1.,.2,.04),drop=True,merge=True):
-  if drop: Rs = system.drop_fails(Rs)[0]
-  Rss = [target.top_ll(Rs,top) for top in tops] if (tops and T) else [Rs]
-  kwds = dict(T=T,tfname=(None if merge else fname))
-  groups = ['all','aq','fsw','cli']
-  tfnames = [
-    # output projections
-    plot_output(t,Rss,'prevalence',groups,**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'incidence', groups,**kwds),
-    plot_output(t,Rss,'diagnosed', groups,**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'treated_c', groups,**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'vls_c',     groups,**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'treated_u', groups,**kwds,ylim=(0,1)),
-    plot_output(t,Rss,'vls_u',     groups,**kwds,ylim=(0,1)),
-  ]
-  if merge:
-    fio.pdfmerge(fname,tfnames,rm=True)
-
-def plot_param(Rss,pname,tfname=None,**kwds):
+def plot_output(t,Rss,oname,snames,T=None,tfname=None,ymax=None,**kwds):
   if tfname is None: tfname = ttfname
-  p0 = Rss[0][0]['P'][pname]
-  row,col = squarish(np.size(p0))
-  fh,ah = plot.subplots(row,col)
-  kwds.update(ah=ah,gbins=True,density=True)
-  cmap = plot.cmap(len(Rss),trim=True)
-  for r,Rs in enumerate(Rss): # subsets of model fits
-    plot.hist_p([R['P'] for R in Rs],pname,color=cmap[r],**kwds)
-  fh.set_size_inches((plotsize*col,plotsize*row))
-  fh.tight_layout()
-  return plot.save(tfname.format(pname))
-
-def plot_output(t,Rss,oname,snames,T=None,tfname=None,ylab=None,ylim=None,**kwds):
-  if tfname is None: tfname = ttfname
-  if ylab is None: ylab = out.labels.get(oname,oname)
+  if np.size(ymax) == 1: ymax = len(snames) * flatten(ymax)
+  ylab = out.labels.get(oname,oname)
   fh,ah = plot.subplots(1,len(snames))
-  kwds.update(median=False,interval=1 if T else (1.,.2,.04))
-  for s,sname in enumerate(snames): # subplots
+  kwds.update(interval=1,median=(len(Rss)==1))
+  for s,sname in enumerate(snames):
     plot.plt.sca(ah[0,s])
-    if isinstance(sname,tuple):
-      plot.labels(title=out.vs_label(slicers[sname[0]].label,slicers[sname[1]].label,kwds['vsop']),
-        x=None,y=ylab if s==0 else None)
-      for Rs in Rss:
+    if isinstance(sname,tuple): # 2-group (vs) type
+      title = out.vs_label(slicers[sname[0]].label,slicers[sname[1]].label,'\n')
+      plot.labels(title=title,x=None,y=ylab+' Ratio' if s==0 else None)
+      for Rs in Rss: # ribbons
         plot.plot_vS(oname,t,Rs,sname[0],sname[1],**kwds)
       plot.targets_vS(T,oname,sname[0],sname[1],kwds['vsop'])
-    else:
+    else: # 1-group type
       plot.labels(title=slicers[sname].label,x=None,y=ylab if s==0 else None)
-      for Rs in Rss:
+      for Rs in Rss: # ribbons
         plot.plot_S(oname,t,Rs,sname,**kwds)
       plot.targets_S(T,oname,sname)
-    plot.plt.ylim(ylim)
+    plot.plt.ylim((0,ymax[s]))
   fh.set_size_inches((plotsize*len(snames),plotsize))
   fh.tight_layout()
   return plot.save(tfname.format(oname+(kwds.get('vsop','').replace('/','v'))))

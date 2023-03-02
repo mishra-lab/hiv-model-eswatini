@@ -21,7 +21,7 @@ def run(b,**kwds):
   R0s = system.drop_fails(R0s)[0]
   Rs = target.top_ll(R0s,top=int(len(seeds)*N['topcal']))
   fio.save(fname('npy','cal','Ps',case=case,b=b),[R['P'] for R in Rs])
-  fit.plot_cal(tvec['cal'],R0s,T,fname=fname('fig','sam','cal',case=case,b=b))
+  fit.plot_sets(tvec['cal'],R0s,T,fname=fname('fig','sam','cal',case=case,b=b))
 
 def merge():
   log(0,'scenario.calibrate.merge')
