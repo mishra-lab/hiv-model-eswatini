@@ -6,7 +6,7 @@
   \ifx\eya\eyb\def\eyt{#2}\else\def\eyt{#1--#2}\fi
   \draw[fill=#5,fill opacity=.2] (0,\eya) -- (#31,\eyc) -- (0,\eyb);
   % \fill[#5] (#31,\eyc) circle (1pt);
-  \node[#5,event,anchor=\ea] at (#31,\eyc) {\eyt: #6};}
+  \node[#5,anchor=\ea] at (#31,\eyc) {\eyt: #6};}
 \begin{tikzpicture}[x=1.67ex,y=-1.67ex,thick]
   \event{1980}{1985}{+}{ 0}{}{HIV first imported\tn{*}}
   \event{1986}{1986}{+}{-1}{}{First HIV case}

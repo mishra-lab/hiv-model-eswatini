@@ -26,7 +26,7 @@
   },
   df/.style = {
     draw = #1,
-    fill = #1!20!white,
+    fill = #1!20,
     inner sep = 0pt,
     lwd,
   },
@@ -74,8 +74,8 @@
 \newcommand{\xbeta}{.03}
 \newcommand{\Bfun}{1-(1-\xbeta)^(\x)}
 \newcommand{\slice}[5]{
-  \ifx#3#4\draw[draw=#5,fill=#5!20!white] ({#1},{#2}) circle (2.5mm);
-  \else\draw[draw=#5,fill=#5!20!white] ({#1},{#2}) --
+  \ifx#3#4\draw[draw=#5,fill=#5!20] ({#1},{#2}) circle (2.5mm);
+  \else\draw[draw=#5,fill=#5!20] ({#1},{#2}) --
       ++ ({#3*360+90}:2.5mm) arc ({#3*360+90}:{#4*360+90}:2.5mm) -- cycle;
   \fi}%
 \newcommand{\shiftscope}[3]{%
@@ -105,6 +105,7 @@
 \definecolor{cli.h}{rgb}{.00,.00,.40}
 \definecolor  {cli}{rgb}{.00,.00,.60}
 \definecolor  {sus}{rgb}{1.0,.60,.00}
+\definecolor  {hiv}{rgb}{.90,.00,.15}
 \definecolor  {ahi}{rgb}{.90,.30,.00}
 \definecolor{hiv.1}{rgb}{.90,.15,.00}
 \definecolor{hiv.2}{rgb}{.90,.00,.15}
@@ -119,10 +120,12 @@
 \definecolor  {cas}{rgb}{.58,.15,.40}
 \definecolor  {swo}{rgb}{.87,.32,.23}
 \definecolor  {swr}{rgb}{.99,.65,.04}
-\colorlet{C0a}{C0!50!white}
-\colorlet{C1a}{C1!50!white}
-\colorlet{C2a}{C2!50!white}
-\colorlet{C3a}{C3!50!white}
+\colorlet{susa}{sus!50}
+\colorlet{hiva}{hiv!50}
+\colorlet{C0a}{C0!50}
+\colorlet{C1a}{C1!50}
+\colorlet{C2a}{C2!50}
+\colorlet{C3a}{C3!50}
 \colorlet{C12}{C1!50!C2}
 \colorlet{C13}{C1!50!C3}
 \colorlet{C23}{C2!50!C3}
