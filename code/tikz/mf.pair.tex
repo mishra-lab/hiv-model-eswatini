@@ -1,0 +1,12 @@
+\begin{tikzpicture}[x=9em,y=4.5em,state/.append style={minimum width=5em,minimum height=2em}]
+  \node[state=sus] (ss) at (0,2) {$S$-$S$};
+  \node[state=hiv] (ii) at (1,2) {$I$-$I$};
+  \node[state=sus!50!hiv] (si) at (.5,1) {$S$-$I$};
+  \node[state=sus] (s)  at (0,0) {$S$};
+  \node[state=hiv] (i)  at (1,0) {$I$};
+  \draw[arrow,->,dashed] (si) -- (ii);
+  \draw[arrow,<->,dashed] (s) -- (ss);
+  \draw[arrow,<->,dashed] (s) -- (si);
+  \draw[arrow,<->,dashed] (i) -- (si);
+  \draw[arrow,<->,dashed] (i) -- (ii);
+\end{tikzpicture}

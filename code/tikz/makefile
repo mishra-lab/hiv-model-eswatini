@@ -17,6 +17,9 @@ figs =
 # figs += durs.partner
 # figs += durs.pop
 # figs += durs.tte
+# figs += mf.comp
+# figs += mf.pair
+# figs += mf.ibm
 all:
 	for fig in $(figs); do \
 	  ./maketikz.sh $$fig ;\

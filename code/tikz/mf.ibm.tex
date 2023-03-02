@@ -1,0 +1,16 @@
+\begin{tikzpicture}[x=4em,y=3em,state/.append style={minimum width=2em,minimum height=2em}]
+  \node[state=sus] (s1) at (3,2) {$S$};
+  \node[state=sus] (s2) at (0,3) {$S$};
+  \node[state=sus] (s3) at (2,1) {$S$};
+  \node[state=sus] (s4) at (0,2) {$S$};
+  \node[state=sus] (s5) at (1,1) {$S$};
+  \node[state=hiv] (i1) at (2,2) {$I$};
+  \node[state=hiv] (i2) at (3,0) {$I$};
+  \node[state=hiv] (i3) at (1,3) {$I$};
+  \node[state=hiv] (i4) at (0,0) {$I$};
+  \node[state=hiv] (i5) at (1,0) {$I$};
+  \draw[arrow,<->] (s1) -- (i1);
+  \draw[arrow,<->] (s2) -- (i3);
+  \draw[arrow,<->] (s3) -- (s5);
+  \draw[arrow,<->] (i4) -- (i5);
+\end{tikzpicture}

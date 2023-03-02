@@ -1,0 +1,7 @@
+\begin{tikzpicture}[x=9em,state/.append style={minimum width=5em,minimum height=3em}]
+  \node[state=sus] (s) at (0,0) {$S$};
+  \node[state=hiv] (i) at (1,0) {$I$};
+  \draw[arrow,<->] (s.015) -- (i.165);
+  \draw[arrow,<->] (s.000) -- (i.180);
+  \draw[arrow,<->] (s.345) -- (i.196);
+\end{tikzpicture}
