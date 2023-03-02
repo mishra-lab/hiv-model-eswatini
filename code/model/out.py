@@ -1,4 +1,5 @@
 import numpy as np
+from itertools import product as iprod
 from utils import _,deco,dtfun,itslice
 from model import system,foi,slicers
 # TODO: integrate slicers fully?
@@ -47,6 +48,7 @@ def vs_label(lab1,lab2,vsop):
   elif vsop=='2-1/1':  return '{} - {} (REF=1)'.format(lab2,lab1)
   elif vsop=='1-2/2':  return '{} - {} (REF=2)'.format(lab1,lab2)
   elif vsop=='2-1/2':  return '{} - {} (REF=2)'.format(lab2,lab1)
+  if   vsop=='\n':     return '{}\nvs. {}'.format(lab1,lab2) # HACK
   else: raise NotImplementedError('out.vs_label(): vsop = '+str(vsop))
 
 @deco.nanzero
@@ -104,31 +106,6 @@ def prevalence(X,s=None,i=None,aggr=True):
   XS = X.sum(axis=(3,4)) # <- denominator; numerator -> (1 - susceptible)
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
   return aggratio(Xhiv,XS,aggr)
-
-@deco.rmap(args=['X','inc','foi_mode'])
-@deco.tslice(targs=['X','inc'])
-def whoinfectwhom(X,inc,foi_mode,p=None,fpop=None,tpop=None,aggr=True):
-  # total infections between pop1 & pop2 along partnership type p
-  # TODO: implement cumulative?
-  fs = None if fpop is None else fpop.get('s')
-  fi = None if fpop is None else fpop.get('i')
-  ts = None if tpop is None else tpop.get('s')
-  ti = None if tpop is None else tpop.get('i')
-  # aggregating non-self dimensions: (p[1], s'[4], i'[5])
-  inc = foi.aggr_inc(inc,foi_mode,axis=1,keepdims=True) if p is None \
-        else inc[:,_,p] if isinstance(p,int) else inc[:,p]
-  inc = foi.aggr_inc(inc,foi_mode,axis=4,keepdims=True) if fs is None \
-        else inc[:,:,:,:,_,fs] if isinstance(fs,int) else inc[:,:,:,:,fs]
-  inc = foi.aggr_inc(inc,foi_mode,axis=5,keepdims=True) if fi is None \
-        else inc[:,:,:,:,:,_,fi] if isinstance(fi,int) else inc[:,:,:,:,:,fi]
-  inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_]) if aggr \
-        else foi.aggr_inc(inc,foi_mode,axis=(),keepdims=True,Xsus=X[:,_,:,:,0,0,_,_])
-  inf = inf.sum(axis=2,keepdims=True) if ts is None \
-        else inf[:,:,_,ts] if isinstance(ts,int) else inf[:,:,ts]
-  inf = inf.sum(axis=3,keepdims=True) if ti is None \
-        else inf[:,:,:,_,ti] if isinstance(ti,int) else inf[:,:,:,ti]
-  inf = inf.sum(axis=(2,3),keepdims=True) if aggr else inf
-  return np.squeeze(inf) if aggr else inf
 
 @deco.rmap(args=['X','inc','foi_mode'])
 @deco.tslice(targs=['X','inc'])
@@ -223,55 +200,24 @@ def condom(PF_condom_t,p,aggr=None):
 def circum(PF_circum_t,aggr=None):
   return np.squeeze(PF_circum_t)[:]
 
-def get_infections(R1s,tvec,t,R2s=None,vsop='1-2'):
-  # TODO: upddate for foi edits
-  # get fully stratified infection counts by partnership/group for plotting alluvial diagram in R
+@deco.rmap(args=['X','inc','foi_mode'])
+@deco.tslice(targs=['X','inc'])
+def infections(X,inc,foi_mode,p,fs,fi,ts,ti):
+  # NOTE: p,fs,fi,ts,ti must be single values!
+  return foi.aggr_inc(inc[:,p,fs,fi,ts,ti],foi_mode,axis=(),Xsus=X[:,fs,fi,0,0])
+
+def wiw(R1s,tvec,t,R2s=None,vsop='1-2'):
   if isinstance(R1s,dict): R1s = [R1s]
   if isinstance(R2s,dict): R2s = [R2s]
   qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
   aggrop = lambda inf: np.nanquantile(inf,qs,axis=0)
   cols = ['q'+str(q) for q in qs]
   data = [['t','p','fs','fi','ts','ti']+cols]
-  for p in range(4):
-    for fs in range(2):
-      for fi in range(4):
-        for ts in range(2):
-          for ti in range(4):
-            kwds = dict(tvec=tvec,t=t,p=p,fpop=dict(s=fs,i=fi),tpop=dict(s=ts,i=ti),aggr=True)
-            if R2s is None:
-              inf = aggrop([whoinfectwhom(R1,**kwds) for R1 in R1s])
-            else:
-              inf = aggrop([vs_fun(whoinfectwhom(R1,**kwds),whoinfectwhom(R2,**kwds),vsop)
-                for R1,R2 in zip(R1s,R2s)])
-            data += [[tk,p,fs,fi,ts,ti]+inf[:,k].tolist() for k,tk in enumerate(t)]
+  kwds = dict(tvec=tvec,t=t)
+  grid = dict(p=range(4),fs=range(2),fi=range(4),ts=range(2),ti=range(4))
+  for p,fs,fi,ts,ti in iprod(*grid.values()):
+    kwds.update(p=p,fs=fs,fi=fi,ts=ts,ti=ti)
+    inf = aggrop([infections(R1,**kwds) for R1 in R1s]) if R2s is None else \
+          aggrop([vs_fun(infections(R1,**kwds),infections(R2,**kwds),vsop) for R1,R2 in zip(R1s,R2s)])
+    data += [[tk,p,fs,fi,ts,ti]+inf[:,k].tolist() for k,tk in enumerate(t)]
   return data
-
-def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',ecols=None,mode='q',drop=True,**kwds):
-  if drop:
-    if R2s: R1s,R2s = system.drop_fails(R1s,R2s)
-    else: R1s = system.drop_fails(R1s)[0]
-  if mode == 'q':
-    qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
-    aggrop = lambda os: np.nanquantile(os,qs,axis=0)
-    cols = ['q'+str(q) for q in qs]
-  if mode == 'seed':
-    aggrop = lambda os: np.array(os)
-    cols = ['s'+str(R['P']['seed']) for R in R1s]
-  sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
-  if ecols is None: ecols = {}
-  ecols.update(op=vsop)
-  E = dict(out=og,pop=sg,t=tg,**{k:[v]*len(tg) for k,v in ecols.items()},**{k:[] for k in cols})
-  for oname in onames:
-    fun = by_name(oname)
-    for sname in snames:
-      if oname == 'cuminfect': # special case as we cannot use @deco.tslice
-        sfun = lambda R: fun(R,**slicers[sname].pop,tvec=tvec,**kwds)[itslice(t,tvec)]
-      else:
-        sfun = lambda R: fun(R,**slicers[sname].pop,tvec=tvec,t=t,**kwds)
-      if R2s is None:
-        osk = aggrop([sfun(R) for R in R1s])
-      else:
-        osk = aggrop([vs_fun(sfun(R1),sfun(R2),vsop) for R1,R2 in zip(R1s,R2s)])
-      for i,col in enumerate(cols): # TODO: is this slow? if so, vectorize with np?
-        E[col] += osk[i,:].tolist()
-  return E
