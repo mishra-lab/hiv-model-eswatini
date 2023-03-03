@@ -204,7 +204,7 @@ def circum(PF_circum_t,aggr=None):
 @deco.tslice(targs=['X','inc'])
 def infections(X,inc,foi_mode,p,fs,fi,ts,ti):
   # NOTE: p,fs,fi,ts,ti must be single values!
-  return foi.aggr_inc(inc[:,p,fs,fi,ts,ti],foi_mode,axis=(),Xsus=X[:,fs,fi,0,0])
+  return foi.aggr_inc(inc[:,p,ts,ti,fs,fi],foi_mode,axis=(),Xsus=X[:,ts,ti,0,0])
 
 def wiw(R1s,tvec,t,R2s=None,vsop='1-2'):
   if isinstance(R1s,dict): R1s = [R1s]
