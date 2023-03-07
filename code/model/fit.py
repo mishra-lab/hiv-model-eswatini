@@ -43,10 +43,10 @@ def plot_sets(t,Rs,T=None,fname='pyplots.pdf',debug=True,sets=None):
     for set in flatten(sets) for name in specsets[set]]
   if debug: fio.pdfmerge(fname,tfnames)
 
-def plot_output(t,Rss,oname,snames,T=None,tfname=None,ymax=None,**kwds):
+def plot_output(t,Rss,oname,snames,T=None,tfname=None,ylab=None,ymax=None,**kwds):
   if tfname is None: tfname = ttfname
+  if ylab is None: ylab = out.labels.get(oname,oname)
   if np.size(ymax) == 1: ymax = len(snames) * flatten(ymax)
-  ylab = out.labels.get(oname,oname)
   fh,ah = plot.subplots(1,len(snames))
   kwds.update(interval=1,median=(len(Rss)==1))
   for s,sname in enumerate(snames):
@@ -63,6 +63,6 @@ def plot_output(t,Rss,oname,snames,T=None,tfname=None,ymax=None,**kwds):
         plot.plot_S(oname,t,Rs,sname,**kwds)
       plot.targets_S(T,oname,sname)
     plot.plt.ylim((0,ymax[s]))
-  fh.set_size_inches((plotsize*len(snames),plotsize))
+  fh.set_size_inches((.5+plotsize*len(snames),plotsize))
   fh.tight_layout()
   return plot.save(tfname.format(oname+(kwds.get('vsop','').replace('/','v'))))
