@@ -7,15 +7,15 @@ from model import system,foi,slicers
 labels = {
   'NX':         'Population size, absolute (\'000s)',
   'Psi':        'Population size, relative',
-  'Ph':         'Proportion of HIV+',
+  'Ph':         'Proportion of PLHIV',
   'prevalence': 'Prevalence',
   'incidence':  'Incidence (per person-year)',
   'cuminfect':  'Cumulative infections (\'000s)',
-  'diagnosed':  'Diagnosed among HIV+',
-  'treated_u':  'Treated among HIV+',
+  'diagnosed':  'Diagnosed among PLHIV',
+  'treated_u':  'Treated among PLHIV',
   'treated_c':  'Treated among diagnosed',
-  'vls_u':      'Virally suppressed among HIV+',
-  'vls_c':      'Virally suppressed among treated',
+  'vls_u':      'VLS among PLHIV',
+  'vls_c':      'VLS among treated',
   'dx_rate':    'Diagnosis rate (per person-year)',
   'tx_rate':    'Treatment rate (per person-year)',
   'condom':     'Condom use (proportion of acts)',
@@ -139,7 +139,7 @@ def Ph(X,h,s=None,i=None,aggr=True):
 @deco.tslice(targs=['X'])
 def diagnosed(X,s=None,i=None,aggr=True):
   X = X_by_si(X,s=s,i=i)
-  Xhiv = X[:,:,:,1:,:].sum(axis=(3,4)) # HIV+
+  Xhiv = X[:,:,:,1:,:].sum(axis=(3,4)) # PLHIV
   Xdia = X[:,:,:,1:,1:].sum(axis=(3,4)) # diagnosed
   return aggratio(Xdia,Xhiv,aggr)
 
@@ -151,7 +151,7 @@ def treated(X,s=None,i=None,aggr=True,cond=False):
   if cond:
     Xref = X[:,:,:,1:,1:].sum(axis=(3,4)) # diagnosed
   else:
-    Xref = X[:,:,:,1:,:].sum(axis=(3,4)) # HIV+
+    Xref = X[:,:,:,1:,:].sum(axis=(3,4)) # PLHIV
   Xtre = X[:,:,:,1:,3:].sum(axis=(3,4))
   return aggratio(Xtre,Xref,aggr)
 
@@ -163,7 +163,7 @@ def vls(X,s=None,i=None,aggr=True,cond=False):
   if cond:
     Xref = X[:,:,:,1:,3:].sum(axis=(3,4)) # treated
   else:
-    Xref = X[:,:,:,1:,:].sum(axis=(3,4)) # HIV+
+    Xref = X[:,:,:,1:,:].sum(axis=(3,4)) # PLHIV
   Xvls = X[:,:,:,1:,4:].sum(axis=(3,4))
   return aggratio(Xvls,Xref,aggr)
 
