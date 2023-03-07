@@ -131,7 +131,7 @@ def def_sample_distrs():
   # condoms
   'Rbeta_condom':         stats.betabin(p=.734,n= 32),
   'RPF_condom_a:v':       stats.betabin(p=.768,n= 12),
-  'RPF_condom_mcx_1996':  stats.uniform(l=0,h=1), # TODO
+  'RPF_condom_1996':      stats.uniform(l=0,h=1), # TODO
   'PF_condom_msp_2006':   stats.betabin(p=.230,n=100),
   'PF_condom_msp_2016':   stats.betabin(p=.416,n= 75),
   'PF_condom_cas_2006':   stats.betabin(p=.598,n=100),
@@ -437,7 +437,7 @@ def get_K(P): # TODO C -> Q
 
 def get_condom(P): # [OK]
   k = 'PF_condom_' # convenience
-  R = P['RPF_condom_mcx_1996'] # TODO
+  R = P['RPF_condom_1996'] # TODO
   PF_condom_t = ta.tarray([1980,1988,1996,2002,2006,2011,2014,2016,2050],
     [[0,  0,R*P[k+'msp_2006'],NAN,P[k+'msp_2006'],NAN,NAN,*2*[P[k+'msp_2016']] ], # main
      [0,  0,R*P[k+'cas_2006'],NAN,P[k+'cas_2006'],NAN,NAN,*2*[P[k+'cas_2016']] ], # casual
