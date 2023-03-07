@@ -209,11 +209,11 @@ def get_pop_total_esw():
     607854,618763]) if t%5==0 # only every 5th year
   ]
 
-def get_prevalence_esw_anc():
+def get_prevalence_esw_anc(w=0):
   return [
-    Target(stats.betabin(p=Pt,n=1000),'prevalence',dict(t=t,s=0,i=(0,1,2,3)),weight=0)
-      for t,Pt in zip(# 1992-2010: UNGASS 2008, 2012-2015: EswHIVPR2015
-    [1992,1994,1996,1998,2000,2002,2004,2006,  2010,2012,2013,2014,2015],
-    [.039,.161,.260,.316,.342,.386,.426,.392,  .411,.344,.384,.350,.370])
+    Target(stats.betabin(p=Pt,n=1000),'prevalence',dict(t=t,s=0,i=(0,1,2,3)),weight=w)
+      for t,Pt in zip(# 1992-2010: UNGASS, 2012-2015: EswHIVPR2015
+    [1992,1994,1996,1998,2000,2002,2004,2006,2008,2010,2012,2013,2014,2015],
+    [.039,.161,.260,.316,.342,.386,.426,.392,.381,.411,.344,.384,.350,.370])
   ]
 
