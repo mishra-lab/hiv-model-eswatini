@@ -495,14 +495,14 @@ def get_mix(P): # [OK]
     't0_tpaf': np.inf,
   }
 
-def get_mix_mask(mask=None,p=None,sfr=None,ifr=None,sto=None,ito=None):
+def get_mix_mask(mask=None,p=None,fs=None,fi=None,ts=None,ti=None):
   if mask is None: mask = np.ones((4,2,4,2,4))
-  if p   is None: p   = slice(None)
-  if sfr is None: sfr = slice(None)
-  if ifr is None: ifr = slice(None)
-  if sto is None: sto = slice(None)
-  if ito is None: ito = slice(None)
-  mask[p,sfr,ifr,sto,ito] = 0
+  if p  is None: p  = slice(None)
+  if fs is None: fs = slice(None)
+  if fi is None: fi = slice(None)
+  if ts is None: ts = slice(None)
+  if ti is None: ti = slice(None)
+  mask[p,ts,ti,fs,fi] = 0
   return mask
 
 # HIV ----------------------------------------------------------------------------------------------

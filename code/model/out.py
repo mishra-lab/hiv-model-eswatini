@@ -23,6 +23,8 @@ labels = {
   'gud':        'Relative GUD prevalence',
 }
 
+qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
+
 def by_name(name):
   # get a function in this module by its name
   return globals()[name]
@@ -209,7 +211,6 @@ def infections(X,inc,foi_mode,p,fs,fi,ts,ti):
 def wiw(R1s,tvec,t,R2s=None,vsop='1-2'):
   if isinstance(R1s,dict): R1s = [R1s]
   if isinstance(R2s,dict): R2s = [R2s]
-  qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
   aggrop = lambda inf: np.nanquantile(inf,qs,axis=0)
   cols = ['q'+str(q) for q in qs]
   data = [['t','p','fs','fi','ts','ti']+cols]
@@ -221,3 +222,33 @@ def wiw(R1s,tvec,t,R2s=None,vsop='1-2'):
           aggrop([vs_fun(infections(R1,**kwds),infections(R2,**kwds),vsop) for R1,R2 in zip(R1s,R2s)])
     data += [[tk,p,fs,fi,ts,ti]+inf[:,k].tolist() for k,tk in enumerate(t)]
   return data
+
+def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',ecols=None,mode='q',drop=True,**kwds):
+  # E: dict of cols (lists); first cols = strata, later cols = output quantiles/values per seed
+  if drop:
+    if R2s: R1s,R2s = system.drop_fails(R1s,R2s)
+    else: R1s = system.drop_fails(R1s)[0]
+  if mode == 'q':
+    aggrop = lambda os: np.nanquantile(os,qs,axis=0)
+    cols = ['q'+str(q) for q in qs]
+  if mode == 'seed':
+    aggrop = lambda os: np.array(os)
+    cols = ['s'+str(R['P']['seed']) for R in R1s]
+  sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
+  if ecols is None: ecols = {}
+  ecols.update(op=vsop)
+  E = dict(out=og,pop=sg,t=tg,**{k:[v]*len(tg) for k,v in ecols.items()},**{k:[] for k in cols})
+  for oname in onames:
+    fun = by_name(oname)
+    for sname in snames:
+      if oname == 'cuminfect': # special case as we cannot use @deco.tslice
+        sfun = lambda R: fun(R,**slicers[sname].pop,tvec=tvec,**kwds)[itslice(t,tvec)]
+      else:
+        sfun = lambda R: fun(R,**slicers[sname].pop,tvec=tvec,t=t,**kwds)
+      if R2s is None:
+        osc = aggrop([sfun(R) for R in R1s])
+      else:
+        osc = aggrop([vs_fun(sfun(R1),sfun(R2),vsop) for R1,R2 in zip(R1s,R2s)])
+      for i,col in enumerate(cols): # TODO: is this slow? if so, vectorize with np?
+        E[col] += osc[i,:].tolist()
+  return E
