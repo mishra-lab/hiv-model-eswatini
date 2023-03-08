@@ -2,9 +2,7 @@ from utils import log,fio,dict_list_update
 from model import system,params,out
 from model.scenario import N,tvec,fname
 
-case = 'base'
-
-def run():
+def run(case='base'):
   log(0,'scenario.tpaf.run: '+case)
   P1s = fio.load(fname('npy','fit','Ps',case=case))
   R1s = system.run_n(P1s,t=tvec['main'])

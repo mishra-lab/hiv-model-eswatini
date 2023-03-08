@@ -1,7 +1,7 @@
 import sys
 
 import model.scenario
-from model.scenario import calibrate,foi,art
+from model.scenario import calibrate,tpaf,foi,art
 
 model.scenario.uid = '2023-03-03'
 # model.scenario.N['sam'] = 1000 # DEBUG
@@ -10,6 +10,8 @@ model.scenario.uid = '2023-03-03'
 # calibrate.run(int(sys.argv[1]))
 # calibrate.merge()
 # calibrate.rerun()
+# tpaf --------------------------------
+# tpaf.run(sys.argv[2])
 # foi ---------------------------------
 # calibrate.case =
 # calibrate.run(int(sys.argv[1]),foi_mode=calibrate.case)

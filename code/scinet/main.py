@@ -3,7 +3,7 @@ os.environ['MPLCONFIGDIR'] = os.path.join('.tmp',sys.argv[1])
 
 from utils import parallel
 import model.scenario
-from model.scenario import calibrate,foi,art
+from model.scenario import calibrate,tpaf,foi,art
 
 parallel.cpus = 80
 model.scenario.uid = '2023-03-03'
@@ -13,6 +13,8 @@ model.scenario.uid = '2023-03-03'
 # calibrate.run(int(sys.argv[1]))
 # calibrate.merge()
 # calibrate.rerun()
+# tpaf --------------------------------
+# tpaf.run(sys.argv[2])
 # foi ---------------------------------
 # calibrate.case = sys.argv[2]
 # calibrate.run(int(sys.argv[1]),foi_mode=calibrate.case)
