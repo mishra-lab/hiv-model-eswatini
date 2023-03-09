@@ -2,7 +2,7 @@ source('post/config.r')
 # N$sam = 1000 # DEBUG
 
 base.wiw = function(){
-  source('post/infections.r')
+  source('post/wiw.r')
   X = clean.wiw.data(read.csvs('fit','wiw','base','all'))
   do.ratio(X);         fig.save(uid,N$sam,'wiw.base.ratio',w=5,h=5);
   do.margin(X,'part'); fig.save(uid,N$sam,'wiw.base.part',w=5,h=5.5);
