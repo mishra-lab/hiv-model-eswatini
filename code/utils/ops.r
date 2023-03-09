@@ -1,5 +1,5 @@
 library('parallel')
-options(width=200)
+options(width=200,scipen=99)
 root.path = function(...,create=FALSE){
   root = strsplit(file.path(getwd(),''),file.path('','code',''))[[1]][1]
   path = file.path(root,...)
@@ -37,9 +37,11 @@ print.m.ci = function(m,ci,w=8,n=3){
   return(paste0('',print.v(m,w=w,n=n),
     ' (',print.v(ci[1],w=w,n=n),',',print.v(ci[2],w=w,n=n),')'))
 }
-print.p = function(p,w=7,n=5,s=5){
-  stars = rep('*',min(s,max(0,-ceiling(log10(p)))))
-  return(paste0(print.v(p,w=w,n=n),' ',str.r.pad(paste0(stars,collapse=''),s)))
+p.stars = function(p,s=5){
+  paste0(rep('*',min(s,max(0,-ceiling(log10(p))))),collapse='')
+}
+p.print = function(p,w=7,n=5,s=5){
+  paste0(print.v(p,w=w,n=n),' ',str.r.pad(p.stars(p,s),s))
 }
 squarish = function(n){
   i = ceiling(sqrt(n))
@@ -54,6 +56,15 @@ rename.cols = function(X,...){
     X[[name]] = NULL
   }
   return(X)
+}
+filter.cols = function(X,...){
+  filter = list(...)
+  bool = !logical(nrow(X))
+  for (col in names(filter)){ bool = bool & X[[col]] %in% filter[[col]] }
+  X[bool,]
+}
+cut.q = function(x,qs,labels){
+  x.cut = cut(x,c(-Inf,quantile(x,qs),Inf),labels=labels)
 }
 iterms = function(x,n,lower=TRUE){
   return(paste(lapply(ifelse(lower,1,n):n,function(ni){
