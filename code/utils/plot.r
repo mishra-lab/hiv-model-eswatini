@@ -1,12 +1,40 @@
 suppressPackageStartupMessages({
   library('ggplot2')
   library('ggalluvial')
+  library('corrplot')
   library('viridis')
   library('reshape2')
 })
-
-fig.save = function(uid,...,w=7,h=7){
-  fig.name = root.path('out','fig',uid,paste0(paste(...,sep='_'),'.pdf'))
+q.aes = function(q,grp,x='t',...){
+  qq = function(qi,op){ paste0(op,'(q',1-(1-qi)/2,',q',(1-qi)/2,')') }
+  if (q==0){ return(aes_string(x=x,y='q0.5',color=grp,linetype=grp,...)) }
+  if (is.numeric(q)){ return(aes_string(x=x,ymin=qq(q,'pmin'),ymax=qq(q,'pmax'),fill=grp,...)) }
+  if (q=='box'){ return(aes_string(x=paste0('factor(',x,')'),...,
+    ymin=qq(.95,'pmin'),ymax=qq(.95,'pmax'),lower=qq(.5,'pmin'),upper=qq(.5,'pmax'),
+    middle='q0.5',color=grp,fill=grp,group=paste0('interaction(',x,',',grp,')'))) }
+}
+plot.expo.ribbon = function(X,out,grp,q=.9){
+  Xe = filter.cols(X,out=out)
+  g = ggplot(Xe,aes(x=t)) +
+    geom_ribbon(q.aes(q,grp=grp),alpha=.25) +
+    geom_line(q.aes(0,grp=grp))
+  g = plot.clean(g)
+}
+plot.expo.box = function(X,out,grp,t,w=.8){
+  Xe = filter.cols(X,out=out,t=t)
+  g = ggplot(Xe,aes(x=factor(t))) +
+    geom_boxplot(q.aes('box',grp=grp),stat='identity',
+      alpha=.25,width=.8*w,position=position_dodge(width=w))
+  g = plot.clean(g)
+}
+fig.save = function(uid,sam,...,w=7,h=7){
+  fig.name = root.path('out','fig',uid,sam,paste0(paste(...,sep='.'),'.pdf'))
   print(paste('saving:',fig.name))
   ggsave(fig.name,w=w,h=h)
+}
+plot.clean = function(g,...){
+  g = g + theme_light() + theme(...,
+    strip.background=element_rect(fill='gray85'),
+    strip.text.x=element_text(color='black'),
+    strip.text.y=element_text(color='black'))
 }
