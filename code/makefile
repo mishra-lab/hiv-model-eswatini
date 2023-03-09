@@ -1,16 +1,16 @@
 export PYTHONPATH := .:$$PYTHONPATH
 do.debug:
-	python3.8 main/debug.py && echo [OK]
+	python3.8 model/debug.py && echo [OK]
 do.model.foi:
 	python3.8 model/scenario/foi.py && echo [OK]
 do.model.art:
 	python3.8 model/scenario/art.py && echo [OK]
 do.post.base:
-	Rscript post/base.r && echo [OK]
+	Rscript post/main.base.r && echo [OK]
 do.post.foi:
-	Rscript post/foi.r && echo [OK]
+	Rscript post/main.foi.r && echo [OK]
 do.post.art:
-	Rscript post/art.r && echo [OK]
+	Rscript post/main.art.r && echo [OK]
 do.params.distr:
 	python3.8 params/distr.py && echo [OK]
 do.params.fsw:
