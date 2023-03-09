@@ -5,7 +5,6 @@ from scipy.optimize import Bounds as bounds
 from utils.ops import *
 from utils.fio import rootpath,genpath
 from utils.log import log
-from utils.glob import globs
 
 _ = None
 

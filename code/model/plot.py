@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from model.target import filter_targets
-from utils import _,log,genpath,flatten,dict_split,interval_qs,clr_interp,squarish,itslice,tdt,globs
+from utils import _,log,genpath,flatten,dict_split,interval_qs,clr_interp,squarish,itslice,tdt
 from model import out,dimkeys,dimensions,slicers
 
 # TODO: labeling & colors for vsop
@@ -127,29 +127,6 @@ def target(Ti,interval=.95,**kwds):
   Terr = np.abs(np.reshape(Ti.ci(interval),(2,1)) - Tm)
   eh = plt.errorbar(t,Tm,yerr=Terr,marker=marker,ms=2,lw=1,mew=1,capsize=2,label=label,**kwds)
   eh[-1][0].set_linestyle(ls)
-
-def hist_p(Ps,name,dstr=None,ah=None,alpha=.3,xlim=None,gbins=False,**kwds):
-  def ihist(x,title='',**kwds):
-    bins = plt.hist(x,alpha=alpha,**kwds)[1]
-    plt.title(title,loc='left',y=1,pad=-12*(1+title.count('\n')))
-    plt.yticks([])
-    plt.xlim(xlim)
-    return bins
-  gbkey = 'hist_p_'+name+'_{}'
-  Xs = [np.squeeze(P[name]) for P in Ps]
-  shape = np.shape(Xs[0])
-  if len(shape):
-    for i,slicer,ilabel in sliceiter(shape,dstr,ah):
-      if gbins: kwds['bins'] = globs(get=gbkey.format(i),default=32)
-      bins = ihist([X[slicer] for X in Xs],ilabel,**kwds)
-      if gbins: globs(**{gbkey.format(i):bins})
-  else:
-    if ah is None: ah = subplots(1,1)[1]
-    if gbins: kwds['bins'] = globs(get=gbkey.format(0),default=32)
-    bins = ihist(Xs,**kwds)
-    if gbins: globs(**{gbkey.format(0):bins})
-  plt.suptitle(name)
-  return ah
 
 # PLOT FUNCTION ITERATORS ------------------------------------------------------
 
