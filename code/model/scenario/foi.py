@@ -5,7 +5,7 @@ from model.scenario import calibrate,tpaf,tvec,fname
 import model.scenario
 
 model.scenario.uid = '2023-03-03'
-model.scenario.N['sam'] = 1000 # DEBUG
+# model.scenario.N['sam'] = 1000 # DEBUG
 
 cases = ['base','rd','ry','pd','py']
 
