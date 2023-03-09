@@ -1,4 +1,5 @@
 import os
+import sys
 import csv
 import numpy as np
 from datetime import datetime
@@ -105,4 +106,15 @@ def pdfmerge(ofname,fnames,rm=False):
     for fname in fnames:
       os.remove(fname)
 
-
+def argvkwds(i=1,**kwds):
+  # parse argv to dict, e.g. ['a','b=1'] -> dict(a=True,b=1)
+  for arg in sys.argv[i:]:
+    k,e,v = arg.partition('=')
+    if e:
+      try:
+        kwds[k] = int(v)
+      except:
+        kwds[k] = v
+    else:
+      kwds[k] = True
+  return kwds
