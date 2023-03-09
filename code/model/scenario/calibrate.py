@@ -3,9 +3,7 @@ from utils import log,fio
 from model import system,params,target,fit,out
 from model.scenario import N,tvec,fname,batch_select
 
-case = 'base'
-
-def run(b,**kwds):
+def run(case,b,**kwds):
   log(0,'scenario.calibrate.run: '+str(b))
   # get targets (T), seeds, params (P0s)
   T = target.get_all_esw()
@@ -23,7 +21,7 @@ def run(b,**kwds):
   fio.save(fname('npy','cal','Ps',case=case,b=b),[R['P'] for R in Rs])
   fit.plot_sets(tvec['cal'],R0s,T,fname=fname('fig','sam','cal',case=case,b=b))
 
-def merge():
+def merge(case):
   log(0,'scenario.calibrate.merge')
   # npy: load topcal, select topfit, save topfit
   P0s = [P for b in range(N['batch']) for P in fio.load(fname('npy','cal','Ps',case=case,b=b))]
@@ -37,7 +35,7 @@ def merge():
       P0s[seeds.index(int(ll['seed']))].update(ll=ll['ll'])
   fio.save_csv(fname('csv','sam','Ps',case=case),P0s)
 
-def rerun():
+def rerun(case):
   log(0,'scenario.calibrate.rerun')
   T = target.get_all_esw()
   Ps = fio.load(fname('npy','fit','Ps',case=case))

@@ -1,4 +1,5 @@
-from utils import fio,rootpath,genpath
+import os
+from utils import fio,rootpath,genpath,parallel
 from model import system
 
 uid = fio.datestamp()
@@ -31,4 +32,6 @@ def batch_select(objs,b):
   nb = int(len(objs) / N['batch'])
   return objs[slice(nb*b,nb*(b+1))]
 
-
+def scinet():
+  os.environ['MPLCONFIGDIR'] = fio.tmpfile()
+  parallel.cpus = 80
