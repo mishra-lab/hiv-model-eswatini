@@ -21,14 +21,14 @@ def eprun():
     log(1,case)
     R1s = system.run_n(dict_list_update(Ps,foi_mode=case),t=tvec['main'])
     E = out.expo(onames,R1s,**ekwds)
-    fio.save_csv(fname('csv','foi','wiw',case=case),out.wiw(R1s,tvec['main'],tvec['plot']))
+    fio.save_csv(fname('csv','foi-ep','wiw',case=case),out.wiw(R1s,tvec['main'],tvec['plot']))
     if case == 'base':
       R2s = copy(R1s)
     else:
       EAD = out.expo(onames,R1s,R2s=R2s,vsop='1-2',  **ekwds)
       ERD = out.expo(onames,R1s,R2s=R2s,vsop='1-2/2',**ekwds)
       E = {col:E[col]+EAD[col]+ERD[col] for col in E}
-    fio.save_csv(fname('csv','foi','expo',case=case),E)
+    fio.save_csv(fname('csv','foi-ep','expo',case=case),E)
 
 if __name__ == '__main__':
   # calibrate.run(**kwds)

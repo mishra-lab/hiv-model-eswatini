@@ -10,9 +10,9 @@ clean.wiw.data = function(X,infs='q0.5'){
   return(X)
 }
 do.norm = function(X,margin,strat='1',scale=100){
-  if (strat != 1){ X = X[order(X[[margin]],X[[strat]],X$t),] }
-  total.inf = aggregate(formula(paste('infs ~ t + ',strat)),X,sum)$infs
-  X$infs = scale * X$infs / total.inf
+  X = X[do.call(order,X[c(margin,rev(strat),'t')]),]
+  X.total = aggregate(formula(paste(c('infs ~ t',strat),collapse=' + ')),X,sum)
+  X$infs = scale * X$infs / X.total$infs
   return(X)
 }
 do.alluvial = function(X,fill='part',norm=FALSE){
@@ -52,7 +52,7 @@ do.ratio = function(X){
   g = plot.clean(g,legend.position='top')
 }
 do.margin = function(X,margin,type='both',strat='1'){
-  X.abs = aggregate(formula(paste('infs ~ t + ',margin,' + ',strat)),X,sum)
+  X.abs = aggregate(formula(paste(c('infs ~ t',margin,strat),collapse=' + ')),X,sum)
   X.rel = do.norm(X.abs,margin=margin,strat=strat)
   X.abs$scale = 'Absolute (\'000s)'
   X.rel$scale = 'Proportion (%)'

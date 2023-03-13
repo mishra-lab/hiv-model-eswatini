@@ -1,4 +1,5 @@
 source('post/config.r')
+source('post/wiw.r')
 source('post/tpaf.r')
 # N$sam = 1000 # DEBUG
 
@@ -21,7 +22,7 @@ plot.ep = function(Xepp,op,ylab,leg='top',oname='incidence'){
 
 main.ep = function(){
   # load & clean data
-  X = read.csvs('foi','expo','foi')
+  X = read.csvs('foi-ep','expo','foi')
   Xe = filter.cols(X,pop=c('aq','fsw','cli'))
   Xe$pop = factor(Xe$pop,levels=names(slice.labs),labels=slice.labs)
   Xe$case.lab.x = Xe$case.lab
@@ -38,6 +39,16 @@ main.ep = function(){
     fig.save(uid,N$sam,'foi.ep.incidence.rel',w=9,h=6)
 }
 
+main.wiw = function(){
+  X = rbind(
+    cbind(clean.wiw.data(read.csvs('foi-ep','wiw','foi','all')),par='Equal Parameters'),
+    cbind(clean.wiw.data(read.csvs('fit',   'wiw','foi','all')),par='Recalibrated Parameters'))
+  g = do.margin(X,'part',type='rel',strat=c('case.lab','par')) +
+    facet_grid('par~case.lab') +
+    labs(y='Yearly Infections (%)')
+  fig.save(uid,N$sam,'foi.wiw.part',w=11,h=5)
+}
+
 main.tpaf = function(){
   X = read.csvs('tpaf','expo','foi')
   X$t.hor = X$t - X$tpaf.t0
@@ -51,5 +62,6 @@ main.tpaf = function(){
   }
 }
 
-# main.tpaf()
 # main.ep()
+# main.wiw()
+# main.tpaf()

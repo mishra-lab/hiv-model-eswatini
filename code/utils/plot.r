@@ -5,25 +5,25 @@ suppressPackageStartupMessages({
   library('viridis')
   library('reshape2')
 })
-q.aes = function(q,grp,x='t',...){
-  qq = function(qi,op){ paste0(op,'(q',1-(1-qi)/2,',q',(1-qi)/2,')') }
-  if (q==0){ return(aes_string(x=x,y='q0.5',color=grp,linetype=grp,...)) }
+q.aes = function(q,grp,x='t',scale=1,...){
+  qq = function(qi,op){ paste0(scale,'*',op,'(q',1-(1-qi)/2,',q',(1-qi)/2,')') }
+  if (q==0){ return(aes_string(x=x,y=qq(0,'pmin'),color=grp,linetype=grp,...)) }
   if (is.numeric(q)){ return(aes_string(x=x,ymin=qq(q,'pmin'),ymax=qq(q,'pmax'),fill=grp,...)) }
   if (q=='box'){ return(aes_string(x=paste0('factor(',x,')'),...,
     ymin=qq(.95,'pmin'),ymax=qq(.95,'pmax'),lower=qq(.5,'pmin'),upper=qq(.5,'pmax'),
-    middle='q0.5',color=grp,fill=grp,group=paste0('interaction(',x,',',grp,')'))) }
+    middle=qq(0,'pmin'),color=grp,fill=grp,group=paste0('interaction(',x,',',grp,')'))) }
 }
-plot.expo.ribbon = function(X,out,grp,q=.9){
+plot.expo.ribbon = function(X,out,grp,q=.9,...){
   Xe = filter.cols(X,out=out)
   g = ggplot(Xe,aes(x=t)) +
-    geom_ribbon(q.aes(q,grp=grp),alpha=.25) +
-    geom_line(q.aes(0,grp=grp))
+    geom_ribbon(q.aes(q,grp=grp,...),alpha=.25) +
+    geom_line(q.aes(0,grp=grp,...))
   g = plot.clean(g)
 }
-plot.expo.box = function(X,out,grp,t,w=.8){
+plot.expo.box = function(X,out,grp,t,w=.8,...){
   Xe = filter.cols(X,out=out,t=t)
   g = ggplot(Xe,aes(x=factor(t))) +
-    geom_boxplot(q.aes('box',grp=grp),stat='identity',
+    geom_boxplot(q.aes('box',grp=grp,...),stat='identity',
       alpha=.25,width=.8*w,position=position_dodge(width=w))
   g = plot.clean(g)
 }
