@@ -4,24 +4,23 @@ from model import system,target,out,plot,slicers
 
 plotsize = 3 # inches
 ttfname = fio.tmpfile('fit-{}.pdf')
-groups = ['all','w','m','fsw']
 specs = dict(
   NX            = dict(oname='NX',snames=['all']),
   Psi           = dict(oname='Psi',snames=['fsw.h','fsw.l','cli.h','cli.l']),
   Ph            = dict(oname='Ph',snames=['ahi','>500','<500','<350','<200'],ymax=1),
-  prevalence    = dict(oname='prevalence',snames=groups,ymax=[.5,.5,.5,1]),
+  prevalence    = dict(oname='prevalence',ymax=[.5,.5,.5,1]),
   prevalence1v2 = dict(oname='prevalence',snames=[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],vsop='1/2',ymax=5),
-  incidence     = dict(oname='incidence',snames=groups,ymax=[.1,.1,.1,3]),
+  incidence     = dict(oname='incidence',ymax=[.1,.1,.1,3]),
   incidence1v2  = dict(oname='incidence',snames=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
-  diagnosed     = dict(oname='diagnosed',snames=groups,ymax=1),
-  treated_c     = dict(oname='treated_c',snames=groups,ymax=1),
-  treated_u     = dict(oname='treated_u',snames=groups,ymax=1),
-  vls_c         = dict(oname='vls_c',snames=groups,ymax=1),
-  vls_u         = dict(oname='vls_u',snames=groups,ymax=1),
+  diagnosed     = dict(oname='diagnosed',ymax=1),
+  treated_c     = dict(oname='treated_c',ymax=1),
+  treated_u     = dict(oname='treated_u',ymax=1),
+  vls_c         = dict(oname='vls_c',ymax=1),
+  vls_u         = dict(oname='vls_u',ymax=1),
   condom        = dict(oname='condom',snames=['msp','cas','swo','swr'],ymax=1),
   circum        = dict(oname='circum',snames=['*']),
-  dx_rate       = dict(oname='dx_rate',snames=groups),
-  tx_rate       = dict(oname='tx_rate',snames=groups),
+  dx_rate       = dict(oname='dx_rate'),
+  tx_rate       = dict(oname='tx_rate'),
 )
 specsets = dict(
   hiv     = ['prevalence','prevalence1v2','incidence','incidence1v2'],
@@ -30,16 +29,17 @@ specsets = dict(
   rates   = ['dx_rate','tx_rate'],
 )
 
-def plot_sets(t,Rs,T=None,fname='pyplots.pdf',debug=True,sets=None):
+def plot_sets(t,Rs,T=None,fname='pyplots.pdf',debug=False,sets=None,snames=None):
   if sets is None: sets = specsets.keys()
+  if snames is None: snames = ['all','w','m','fsw']
+  kwds = dict(T=T,snames=snames)
   if debug: # best 100%, 10%, 1% fits as ribbons; then merge 
     Rs = system.drop_fails(Rs)[0]
     Rss = [target.top_ll(Rs,top) for top in (1.,.1,.01)]
-    kwds = dict(T=T)
   else: # 100% fits as ribbon + median; no merge
     Rss = [Rs]
-    kwds = dict(T=T,tfname=fname)
-  tfnames = [plot_output(t,Rss,**specs[name],**kwds) \
+    kwds.update(tfname=fname)
+  tfnames = [plot_output(t,Rss,**dict(kwds,**specs[name])) \
     for set in flatten(sets) for name in specsets[set]]
   if debug: fio.pdfmerge(fname,tfnames)
 
