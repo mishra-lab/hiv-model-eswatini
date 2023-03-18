@@ -124,6 +124,6 @@ def get_sens_sample(Ps,Ns):
 if __name__ == '__main__':
   # run_rf(**akwds)
   # merge_rf()
-  rerun_rf()
+  # rerun_rf()
   # run_ss(**akwds)
   pass
