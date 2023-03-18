@@ -223,7 +223,7 @@ def wiw(R1s,tvec,t,R2s=None,vsop='1-2'):
     data += [[tk,p,fs,fi,ts,ti]+inf[:,k].tolist() for k,tk in enumerate(t)]
   return data
 
-def expo(onames,R1s,tvec,t,snames,R2s=None,vsop='raw',ecols=None,mode='q',drop=True,**kwds):
+def expo(R1s,tvec,t,onames,snames,R2s=None,vsop='raw',ecols=None,mode='q',drop=True,**kwds):
   # E: dict of cols (lists); first cols = strata, later cols = output quantiles/values per seed
   if drop:
     if R2s: R1s,R2s = system.drop_fails(R1s,R2s)

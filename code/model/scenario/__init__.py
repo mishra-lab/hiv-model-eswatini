@@ -32,6 +32,11 @@ def batch_select(objs,b):
   nb = int(len(objs) / N['batch'])
   return objs[slice(nb*b,nb*(b+1))]
 
-def scinet():
-  os.environ['MPLCONFIGDIR'] = fio.tmpfile()
+akwds = fio.argvkwds(scinet=False)
+
+if akwds.pop('scinet'):
+  os.environ['MPLCONFIGDIR'] = fio.tmpfile() # TODO: this may not work?
   parallel.cpus = 80
+
+uid = '2023-03-03'
+# N['sam'] = 1000 # DEBUG

@@ -26,6 +26,6 @@ def run(case='base'):
       log(1,'tpaf: '+name+'_'+str(t0))
       P2s = dict_list_update(P1s,mix_mask_tpaf=params.get_mix_mask(**spec),t0_tpaf=t0)
       R2s = system.run_n(P2s,t=tvec['main'])
-      Ei = out.expo(['cuminfect'],**ekwds,R2s=R2s,ecols={'tpaf.pop':name,'tpaf.t0':str(t0)})
+      Ei = out.expo(**ekwds,R2s=R2s,onames=['cuminfect'],ecols={'tpaf.pop':name,'tpaf.t0':str(t0)})
       E = {col:E[col]+Ei[col] for col in E}
   fio.save_csv(fname('csv','tpaf','expo',case=case),E)
