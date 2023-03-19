@@ -16,7 +16,6 @@ def get_all(P=None,seed=None,**kwds):
   P.update(get_F(P))
   P.update(get_PX(P))
   P.update(get_birth_death(P))
-  # P.update(get_turnover_old(P)) # TODO: remove
   P.update(get_turnover(P))
   P.update(get_K(P))
   P.update(get_mix(P))
@@ -250,7 +249,7 @@ def get_birth_death(P): # [OK]
     'death': death,
   }
 
-def get_turnover(P):
+def get_turnover(P): # TODO: thesis update
   # turn_sii.shape = (s:2, i:4, i':4)
   dur = np.array([[NAN,NAN,P['dur_fsw_l'],P['dur_fsw_h']],[NAN,NAN,P['dur_cli'],P['dur_cli']]])
   PXe = np.zeros((2,4)) # s, i
@@ -302,33 +301,6 @@ def solve_turnover(P,t):
       P['PXe_si'][s] = -np.inf # fail (gracefully) in system.solve
       # raise Exception('Cannot solve turnover (s={}) error: {}, seed: {}'.format(s,err,P['seed']))
   return v,P['PXe_si'],P['turn_sii']
-
-def get_turnover_old(P): # TODO: remove
-  # turn_sii.shape = (s:2, i:4, i':4)
-  t_fsw_l = 1/P['dur_fsw_l'] - P['death']
-  t_fsw_h = 1/P['dur_fsw_h'] - P['death']
-  t_cli   = 1/P['dur_cli'] - P['death']
-  turn = np.zeros((2,4,4)) # s, i.from, i.to
-  # fsw -> med & low
-  turn[0,2,1] = t_fsw_l * (P['Pturn_fsw_m:l'])
-  turn[0,2,0] = t_fsw_l * (1 - P['Pturn_fsw_m:l'])
-  turn[0,3,1] = t_fsw_h * (P['Pturn_fsw_m:l'])
-  turn[0,3,0] = t_fsw_h * (1 - P['Pturn_fsw_m:l'])
-  # clients -> med & low
-  turn[1,2,1] = t_cli * (P['Pturn_cli_m:l'])
-  turn[1,2,0] = t_cli * (1 - P['Pturn_cli_m:l'])
-  turn[1,3,1] = t_cli * (P['Pturn_cli_m:l'])
-  turn[1,3,0] = t_cli * (1 - P['Pturn_cli_m:l'])
-  # med -> low
-  turn[0,1,0] = P['turn_xm_xl']
-  turn[1,1,0] = P['turn_xm_xl']
-  # balance flows (absolute)
-  i = [(3,3,2,2,1),(1,0,1,0,0)]
-  turn[:,i[1],i[0]] += turn[:,i[0],i[1]] * P['PX_si'][:,i[0]] / P['PX_si'][:,i[1]]
-  return {
-    'turn_sii': turn,
-    'dur_si': 1 / (turn.sum(axis=2) + P['death']),
-  }
 
 # FOI ----------------------------------------------------------------------------------------------
 
@@ -389,7 +361,7 @@ def check_F(P):
     P['C1m_swr_fsw_l'] * C2K_swr * P['RC_swr_fsw_h:l'] * P['F_swr'] < 2*365
   )
 
-def get_K(P): # TODO C -> Q
+def get_K(P):
   # .shape = (p:4, s:2, i:4)
   PX_si = P['PX_si']
   F = np.squeeze(P['F_ap'].sum(axis=0))
@@ -491,7 +463,7 @@ def get_mix(P): # [OK]
   return {
     'pref_pii': pref_pii,
     'mix': np.zeros((4,2,4,2,4)), # initialize
-    'mix_mask': np.ones((4,2,4,2,4)), # TODO
+    'mix_mask': np.ones((4,2,4,2,4)),
     't0_tpaf': np.inf,
   }
 
