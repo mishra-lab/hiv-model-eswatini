@@ -154,7 +154,7 @@ def plot_S(fun,t,R,sname,box=False,**kwds):
   if isinstance(fun,str):
     fun = out.by_name(fun)
   if isinstance(R,list):
-    x = [fun(Ri,**S.pop) for Ri in R]
+    x = [fun(Ri,**S.pop,**fkwds) for Ri in R]
     ribbon_or_box(t,x,box=box,**kwds)
   else:
     x = fun(R,**S.pop,**fkwds)

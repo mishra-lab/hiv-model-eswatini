@@ -12,6 +12,7 @@ specs = dict(
   prevalence1v2 = dict(oname='prevalence',snames=[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],vsop='1/2',ymax=5),
   incidence     = dict(oname='incidence',ymax=[.1,.1,.1,3]),
   incidence1v2  = dict(oname='incidence',snames=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
+  cuminfect     = dict(oname='cuminfect'),
   diagnosed     = dict(oname='diagnosed',ymax=1),
   treated_c     = dict(oname='treated_c',ymax=1),
   treated_u     = dict(oname='treated_u',ymax=1),
@@ -49,6 +50,7 @@ def plot_output(t,Rss,oname,snames,T=None,tfname=None,ylab=None,ymax=None,**kwds
   if np.size(ymax) == 1: ymax = len(snames) * flatten(ymax)
   fh,ah = plot.subplots(1,len(snames))
   kwds.update(interval=1,median=(len(Rss)==1))
+  if oname == 'cuminfect': kwds.update(tvec=t)
   for s,sname in enumerate(snames):
     plot.plt.sca(ah[0,s])
     if isinstance(sname,tuple): # 2-group (vs) type
