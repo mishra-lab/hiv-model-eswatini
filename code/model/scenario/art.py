@@ -43,7 +43,7 @@ def rerun_rf():
     fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkwds))
     fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s=R1s,**tkwds,
       snames=['all','w','m','aq','fsw','cli'],
-      onames=['incidence','prevalence','diagnosed','treated_c','treated_u','vls_c','vls_u']))
+      onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
     # TODO: add back keyout
     fit.plot_sets(tvec['main'],R1s,T=T,fname=fname('fig','art-rf','{}',case=case),
       sets='cascade',snames=['all','aq','fsw','cli'])
