@@ -41,10 +41,9 @@ def rerun_rf():
     Ps = fio.load(fname('npy','fit' if base else 'art-rf','Ps',case=case))
     R1s = system.run_n(Ps,t=tvec['main'],T=T)
     fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkwds))
-    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s=R1s,**tkwds,
+    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s=R1s,**tkwds,mode='seed',
       snames=['all','w','m','aq','fsw','cli'],
       onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
-    # TODO: add back keyout
     fit.plot_sets(tvec['main'],R1s,T=T,fname=fname('fig','art-rf','{}',case=case),
       sets='cascade',snames=['all','aq','fsw','cli'])
     if base:
