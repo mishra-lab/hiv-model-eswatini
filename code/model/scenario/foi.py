@@ -1,7 +1,7 @@
 from copy import copy
 from utils import log,fio,dict_list_update
 from model import system,out
-from model.scenario import calibrate,tpaf,akwds,tvec,fname
+from model.scenario import cal,tpaf,akwds,tvec,fname
 
 cases = ['base','rd','ry','pd','py']
 

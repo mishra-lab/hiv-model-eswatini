@@ -4,7 +4,7 @@ from model import system,params,target,fit,out
 from model.scenario import akwds,N,tvec,fname,batch_select
 
 def run(case,b,**kwds):
-  log(0,'scenario.calibrate.run: '+str(b))
+  log(0,'scenario.cal.run: '+str(b))
   # get targets (T), seeds, params (P0s)
   T = target.get_all_esw()
   seeds = batch_select(range(N['sam']),b=b)
@@ -22,7 +22,7 @@ def run(case,b,**kwds):
   fit.plot_sets(tvec['cal'],R0s,T=T,tfname=fname('fig','sam','cal',case=case,b=b),debug=True)
 
 def merge(case):
-  log(0,'scenario.calibrate.merge')
+  log(0,'scenario.cal.merge')
   # npy: load topcal, select topfit, save topfit
   P0s = [P for b in range(N['batch']) for P in fio.load(fname('npy','cal','Ps',case=case,b=b))]
   Ps = target.top_ll(P0s,top=int(N['sam']*N['topfit']))
@@ -36,7 +36,7 @@ def merge(case):
   fio.save_csv(fname('csv','sam','Ps',case=case),P0s)
 
 def rerun(case):
-  log(0,'scenario.calibrate.rerun')
+  log(0,'scenario.cal.rerun')
   T = target.get_all_esw()
   Ps = fio.load(fname('npy','fit','Ps',case=case))
   Rs = system.run_n(Ps,t=tvec['main'])
