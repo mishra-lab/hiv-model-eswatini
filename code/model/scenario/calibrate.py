@@ -19,7 +19,7 @@ def run(case,b,**kwds):
   R0s = system.drop_fails(R0s)[0]
   Rs = target.top_ll(R0s,top=int(len(seeds)*N['topcal']))
   fio.save(fname('npy','cal','Ps',case=case,b=b),[R['P'] for R in Rs])
-  fit.plot_sets(tvec['cal'],R0s,T=T,fname=fname('fig','sam','cal',case=case,b=b),debug=True)
+  fit.plot_sets(tvec['cal'],R0s,T=T,tfname=fname('fig','sam','cal',case=case,b=b),debug=True)
 
 def merge(case):
   log(0,'scenario.calibrate.merge')
@@ -40,7 +40,7 @@ def rerun(case):
   T = target.get_all_esw()
   Ps = fio.load(fname('npy','fit','Ps',case=case))
   Rs = system.run_n(Ps,t=tvec['main'])
-  fit.plot_sets(tvec['main'],Rs,T=T,fname=fname('fig','fit','{}',case=case))
+  fit.plot_sets(tvec['main'],Rs,T=T,tfname=fname('fig','fit','{}',case=case))
   fio.save_csv(fname('csv','fit','wiw',case=case),out.wiw(Rs,tvec['main'],tvec['plot']))
 
 if __name__ == '__main__':

@@ -44,7 +44,7 @@ def rerun_rf():
     fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s=R1s,**tkwds,mode='seed',
       snames=['all','w','m','aq','fsw','cli'],
       onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
-    fit.plot_sets(tvec['main'],R1s,T=T,fname=fname('fig','art-rf','{}',case=case),
+    fit.plot_sets(tvec['main'],R1s,T=T,tfname=fname('fig','art-rf','{}',case=case),
       sets='cascade',snames=['all','aq','fsw','cli'])
     if base:
       R2s = deepcopy(R1s)
@@ -107,7 +107,7 @@ def run_ss(Ns=10):
   Rs = system.run_n(Ps,t=tvec['main'])
   fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkwds))
   # TODO: add back keyouts
-  fit.plot_sets(tvec['main'],Rs,fname=fname('fig','art-ss','{}',case='sens'),
+  fit.plot_sets(tvec['main'],Rs,tfname=fname('fig','art-ss','{}',case='sens'),
     sets='cascade',snames=['all','aq','fsw','cli'])
 
 def get_sens_sample(Ps,Ns):

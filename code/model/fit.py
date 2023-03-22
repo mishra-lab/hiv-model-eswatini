@@ -3,34 +3,35 @@ from utils import fio,squarish,flatten
 from model import system,target,out,plot,slicers
 
 plotsize = 3 # inches
-ttfname = fio.tmpfile('fit-{}.pdf')
 specs = dict(
-  NX            = dict(oname='NX',snames=['all']),
-  Psi           = dict(oname='Psi',snames=['fsw.h','fsw.l','cli.h','cli.l']),
-  Ph            = dict(oname='Ph',snames=['ahi','>500','<500','<350','<200'],ymax=1),
-  prevalence    = dict(oname='prevalence',ymax=[.5,.5,.5,1]),
-  prevalence1v2 = dict(oname='prevalence',snames=[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],vsop='1/2',ymax=5),
-  incidence     = dict(oname='incidence',ymax=[.1,.1,.1,3]),
-  incidence1v2  = dict(oname='incidence',snames=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
-  cuminfect     = dict(oname='cuminfect'),
-  diagnosed     = dict(oname='diagnosed',ymax=1),
-  treated_c     = dict(oname='treated_c',ymax=1),
-  treated_u     = dict(oname='treated_u',ymax=1),
-  vls_c         = dict(oname='vls_c',ymax=1),
-  vls_u         = dict(oname='vls_u',ymax=1),
-  condom        = dict(oname='condom',snames=['msp','cas','swo','swr'],ymax=1),
-  circum        = dict(oname='circum',snames=['*']),
-  dx_rate       = dict(oname='dx_rate'),
-  tx_rate       = dict(oname='tx_rate'),
+  NX      = dict(oname='NX',snames=['all']),
+  Psi     = dict(oname='Psi',snames=['fsw.h','fsw.l','cli.h','cli.l']),
+  Ph      = dict(oname='Ph',snames=['ahi','>500','<500','<350','<200'],ymax=1),
+  prev    = dict(oname='prevalence',ymax=[.5,.5,.5,1]),
+  prev1v2 = dict(oname='prevalence',snames=[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],vsop='1/2',ymax=5),
+  prevanc = dict(oname='prevalence',snames=['w'],ymax=[.5],T=target.get_prevalence_esw_anc()),
+  inc     = dict(oname='incidence',ymax=[.1,.1,.1,3]),
+  inc1v2  = dict(oname='incidence',snames=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
+  cuminf  = dict(oname='cuminfect'),
+  diag    = dict(oname='diagnosed',ymax=1),
+  treat_c = dict(oname='treated_c',ymax=1),
+  treat_u = dict(oname='treated_u',ymax=1),
+  vls_c   = dict(oname='vls_c',ymax=1),
+  vls_u   = dict(oname='vls_u',ymax=1),
+  condom  = dict(oname='condom',snames=['msp','cas','swo','swr'],ymax=1),
+  circum  = dict(oname='circum',snames=['*']),
+  dx_rate = dict(oname='dx_rate'),
+  tx_rate = dict(oname='tx_rate'),
 )
 specsets = dict(
-  hiv     = ['prevalence','prevalence1v2','incidence','incidence1v2'],
-  cascade = ['diagnosed','treated_c','treated_u','vls_c','vls_u'],
-  extra   = ['NX','Psi','Ph','condom','circum'],
+  hiv     = ['prev','prev1v2','inc','inc1v2'],
+  cascade = ['diag','treat_c','treat_u','vls_c','vls_u'],
+  extra   = ['NX','Psi','Ph','condom','circum','prevanc'],
   rates   = ['dx_rate','tx_rate'],
 )
 
-def plot_sets(t,Rs,T=None,fname='pyplots.pdf',debug=False,sets=None,snames=None):
+def plot_sets(t,Rs,T=None,tfname=None,debug=False,sets=None,snames=None):
+  if tfname is None: tfname = fio.tmpfile('fit-{}.pdf')
   if sets is None: sets = specsets.keys()
   if snames is None: snames = ['all','w','m','fsw']
   kwds = dict(T=T,snames=snames)
@@ -39,13 +40,11 @@ def plot_sets(t,Rs,T=None,fname='pyplots.pdf',debug=False,sets=None,snames=None)
     Rss = [target.top_ll(Rs,top) for top in (1.,.1,.01)]
   else: # 100% fits as ribbon + median; no merge
     Rss = [Rs]
-    kwds.update(tfname=fname)
-  tfnames = [plot_output(t,Rss,**dict(kwds,**specs[name])) \
+  tfnames = [plot_output(t,Rss,**dict(kwds,fname=tfname.format(name),**specs[name])) \
     for set in flatten(sets) for name in specsets[set]]
-  if debug: fio.pdfmerge(fname,tfnames)
+  if debug: fio.pdfmerge('pyplots.pdf',tfnames)
 
-def plot_output(t,Rss,oname,snames,T=None,tfname=None,ylab=None,ymax=None,**kwds):
-  if tfname is None: tfname = ttfname
+def plot_output(t,Rss,oname,snames,fname,T=None,ylab=None,ymax=None,**kwds):
   if ylab is None: ylab = out.labels.get(oname,oname)
   if np.size(ymax) == 1: ymax = len(snames) * flatten(ymax)
   fh,ah = plot.subplots(1,len(snames))
@@ -67,4 +66,4 @@ def plot_output(t,Rss,oname,snames,T=None,tfname=None,ylab=None,ymax=None,**kwds
     plot.plt.ylim((0,ymax[s]))
   fh.set_size_inches((.5+plotsize*len(snames),plotsize))
   fh.tight_layout()
-  return plot.save(tfname.format(oname+(kwds.get('vsop','').replace('/','v'))))
+  return plot.save(fname)
