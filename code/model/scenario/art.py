@@ -4,6 +4,7 @@ from copy import deepcopy
 from utils import stats,log,fio,parallel,flatten,minimize
 from model import slicers,params,system,target,fit,out
 from model.scenario import akwds,N,tvec,fname,batch_select
+from pprint import pprint
 
 cascade = dict( # 2020 cascade targets
   low  = (.60,.40,.80),
@@ -101,17 +102,24 @@ def Rxs_update(P,Pu,q=None):
 
 def run_ss(Ns=10):
   log(0,'scenario.art.run_ss')
-  tkwds = dict(tvec=tvec['main'],t=tvec['plot'])
+  tkwds = dict(tvec=tvec['main'])
   P0s = fio.load(fname('npy','fit','Ps'))
   Ps = get_sens_sample(P0s,Ns)
   Rs = system.run_n(Ps,t=tvec['main'])
-  fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkwds))
-  # TODO: add back keyouts
+  fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkwds,t=tvec['plot']))
+  fio.save_csv(fname('csv','art-ss','Ps',case='sens'),get_par_expo(Rs,
+    pnames=[*params.def_sample_distrs().keys(),'PX_fsw','PX_cli','EHY_acute']))
+  fio.save_csv(fname('csv','art-ss','expo',case='sens'),out.expo(Rs,**tkwds,t=tvec['outs'],mode='seed',
+    snames=['all','w','m','aq','fsw','cli'],
+    onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
   fit.plot_sets(tvec['main'],Rs,tfname=fname('fig','art-ss','{}',case='sens'),
     sets='cascade',snames=['all','aq','fsw','cli'])
 
+def get_par_expo(Rs,pnames):
+  return dict(par=pnames,**{'s'+str(R['P']['seed']):[R['P'][pname] for pname in pnames] for R in Rs})
+
 def get_sens_sample(Ps,Ns):
-  PDs = { # TODO: adjust to get desire posterior cascade
+  PDs = { # TODO: adjust to get desired posterior cascade
     'd': stats.betabin(p=.6,n=3),
     't': stats.betabin(p=.6,n=3),
     'u': stats.gamma(m=6,sd=3),
