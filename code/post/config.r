@@ -27,6 +27,10 @@ slicers = list(
   'ry'    = list('#990099','Rate-1-Year','22'),
   'pd'    = list('#00CC66','Proportion-Duration','8212'),
   'py'    = list('#0066CC','Proportion-1-Year','4212'),
+  'fsw-cli+' = list('#FF0033','FSW'),
+  'fsw+cli-' = list('#0066CC','Clients'),
+  'fsw-cli-' = list('#990099','Both'),
+  'fsw+cli+' = list('#FF9900','Neither'),
   'base'  = list('#999999','Base','solid'))
 slicers$aqf  = slicers$aqt  = slicers$aq
 slicers$fswf = slicers$fswt = slicers$fsw
@@ -34,6 +38,7 @@ slicers$clif = slicers$clit = slicers$cli
 sets = list(
   base    = c('base'),
   foi     = c('rd','ry','pd','py','base'),
+  art     = c('fsw-cli+','fsw+cli-','fsw-cli-','fsw+cli+','base'),
   pop.all = c('wl','wm','fsw.l','fsw.h','ml','mm','cli.l','cli.h'),
   pop.cal = c('all','w','m','fsw'),
   pop.art = c('all','aq','fsw','cli'),
@@ -62,4 +67,20 @@ read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
   X$case.lab = factor(X$case,levels=sets[[set]],labels=set.labs[[set]])
   if (rdata=='save'){ save(X,file=gen.name(phase,key,set,ext='.rdata')) }
   return(X)
+}
+
+melt.expo.s = function(X,...){
+  X = melt(filter.cols(X,...),measure=grep('^s\\d*',colnames(X)),var='seed')
+  X$seed = as.integer(gsub('s','',X$seed))
+  return(X[order(X$case),])
+}
+
+qs = c(0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1)
+
+expo.qs = function(X,q=qs){
+  vars = colnames(X)[!grepl('^seed$|^value$',colnames(X))]
+  f = formula(paste('value ~',paste(vars,collapse='+')))
+  X.q = do.call(data.frame,aggregate(f,X,quantile,p=q))
+  colnames(X.q)[grep('^value\\.',colnames(X.q))] = paste0('q',q)
+  return(X.q)
 }
