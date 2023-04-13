@@ -27,6 +27,11 @@ plot.expo.box = function(X,out,grp,t,w=.8,...){
       alpha=.25,width=.8*w,position=position_dodge(width=w))
   g = plot.clean(g)
 }
+plot.hist = function(X,x,bw=1,...){
+  g = ggplot(X,aes_string(x=x,...)) +
+    geom_histogram(binwidth=bw,alpha=.6,lwd=.1)
+  g = plot.clean(g)
+}
 fig.save = function(uid,sam,...,w=7,h=7){
   fig.name = root.path('out','fig',uid,sam,paste0(paste(...,sep='.'),'.pdf'))
   print(paste('saving:',fig.name))
