@@ -4,7 +4,7 @@ q.cut = .01
 id.vars = c('seed','ll','ll.cut')
 
 pre.load = function(case){
-  P = read.csv(gen.name('sam','Ps',case,b='all'))
+  P = read.csv(gen.name('sam','Ps',case))
   P$ll[!is.finite(P$ll)] = -Inf
   P$foi_mode = NULL
   s.post = P$ll >= quantile(P$ll,1-q.cut,na.rm=TRUE)

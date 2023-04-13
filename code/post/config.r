@@ -27,7 +27,7 @@ slicers = list(
   'ry'    = list('#990099','Rate-1-Year','22'),
   'pd'    = list('#00CC66','Proportion-Duration','8212'),
   'py'    = list('#0066CC','Proportion-1-Year','4212'),
-  'base'  = list('#FF9900','New Proposed','solid'))
+  'base'  = list('#999999','Base','solid'))
 slicers$aqf  = slicers$aqt  = slicers$aq
 slicers$fswf = slicers$fswt = slicers$fsw
 slicers$clif = slicers$clit = slicers$cli
@@ -43,20 +43,23 @@ slice.labs = sapply(names(slicers),function(id){ slicers[[id]][[2]] })
 set.cols = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.cols[[id]] })) })
 set.labs = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.labs[[id]] })) })
 set.lts = list(foi=unname(sapply(sets$foi,function(id){ slicers[[id]][[3]] }))) # TODO: better way?
+set.labs$foi[5] = 'New Proposed'; set.cols$foi[5] = '#FF9900'
 
 gen.name = function(phase,key,case,b='all',ext='.csv'){
   return(root.path('data','csv',uid,sprintf('%d',N$sam),
     paste0( phase,'_',key,'_',case,'_',b,ext)))
 }
-read.csvs = function(phase,key,set,b='all',skip=NULL){
+read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
+  if (rdata=='load'){ load(file=gen.name(phase,key,set,ext='.rdata')); return(X) }
   X = do.call(rbind,lapply(sets[[set]],function(case){
     if (case %in% skip){ return(NULL) }
     X.i = do.call(rbind,lapply(b,function(bi){
-      read.csv(gen.name(phase,key,case,b=bi))
+      read.csv(gen.name(phase,key,case,b=bi),as.is=TRUE)
     }))
     X.i$case = case
     return(X.i)
   }))
   X$case.lab = factor(X$case,levels=sets[[set]],labels=set.labs[[set]])
+  if (rdata=='save'){ save(X,file=gen.name(phase,key,set,ext='.rdata')) }
   return(X)
 }

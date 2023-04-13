@@ -41,8 +41,8 @@ main.ep = function(){
 
 main.wiw = function(){
   X = rbind(
-    cbind(clean.wiw.data(read.csvs('foi-ep','wiw','foi','all')),par='Equal Parameters'),
-    cbind(clean.wiw.data(read.csvs('fit',   'wiw','foi','all')),par='Recalibrated Parameters'))
+    cbind(clean.wiw.data(read.csvs('foi-ep','wiw','foi')),par='Equal Parameters'),
+    cbind(clean.wiw.data(read.csvs('fit',   'wiw','foi')),par='Recalibrated Parameters'))
   g = do.margin(X,'part',type='rel',strat=c('case.lab','par')) +
     facet_grid('par~case.lab') +
     labs(y='Yearly Infections (%)')
@@ -53,12 +53,12 @@ main.tpaf = function(){
   X = read.csvs('tpaf','expo','foi')
   X$t.hor = X$t - X$tpaf.t0
   # plot groups of transmission pathways
-  pops = list(part=c('msp','cas','swx'),popf=c('aqf','fswf','clif'))
+  pops = list(part=c('msp','cas','swx'),popf=c('aqf','fswf','clif'),popt=c('aqt','fswt','clit'))
   for (pop in names(pops)){
     g = plot.tpaf.box(X,tpaf.pop=pops[[pop]],tpaf.t0=c(1990,2000,2010)) +
       facet_grid('tpaf.t0 ~ tpaf.pop',scales='free_y')
     g = plot.clean.foi(g)
-    fig.save(uid,N$sam,'tpaf.foi',pop,w=8,h=7)
+    fig.save(uid,N$sam,'foi.tpaf',pop,w=8,h=7)
   }
 }
 

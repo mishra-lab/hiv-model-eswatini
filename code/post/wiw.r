@@ -9,10 +9,11 @@ clean.wiw.data = function(X,infs='q0.5'){
   X$part  = factor(1+X$p,levels=1:4,labels=set.labs$part)
   return(X)
 }
-do.norm = function(X,margin,strat='1',scale=100){
-  X = X[do.call(order,X[c(margin,rev(strat),'t')]),]
-  X.total = aggregate(formula(paste(c('infs ~ t',strat),collapse=' + ')),X,sum)
-  X$infs = scale * X$infs / X.total$infs
+do.norm = function(X,margin,strat=NULL,scale=100){
+  X.s = aggregate(formula(paste(c('infs ~ t',strat),collapse=' + ')),X,sum)
+  X = merge(X,rename.cols(X.s,infs='infs.total'))
+  X$infs = scale * X$infs / X$infs.total
+  X$infs.total = NULL
   return(X)
 }
 do.alluvial = function(X,fill='part',norm=FALSE){
@@ -51,7 +52,7 @@ do.ratio = function(X){
     labs(x='Year',y='Yearly Infections Transmitted / Acquired ',color='',fill='')
   g = plot.clean(g,legend.position='top')
 }
-do.margin = function(X,margin,type='both',strat='1'){
+do.margin = function(X,margin,type='both',strat=NULL){
   X.abs = aggregate(formula(paste(c('infs ~ t',margin,strat),collapse=' + ')),X,sum)
   X.rel = do.norm(X.abs,margin=margin,strat=strat)
   X.abs$scale = 'Absolute (\'000s)'
