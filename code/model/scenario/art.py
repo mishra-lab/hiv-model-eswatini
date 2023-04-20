@@ -86,7 +86,7 @@ def run_rf_1(P,PD,T,t,ftol=.1):
     if not M.success: return False
   return P
 
-def Rxs_update(P,Pu,q=None):
+def Rxs_update(P,Pu,q=None,**kwds):
   # update R*x_scen using Pu, e.g. {'Rdx:fsw':1.5}
   # q might be given as quantiles, e.g. Pu[k].ppf(qk) -> 1.5
   def Rx_update_S(Rx,sname,sRx):
@@ -97,7 +97,7 @@ def Rxs_update(P,Pu,q=None):
   if q is not None: Pu = {k:Pu[k].ppf(qk) for k,qk in zip(Pu.keys(),q)}
   for key,sRx in Pu.items():
     rate,pop = key.split(':')
-    P.update({rate+'_scen':Rx_update_S(P[rate+'_scen'],pop,sRx)})
+    P.update({rate+'_scen':Rx_update_S(P[rate+'_scen'],pop,sRx)},**kwds)
   return P
 
 def run_ss(Ns=10):
@@ -119,14 +119,14 @@ def get_par_expo(Rs,pnames):
   return dict(par=pnames,**{'s'+str(R['P']['seed']):[R['P'][pname] for pname in pnames] for R in Rs})
 
 def get_sens_sample(Ps,Ns):
-  PDs = { # TODO: adjust to get desired posterior cascade
-    'd': stats.betabin(p=.6,n=3),
-    't': stats.betabin(p=.6,n=3),
-    'u': stats.gamma(m=6,sd=3),
+  PDs = {
+    'd': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
+    't': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
+    'u': stats.gamma(m=6.5,sd=3.5),  # CI: (1.5, 15)
   }
   PD = {'R'+step+'x:'+pop: PDs[step] for pop in ('fsw','cli','aq') for step in 'dtu'}
-  return [Rxs_update(deepcopy(P),Pu) for P in Ps
-    for Pu in params.get_n_sample_lhs(Ns,PD,seed=P['seed'])]
+  return [Rxs_update(deepcopy(P),Pu,seed=P['seed']+s/1000) for P in Ps
+    for s,Pu in enumerate(params.get_n_sample_lhs(Ns,PD,seed=P['seed']))]
 
 if __name__ == '__main__':
   # run_rf(**akwds)

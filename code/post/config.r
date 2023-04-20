@@ -31,12 +31,14 @@ slicers = list(
   'fsw+cli-' = list('#0066CC','Clients'),
   'fsw-cli-' = list('#990099','Both'),
   'fsw+cli+' = list('#FF9900','Neither'),
+  'sens'  = list('#999999','Sensitivity'),
   'base'  = list('#999999','Base','solid'))
 slicers$aqf  = slicers$aqt  = slicers$aq
 slicers$fswf = slicers$fswt = slicers$fsw
 slicers$clif = slicers$clit = slicers$cli
 sets = list(
   base    = c('base'),
+  sens    = c('sens'),
   foi     = c('rd','ry','pd','py','base'),
   art     = c('fsw-cli+','fsw+cli-','fsw-cli-','fsw+cli+','base'),
   pop.all = c('wl','wm','fsw.l','fsw.h','ml','mm','cli.l','cli.h'),
@@ -69,9 +71,9 @@ read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
   return(X)
 }
 
-melt.expo.s = function(X,...){
-  X = melt(filter.cols(X,...),measure=grep('^s\\d*',colnames(X)),var='seed')
-  X$seed = as.integer(gsub('s','',X$seed))
+melt.expo.s = function(X.wide,...){
+  X = melt(filter.cols(X.wide,...),measure=grep('^s\\d*',colnames(X.wide)),var='seed')
+  X$seed = as.numeric(gsub('s','',X$seed))
   return(X[order(X$case),])
 }
 
