@@ -7,13 +7,17 @@ def run(case='base'):
   P1s = fio.load(fname('npy','fit','Ps',case=case))
   R1s = system.run_n(P1s,t=tvec['main'])
   ekwds = dict(R1s=R1s,tvec=tvec['main'],t=tvec['plot'],vsop='1-2/1',
-    snames=['all','w','m','aq','fsw','cli'])
+    snames=['all','w','m','aq','asw','fsw','cli'])
   tpafs = dict(
     msp = dict(p=0),
     cas = dict(p=1),
+    swo = dict(p=2),
+    swr = dict(p=3),
     swx = dict(p=(2,3)),
     aqf = dict(fs=(0,1),fi=(0,1)),
     aqt = dict(ts=(0,1),ti=(0,1)),
+    aswf = dict(fs=(0,1),fi=(2,3)),
+    aswt = dict(ts=(0,1),ti=(2,3)),
     fswf = dict(fs=0,fi=(2,3)),
     fswt = dict(ts=0,ti=(2,3)),
     clif = dict(fs=1,fi=(2,3)),
