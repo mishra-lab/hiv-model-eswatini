@@ -23,7 +23,7 @@ def run(case='base'):
     clif = dict(fs=1,fi=(2,3)),
     clit = dict(ts=1,ti=(2,3)),
   )
-  t0s = [1990,1995,2000,2005,2010,2015,2020,2025]
+  t0s = [1990,2000,2010,2020]
   E = out.expo([],[],[],[],[],ecols={'tpaf.pop':None,'tpaf.t0':None})
   for name,spec in tpafs.items():
     for t0 in t0s:
