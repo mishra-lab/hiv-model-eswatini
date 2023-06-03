@@ -24,9 +24,9 @@ def run_ep():
     fio.save_csv(fname('csv','foi-ep','expo',case=case),E)
 
 if __name__ == '__main__':
-  # calibrate.run(**akwds)
-  # calibrate.merge(**akwds)
-  # calibrate.rerun(**akwds)
+  # cal.run(**akwds)
+  # cal.merge(**akwds)
+  # cal.rerun(**akwds)
   # tpaf.run(**akwds)
   # run_ep()
   pass
