@@ -1,4 +1,5 @@
 source('post/config.r')
+source('post/posterior.r')
 source('post/wiw.r')
 source('post/tpaf.r')
 # N$sam = 1000 # DEBUG
@@ -9,6 +10,17 @@ plot.clean.foi = function(g,leg='top',lab='FOI Approach'){
     scale_color_manual(values=set.cols$foi) +
     scale_linetype_manual(values=set.lts$foi) +
     theme(legend.position=leg)
+}
+
+main.post = function(){
+  X = do.call(rbind,lapply(sets$foi,function(case){
+    load(gen.name('sam','Ps',case,ext='.rdata'))
+    X = cbind(X[s.post(X),],case=case)
+  }))
+  X$case.lab = factor(X$case,levels=sets$foi,labels=set.labs$foi)
+  g = plot.post.uni(X,'case.lab',ncol=6,p.thr=.1) # MAN
+  g = plot.clean.foi(g)
+  ggsave('post.distr.foi.pdf',w=10,h=6)
 }
 
 plot.ep = function(Xepp,op,ylab,leg='top',oname='incidence'){
@@ -61,6 +73,7 @@ main.tpaf = function(){
   }
 }
 
+# main.post()
 # main.ep()
 # main.wiw()
 # main.tpaf()
