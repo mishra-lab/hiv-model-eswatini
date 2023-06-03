@@ -1,11 +1,11 @@
-\renewcommand{\xbeta}{.02}
-\binomdashtopfalse\input{binom.part.axes}
-\draw[BPH,dashed] ( 0, 1) -- (100, 1);
-\draw[BPH,dashed] (100,0) -- (100, 1);
-\draw[BPH,dashed] ( 0,.5) -- (100,.5);
-\node[BPH, right,axlab] at (0,.25) {$\alpha_1$};
-\node[BPHa,right,axlab] at (0,.75) {$\alpha_2$};
-\draw[BPH, plot={0}{100}] plot ({\x},{.5*(1-(1-\xbeta)^(\x))}) coordinate (b1);
-\draw[BPHa,plot={0}{100}] plot ({\x},{.5+.5*(1-(1-\xbeta/3)^(\x))}) coordinate (b2);
-\draw[BPH, brace] (b1 -| {(102,0)}) -- (102,0);
-\draw[BPHa,brace] (b2 -| {(102,0)}) -- (102,.5);
+\def\xbeta{.02}
+\binomfullfalse\binomaxes
+\draw[C1,dashed] ( 0, 1) -- (100, 1);
+\draw[C1,dashed] (100,0) -- (100, 1);
+\draw[C1,dashed] ( 0,.5) -- (100,.5);
+\node[C1, right,axlab] at (0,.25) {$\alpha_1$};
+\node[C1a,right,axlab] at (0,.75) {$\alpha_2$};
+\draw[C1, plot={0}{100}] plot ({\x},{.5*(1-(1-\xbeta)^(\x))}) coordinate (b1);
+\draw[C1a,plot={0}{100}] plot ({\x},{.5+.5*(1-(1-\xbeta/3)^(\x))}) coordinate (b2);
+\draw[C1, brace] (b1 -| {(102,0)}) -- (102,0);
+\draw[C1a,brace] (b2 -| {(102,0)}) -- (102,.5);

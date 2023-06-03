@@ -1,3 +1,4 @@
+\newcommand{\tn}[1]{\textsuperscript{\rlap{\,#1}}}
 \newcommand{\event}[6]{
   \pgfmathsetmacro{\eya}{#1-2000}
   \pgfmathsetmacro{\eyb}{#2-2000}
@@ -12,7 +13,7 @@
   \event{1986}{1986}{+}{-1}{}{First HIV case}
   \event{1987}{1987}{+}{+1}{}{First AIDS case, SNAP founded}
   \event{1992}{1992+}{-}{0}{}{ANC monitoring}
-  \event{1999}{1999}{+}{ 0}{}{HIV/AIDS declared national emergency}
+  \event{1999}{1999}{+}{ 0}{}{HIV/AIDS declared national disaster}
   \event{2003}{2003}{+}{ 0}{}{NERCHA founded, ART for CD4\,$<$\,200\tn{a}}
   \event{2006}{2007}{-}{ 0}{}{SDHS}
   \event{2010}{2010}{+}{ 0}{}{ART for CD4\,$<$\,350\tn{b}}
@@ -22,7 +23,7 @@
   \event{2014}{2018}{+}{ 0}{}{MaxART phase~2}
   \event{2016}{2017}{-}{ 0}{}{SHIMS~2}
   \event{2017}{2017}{+}{+1}{}{ART for all}
-  \event{2019}{2020}{+}{ 0}{}{Achieved 90-90-90\tn{*}}
+  \event{2019}{2020}{+}{ 0}{}{Achieved 95-95-95\tn{*}}
   \event{2021}{2021}{-}{ 0}{}{IBBSS~2}
   \draw[->] (0,-22) -- (0,+23);
 \end{tikzpicture}

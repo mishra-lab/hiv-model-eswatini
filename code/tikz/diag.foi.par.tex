@@ -1,0 +1,24 @@
+\newcommand{\idef}[2]{\strut$#1$\\\scriptsize#2\strut}
+\newcommand{\odef}[2]{~~\parbox{1.5em}{\textsc{#1}}~$\begin{cases}#2\end{cases}$}
+\begin{tikzpicture}[x=11em,y=5em,
+  state/.append style={anchor=west},
+  input/.style={state=gray,align=center},
+  output/.style={state=#1,text width=10em,minimum height=5em},
+  eqn/.style={state=C1},
+]\small
+  \node[input] (c) at (-1,+1) {\idef{C}{reported partners}};
+  \node[input] (w) at (-1, 0) {\idef{\omega}{recall period}};
+  \node[input] (d) at (-1,-1) {\idef{\delta}{partnership duration}};
+  \node[input] (f) at ( 0,+1) {\idef{F}{sex frequency}};
+  \node[eqn]   (k) at ( 0, 0) {$K = C\,\displaystyle\frac{\delta}{\omega+\delta}$};
+  \node[output=epa] (epa) at (1,+1) {\odef{epa}{K = K\\F=F\\\delta=\delta}};
+  \node[output=ird] (ird) at (1, 0) {\odef{ird}{Q = K/\delta\\A=F\delta}};
+  \node[output=iry!50!ipy] (ixy) at (1,-1) {\odef{iry\\ipy}{\delta_1=\min(\delta,1)\\Q = K/\delta_1\\A=F\delta_1}};
+  \node[output=white,font=\scriptsize] at (0,-1) {
+    {$K$:} concurrent partners\\
+    {$Q$:} partner change rate\\
+    {$A$:} \rlap{sex acts per partnership}};
+  \foreach \i in {d,w,c}{ \draw[arrow] (\i) edge[->,out=0,in=180] (k.180); }
+  \foreach \i in {epa,ird,ixy}{ \draw[arrow] (k) edge[->,out=0,in=180] (\i); }
+  \draw[arrow,->] (f) -- (k);
+\end{tikzpicture}

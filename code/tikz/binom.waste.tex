@@ -1,9 +1,0 @@
-\begin{tikzpicture}[x=.5mm,y=25mm]
-  \input{binom.part.axes}
-  \node[below,axlab] at (50,0) {$A$};
-  \node[below left,axlab] at (0,0) {0};
-  \node[left, axlab,C1] at (0,.5) {$\displaystyle\frac{\beta_e}{\beta}$};
-  \node[right,axlab,C2] at (110,.5) {$W$};
-  \draw[C1,plot={1}{100}] plot ({\x},{(\Bfun)/(\x*\xbeta)});
-  \draw[C2,plot={1}{100}] plot ({\x},{1-(\Bfun)/(\x*\xbeta)});
-\end{tikzpicture}

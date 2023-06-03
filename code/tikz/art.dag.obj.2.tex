@@ -1,0 +1,10 @@
+\begin{tikzpicture}[x=4em,y=4em,state/.append style={minimum width=3em,rounded corners=1.5em}]\small
+  \foreach \i in {5,4,3,2,1,0}{ \node[state=blu!\i0!red] (Ci) at (1.5-.\i,1.5+.\i) {$C_{j}$}; }
+  \node[state=yel] (Y)  at (2.5,0) {$Y$};
+  \node[state=blu] (U0) at (2.5,1.5) {$D$};
+  \node[state=blu] (dU) at (0,+.5) {$d_{\textnormal{FSW}}$}; \draw[arrow,->] (dU) -- (Y);
+  \node[state=blu] (dU) at (0,-.5) {$d_{\textnormal{Cli}}$}; \draw[arrow,->] (dU) -- (Y);
+  \draw[arrow,->] (Ci.270) -- (1,+.3);
+  \draw[arrow,->] (Ci.270) -- (1,-.3);
+  \draw[arrow,->] (U0) -- (Y);
+\end{tikzpicture}

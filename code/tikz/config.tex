@@ -1,21 +1,16 @@
 \usepackage{tikz}
-\ifsans
-  \usepackage{newtxsf}
-  \usepackage[tabular,osf,sfdefault]{gandhi}
-  \usepackage{microtype}\DisableLigatures{shape=sc}
-  \usepackage[italic]{mathastext}
-\else
-  \usepackage[charter]{mathdesign}
-  \usepackage[lf]{CrimsonPro}
-  \usepackage[italic]{mathastext}
-\fi
-\usepackage{bm}
-\definecolor{C0}{HTML}{003366}
-\definecolor{C1}{HTML}{0099CC}
-\definecolor{C2}{HTML}{CC0033}
-\definecolor{C3}{HTML}{FF9900}
-\definecolor{C4}{HTML}{00CC99}
-\usetikzlibrary{decorations.pathreplacing,fit,arrows.meta}
+\usepackage{newtxsf}
+\usepackage[tabular,osf,sfdefault]{gandhi}
+\usepackage{microtype}\DisableLigatures{shape=sc}
+\usepackage[italic]{mathastext}
+\usepackage{bm,xfp}
+\input{colors}
+\usetikzlibrary{
+  decorations.pathreplacing,
+  arrows.meta,
+  plotmarks,
+  fadings,
+  fit}
 \pgfdeclarelayer{back}
 \pgfdeclarelayer{fore}
 \pgfsetlayers{back,main,fore}
@@ -44,21 +39,24 @@
   },
   plot/.style 2 args = {
     thick,
-    variable=\x,
-    samples=128,
-    domain=#1:#2,
+    variable = \x,
+    samples = 128,
+    domain = #1:#2,
   },
   tangent/.style 2 args = {
-    plot={#1}{#2},
-    samples=2,
-    mark=*,
-    mark size=.3mm,
+    plot = {#1}{#2},
+    samples = 2,
+    mark = o,
+    mark size = .5mm,
+    shorten <= .5mm,
+    shorten >= .5mm,
   },
   brace/.style = {
     decorate,
     decoration = {brace,amplitude=1ex},
   },
   axlab/.style = {
+    align = center,
   },
   pair/.style = {
     df = #1,
@@ -67,69 +65,48 @@
     minimum width = 1.67em,
     minimum height = 1.67em,
   },
+  unobs/.style = {#1!40},
+  partx/.style = {very thick},
+  parti/.style = {partx,{Circle[length=4pt]}- },
+  parto/.style = {partx, -{Rays[length=6pt]}},
+  partb/.style = {partx,{Circle[length=4pt]}-{Rays[length=6pt]}},
+  partz/.style = {partx, -{Square[length=4pt]}},
 }
-\newcommand{\num}[1]{\the\numexpr#1\relax}%
-\newcommand{\ifempty}[3]{\if\relax\detokenize{#1}\relax#2\else#3\fi}
-\newcommand{\tn}[1]{\textsuperscript{\rlap{\,#1}}}
-\newcommand{\xbeta}{.03}
-\newcommand{\Bfun}{1-(1-\xbeta)^(\x)}
-\newcommand{\slice}[5]{
-  \ifx#3#4\draw[draw=#5,fill=#5!20] ({#1},{#2}) circle (2.5mm);
-  \else\draw[draw=#5,fill=#5!20] ({#1},{#2}) --
-      ++ ({#3*360+90}:2.5mm) arc ({#3*360+90}:{#4*360+90}:2.5mm) -- cycle;
-  \fi}%
-\newcommand{\shiftscope}[3]{%
-  \begin{scope}[transform canvas={xshift=#1,yshift=#2}]
-    #3
-  \end{scope}}
-\definecolor    {g}{rgb}{.60,.60,.60}
-\definecolor  {all}{rgb}{.40,.00,.40}
-\definecolor   {al}{rgb}{1.0,.40,1.0}
-\definecolor   {am}{rgb}{.80,.20,.80}
-\definecolor   {ah}{rgb}{.60,.00,.60}
-\definecolor   {aq}{rgb}{.60,.20,.60}
-\definecolor    {w}{rgb}{.80,.20,.20}
-\definecolor   {wq}{rgb}{1.0,.60,.60}
-\definecolor   {wl}{rgb}{1.0,.60,.60}
-\definecolor   {wm}{rgb}{.80,.40,.40}
-\definecolor   {wh}{rgb}{.60,.00,.00}
-\definecolor{fsw.l}{rgb}{.60,.20,.20}
-\definecolor{fsw.h}{rgb}{.40,.00,.00}
-\definecolor  {fsw}{rgb}{.60,.00,.00}
-\definecolor    {m}{rgb}{.20,.20,.80}
-\definecolor   {mq}{rgb}{.60,.60,1.0}
-\definecolor   {ml}{rgb}{.60,.60,1.0}
-\definecolor   {mm}{rgb}{.40,.40,.80}
-\definecolor   {mh}{rgb}{.00,.00,.60}
-\definecolor{cli.l}{rgb}{.20,.20,.60}
-\definecolor{cli.h}{rgb}{.00,.00,.40}
-\definecolor  {cli}{rgb}{.00,.00,.60}
-\definecolor  {sus}{rgb}{1.0,.60,.00}
-\definecolor  {hiv}{rgb}{.90,.00,.15}
-\definecolor  {ahi}{rgb}{.90,.30,.00}
-\definecolor{hiv.1}{rgb}{.90,.15,.00}
-\definecolor{hiv.2}{rgb}{.90,.00,.15}
-\definecolor{hiv.3}{rgb}{.60,.00,.30}
-\definecolor {aids}{rgb}{.30,.00,.60}
-\definecolor  {udx}{rgb}{.00,.30,.30}
-\definecolor   {dx}{rgb}{.00,.60,.30}
-\definecolor   {ux}{rgb}{.00,.60,.60}
-\definecolor   {tx}{rgb}{.40,.80,.00}
-\definecolor   {vx}{rgb}{.80,.80,.00}
-\definecolor  {msp}{rgb}{.26,.04,.41}
-\definecolor  {cas}{rgb}{.58,.15,.40}
-\definecolor  {swo}{rgb}{.87,.32,.23}
-\definecolor  {swr}{rgb}{.99,.65,.04}
-\colorlet{susa}{sus!50}
-\colorlet{hiva}{hiv!50}
-\colorlet{C0a}{C0!50}
-\colorlet{C1a}{C1!50}
-\colorlet{C2a}{C2!50}
-\colorlet{C3a}{C3!50}
-\colorlet{C12}{C1!50!C2}
-\colorlet{C13}{C1!50!C3}
-\colorlet{C23}{C2!50!C3}
-\colorlet{WPH}{C2}\colorlet{WPHa}{C2a}
-\colorlet{BPH}{C1}\colorlet{BPHa}{C1a}
+% paths
 \newcommand{\rootpath}{../..}
 \graphicspath{{\rootpath/out/fig/tikz/}}
+\newcommand{\ifempty}[3]{\if\relax\detokenize{#1}\relax#2\else#3\fi}
+% scopes
+\newcommand{\shiftscope}[3]{%
+  \begin{scope}[transform canvas={xshift=#1,yshift=#2}] #3 \end{scope}}
+\newcommand{\clipscope}[5]{
+  \scope\pgfinterruptboundingbox
+    \clip (#1,#2) rectangle (#3,#4);
+  \endpgfinterruptboundingbox #5 \endscope}
+% binom
+\newcommand{\binomaxes}{
+  \draw[->] (0,0) -- (0,1.1);
+  \draw[->] (0,0) -- (110,0);
+  \ifbinomfull \draw[dashed] (0,1) node[left,axlab]{1} -- (110,1); \fi}
+\newcommand{\binomlabs}{
+  \node[axlab,below] at (50,0) {$A$\ifbinomfull: number of sex acts\fi};
+  \node[axlab,above,rotate=90] at (0,.5)
+    {$B(A)$\ifbinomfull: probability\\of transmission\\per partnership\\\fi};
+  \node[axlab,below left] at (0,0) {0};}
+\newcommand{\slice}[5]{
+  \ifx#3#4\draw[draw=#5,fill=#5!20] ({#1},{#2}) circle (2mm);
+  \else\draw[draw=#5,fill=#5!20] ({#1},{#2}) --
+    ++ ({#3*360+90}:2mm) arc ({#3*360+90}:{#4*360+90}:2mm) -- cycle; \fi}
+% partnerships
+\newif\ifdrawpairs
+\newcommand{\defrecall}[2][0]{\def\xri{#1}\def\xro{#1+#2}}
+\newcommand{\partnership}[4]{% xi,dx,y,style
+  \def\xpi{#1+.01}\def\xpo{#1+#2-.01}
+  \ifnum1=\fpeval{(\xpi>\xro)|(\xpo<\xri)} % fully unobserved
+    \draw[partb,#4,unobs=gray] (\xpi,#3) -- (\xpo,#3);
+  \else\ifnum1=\fpeval{\xpo>\xro} % right censored
+    \draw[parti,#4] (\xpi,#3) -- (\xro,#3);
+    \draw[parto,unobs=#4] (\xro,#3) -- (\xpo,#3);
+  \else % fully observedd
+    \draw[partb,#4] (\xpi,#3) -- (\xpo,#3);
+  \fi\fi}

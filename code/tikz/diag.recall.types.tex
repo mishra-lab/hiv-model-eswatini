@@ -1,0 +1,10 @@
+\begin{tikzpicture}[x=3em,y=1\baselineskip,thick]
+  \defrecall[1.75]{1.5}
+  \fill[blu!20] (\xri,0.5) rectangle (\xro,4.5);
+  \draw[blu,|<->|] (\xri,0) -- node[below,align=center]{$\omega$\\[1ex]recall period} (\xro,0);
+  \node[below right,align=left] at (5.5,0) {$C$\\reported partners};
+  \foreach \i in {0,..., 0}{ \partnership{   0.00}{5.00}{4}{msp}} \node[msp,right] at (5.5,4) {$C = 1\quad\delta = 10$};
+  \foreach \i in {0,..., 4}{ \partnership{\i*1.00}{1.00}{3}{cas}} \node[cas,right] at (5.5,3) {$C = 3\quad\delta = 2$};
+  \foreach \i in {0,...,16}{ \partnership{\i*0.30}{0.00}{2}{swo}} \node[swo,right] at (5.5,2) {$C = 5\quad\delta \approx 0$};
+  \foreach \i in {0,..., 3}{ \partnership{\i*1.25}{1.25}{1}{swr}} \node[swr,right] at (5.5,1) {$C = 2\quad\delta = 2.5$};
+\end{tikzpicture}

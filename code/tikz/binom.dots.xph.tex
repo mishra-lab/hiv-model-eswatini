@@ -2,15 +2,13 @@
   \useasboundingbox (-5mm,-5mm) rectangle (65mm,40mm);
   \shiftscope{ 0mm}{0mm}{
     % \node[subtitle] at (50,1.6) {within-partnership\\hetrogeneity};
-    \node[subtitle] at (50,1.1) {\includegraphics[scale=.75]{dots.wph.pdf}};
+    \node[subtitle] at (50,1.1) {\includegraphics[scale=1]{dots.wph.pdf}};
     \input{binom.part.wph}
-    \node[below,axlab] at (50,0) {$A$};
-    \node[left, axlab] at (0,.5) {$B(A)$};
-  }
+    \node[axlab,below] at (50,0) {$A$};
+    \node[axlab,above,rotate=90]  at (0,.5) {$B(A)$};}
   \shiftscope{35mm}{0mm}{
     % \node[subtitle] at (50,1.6) {between-partnership\\hetrogeneity};
-    \node[subtitle] at (50,1.1) {\includegraphics[scale=.75]{dots.bph.pdf}};
+    \node[subtitle] at (50,1.1) {\includegraphics[scale=1]{dots.bph.pdf}};
     \input{binom.part.bph}
-    \node[below,axlab] at (50,0) {$A$};
-  }
+    \node[axlab,below] at (50,0) {$A$};}
 \end{tikzpicture}

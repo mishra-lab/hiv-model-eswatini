@@ -1,0 +1,17 @@
+\newcommand{\rxb}[3]{\ifnum#1>#2 red\else\ifnum#1>#3 red!50!blu\else blu\fi\fi}
+\newcommand{\survline}[5]{% y,sw,dx,hiv,label
+  \draw[partx,->,unobs=\ifnum#4>0 red\else blu\fi] (0,#1) -- (1,#1);
+  \draw[parti,\rxb{#4}{#2}{#3}] (-#2,#1) node[anchor=south]{SW} -- (-#3,#1);
+  \draw[partz,\rxb{#4}{#3}{ 0}] (0,#1) -- (-#3-.09,#1) node[anchor=south]{\ifnum#3>0 Dx\fi};
+  \ifnum#4>0
+    \draw[red,parto] (-#4-.09,#1) -- (-#4,#1);
+    \node[red,anchor=west] at (1,#1){~HIV$+$}; \else
+    \node[blu,anchor=west] at (1,#1){~HIV$-$}; \fi
+  \node[anchor=west] at (2.5,#1){#5};}
+\begin{tikzpicture}[x=2em,y=1.667\baselineskip]
+  \draw[arrow] (0,.5) -- (0,4.5) node[anchor=south]{Survey};
+  \survline{4}{3}{4}{5}{Left Censored}
+  \survline{3}{4}{2}{3}{Interval Censored}
+  \survline{2}{3}{0}{1}{Interval Censored}
+  \survline{1}{2}{0}{0}{Right Censored}
+\end{tikzpicture}
