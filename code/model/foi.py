@@ -6,7 +6,6 @@ foi_modes = [
   'lin', # linear
   'rd', # rate duration
   'ry', # rate year
-  'pd', # proportion duration
   'py', # proportion year
   'base', # proposed model (partnership exclusion)
 ]
@@ -49,13 +48,13 @@ def get_mix(XC,P):
 def get_apply_inc(dX,X,t,P):
   # return.shape = (p:4, s:2, i:4, s':2, i':4)
   # NOTE: if foi_mode in ['base','li','rd','ry']: return *absolute* infections (not per susceptible)
-  #       if foi_mode in ['pd','py']: return *probability* of infection (aggr must be deferred)
+  #       if foi_mode in ['py']: return *probability* of infection (aggr must be deferred)
   # partner numbers (K) or rates (Q)
   if P['foi_mode'] in ['base']: # K
     C_psik = P['K_psi'] - P['aK_pk']
   elif P['foi_mode'] in ['lin']: # K
     C_psik = P['K_psi']
-  elif P['foi_mode'] in ['rd','pd']: # Q
+  elif P['foi_mode'] in ['rd']: # Q
     C_psik = P['K_psi'] / P['dur_p'][:,_,_,_]
     A_ap = P['F_ap'] * P['dur_p']
   elif P['foi_mode'] in ['ry','py']: # Q_1
@@ -92,7 +91,7 @@ def get_apply_inc(dX,X,t,P):
     B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
     inc = mix * PXC_hc[:,:,:,0,0,_,_] * (B_p * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
     dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
-  elif P['foi_mode'] in ['pd','py']:
+  elif P['foi_mode'] in ['py']:
     B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
     QA = mix[:,:,:,:,:,_,_] / X.sum(axis=(2,3,4))[_,:,:,_,_,_,_]
     inc = 1 - ((1 - B_p * PXC_hc[:,_,_,:,:,:,:]) ** QA).prod(axis=(5,6))
@@ -105,8 +104,8 @@ def get_apply_inc(dX,X,t,P):
 #@profile
 def aggr_inc(inc,foi_mode,axis,Xsus=None,Xinf=None,keepdims=False):
   # returns absolute infections after appropriately aggregating "inc"
-  # Xsus only needed if 'foi_mode' in ['pd','py']
+  # Xsus only needed if 'foi_mode' in ['py']
   if foi_mode in ['base','lin','rd','ry']:
     return inc.sum(axis=axis,keepdims=keepdims)
-  if foi_mode in ['pd','py']:
+  if foi_mode in ['py']:
     return (1 - (1 - inc).prod(axis=axis,keepdims=keepdims)) * Xsus

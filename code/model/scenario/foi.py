@@ -3,7 +3,7 @@ from utils import log,fio,dict_list_update
 from model import system,out
 from model.scenario import cal,tpaf,akwds,tvec,fname
 
-cases = ['base','rd','ry','pd','py']
+cases = ['base','rd','ry','py']
 
 def run_ep():
   log(0,'foi.run_ep: '+', '.join(cases))
