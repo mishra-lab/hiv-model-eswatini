@@ -3,10 +3,8 @@ source('post/wiw.r')
 source('post/tpaf.r')
 # N$sam = 1000 # DEBUG
 
-foi.lab = 'FOI Approach'
-
-plot.clean.foi = function(g,leg='top'){
-  g = g + labs(color=foi.lab,fill=foi.lab,linetype=foi.lab) +
+plot.clean.foi = function(g,leg='top',lab='FOI Approach'){
+  g = g + labs(color=lab,fill=lab,linetype=lab) +
     scale_fill_manual(values=set.cols$foi) +
     scale_color_manual(values=set.cols$foi) +
     scale_linetype_manual(values=set.lts$foi) +
@@ -23,7 +21,8 @@ plot.ep = function(Xepp,op,ylab,leg='top',oname='incidence'){
 main.ep = function(){
   # load & clean data
   X = read.csvs('foi-ep','expo','foi')
-  Xe = filter.cols(X,pop=c('aq','fsw','cli'))
+  Xe = filter.cols(X,pop=c('aq','fsw','cli'),t=seq(1980,2035))
+  Xe$case.lab = factor(Xe$case.lab,labels=set.labs$foi)
   Xe$pop = factor(Xe$pop,levels=names(slice.labs),labels=slice.labs)
   Xe$case.lab.x = Xe$case.lab
   # duplicate base data for each other case

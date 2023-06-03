@@ -23,10 +23,9 @@ slicers = list(
   'swo'   = list(rgb(.87,.32,.23),'Sex Work Occas.'),
   'swr'   = list(rgb(.99,.65,.04),'Sex Work Reg.'),
   'swx'   = list(rgb(.93,.48,.13),'Sex Work Overall'),
-  'rd'    = list('#FF0033','Rate-Duration','62'),
-  'ry'    = list('#990099','Rate-1-Year','22'),
-  'pd'    = list('#00CC66','Proportion-Duration','8212'),
-  'py'    = list('#0066CC','Proportion-1-Year','4212'),
+  'rd'    = list('#00CC99','Partnership Duration','62'),
+  'ry'    = list('#0099CC','Partnership Year','22'),
+  'py'    = list('#CC00CC','All Partnerships Year','4212'),
   'fsw-cli+' = list('#FF0033','FSW'),
   'fsw+cli-' = list('#0066CC','Clients'),
   'fsw-cli-' = list('#990099','Both'),
@@ -39,7 +38,7 @@ slicers$clif = slicers$clit = slicers$cli
 sets = list(
   base    = c('base'),
   sens    = c('sens'),
-  foi     = c('rd','ry','pd','py','base'),
+  foi     = c('rd','ry','py','base'),
   art     = c('fsw-cli+','fsw+cli-','fsw-cli-','fsw+cli+','base'),
   pop.all = c('wl','wm','fsw.l','fsw.h','ml','mm','cli.l','cli.h'),
   pop.cal = c('all','w','m','fsw'),
@@ -50,7 +49,7 @@ slice.labs = sapply(names(slicers),function(id){ slicers[[id]][[2]] })
 set.cols = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.cols[[id]] })) })
 set.labs = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.labs[[id]] })) })
 set.lts = list(foi=unname(sapply(sets$foi,function(id){ slicers[[id]][[3]] }))) # TODO: better way?
-set.labs$foi[5] = 'New Proposed'; set.cols$foi[5] = '#FF9900'
+set.labs$foi[4] = 'Effective Partners Adjustment'; set.cols$foi[4] = '#FF9900'
 
 gen.name = function(phase,key,case,b='all',ext='.csv'){
   return(root.path('data','csv',uid,sprintf('%d',N$sam),
@@ -71,18 +70,23 @@ read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
   return(X)
 }
 
+grep.s.col = function(X,...){ grep('^s\\d+$',colnames(X),...) }
+seed.nums = function(seeds){ as.numeric(gsub('^s','',seeds)) }
+
 melt.expo.s = function(X.wide,...){
-  X = melt(filter.cols(X.wide,...),measure=grep('^s\\d*',colnames(X.wide)),var='seed')
-  X$seed = as.numeric(gsub('s','',X$seed))
+  X = melt(filter.cols(X.wide,...),measure=grep.s.col(X.wide),var='seed')
+  X$seed = seed.nums(X$seed)
   return(X[order(X$case),])
 }
 
 qs = c(0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1)
+q3 = c(.025,.5,.975)
 
-expo.qs = function(X,q=qs){
+expo.qs = function(X,q=qs,trans=identity){
   vars = colnames(X)[!grepl('^seed$|^value$',colnames(X))]
   f = formula(paste('value ~',paste(vars,collapse='+')))
-  X.q = do.call(data.frame,aggregate(f,X,quantile,p=q))
+  fun = function(x){ trans(quantile(x,p=q)) }
+  X.q = do.call(data.frame,aggregate(f,X,fun))
   colnames(X.q)[grep('^value\\.',colnames(X.q))] = paste0('q',q)
   return(X.q)
 }
