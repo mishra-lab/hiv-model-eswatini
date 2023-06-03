@@ -107,16 +107,22 @@ def run_ss(Ns=10):
   Ps = get_sens_sample(P0s,Ns)
   Rs = system.run_n(Ps,t=tvec['main'])
   fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkwds,t=tvec['plot']))
-  fio.save_csv(fname('csv','art-ss','Ps',case='sens'),get_par_expo(Rs,
+  fio.save_csv(fname('csv','art-ss','P0s',case='sens'),get_par_expo(P0s,
     pnames=[*params.def_sample_distrs().keys(),'PX_fsw','PX_cli','EHY_acute']))
-  fio.save_csv(fname('csv','art-ss','expo',case='sens'),out.expo(Rs,**tkwds,t=tvec['outs'],mode='seed',
-    snames=['all','w','m','aq','fsw','cli'],
-    onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
+  # TODO: base expo too
+  fio.save_csv(fname('csv','art-ss','expo',case='sens'),merge_expo([
+      out.expo([R for R in Rs if R['P']['ss']==ss],**tkwds,t=tvec['outs'],ecols=dict(ss=ss),mode='seed'
+        snames=['all','w','m','aq','fsw','cli'],
+        onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u'])
+      for ss in range(Ns)]))
   fit.plot_sets(tvec['main'],Rs,tfname=fname('fig','art-ss','{}',case='sens'),
     sets='cascade',snames=['all','aq','fsw','cli'])
 
-def get_par_expo(Rs,pnames):
-  return dict(par=pnames,**{'s'+str(R['P']['seed']):[R['P'][pname] for pname in pnames] for R in Rs})
+def get_par_expo(Ps,pnames):
+  return dict(par=pnames,**{'s'+str(P['seed']):[P[pname] for pname in pnames] for P in Ps})
+
+def merge_expo(Es):
+  return {k:[x for E in Es for x in E[k]] for k in Es[0]}
 
 def get_sens_sample(Ps,Ns):
   PDs = {
@@ -125,8 +131,8 @@ def get_sens_sample(Ps,Ns):
     'u': stats.gamma(m=6.5,sd=3.5),  # CI: (1.5, 15)
   }
   PD = {'R'+step+'x:'+pop: PDs[step] for pop in ('fsw','cli','aq') for step in 'dtu'}
-  return [Rxs_update(deepcopy(P),Pu,seed=P['seed']+s/1000) for P in Ps
-    for s,Pu in enumerate(params.get_n_sample_lhs(Ns,PD,seed=P['seed']))]
+  return [Rxs_update(deepcopy(P),Pu,ss=ss) for P in Ps
+    for ss,Pu in enumerate(params.get_n_sample_lhs(Ns,PD,seed=P['seed']))]
 
 if __name__ == '__main__':
   # run_rf(**akwds)

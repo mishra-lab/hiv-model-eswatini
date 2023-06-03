@@ -1,4 +1,5 @@
 library('reshape2')
+library('geepack')
 source('post/config.r')
 source('post/wiw.r')
 
@@ -18,6 +19,30 @@ pop.labs = list(
   aq  = 'Lower Risk',
   fsw = 'FSW',
   cli = 'Clients')
+
+y.vars = c(
+  'Cumulative Additional Infections' = 'cai',
+  'Additional Incidence Rate' = 'air')
+adj.vars = c(
+  'DU Overall' = 'Du.all')
+pred.vars = c(
+  'd FSW'     = 'du.fsw',
+  'd Clients' = 'du.cli')
+mod.vars = c(
+  'FSW % Population'     = 'px.fsw',
+  'FSW / Women HIV IR'   = 'ir.fsw',
+  'FSW Turnover'         = 'tur.fsw',
+  'Clients % Population' = 'px.cli',
+  'Clients / Men HIV IR' = 'ir.cli',
+  'Clients Turnover'     = 'tur.cli')
+
+var.lab.fun = function(vars){
+  var.labs = c(y.vars,adj.vars,pred.vars,mod.vars)
+  for (v in 1:length(var.labs)){
+    vars = gsub(var.labs[v],names(var.labs[v]),vars)
+  }
+  vars = gsub('^.*:','',vars)
+}
 
 melt.expo.cascade = function(X.wide,...){
   X = melt.expo.s(X.wide,pop=c('all','aq','fsw','cli'),
@@ -47,11 +72,11 @@ plot.1.rai = function(X){
 
 num.1.rai = function(X,t.hor=2030){
   X.hor = X[X$t==t.hor,]
-  print(expo.qs(X.hor,q=c(.025,.5,.975)))
+  print(expo.qs(X.hor,q=q3,trans=function(x){ round(x,1) }))
   x.case = function(case){ X.hor[X.hor$case==case,] }
   X.ref = x.case('fsw-cli-')
   X.ref$value = (X.ref$value - x.case('fsw+cli+')$value) / X.ref$value
-  print(expo.qs(X.ref,q=c(.025,.5,.975)))
+  print(expo.qs(X.ref,q=q3,trans=function(x){ round(100*x,1) }))
 }
 
 main.1.rai = function(){
@@ -91,18 +116,109 @@ main.1.cascade = function(){
 main.2.cascade = function(){
   X.wide = read.csvs('art-ss','expo','sens',rdata='load')
   X = melt.expo.cascade(X.wide,t=2020)
-  g = ggplot(X,aes(x=value,y=pop,color=pop,fill=pop)) +
-    geom_boxplot(alpha=.25,outlier.alpha=1,outlier.shape=3,outlier.size=.5) +
-    facet_grid('out') +
-    scale_x_continuous(breaks=seq(0,100,20),limits=c(0,100)) +
+  print(expo.qs(X[X$pop=='Overall',],q=q3,trans=function(x){ round(x,1) }))
+  g = ggplot(expo.qs(X)) +
+    geom_boxplot(q.aes('box','pop',x='pop'),stat='identity',alpha=.2) +
+    facet_grid('out') + coord_flip() +
+    scale_y_continuous(breaks=seq(0,100,20),limits=c(0,100)) +
     scale_color_manual(values=set.cols$pop.art) +
     scale_fill_manual(values=set.cols$pop.art) +
-    labs(x='Cascade step (%)',y='Population',color='',fill='')
+    labs(y='Cascade step (%)',x='Population',color='',fill='')
   g = plot.clean(g,legend.position='none')
   fig.save(uid,N$sam,'art.2.cascade',w=5,h=9)
+}
+
+load.2.data = function(rdata=''){
+  X.list = list(
+  'out' = do.call(rbind,lapply(c('base','sens'),function(case){
+    X.case = filter.cols(read.csvs('art-ss','expo',case,rdata=rdata),
+      out = c('prevalence','incidence','cuminfect','vls_u'))
+    if (case=='base'){ X.case$ss = NA }
+    return(X.case)
+  })),
+  'par' = read.csvs('art-ss','P0s','sens'))
+}
+
+clean.2.data = function(X.list,t.hor=2030){
+  s.list = lapply(X.list,grep.s.col)
+  x.out = function(...){ c(t(filter.cols(X.list$out,...)[,s.list$out])) }
+  x.par = function(par){ c(t(filter.cols(X.list$par,par=par)[,s.list$par])) }
+  X = data.frame(
+    seed    = seed.nums(colnames(X.list$par[s.list$par])),
+    cai     = (x.out(case='sens',pop='all',t=t.hor,out='cuminfect') - x.out(case='base',pop='all',t=t.hor,out='cuminfect')) /
+               x.out(case='sens',pop='all',t=t.hor,out='cuminfect'),
+    air     = (x.out(case='sens',pop='all',t=t.hor,out='incidence') - x.out(case='base',pop='all',t=t.hor,out='incidence')) /
+               x.out(case='sens',pop='all',t=t.hor,out='incidence'),
+    Du.all  =  x.out(case='base',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='all',t=2020,out='vls_u'),
+    du.fsw  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='fsw',t=2020,out='vls_u'),
+    du.cli  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='cli',t=2020,out='vls_u'),
+    ir.fsw  =  x.out(case='sens',pop='fsw',t=2000,out='incidence') / x.out(case='sens',pop='w',t=2000,out='incidence'),
+    ir.cli  =  x.out(case='sens',pop='cli',t=2000,out='incidence') / x.out(case='sens',pop='m',t=2000,out='incidence'),
+    tur.fsw = 1/(.8 * x.par('dur_fsw_l') + .2 * x.par('dur_fsw_h')),
+    tur.cli = 1/x.par('dur_cli'),
+    px.fsw  = x.par('PX_fsw'),
+    px.cli  = x.par('PX_cli'))
+  X = X[order(X$seed),]
+}
+
+fit.2.glm = function(X,y,std=TRUE){
+  all.vars = c(adj.vars,pred.vars,mod.vars)
+  if (std){ X[,all.vars] = apply(X[,all.vars],2,function(x){ (x-mean(x))/sd(x) }) }
+  # if (std){ X[,all.vars] = apply(X[,all.vars],2,function(x){ (x-median(x))/iqr(x) }) } # DEBUG
+  term.fun = function(x){ paste('(',paste(x,collapse=' + '),')') }
+  f = paste(y,'* 100 ~ 0 +',
+    term.fun(adj.vars),'+',
+    term.fun(pred.vars),'+',
+    term.fun(pred.vars),':',term.fun(mod.vars))
+  # print(f) # DEBUG
+  M = geeglm(formula(f),'gaussian',X[order(X$seed),],id=factor(X$seed),corstr='e')
+  # print(M); print(anova(M)) # DEBUG
+  return(M)
+}
+
+plot.2.glm.effects = function(M.list,o.lab){
+  f.lab = c('d Effects','d Interaction',paste(names(pred.vars),'Effect Modification'))
+  E = do.call(rbind,lapply(names(M.list),function(name){
+    e = summary(M.list[[name]])$coefficients
+    e$var  = rownames(e)
+    e$facet = factor(sapply(e$var,function(v){
+      i = which(sapply(pred.vars,grepl,v))
+      if      (length(i) == 0){ return(NA) }
+      else if (length(i)  > 1){ return(f.lab[2]) }
+      else if (!grepl(':',v)) { return(f.lab[1]) }
+      else { return(f.lab[i+2]) }
+    }),levels=f.lab)
+    e$Est.low  = e$Estimate - e$Std.err * qnorm(.975)
+    e$Est.high = e$Estimate + e$Std.err * qnorm(.975)
+    e$var = var.lab.fun(e$var)
+    e$name = name
+    e = e[!is.na(e$facet),]
+  }))
+  dodge = position_dodge(width=.7)
+  clrs = c(clr.map(6,'Blues')[c(5,4,3,6)],clr.map(6,'Reds')[c(6,5,4,3)]) # HACK
+  g = ggplot(E,aes(y=var,x=100*Estimate,xmin=100*Est.low,xmax=100*Est.high,color=var)) +
+    facet_grid('facet',scales='free',space='free') +
+    geom_vline(xintercept=0,color=rgb(.8,.8,.8),lwd=1) +
+    geom_point(position=dodge,lwd=2) +
+    geom_errorbar(position=dodge,width=.25,lwd=.7) +
+    scale_color_manual(values=clrs) +
+    labs(x=paste('Effect on',o.lab,'(%)'),y='')
+  g = plot.clean(g,legend.position='none')
+}
+
+main.2.stats = function(){
+  X.list = load.2.data('load')
+  X = clean.2.data(X.list)
+  for (name in names(y.vars)){
+    y = y.vars[[name]]
+    M = fit.2.glm(X,y)
+    g = plot.2.glm.effects(list(x=M),name)
+    fig.save(uid,N$sam,'art.2',y,w=6,h=5)
+  }
 }
 
 # main.1.cascade()
 # main.1.rai()
 # main.1.wiw()
 # main.2.cascade()
+# main.2.stats()

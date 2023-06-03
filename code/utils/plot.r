@@ -4,7 +4,9 @@ suppressPackageStartupMessages({
   library('corrplot')
   library('viridis')
   library('reshape2')
+  library('scales')
 })
+clr.map = RColorBrewer::brewer.pal
 q.aes = function(q,grp,x='t',scale=1,...){
   qq = function(qi,op){ paste0(scale,'*',op,'(q',1-(1-qi)/2,',q',(1-qi)/2,')') }
   if (q==0){ return(aes_string(x=x,y=qq(0,'pmin'),color=grp,linetype=grp,...)) }
@@ -20,7 +22,7 @@ plot.expo.ribbon = function(X,out,grp,q=.9,...){
     geom_line(q.aes(0,grp=grp,...))
   g = plot.clean(g)
 }
-plot.expo.box = function(X,out,grp,t,w=.8,...){
+plot.expo.box = function(X,out,grp,t,w=.75,...){
   Xe = filter.cols(X,out=out,t=t)
   g = ggplot(Xe,aes(x=factor(t))) +
     geom_boxplot(q.aes('box',grp=grp,...),stat='identity',

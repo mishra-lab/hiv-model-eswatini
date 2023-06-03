@@ -1,16 +1,11 @@
 library('parallel')
 options(width=200,scipen=99)
+len = length
 root.path = function(...,create=FALSE){
   root = strsplit(file.path(getwd(),''),file.path('','code',''))[[1]][1]
   path = file.path(root,...)
   if (create & !dir.exists(dirname(path))){ dir.create(dirname(path),recursive=TRUE) }
   return(path)
-}
-quiet = function(code){
-  sink('/dev/null')
-  result = code
-  sink()
-  return(result)
 }
 read.big.csv = function(fname,fresh=FALSE,...){
   # for big "path/file.csv", write "path/.tmp/file.csv.rds" on first run & use this thereafter
@@ -63,8 +58,8 @@ filter.cols = function(X,...){
   for (col in names(filter)){ bool = bool & X[[col]] %in% filter[[col]] }
   X[bool,]
 }
-cut.q = function(x,qs,labels){
-  x.cut = cut(x,c(-Inf,quantile(x,qs),Inf),labels=labels)
+iqr = function(x){
+  unname(diff(quantile(x,c(.25,.75))))
 }
 iterms = function(x,n,lower=TRUE){
   return(paste(lapply(ifelse(lower,1,n):n,function(ni){

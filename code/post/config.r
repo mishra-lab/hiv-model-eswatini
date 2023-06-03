@@ -83,7 +83,7 @@ qs = c(0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1)
 q3 = c(.025,.5,.975)
 
 expo.qs = function(X,q=qs,trans=identity){
-  vars = colnames(X)[!grepl('^seed$|^value$',colnames(X))]
+  vars = colnames(X)[!grepl('^seed$|^value$|^ss$',colnames(X))]
   f = formula(paste('value ~',paste(vars,collapse='+')))
   fun = function(x){ trans(quantile(x,p=q)) }
   X.q = do.call(data.frame,aggregate(f,X,fun))
