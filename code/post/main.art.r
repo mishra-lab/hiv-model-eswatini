@@ -44,19 +44,26 @@ var.lab.fun = function(vars){
   vars = gsub('^.*:','',vars)
 }
 
-melt.expo.cascade = function(X.wide,...){
-  X = melt.expo.s(X.wide,pop=c('all','aq','fsw','cli'),
-    out=c('diagnosed','treated_c','vls_c','treated_u','vls_u'),...)
+melt.expo.labs = function(X.wide,...){
+  X = melt.expo.s(X.wide,...)
   X$value = 100 * X$value
   X$out = factor(X$out,names(out.labs),out.labs)
   X$pop = factor(X$pop,names(pop.labs),pop.labs)
   return(X)
 }
 
+melt.expo.cascade = function(X.wide,...){
+  X = melt.expo.labs(X.wide,...,
+    pop=c('all','aq','fsw','cli'),
+    out=c('diagnosed','treated_c','vls_c','treated_u','vls_u'))
+  return(X)
+}
+
 plot.clean.art = function(g){
   g = g + labs(x='Year',color='Left behind:',fill='Left behind:',linetype='Left behind:') +
     scale_color_manual(values=set.cols$art) +
-    scale_fill_manual(values=set.cols$art)
+    scale_fill_manual(values=set.cols$art) +
+    scale_linetype_manual(values=set.lts$art)
   return(g)
 }
 
@@ -65,7 +72,7 @@ plot.1.rai = function(X){
   g = plot.expo.box(expo.qs(X),unlist(out.labs),'case.lab',seq(2005,2030,5)) +
     facet_grid('out',scales='free_y') + 
     labs(y='Relative Additional Infections (%)') +
-    theme(legend.pos=c(.005,.99),legend.justification=c(0,1))
+    theme(legend.pos=c(.005,.99),legend.just=c(0,1))
   g = plot.clean.art(g)
   fig.save(uid,N$sam,'art.1.rai',w=6,h=5)
 }
@@ -101,16 +108,17 @@ main.1.wiw = function(){
   }
 }
 
-main.1.cascade = function(){
+main.1.expo = function(){
   X.wide = read.csvs('art-rf','expo','art',rdata='load')
   X.wide = X.wide[X.wide$t > 1995 & X.wide$t <= 2030,]
-  X = melt.expo.cascade(X.wide)
-  g = plot.expo.ribbon(expo.qs(X),unlist(out.labs),'case.lab') +
-    facet_grid('out ~ pop') + lims(y=c(0,100)) +
-    labs(y='Cascade Step (%)') +
-    theme(legend.position='top')
-  g = plot.clean.art(g)
-  fig.save(uid,N$sam,'art.1.cascade',w=8,h=10)
+  X.cascade = melt.expo.cascade(X.wide)
+  g = plot.expo.ribbon(expo.qs(X.cascade),unlist(out.labs),'case.lab') + facet_grid('out ~ pop') +
+    lims(y=c(0,100)) + labs(y='Cascade Step (%)') + theme(legend.pos='top')
+  g = plot.clean.art(g); fig.save(uid,N$sam,'art.1.cascade',w=8,h=10)
+  X.inc = melt.expo.labs(X.wide,out='incidence',pop='all')
+  g = plot.expo.ribbon(expo.qs(X.inc),unlist(out.labs),'case.lab',alpha=.1) +
+    labs(y='HIV Incidence (per person-year)') + theme(legend.position='top')
+  g = plot.clean.art(g); fig.save(uid,N$sam,'art.1.inc',w=5,h=4)
 }
 
 main.2.cascade = function(){
@@ -217,7 +225,7 @@ main.2.stats = function(){
   }
 }
 
-# main.1.cascade()
+# main.1.expo()
 # main.1.rai()
 # main.1.wiw()
 # main.2.cascade()

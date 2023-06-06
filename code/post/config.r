@@ -26,10 +26,10 @@ slicers = list(
   'rd'    = list('#00CC99','Partnership Duration','62'),
   'ry'    = list('#0099CC','Partnership Year','22'),
   'py'    = list('#CC00CC','All Partnerships Year','4212'),
-  'fsw-cli+' = list('#FF0033','FSW'),
-  'fsw+cli-' = list('#0066CC','Clients'),
-  'fsw-cli-' = list('#990099','Both'),
-  'fsw+cli+' = list('#FF9900','Neither'),
+  'fsw-cli+' = list('#FF0033','FSW','62'),
+  'fsw+cli-' = list('#0066CC','Clients','22'),
+  'fsw-cli-' = list('#990099','Both','3212'),
+  'fsw+cli+' = list('#FF9900','Neither','6212'),
   'sens'  = list('#999999','Sensitivity'),
   'base'  = list('#999999','Base','solid'))
 slicers$aqf  = slicers$aqt  = slicers$aq
@@ -44,11 +44,13 @@ sets = list(
   pop.cal = c('all','w','m','fsw'),
   pop.art = c('all','aq','fsw','cli'),
   part    = c('msp','cas','swo','swr'))
-slice.cols = sapply(names(slicers),function(id){ slicers[[id]][[1]] })
-slice.labs = sapply(names(slicers),function(id){ slicers[[id]][[2]] })
+f = function(x,i){ ifelse(len(x) < i,NA,x[[i]]) }
+slice.cols = sapply(names(slicers),function(id){ f(slicers[[id]],1) })
+slice.labs = sapply(names(slicers),function(id){ f(slicers[[id]],2) })
+slice.lts  = sapply(names(slicers),function(id){ f(slicers[[id]],3) })
 set.cols = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.cols[[id]] })) })
 set.labs = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.labs[[id]] })) })
-set.lts = list(foi=unname(sapply(sets$foi,function(id){ slicers[[id]][[3]] }))) # TODO: better way?
+set.lts  = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.lts[[id]] })) })
 set.labs$foi[4] = 'Effective Partners Adjustment'; set.cols$foi[4] = '#FF9900'
 
 gen.name = function(phase,key,case,b='all',ext='.csv'){

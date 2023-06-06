@@ -15,10 +15,10 @@ q.aes = function(q,grp,x='t',scale=1,...){
     ymin=qq(.95,'pmin'),ymax=qq(.95,'pmax'),lower=qq(.5,'pmin'),upper=qq(.5,'pmax'),
     middle=qq(0,'pmin'),color=grp,fill=grp,group=paste0('interaction(',x,',',grp,')'))) }
 }
-plot.expo.ribbon = function(X,out,grp,q=.9,...){
+plot.expo.ribbon = function(X,out,grp,q=.9,alpha=.25,...){
   Xe = filter.cols(X,out=out)
   g = ggplot(Xe,aes(x=t)) +
-    geom_ribbon(q.aes(q,grp=grp,...),alpha=.25) +
+    geom_ribbon(q.aes(q,grp=grp,...),alpha=alpha) +
     geom_line(q.aes(0,grp=grp,...))
   g = plot.clean(g)
 }
