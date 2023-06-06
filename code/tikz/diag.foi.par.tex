@@ -6,11 +6,11 @@
   output/.style={state=#1,text width=10em,minimum height=5em},
   eqn/.style={state=C1},
 ]\small
-  \node[input] (c) at (-1,+1) {\idef{C}{reported partners}};
+  \node[input] (c) at (-1,+1) {\idef{x}{reported partners}};
   \node[input] (w) at (-1, 0) {\idef{\omega}{recall period}};
   \node[input] (d) at (-1,-1) {\idef{\delta}{partnership duration}};
   \node[input] (f) at ( 0,+1) {\idef{F}{sex frequency}};
-  \node[eqn]   (k) at ( 0, 0) {$K = C\,\displaystyle\frac{\delta}{\omega+\delta}$};
+  \node[eqn]   (k) at ( 0, 0) {$K = x\,\displaystyle\frac{\delta}{\omega+\delta}$};
   \node[output=epa] (epa) at (1,+1) {\odef{epa}{K = K\\F=F\\\delta=\delta}};
   \node[output=ird] (ird) at (1, 0) {\odef{ird}{Q = K/\delta\\A=F\delta}};
   \node[output=iry!50!ipy] (ixy) at (1,-1) {\odef{iry\\ipy}{\delta_1=\min(\delta,1)\\Q = K/\delta_1\\A=F\delta_1}};
