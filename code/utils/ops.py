@@ -36,13 +36,12 @@ def dict_str(d):
   # print a dictionary "pretty"
   return ', '.join([ '{}={}'.format(k,v) for k,v in d.items() ])
 
-def dict_list_update(ds,op=None,**kwds):
-  # update every dict in ds with kwds
-  for d in ds:
-    if op is None:
-      d.update(kwds)
-    else:
-      d.update({k:op(d[k],v) for k,v in kwds.items()})
+def dict_list_update(ds,lkwds=None,**kwds):
+  # update every dict in ds with kwds and lkwds
+  for i,d in enumerate(ds):
+    d.update(kwds)
+    if lkwds:
+      d.update({k:v[i] for k,v in lkwds.items()})
   return ds
 
 def squarish(n):
