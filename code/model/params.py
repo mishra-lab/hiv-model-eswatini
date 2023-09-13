@@ -168,6 +168,12 @@ def def_sample_distrs():
   'revx_2010':            stats.gamma(m=.7288,sd=.1279),
   }
 
+def get_lp(P,PD=None):
+  # log prior
+  if PD is None: PD = def_sample_distrs()
+  return sum(PD[k].logpdf(P[k]) for k in PD.keys()) + \
+    sum(0 if checker(P) else -np.inf for checker in def_checkers())
+
 def print_sample_distrs(PD=None,fmt='{:6.3f}',interval=.95,keys=None):
   if PD is None: PD = def_sample_distrs()
   if keys is None: keys = PD.keys()
