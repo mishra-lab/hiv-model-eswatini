@@ -1,3 +1,4 @@
+import time
 import scipy.stats as ss
 from scipy.stats.qmc import LatinHypercube
 from numpy.random import permutation
@@ -29,6 +30,10 @@ def invgauss(m,sd,z=0):
 def uniform(l,h):
   return ss.uniform(loc=l,scale=h-l)
 
+def mvn(m,cov):
+  # TODO: singular safe?
+  return ss.multivariate_normal(mean=m,cov=cov,allow_singular=True)
+
 def ratio_binom(p1,n1,p2,n2):
   # Katz1978
   var = ((1/p1)-1)/n1+((1/p2)-1)/n2
@@ -37,3 +42,6 @@ def ratio_binom(p1,n1,p2,n2):
 def lhs(d,n,seed=None):
   # n: number of samples to obtain
   return LatinHypercube(d,seed=seed).random(n)
+
+def random_seed(imax=4294967295):
+  return int(imax*(time.time()%1))
