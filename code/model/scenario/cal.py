@@ -16,7 +16,6 @@ def run(case,b,**kwds):
   fio.save_csv(fname('csv','sam','ll',case=case,b=b),
     {'seed':seeds,'ll':[R['ll'] if R else np.nan for R in R0s]})
   # select, save, plot topcal %
-  R0s = system.drop_fails(R0s)[0]
   Rs = target.top_ll(R0s,top=int(len(seeds)*N['topcal']))
   fio.save(fname('npy','cal','Ps',case=case,b=b),[R['P'] for R in Rs])
   fit.plot_sets(tvec['cal'],R0s,T=T,tfname=fname('fig','sam','cal',case=case,b=b),debug=True)

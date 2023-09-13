@@ -35,8 +35,7 @@ def plot_sets(t,Rs,T=None,tfname=None,debug=False,sets=None,snames=None):
   if sets is None: sets = specsets.keys()
   if snames is None: snames = ['all','w','m','fsw']
   kwds = dict(T=T,snames=snames)
-  if debug: # best 100%, 10%, 1% fits as ribbons; then merge 
-    Rs = system.drop_fails(Rs)[0]
+  if debug: # best 100%, 10%, 1% fits as ribbons; then merge
     Rss = [target.top_ll(Rs,top) for top in (1.,.1,.01)]
   else: # 100% fits as ribbon + median; no merge
     Rss = [Rs]

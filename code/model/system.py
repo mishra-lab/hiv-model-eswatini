@@ -11,38 +11,26 @@ def get_X(X0,t):
   X[0] = X0
   return X
 
-def drop_fails(*Rss):
-  # Rss is a list of lists of R, which are assumed to be paired.
-  # e.g. Rss[0][i] is fit i from scenario A, Rss[1][i] is (paired) fit i from scenario B
-  # We drop all fits that have any fail across scenarios
-  oks = [all(Ris) for Ris in zip(*Rss)]
-  return tuple([R for (R,ok) in zip(Rs,oks) if ok] for Rs in Rss)
-
 def run_n(Ps,t=None,T=None,para=True,**kwds):
-  log(2,'system.run_n: '+str(len(Ps)))
+  log(2,'system.run_n: N = '+str(len(Ps)))
   if para:
     fun = lambda P: run(P,t=t,T=T,**kwds)
-    Rs = parallel.ppool(len(Ps)).map(fun,Ps)
+    return log(-1,parallel.ppool(len(Ps)).map(fun,Ps))
   else:
-    Rs = [run(P,t=t,T=T,**kwds) for P in Ps]
-  log(1)
-  return Rs
+    return log(-1,[run(P,t=t,T=T,**kwds) for P in Ps])
 
-def run(P,t=None,T=None,RPts=None,interval=None):
+def run(P,t=None,T=None,RPts=None):
   if t is None: t = get_t()
   if RPts is None:
     RPts = ['PF_condom_t','PF_circum_t','dx_sit','tx_sit','Rtx_ht','unvx_t','revx_t']
   R = solve(P,t)
-  log(3,str(P['seed']).rjust(6)+(' ' if R else '!'))
+  log(3,str(P['seed']).rjust(9)+(' ' if R else '!'))
   if not R:
-    return R
+    return {'P':P,'t':t,'ll':-np.inf}
   R['foi_mode'] = R['P']['foi_mode']
-  if T is not None:
-    R['ll'] = target.get_model_ll(T,R,t,interval=interval)
-    R['P']['ll'] = R['ll']
+  R['ll'] = target.get_model_ll(T,R,t) if T else None
   if RPts:
-    for RPt in RPts:
-      R[RPt] = np.rollaxis(P[RPt](t),-1)
+    R.update({k:np.rollaxis(P[k](t),-1) for k in RPts})
   return R
 
 def solve(P,t):
