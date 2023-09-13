@@ -3,6 +3,8 @@ from inspect import signature
 from utils import deco,stats,flatten,dict_str
 from model import out
 
+llmin = -1e6
+
 class Target():
   def __init__(self,dist,name,pop,pop2=None,vsop=None,weight=1):
     self.dist = dist
@@ -42,7 +44,7 @@ class Target():
         xlo,xhi = self.dist.interval(interval)
         return self.weight * (xlo <= x <= xhi)
       else:
-        return self.weight * np.maximum(-1e6,self.dist.logpdf(x))
+        return self.weight * np.maximum(llmin,self.dist.logpdf(x))
     else: # False-y
       return self.weight
 
@@ -212,7 +214,7 @@ def get_pop_total_esw():
 def get_prevalence_esw_anc(w=0):
   return [
     Target(stats.betabin(p=Pt,n=1000),'prevalence',dict(t=t,s=0,i=(0,1,2,3)),weight=w)
-      for t,Pt in zip(# 1992-2010: UNGASS, 2012-2015: EswHIVPR2015
+      for t,Pt in zip(# 1992-2010: EswUNGASS2010, 2012-2015: EswHIVPR2015 # TODO: NERCHA2012
     [1992,1994,1996,1998,2000,2002,2004,2006,2008,2010,2012,2013,2014,2015],
     [.039,.161,.260,.316,.342,.386,.426,.392,.381,.411,.344,.384,.350,.370])
   ]
