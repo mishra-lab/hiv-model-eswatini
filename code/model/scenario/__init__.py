@@ -5,10 +5,11 @@ from model import system
 uid = fio.datestamp()
 
 N = dict(
-  sam    = 100000, # total samples
-  topcal = .1,     # top fraction to save from each cal batch
-  topfit = .01,    # top fraction to save & use from all batches
-  batch  = 10,     # how many batches
+  sam    = 1000,    # total initial samples
+  batch  = 10,      # number of batches
+  imis   = 10,      # numer of imis iterations
+  fisam  = .1,      # fraction to resample per imis iter
+  fpost  = .03,     # fraction to resample as posterior
 )
 tvec = dict(
   cal  = system.get_t(tf=2025),
@@ -18,7 +19,7 @@ tvec = dict(
 )
 
 def fname(ftype,phase,key,case='base',b='all'):
-  subdirs = [uid,str(N['sam'])]
+  subdirs = [uid,str(N['sam'])+'x'+str(N['imis'])]
   if ftype=='npy':
     path,ext = ['data','npy',*subdirs],''
   if ftype=='csv':
@@ -28,9 +29,14 @@ def fname(ftype,phase,key,case='base',b='all'):
   # e.g. data/npy/2022-01-01/1000/fit_Ps_base_3.npy
   return genpath(rootpath(*path,'{}_{}_{}_{}{}'.format(phase,key,case,b,ext)))
 
-def batch_select(objs,b):
-  nb = int(len(objs) / N['batch'])
-  return objs[slice(nb*b,nb*(b+1))]
+def get_seeds(b):
+  return list(range(N['bsam']*b,N['bsam']*(b+1)))
+
+def set_N_all():
+  # finalize N (dependent)
+  N['bsam']  = int(N['sam']/N['batch'])  # number of samples per batch
+  N['bisam'] = int(N['bsam']*N['fisam']) # number of resamples per batch-iter
+  N['psam']  = int(N['sam']*N['fpost'])  # number of resamples as posterior
 
 akwds = fio.argvkwds(scinet=False)
 
@@ -38,5 +44,5 @@ if akwds.pop('scinet'):
   os.environ['MPLCONFIGDIR'] = fio.tmpfile() # TODO: this may not work?
   parallel.cpus = 80
 
-uid = '2023-03-03'
-# N['sam'] = 1000 # DEBUG
+uid = '2023-09-12'
+set_N_all()
