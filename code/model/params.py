@@ -7,9 +7,7 @@ from model import tol
 
 # main -------------------------------------------------------------------------
 
-def get_all(P=None,seed=None,**kwds):
-  P = P if P is not None else \
-      get_sample_random(seed=seed)
+def get_all(P,**kwds):
   P['foi_mode'] = 'base'
   P.update(kwds)
   # order matters for some dependencies
@@ -28,55 +26,49 @@ def get_all(P=None,seed=None,**kwds):
   P.update(get_scen(P))
   return P
 
-def get_n_all(n,Ps=None,seeds=None,lhs=True,all=True,**kwds):
-  log(2,'params.get_n_all: '+str(n))
-  if seeds is None: seeds = n*[None]
+def get_n_all(seeds,Ps=None,lhs=True,all=True,**kwds):
+  log(2,'params.get_n_all: N = '+str(len(seeds)))
   if Ps is None:
     PD = def_sample_distrs()
     if lhs:
-      # only latin hypercube sample params without constraints
-      # too expensive / frail for constraints - https://arxiv.org/abs/0909.0329
+      # lhs w constraints too expensive/frail: https://arxiv.org/abs/0909.0329
       PDc = dict_split(PD,flatten(def_checkers().values()))
-      Phs = get_n_sample_lhs(n,PD,seed=seeds[0])
-      Ps = get_n_sample_random(n,PDc,seeds=seeds,Ps=Phs)
+      Phs = get_n_sample_lhs(seeds,PD) # no constraints
+      Ps = get_n_sample_random(seeds,PD=PDc,Ps=Phs) # constraints
     else:
-      Ps = get_n_sample_random(n,PD,seeds=seeds)
+      Ps = get_n_sample_random(seeds,PD=PD)
   if all:
     return [get_all(P,**kwds) for P in Ps]
   else:
     return Ps
 
-def get_n_sample_lhs(n,PD,seed=None):
-  Qs = stats.lhs(len(PD),n,seed=seed)
+def get_n_sample_lhs(seeds,PD):
+  # latin hypercube sampling - n.b. seeds[0]
+  Qs = stats.lhs(len(PD),len(seeds),seeds[0])
   return [{key:PD[key].ppf(q) for key,q in zip(PD,Q)} for Q in Qs]
 
-def get_n_sample_random(n,PD=None,seeds=None,Ps=None):
-  if Ps is None: Ps = n*[{}]
-  if seeds is None: seeds = n*[None]
+def get_n_sample_random(seeds,Ps=None,PD=None):
+  if Ps is None: Ps = [{} for seed in seeds]
   if PD is None: PD = def_sample_distrs()
-  return [get_sample_random(PD,seed=seeds[i],P=Ps[i]) for i in range(n)]
+  return [get_sample_random(seed,P,PD) for seed,P in zip(seeds,Ps)]
 
-def get_sample_random(PD=None,seed=None,P=None):
-  if P is None: P = {}
+def get_sample_random(seed=None,P=None,PD=None):
   if seed is not None: np.random.seed(seed)
+  if P is None: P = {}
   if PD is None: PD = def_sample_distrs()
   P.update({key:dist.rvs() for key,dist in PD.items()})
   P['seed'] = seed
+  # constraints / checkers
   checkers = def_checkers()
-  # adjustments / forcing
   for checker,keys in checkers.items():
     resample_until(P,PD,checker,keys)
   return P
 
-def resample_until(P,PD,checker,keys,log=False):
+def resample_until(P,PD,checker,keys):
   if keys is None: keys = PD.keys()
-  n = 1
   while not checker(P):
-    n += 1
     for key in keys:
       P[key] = PD[key].rvs()
-  if log:
-    print('{:.5f} {:>15} @ {}'.format((1/n),str(checker).split()[1],', '.join(keys)))
   return P
 
 def def_checkers():
