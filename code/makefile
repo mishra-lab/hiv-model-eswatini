@@ -1,8 +1,8 @@
 export PYTHONPATH := .:$$PYTHONPATH
 do.debug:
 	python3.8 model/debug.py && echo [OK]
-do.model.cal:
-	python3.8 model/scenario/cal.py case=base && echo [OK]
+do.model.imis:
+	python3.8 model/scenario/imis.py case=base b=0 && echo [OK]
 do.model.foi:
 	python3.8 model/scenario/foi.py && echo [OK]
 do.model.art:
