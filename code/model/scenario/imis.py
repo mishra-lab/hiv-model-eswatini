@@ -72,7 +72,7 @@ def run(case,b,**kwds):
     Gs += [get_mvn(param_array(Ps,ks),pic,wts)]
     Ps += sample_mvn(Gs[-1],i,ks)
     Rs += system.run_n(Ps[zi],t=tvec['cal'],T=T)
-    wts = get_weights(Rs,param_array(Ps,ks),Gs)
+    wts = get_weights(Rs,param_array(Ps,ks),Gs,PD)
   # saving etc. - TODO: clean-up
   lkwds = dict(seed=[P['seed'] for P in Ps],ll=[R['ll'] for R in Rs],wt=wts)
   fio.save_csv(fname('csv','imis','Ps',b=b),param_dict(param_array(Ps,ks),ks,lkwds=lkwds))
