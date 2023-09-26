@@ -90,8 +90,8 @@ def def_sample_distrs():
   'PX_w_fsw':             stats.betabin(p=.0288,n=121),
   'PX_w_h':               stats.betabin(p=.1778,n=66),
   'PX_m_m':               stats.betabin(p=.1331,n=360),
-  'dur_fsw_l':            stats.gamma(m=4.125,sd=0.644),
-  'dur_fsw_h':            stats.gamma(m=9.408,sd=1.748),
+  'dur_fsw':              stats.gamma(m=4.065,sd=1.039),
+  'dur_sw_h':             stats.gamma(m=0.500,sd=0.216),
   'dur_cli':              stats.gamma(m=8.626,sd=2.832),
   'turn_xm_xl':           stats.gamma(m=.2156,sd=.1177),
   'Pturn_fsw_m:l':        stats.betabin(p=.724,n=18),
@@ -249,35 +249,35 @@ def get_birth_death(P): # [OK]
 
 def get_turnover(P):
   # turn_sii.shape = (s:2, i:4, i':4)
-  dur = np.array([[NAN,NAN,P['dur_fsw_l'],P['dur_fsw_h']],[NAN,NAN,P['dur_cli'],P['dur_cli']]])
   PXe = np.zeros((2,4)) # s, i
   turn = np.zeros((2,4,4)) # s, i.from, i.to
   b4 = np.eye(4,dtype=bool) # pre-compute
   A = np.zeros((2,16,16)) #  0, 1, 2, 3,   4,  5,  6,   7,  8,  9,  10, 11, 12,  13, 14, 15
   b = np.zeros((2,16))    # e1,e2,e3,e4, t01,t02,t03, t10,t12,t13, t20,t21,t23, t30,t31,t32
-  for s in (0,1):
+  for s in (0,1): # {variables} computed at runtime in solve_turnover (below)
     x = P['PX_si'][s,:]
-    b[s,0:4] = x * NAN # * birth_t (runtime)
+    p = (P['PX_fsw_h'],P['PX_cli_h'])[s]
+    dur = (P['dur_fsw'],P['dur_cli'])[s]
+    b[s,0:4] = NAN # x*{birth_t}
     A[s,0,:] = (NAN,0,0,0,-x[0],-x[0],-x[0],+x[1],    0,    0,+x[2],    0,    0,+x[3],    0,    0)
     A[s,1,:] = (0,NAN,0,0,+x[0],    0,    0,-x[1],-x[1],-x[1],    0,+x[2],    0,    0,+x[3],    0)
     A[s,2,:] = (0,0,NAN,0,    0,+x[0],    0,    0,+x[1],    0,-x[2],-x[2],-x[2],    0,    0,+x[3])
     A[s,3,:] = (0,0,0,NAN,    0,    0,+x[0],    0,    0,+x[1],    0,    0,+x[2],-x[3],-x[3],-x[3])
-    A[s,4,0:4],b[s,4]   = 1, x.sum() # e.sum = x.sum
-    A[s,5,10:13],b[s,5] = 1, 1/dur[s,2] - P['death'] # dur 2
-    A[s,6,13:16],b[s,6] = 1, 1/dur[s,3] - P['death'] # dur 3
-    A[s,7,12],b[s,7] = 1, 0.0 # t23 = 0
-    A[s,8,15],b[s,8] = 1, 0.0 # t32 = 0
-    A[s,9, 7],b[s,9] = 1, P['turn_xm_xl'] # t10
-    A[s,11,1],b[s,11] = 1, x[1]*1.0 # e1 = x1*R
-    A[s,12,2],b[s,12] = 1, NAN # e2 = x2*R (runtime)
-    A[s,13,3],b[s,13] = 1, NAN # e3 = x3*R (runtime)
-    p = (P['Pturn_fsw_m:l'],P['Pturn_cli_m:l'])[s]
-    A[s,14,:] = (0,0,0,0, 0,0,0, 0,0,0, p-1,p,0, 0,0,0) # (p-1) * t20 = (p) * t21
-    A[s,15,:] = (0,0,0,0, 0,0,0, 0,0,0, 0,0,0, p-1,p,0) # (p-1) * t30 = (p) * t31
-    # print(np.array(sympy.Matrix(A[s,:,:]).rref()[0],dtype=float).round(3)) # DEBUG (NAN fails OK)
-    # print(np.linalg.matrix_rank(A)) # DEBUG ~= [16,16]
+    A[s,4,0:4],b[s,4] = 1, x.sum() # e.sum = x.sum
+    A[s,5,1],b[s,5] = 1, x[1]*1.0 # e1 = x1
+    A[s,6,2],b[s,6] = 1, NAN # e2 = (x1+x2)*{R}
+    A[s,7,3],b[s,7] = 1, 0.0 # e3  = 0
+    A[s,8,10:12],b[s,8] = 1, (1/dur - P['death'])/(1-p) # dur 2 (adj for +3)
+    A[s,9,15],   b[s,9] = 1, (1/P['dur_sw_h'] - P['death']) # dur 3
+    A[s,10, 7],b[s,10] = 1, P['turn_xm_xl'] # t10
+    A[s,11, 6],b[s,11] = 1, 0.0 # t03 = 0
+    A[s,12, 9],b[s,12] = 1, 0.0 # t13 = 0
+    A[s,13,13],b[s,13] = 1, 0.0 # t30 = 0
+    A[s,14,14],b[s,14] = 1, 0.0 # t31 = 0
+    A[s,15, :],b[s,15] = (0,0,0,0, 0,0,0, 0,0,0, 0,0,1-p, 0,0,-p), p # t23*x2 - t32*x3 = x3*{birth_t}
+  # print(np.array(sympy.Matrix(A[s,:,:]).rref()[0],dtype=float).round(3)) # DEBUG (NAN fails OK)
+  # print(np.linalg.matrix_rank(A)) # DEBUG ~= [16,16] @ NAN = 1
   return {
-    'dur_si': dur,
     'PXe_si': PXe,
     'turn_sii': turn,
     'turn_A_s': A,
@@ -289,15 +289,15 @@ def solve_turnover(P,t):
   v = P['birth_t'](t)
   P['turn_b_s'][:,0:4]     = v * P['PX_si']
   P['turn_A_s'][:,0:4,0:4] = v * P['b4']
-  for s in (0,1):
-    Re = np.minimum((2.0,1.5)[s], (v - P['death'] + 1/P['dur_si'][s,2:4]) / v)
-    P['turn_b_s'][s,12:14] = P['PX_si'][s,2:4] * Re
+  for s,R,dur in zip((0,1),(2.0,1.5),(P['dur_fsw'],P['dur_cli'])):
+    P['turn_b_s'][s,6]  = P['PX_si'][s,2:].sum() * np.minimum(R, (v - P['death'] + 1/dur) / v)
+    P['turn_b_s'][s,15] = v * P['PX_fsw_h']
     et,err = nnls(P['turn_A_s'][s],P['turn_b_s'][s])
     P['PXe_si'][s] = et[0:4]
     P['turn_sii'][s,np.logical_not(P['b4'])] = et[4:]
     if err > tol:
       P['PXe_si'][s] = -np.inf # fail (gracefully) in system.solve
-      # raise Exception('Cannot solve turnover (s={}) error: {}, seed: {}'.format(s,err,P['seed']))
+      # raise Exception('Cannot solve turnover (s={},t={},seed={}) error: {}'.format(s,t,P['seed'],err))
   return v,P['PXe_si'],P['turn_sii']
 
 # FOI ----------------------------------------------------------------------------------------------
