@@ -35,7 +35,7 @@ def update_weights(W,PX,Rs,zi):
   W['lp'] = np.append(W['lp'],[params.get_lp(R['P'],PX['PD']) for R in Rs[zi]]) # original prior
   W['lg'] = np.sum([G.logpdf(Pa) for G in PX['GD']],axis=0) # mvn prior
   W['lq'] = np.log((wp)*np.exp(W['lp']) + (1-wp)*np.exp(W['lg'])) # mixture prior
-  W['wt'] = rescale(W['ll'] + W['lp'] - W['lq']) # overall weight
+  W['wt'] = rescale(get_ll_wts(W['ll']) * np.exp(W['lp'] - W['lq'])) # overall weight
 
 def get_mvn(PX,W,Ps):
   # get mvn around current best params
