@@ -7,6 +7,7 @@
 
 module load python/3.8
 # pip install --upgrade scipy pathos PyPDF2
+export MPLCONFIGDIR=$SCRATCH
 export PYTHONPATH=.:$PYTHONPATH
 python3.8 model/scenario/imis.py scinet case=base b=$SLURM_ARRAY_TASK_ID
 
