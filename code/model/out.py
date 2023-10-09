@@ -224,13 +224,13 @@ def wiw(R1s,tvec,t,R2s=None,vsop='1-2'):
   return data
 
 def expo(R1s,tvec,t,onames,snames,R2s=None,vsop='raw',ecols=None,mode='q',**kwds):
-  # E: dict of cols (lists); first cols = strata, later cols = output quantiles/values per seed
+  # E: dict of cols (lists); first cols = strata, later cols = output quantiles/values per id
   if mode == 'q':
     aggrop = lambda os: np.nanquantile(os,qs,axis=0)
     cols = ['q'+str(q) for q in qs]
-  if mode == 'seed':
+  if mode == 'id':
     aggrop = lambda os: np.array(os)
-    cols = ['s'+str(R['P']['seed']) for R in R1s]
+    cols = ['s'+str(R['P']['id']) for R in R1s]
   sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
   if ecols is None: ecols = {}
   ecols.update(op=vsop)
