@@ -1,99 +1,105 @@
 import numpy as np
-from utils import log,fio,stats,parallel,dict_list_update
-from model import system,params,target,fit
+from utils import log,fio,stats,parallel
+from model import system,params,target,fit,out
 from model.scenario import akwds,N,tvec,fname,get_seeds
 
 # TODO: stopping criterion
 
-def get_ll_wts(lls):
+Ds = params.def_sample_distrs()
+
+def xform_ll(lls):
   # hack transform of badly-scaled lls
   # TODO: quantile changes across batches
   return np.quantile(lls,N['isam']/N['bsam']) / np.array(lls) * -np.sign(lls)
 
-def rescale(wts):
-  return np.array(wts) / np.sum(wts)
+def rescale(x):
+  return np.array(x) / np.sum(x)
 
-def P_array(Ps,PX):
-  return np.array([[P[k] for k in PX['ks']] for P in Ps])
+def P_array(Ps):
+  return np.array([[P[k] for k in Ds.keys()] for P in Ps])
 
-def P_dict(Pa,PX,**kwds):
-  return dict_list_update([dict(zip(PX['ks'],Pai)) for Pai in Pa],**kwds)
+def P_dict(Pa):
+  return [dict(zip(Ds.keys(),Pai)) for Pai in Pa]
 
-def init_weights(PX,Rs):
-  log(2,'imis.init_weights: N = '+str(len(Rs)))
-  W = dict()
-  W['ll'] = np.array([R['ll'] for R in Rs])
-  W['lp'] = np.array([params.get_lp(R['P'],PX['PD']) for R in Rs])
-  W['wt'] = rescale(get_ll_wts(W['ll']))
-  return W
-
-def update_weights(W,PX,Rs,zi):
+def update_weights(Ps,Rs,Gs,zi):
   log(2,'imis.update_weights: N = '+str(len(Rs)))
   wp = N['bsam'] / len(Rs)
-  Pa = P_array([R['P'] for R in Rs],PX)
-  W['ll'] = np.append(W['ll'],[R['ll'] for R in Rs[zi]]) # likelihood
-  W['lp'] = np.append(W['lp'],[params.get_lp(R['P'],PX['PD']) for R in Rs[zi]]) # original prior
-  W['lg'] = np.sum([G.logpdf(Pa) for G in PX['GD']],axis=0) # mvn prior
-  W['lq'] = np.log((wp)*np.exp(W['lp']) + (1-wp)*np.exp(W['lg'])) # mixture prior
-  W['wt'] = rescale(get_ll_wts(W['ll']) * np.exp(W['lp'] - W['lq'])) # overall weight
+  Pa = P_array(Ps)
+  for P,R in zip(Ps[zi],Rs[zi]):
+    P.update(ll=R['ll'],lp=params.get_lp(P,Ds))
+  lls = [P['ll'] for P in Ps] # likelihood
+  lps = [P['lp'] for P in Ps] # original prior
+  lgs = np.sum([G.logpdf(Pa) for G in Gs],axis=0) # mvn prior
+  lqs = np.log((wp)*np.exp(lps) + (1-wp)*np.exp(lgs)) # mixture prior
+  return rescale(xform_ll(lls) * np.exp(lps - lqs)) # overal weight
 
-def get_mvn(PX,W,Ps):
+def get_mvn(wts,Pa):
   # get mvn around current best params
-  z = np.argmax(W['wt'])
+  z = np.argmax(wts)
   log(2,'imis.get_mvn: z = '+str(z))
-  Pa = P_array(Ps,PX)
   Pza = Pa[z,] # best params
-  dPa = ((Pa-Pza) @ PX['pic'] * (Pa-Pza)).sum(axis=1) # mahalanobis^2 wrt prior
+  pic = np.diag([1/D.var() for D in Ds.values()]) # prior inv cov (ignore constr)
+  dPa = ((Pa-Pza) @ pic * (Pa-Pza)).sum(axis=1) # mahalanobis^2 wrt prior
   zs = np.argsort(dPa)[:N['isam']+1] # closest params
-  Pzcov = np.cov(Pa[zs,].T,aweights=W['wt'][zs]+1/len(Ps))
-  # assert np.linalg.matrix_rank(Pzcov) == len(PX['PD']) # DEBUG
-  return stats.mvn(Pza,Pzcov)
+  Pzcov = np.cov(Pa[zs,].T,aweights=wts[zs]+1/Pa.shape[0])
+  # assert np.linalg.matrix_rank(Pzcov) == len(Ds) # DEBUG
+  return [stats.mvn(Pza,Pzcov)]
 
-def sample_mvn(PX,i,gsam=10,jmax=100):
+def sample_mvn(G,gsam=10,jmax=100,**kwds):
   # sample from G but ensure valid samples (prior > 0)
   log(2,'imis.sample_mvn: N = '+str(N['isam']))
   # expensive so we do in parallel + batches (gsam)
   def sample_fun(z):
     for j in range(jmax): # attempt
-      seed = N['bsam'] + N['isam']*jmax*i + jmax*z + j
-      Ps  = P_dict(PX['GD'][i].rvs(gsam,random_state=seed),PX,seed=seed)
+      Ps  = P_dict(G.rvs(gsam,random_state=jmax*z+j))
       lps = [params.get_lp(P) for P in Ps]
       if np.max(lps) > -np.inf: break # success: prior > 0
-    log(3,str(seed).rjust(9)+' ')
-    return params.get_all(Ps[np.argmax(lps)])
+    log(3,str(z).rjust(9)+' ')
+    return params.get_all(Ps[np.argmax(lps)],id=z,**kwds)
   return log(-1,parallel.ppool(N['isam']).map(sample_fun,range(N['isam'])))
 
-def init_PX(PD):
-  PX = dict()
-  PX['PD'] = PD # distributions
-  PX['ks'] = list(PD.keys()) # names
-  PX['pic'] = np.diag([1/D.var() for D in PD.values()]) # prior inverse cov (ignores constr)
-  PX['GD'] = [] # mvn distributions
-  return PX
-
 def run(case,b,**kwds):
-  log(0,'imis.run: b = {}'.format(b))
+  log(0,'imis.run: {} @ b = {}'.format(case,b))
   # initialize & first run
   seeds = get_seeds(b)
-  PX = init_PX(params.def_sample_distrs())
-  T  = target.get_all_esw()
-  Ps = params.get_n_all(seeds,**kwds)
+  T = target.get_all_esw()
+  Gs = []
+  Ps = params.get_n_all(seeds,batch=b,imis=0,**kwds)
   Rs = system.run_n(Ps,t=tvec['cal'],T=T)
-  W  = init_weights(PX,Rs)
+  wts = update_weights(Ps,Rs,Gs,slice(N['bsam']))
   # iterations
   for i in range(N['imis']):
-    log(1,'imis.iter: i = {}'.format(i))
+    log(1,'imis.iter: i = {}'.format(i+1))
     zi = slice(len(Ps),len(Ps)+N['isam'])
-    PX['GD'] += [get_mvn(PX,W,Ps)]
-    Ps += sample_mvn(PX,i)
+    Gs += get_mvn(wts,P_array(Ps))
+    Ps += sample_mvn(Gs[-1],batch=b,imis=i+1,**kwds)
     Rs += system.run_n(Ps[zi],t=tvec['cal'],T=T)
-    update_weights(W,PX,Rs,zi)
-  # saving etc. - TODO: clean-up
-  lkwds = dict(seed=[P['seed'] for P in Ps],ll=W['ll'],w=W['wt'])
-  fio.save_csv(fname('csv','imis','Ps',b=b),P_dict(P_array(Ps,PX),PX,lkwds=lkwds))
-  Rp = np.random.choice(Rs,size=100,replace=True,p=W['wt'])
-  fit.plot_sets(tvec['cal'],Rp,T=T,debug=True)
+    wts = update_weights(Ps,Rs,Gs,zi)
+  kxs = ('id','batch','imis',*Ds.keys(),'ll','lp')
+  Pxs = [dict({k:P[k] for k in kxs},wt=wt) for P,wt in zip(Ps,wts)]
+  fio.save(fname('npy','imis','Ps',b=b),Pxs)
+  fio.save_csv(fname('csv','imis','Ps',b=b),Pxs)
+
+def sample_post(case,seed=0):
+  log(0,'imis.sample_post: {}'.format(case))
+  P0xs = [P for b in range(N['batch']) for P in fio.load(fname('npy','imis','Ps',case=case,b=b))]
+  np.random.seed(seed)
+  wll = rescale(xform_ll([P['ll'] for P in P0xs])) # weights
+  Pxs = np.random.choice(P0xs,N['post'],replace=False,p=wll) # sample
+  Ps = [params.get_all(P,id='{}.{}.{}'.format(P['batch'],P['imis'],P['id'])) for P in Pxs]
+  fio.save(fname('npy','fit','Ps',case=case),Ps)
+
+def rerun(case):
+  log(0,'imis.rerun: {}'.format(case))
+  T = target.get_all_esw()
+  Ps = fio.load(fname('npy','fit','Ps',case=case))
+  Rs = system.run_n(Ps,t=tvec['main'])
+  fit.plot_sets(tvec['main'],Rs,T=T,tfname=fname('fig','fit','{}',case=case))
+  fio.save_csv(fname('csv','fit','wiw',case=case),out.wiw(Rs,tvec['main'],tvec['plot']))
 
 if __name__ == '__main__':
   run(**akwds)
+  # akwds.pop('b')
+  # sample_post(**akwds)
+  # rerun(**akwds)
   pass

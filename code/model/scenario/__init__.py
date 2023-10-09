@@ -5,10 +5,11 @@ from model import system
 uid = fio.datestamp()
 
 N = dict(
-  batch  = 1000,    # [1000] number of batches
+  batch  = 100,     # [ 100] number of batches
   bsam   = 1000,    # [1000] initial samples per batch
   isam   = 100,     # [ 100] number to resample per imis iter
-  imis   = 25,      # [  25] numer of imis iterations
+  imis   = 25,      # [  25] number of imis iterations
+  post   = 1000,    # [1000] number of posterior samples
 )
 tvec = dict(
   cal  = system.get_t(tf=2025),
@@ -37,4 +38,4 @@ if akwds.pop('scinet'):
   os.environ['MPLCONFIGDIR'] = fio.tmpfile() # TODO: this may not work?
   parallel.cpus = 80
 
-uid = '2023-09-20'
+uid = '2023-10-10'
