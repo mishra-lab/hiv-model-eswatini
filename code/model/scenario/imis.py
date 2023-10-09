@@ -98,7 +98,7 @@ def rerun(case):
   fio.save_csv(fname('csv','fit','wiw',case=case),out.wiw(Rs,tvec['main'],tvec['plot']))
 
 if __name__ == '__main__':
-  run(**akwds)
+  # run(**akwds)
   # akwds.pop('b')
   # sample_post(**akwds)
   # rerun(**akwds)

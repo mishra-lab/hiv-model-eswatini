@@ -2,7 +2,7 @@
 #SBATCH --job-name hiv-esw
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=40
-#SBATCH --time=0:15:00
+#SBATCH --time=0:20:00
 #SBATCH --array=0-0
 
 module load python/3.8
