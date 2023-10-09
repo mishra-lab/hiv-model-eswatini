@@ -24,7 +24,7 @@ def run(P,t=None,T=None,RPts=None):
   if RPts is None:
     RPts = ['PF_condom_t','PF_circum_t','dx_sit','tx_sit','Rtx_ht','unvx_t','revx_t']
   R = solve(P,t)
-  log(3,str(P['seed']).rjust(9)+(' ' if R else '!'))
+  log(3,str(P['id']).rjust(9)+(' ' if R else '!'))
   if not R:
     return {'P':P,'t':t,'ll':-np.inf}
   R['foi_mode'] = R['P']['foi_mode']

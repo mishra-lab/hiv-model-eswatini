@@ -29,46 +29,46 @@ def get_all(P,**kwds):
 def get_n_all(seeds,Ps=None,lhs=True,all=True,**kwds):
   log(2,'params.get_n_all: N = '+str(len(seeds)))
   if Ps is None:
-    PD = def_sample_distrs()
+    Ds = def_sample_distrs()
     if lhs:
       # lhs w constraints too expensive/frail: https://arxiv.org/abs/0909.0329
-      PDc = dict_split(PD,flatten(def_checkers().values()))
-      Phs = get_n_sample_lhs(seeds,PD) # no constraints
-      Ps = get_n_sample_random(seeds,PD=PDc,Ps=Phs) # constraints
+      Dsc = dict_split(Ds,flatten(def_checkers().values()))
+      Psh = get_n_sample_lhs(seeds,Ds) # no constraints
+      Ps = get_n_sample_random(seeds,Ds=Dsc,Ps=Psh) # constraints
     else:
-      Ps = get_n_sample_random(seeds,PD=PD)
+      Ps = get_n_sample_random(seeds,Ds=Ds)
   if all:
     return [get_all(P,**kwds) for P in Ps]
   else:
     return Ps
 
-def get_n_sample_lhs(seeds,PD):
+def get_n_sample_lhs(seeds,Ds):
   # latin hypercube sampling - n.b. seeds[0]
-  Qs = stats.lhs(len(PD),len(seeds),seeds[0])
-  return [{key:PD[key].ppf(q) for key,q in zip(PD,Q)} for Q in Qs]
+  Qs = stats.lhs(len(Ds),len(seeds),seeds[0])
+  return [{key:Ds[key].ppf(q) for key,q in zip(Ds,Q)} for Q in Qs]
 
-def get_n_sample_random(seeds,Ps=None,PD=None):
+def get_n_sample_random(seeds,Ps=None,Ds=None):
   if Ps is None: Ps = [{} for seed in seeds]
-  if PD is None: PD = def_sample_distrs()
-  return [get_sample_random(seed,P,PD) for seed,P in zip(seeds,Ps)]
+  if Ds is None: Ds = def_sample_distrs()
+  return [get_sample_random(seed,P,Ds) for seed,P in zip(seeds,Ps)]
 
-def get_sample_random(seed=None,P=None,PD=None):
+def get_sample_random(seed=None,P=None,Ds=None):
   if seed is not None: np.random.seed(seed)
   if P is None: P = {}
-  if PD is None: PD = def_sample_distrs()
-  P.update({key:dist.rvs() for key,dist in PD.items()})
-  P['seed'] = seed
+  if Ds is None: Ds = def_sample_distrs()
+  P.update({key:dist.rvs() for key,dist in Ds.items()})
+  P['id'] = seed
   # constraints / checkers
   checkers = def_checkers()
   for checker,keys in checkers.items():
-    resample_until(P,PD,checker,keys)
+    resample_until(P,Ds,checker,keys)
   return P
 
-def resample_until(P,PD,checker,keys):
-  if keys is None: keys = PD.keys()
+def resample_until(P,Ds,checker,keys):
+  if keys is None: keys = Ds.keys()
   while not checker(P):
     for key in keys:
-      P[key] = PD[key].rvs()
+      P[key] = Ds[key].rvs()
   return P
 
 def def_checkers():
@@ -168,19 +168,19 @@ def def_sample_distrs():
   'revx_2010':            stats.gamma(m=.7288,sd=.1279),
   }
 
-def get_lp(P,PD=None):
+def get_lp(P,Ds=None):
   # log prior
-  if PD is None: PD = def_sample_distrs()
-  return sum(PD[k].logpdf(P[k]) for k in PD.keys()) + \
+  if Ds is None: Ds = def_sample_distrs()
+  return sum(Ds[k].logpdf(P[k]) for k in Ds.keys()) + \
     sum(0 if checker(P) else -np.inf for checker in def_checkers())
 
-def print_sample_distrs(PD=None,fmt='{:6.3f}',interval=.95,keys=None):
-  if PD is None: PD = def_sample_distrs()
-  if keys is None: keys = PD.keys()
-  r = max(map(len,PD.keys()))
+def print_sample_distrs(Ds=None,fmt='{:6.3f}',interval=.95,keys=None):
+  if Ds is None: Ds = def_sample_distrs()
+  if keys is None: keys = Ds.keys()
+  r = max(map(len,Ds.keys()))
   sf = '{}: '+fmt+' & ('+fmt+',~'+fmt+') | {}'
   for key in keys:
-    print(sf.format(key.rjust(r),PD[key].mean(),*PD[key].interval(interval),PD[key].dist.name))
+    print(sf.format(key.rjust(r),Ds[key].mean(),*Ds[key].interval(interval),Ds[key].dist.name))
 
 def print_sampled_distrs(Ps,fmt='{:6.3f}',interval=.95,keys=None):
   # TODO: (?) support slicing
@@ -297,7 +297,7 @@ def solve_turnover(P,t):
     P['turn_sii'][s,np.logical_not(P['b4'])] = et[4:]
     if err > tol:
       P['PXe_si'][s] = -np.inf # fail (gracefully) in system.solve
-      # raise Exception('Cannot solve turnover (s={},t={},seed={}) error: {}'.format(s,t,P['seed'],err))
+      # raise Exception('Cannot solve turnover (s={},t={},seed={}) error: {}'.format(s,t,P['id'],err))
   return v,P['PXe_si'],P['turn_sii']
 
 # FOI ----------------------------------------------------------------------------------------------
