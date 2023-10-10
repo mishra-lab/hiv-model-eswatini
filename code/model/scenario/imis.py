@@ -5,7 +5,7 @@ from model.scenario import akwds,N,tvec,fname,get_seeds
 
 # TODO: stopping criterion
 
-Ds = params.def_sample_distrs()
+PD = params.def_sample_distrs()
 
 def xform_ll(lls):
   # hack transform of badly-scaled lls
@@ -16,17 +16,17 @@ def rescale(x):
   return np.array(x) / np.sum(x)
 
 def P_array(Ps):
-  return np.array([[P[k] for k in Ds.keys()] for P in Ps])
+  return np.array([[P[k] for k in PD.keys()] for P in Ps])
 
 def P_dict(Pa):
-  return [dict(zip(Ds.keys(),Pai)) for Pai in Pa]
+  return [dict(zip(PD.keys(),Pai)) for Pai in Pa]
 
 def update_weights(Ps,Rs,Gs,zi):
   log(2,'imis.update_weights: N = '+str(len(Rs)))
   wp = N['bsam'] / len(Rs)
   Pa = P_array(Ps)
   for P,R in zip(Ps[zi],Rs[zi]):
-    P.update(ll=R['ll'],lp=params.get_lp(P,Ds))
+    P.update(ll=R['ll'],lp=params.get_lp(P,PD))
   lls = [P['ll'] for P in Ps] # likelihood
   lps = [P['lp'] for P in Ps] # original prior
   lgs = np.sum([G.logpdf(Pa) for G in Gs],axis=0) # mvn prior
@@ -38,11 +38,11 @@ def get_mvn(wts,Pa):
   z = np.argmax(wts)
   log(2,'imis.get_mvn: z = '+str(z))
   Pza = Pa[z,] # best params
-  pic = np.diag([1/D.var() for D in Ds.values()]) # prior inv cov (ignore constr)
+  pic = np.diag([1/D.var() for D in PD.values()]) # prior inv cov (ignore constr)
   dPa = ((Pa-Pza) @ pic * (Pa-Pza)).sum(axis=1) # mahalanobis^2 wrt prior
   zs = np.argsort(dPa)[:N['isam']+1] # closest params
   Pzcov = np.cov(Pa[zs,].T,aweights=wts[zs]+1/Pa.shape[0])
-  # assert np.linalg.matrix_rank(Pzcov) == len(Ds) # DEBUG
+  # assert np.linalg.matrix_rank(Pzcov) == len(PD) # DEBUG
   return [stats.mvn(Pza,Pzcov)]
 
 def sample_mvn(G,gsam=10,jmax=100,**kwds):
@@ -75,7 +75,7 @@ def run(case,b,**kwds):
     Ps += sample_mvn(Gs[-1],batch=b,imis=i+1,**kwds)
     Rs += system.run_n(Ps[zi],t=tvec['cal'],T=T)
     wts = update_weights(Ps,Rs,Gs,zi)
-  kxs = ('id','batch','imis',*Ds.keys(),'ll','lp')
+  kxs = ('id','batch','imis',*PD.keys(),'ll','lp')
   Pxs = [dict({k:P[k] for k in kxs},wt=wt) for P,wt in zip(Ps,wts)]
   fio.save(fname('npy','imis','Ps',b=b),Pxs)
   fio.save_csv(fname('csv','imis','Ps',b=b),Pxs)
