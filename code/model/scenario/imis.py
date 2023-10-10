@@ -26,11 +26,11 @@ def update_weights(Ps,Rs,Gs,zi):
   wp = N['bsam'] / len(Rs)
   Pa = P_array(Ps)
   for P,R in zip(Ps[zi],Rs[zi]):
-    P.update(ll=R['ll'],lp=np.maximum(-1e6,params.get_lp(P,PD))) # HACK: lp = -inf -> error
+    P.update(ll=R['ll'],lp=params.get_lp(P,PD))
   lls = [P['ll'] for P in Ps] # likelihood
   lps = [P['lp'] for P in Ps] # original prior
   lgs = np.sum([G.logpdf(Pa) for G in Gs],axis=0) # mvn prior
-  lqs = np.log((wp)*np.exp(lps) + (1-wp)*np.exp(lgs)) # mixture prior
+  lqs = np.maximum(-1e6,np.log((wp)*np.exp(lps) + (1-wp)*np.exp(lgs))) # mixture prior
   return rescale(xform_ll(lls) * np.exp(lps - lqs)) # overal weight
 
 def get_mvn(wts,Pa):
