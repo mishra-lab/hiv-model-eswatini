@@ -7,10 +7,10 @@ do.model.foi:
 	python3.8 model/scenario/foi.py && echo [OK]
 do.model.art:
 	python3.8 model/scenario/art.py && \
-	# python3.8 model/scenario/art.py case=fsw+cli+ b=0 && \
-	# python3.8 model/scenario/art.py case=fsw+cli- b=0 && \
-	# python3.8 model/scenario/art.py case=fsw-cli+ b=0 && \
-	# python3.8 model/scenario/art.py case=fsw-cli- b=0 && \
+	# python3.8 model/scenario/art.py b=0 && \
+	# python3.8 model/scenario/art.py b=1 && \
+	# python3.8 model/scenario/art.py b=2 && \
+	# python3.8 model/scenario/art.py b=3 && \
 	echo [OK]
 do.post.base:
 	Rscript post/main.base.r && echo [OK]
