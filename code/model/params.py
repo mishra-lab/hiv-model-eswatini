@@ -33,7 +33,7 @@ def get_n_all(seeds,Ps=None,lhs=True,all=True,**kwds):
     if lhs:
       # lhs w constraints too expensive/frail: https://arxiv.org/abs/0909.0329
       PDc = dict_split(PD,flatten(def_checkers().values()))
-      Psh = get_n_sample_lhs(seeds,PD) # no constraints
+      Psh = get_n_sample_lhs(len(seeds),PD,seed=seeds[0]) # no constraints, n.b. seeds[0]
       Ps = get_n_sample_random(seeds,PD=PDc,Ps=Psh) # constraints
     else:
       Ps = get_n_sample_random(seeds,PD=PD)
@@ -42,9 +42,9 @@ def get_n_all(seeds,Ps=None,lhs=True,all=True,**kwds):
   else:
     return Ps
 
-def get_n_sample_lhs(seeds,PD):
-  # latin hypercube sampling - n.b. seeds[0]
-  Qs = stats.lhs(len(PD),len(seeds),seeds[0])
+def get_n_sample_lhs(n,PD,seed):
+  # latin hypercube sampling
+  Qs = stats.lhs(len(PD),n,seed)
   return [{key:PD[key].ppf(q) for key,q in zip(PD,Q)} for Q in Qs]
 
 def get_n_sample_random(seeds,Ps=None,PD=None):

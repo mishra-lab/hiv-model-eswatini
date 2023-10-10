@@ -1,12 +1,9 @@
-# WARNING: needs imis update
-
 import re
 import numpy as np
 from copy import deepcopy
 from utils import stats,log,fio,parallel,flatten,minimize
 from model import slicers,params,system,target,fit,out
-from model.scenario import akwds,N,tvec,fname,batch_select
-from pprint import pprint
+from model.scenario import akwds,N,tvec,fname
 
 cascade = dict( # 2020 cascade targets
   low  = (.60,.40,.80),
@@ -18,33 +15,26 @@ cases = ['fsw+cli+','fsw+cli-','fsw-cli+','fsw-cli-']
 def parse_case(case):
   return re.findall('(.*?)(\+|\-)',case)
 
-# TODO: add back keyout
-
-def run_rf(case,b):
-  log(0,'scenario.art.run_rf: '+case+' '+str(b))
-  P0s = batch_select(fio.load(fname('npy','fit','Ps',case='base')),b=b)
+def run_rf(case):
+  log(0,'art.run_rf: {}'.format(case))
+  P0s = fio.load(fname('npy','fit','Ps',case='base'))
   T = get_refit_T(case+'all-')
   PD = get_refit_PD(case+'aq-')
   fun = lambda P: run_rf_1(P,PD,T,tvec['cal'],ftol=.1)
   Ps = parallel.ppool(len(P0s)).map(fun,P0s); log(1)
-  fio.save(fname('npy','art-rf','Ps',case=case,b=b),Ps)
-
-def merge_rf():
-  log(0,'scenario.art.merge_rf')
-  for case in cases:
-    Ps = [P for b in range(N['batch']) for P in fio.load(fname('npy','art-rf','Ps',case=case,b=b))]
-    fio.save(fname('npy','art-rf','Ps',case=case),Ps)
+  fio.save(fname('npy','art-rf','Ps',case=case),Ps)
 
 def rerun_rf():
-  log(0,'scenario.art.rerun_rf')
+  log(0,'art.rerun_rf')
   tkwds = dict(tvec=tvec['main'],t=tvec['plot'])
   for case in ['base']+cases:
-    log(1,case); base = case=='base'
+    log(1,case)
+    base = (case == 'base')
     T = get_refit_T('fsw+cli+all+' if base else case+'all-')
     Ps = fio.load(fname('npy','fit' if base else 'art-rf','Ps',case=case))
     R1s = system.run_n(Ps,t=tvec['main'],T=T)
     fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkwds))
-    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s=R1s,**tkwds,mode='seed',
+    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s=R1s,**tkwds,mode='id',
       snames=['all','w','m','aq','fsw','cli'],
       onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
     fit.plot_sets(tvec['main'],R1s,T=T,tfname=fname('fig','art-rf','{}',case=case),
@@ -76,7 +66,7 @@ def get_refit_PD(case):
 
 def run_rf_1(P,PD,T,t,ftol=.1):
   kwds = dict(method='SLSQP',options=dict(ftol=ftol))
-  PDz,x0z,Tz,P['refit_iter'] = {},[],[],[]
+  PDz,x0z,Tz = {},[],[]
   for pz,oz in zip(['Rdx','Rtx','Rux'],['diagnosed','treated','vls']):
     PDzi = {k:v for k,v in PD.items() if (pz in k)} # new fitted params
     PDz.update(PDzi)                                # add to fitted params
@@ -102,31 +92,31 @@ def Rxs_update(P,Pu,q=None,**kwds):
     P.update({rate+'_scen':Rx_update_S(P[rate+'_scen'],pop,sRx)},**kwds)
   return P
 
-def run_ss(Ns=10):
-  log(0,'scenario.art.run_ss')
+def run_ss(Ns=10,seed=0):
+  log(0,'art.run_ss')
   tkwds = dict(tvec=tvec['main'])
   P0s = fio.load(fname('npy','fit','Ps'))
-  Ps = get_sens_sample(P0s,Ns)
+  Ps = get_sens_sample(P0s,Ns,seed=seed)
   Rs = system.run_n(Ps,t=tvec['main'])
   fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkwds,t=tvec['plot']))
   fio.save_csv(fname('csv','art-ss','P0s',case='sens'),get_par_expo(P0s,
-    pnames=[*params.def_sample_distrs().keys(),'PX_fsw','PX_cli','EHY_acute']))
-  # TODO: base expo too
+    keys=[*params.def_sample_distrs().keys(),'PX_fsw','PX_cli','EHY_acute']))
+  # TODO: base expo too?
   fio.save_csv(fname('csv','art-ss','expo',case='sens'),merge_expo([
-      out.expo([R for R in Rs if R['P']['ss']==ss],**tkwds,t=tvec['outs'],ecols=dict(ss=ss),mode='seed'
+      out.expo([R for R in Rs if R['P']['ss']==ss],**tkwds,t=tvec['outs'],ecols=dict(ss=ss),mode='id',
         snames=['all','w','m','aq','fsw','cli'],
         onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u'])
       for ss in range(Ns)]))
   fit.plot_sets(tvec['main'],Rs,tfname=fname('fig','art-ss','{}',case='sens'),
     sets='cascade',snames=['all','aq','fsw','cli'])
 
-def get_par_expo(Ps,pnames):
-  return dict(par=pnames,**{'s'+str(P['seed']):[P[pname] for pname in pnames] for P in Ps})
+def get_par_expo(Ps,keys):
+  return dict(par=keys,**{'i'+str(P['id']):[P[key] for key in keys] for P in Ps})
 
 def merge_expo(Es):
   return {k:[x for E in Es for x in E[k]] for k in Es[0]}
 
-def get_sens_sample(Ps,Ns):
+def get_sens_sample(Ps,Ns,seed):
   PDs = {
     'd': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
     't': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
@@ -134,11 +124,11 @@ def get_sens_sample(Ps,Ns):
   }
   PD = {'R'+step+'x:'+pop: PDs[step] for pop in ('fsw','cli','aq') for step in 'dtu'}
   return [Rxs_update(deepcopy(P),Pu,ss=ss) for P in Ps
-    for ss,Pu in enumerate(params.get_n_sample_lhs(Ns,PD,seed=P['seed']))]
+    for ss,Pu in enumerate(params.get_n_sample_lhs(Ns,PD,seed=seed))]
 
 if __name__ == '__main__':
   # run_rf(**akwds)
-  # merge_rf()
   # rerun_rf()
   # run_ss(**akwds)
   pass
+

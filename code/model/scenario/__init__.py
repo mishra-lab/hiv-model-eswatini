@@ -11,6 +11,7 @@ N = dict(
   imis   = 25,      # [  25] number of imis iterations
   post   = 1000,    # [1000] number of posterior samples
 )
+# N = dict(batch=5,bsam=100,isam=10,imis=15,post=100) # DEBUG
 tvec = dict(
   cal  = system.get_t(tf=2025),
   main = system.get_t(tf=2050),
