@@ -26,7 +26,7 @@ def update_weights(Ps,Rs,Gs,zi):
   wp = N['bsam'] / len(Rs)
   Pa = P_array(Ps)
   for P,R in zip(Ps[zi],Rs[zi]):
-    P.update(ll=R['ll'],lp=params.get_lp(P,PD))
+    P.update(ll=R['ll'],lp=np.maximum(-1e6,params.get_lp(P,PD))) # HACK: lp = -inf -> error
   lls = [P['ll'] for P in Ps] # likelihood
   lps = [P['lp'] for P in Ps] # original prior
   lgs = np.sum([G.logpdf(Pa) for G in Gs],axis=0) # mvn prior
@@ -52,7 +52,7 @@ def sample_mvn(G,gsam=10,jmax=100,**kwds):
   def sample_fun(z):
     for j in range(jmax): # attempt
       Ps  = P_dict(G.rvs(gsam,random_state=jmax*z+j))
-      lps = [params.get_lp(P) for P in Ps]
+      lps = [params.get_lp(P,PD) for P in Ps]
       if np.max(lps) > -np.inf: break # success: prior > 0
     log(3,str(z).rjust(9)+' ')
     return params.get_all(Ps[np.argmax(lps)],id=z,**kwds)
