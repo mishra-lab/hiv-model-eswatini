@@ -94,8 +94,8 @@ def rerun(case):
   T = target.get_all_esw()
   Ps = fio.load(fname('npy','fit','Ps',case=case))
   Rs = system.run_n(Ps,t=tvec['main'])
-  fit.plot_sets(tvec['main'],Rs,T=T,tfname=fname('fig','fit','{}',case=case))
   fio.save_csv(fname('csv','fit','wiw',case=case),out.wiw(Rs,tvec['main'],tvec['plot']))
+  fit.plot_sets(tvec['main'],Rs,T=T,tfname=fname('fig','fit','{}',case=case))
 
 if __name__ == '__main__':
   # run(**akwds)

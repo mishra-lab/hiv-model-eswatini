@@ -15,7 +15,8 @@ cases = ['fsw+cli+','fsw+cli-','fsw-cli+','fsw-cli-']
 def parse_case(case):
   return re.findall('(.*?)(\+|\-)',case)
 
-def run_rf(case):
+def run_rf(b):
+  case = cases[b]
   log(0,'art.run_rf: {}'.format(case))
   P0s = fio.load(fname('npy','fit','Ps',case='base'))
   T = get_refit_T(case+'all-')
