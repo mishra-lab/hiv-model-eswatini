@@ -10,7 +10,7 @@ PD = params.def_sample_distrs()
 def xform_ll(lls):
   # hack transform of badly-scaled lls
   # TODO: quantile changes across batches
-  return np.quantile(lls,N['isam']/N['bsam']) / np.array(lls) * -np.sign(lls)
+  return np.quantile(lls,N['isam']/N['hsam']) / np.array(lls) * -np.sign(lls)
 
 def rescale(x):
   return np.array(x) / np.sum(x)
@@ -23,7 +23,7 @@ def P_dict(Pa):
 
 def update_weights(Ps,Rs,Gs,zi):
   log(2,'imis.update_weights: N = '+str(len(Rs)))
-  wp = N['bsam'] / len(Rs)
+  wp = N['hsam'] / len(Rs)
   Pa = P_array(Ps)
   for P,R in zip(Ps[zi],Rs[zi]):
     P.update(ll=R['ll'],lp=params.get_lp(P,PD))
@@ -66,7 +66,7 @@ def run(case,b,**kwds):
   Gs = []
   Ps = params.get_n_all(seeds,batch=b,imis=0,**kwds)
   Rs = system.run_n(Ps,t=tvec['cal'],T=T)
-  wts = update_weights(Ps,Rs,Gs,slice(N['bsam']))
+  wts = update_weights(Ps,Rs,Gs,slice(N['hsam']))
   # iterations
   for i in range(N['imis']):
     log(1,'imis.iter: i = {}'.format(i+1))
