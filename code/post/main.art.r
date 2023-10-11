@@ -45,7 +45,7 @@ var.lab.fun = function(vars){
 }
 
 melt.expo.labs = function(X.wide,...){
-  X = melt.expo.s(X.wide,...)
+  X = melt.expo.i(X.wide,...)
   X$value = 100 * X$value
   X$out = factor(X$out,names(out.labs),out.labs)
   X$pop = factor(X$pop,names(pop.labs),pop.labs)
@@ -74,7 +74,7 @@ plot.1.rai = function(X){
     labs(y='Relative Additional Infections (%)') +
     theme(legend.pos=c(.005,.99),legend.just=c(0,1))
   g = plot.clean.art(g)
-  fig.save(uid,N$sam,'art.1.rai',w=6,h=5)
+  fig.save(uid,nid,'art.1.rai',w=6,h=5)
 }
 
 num.1.rai = function(X,t.hor=2030){
@@ -88,7 +88,7 @@ num.1.rai = function(X,t.hor=2030){
 
 main.1.rai = function(){
   X.wide = read.csvs('art-rf','expo','art',rdata='load')
-  X = melt.expo.s(X.wide,pop='all',out=c('incidence','cuminfect'))
+  X = melt.expo.i(X.wide,pop='all',out=c('incidence','cuminfect'))
   base.value = X[X$case=='base',]$value
   X$value = 100 * (X$value - base.value) / base.value
   X = X[X$case!='base',]
@@ -104,7 +104,7 @@ main.1.wiw = function(){
       facet_grid('~case.lab',scales='free_y') +
       labs(y='Additional Infections (\'000s)') +
       guides(colour=guide_legend(nrow=1),fill=guide_legend(nrow=1))
-    fig.save(uid,N$sam,'art.wiw',margin, w=8,h=3)
+    fig.save(uid,nid,'art.wiw',margin, w=8,h=3)
   }
 }
 
@@ -114,11 +114,11 @@ main.1.expo = function(){
   X.cascade = melt.expo.cascade(X.wide)
   g = plot.expo.ribbon(expo.qs(X.cascade),unlist(out.labs),'case.lab') + facet_grid('out ~ pop') +
     lims(y=c(0,100)) + labs(y='Cascade Step (%)') + theme(legend.pos='top')
-  g = plot.clean.art(g); fig.save(uid,N$sam,'art.1.cascade',w=8,h=10)
+  g = plot.clean.art(g); fig.save(uid,nid,'art.1.cascade',w=8,h=10)
   X.inc = melt.expo.labs(X.wide,out='incidence',pop='all')
   g = plot.expo.ribbon(expo.qs(X.inc),unlist(out.labs),'case.lab',alpha=.1) +
     labs(y='HIV Incidence (per person-year)') + theme(legend.position='top')
-  g = plot.clean.art(g); fig.save(uid,N$sam,'art.1.inc',w=5,h=4)
+  g = plot.clean.art(g); fig.save(uid,nid,'art.1.inc',w=5,h=4)
 }
 
 main.2.cascade = function(){
@@ -133,7 +133,7 @@ main.2.cascade = function(){
     scale_fill_manual(values=set.cols$pop.art) +
     labs(y='Cascade step (%)',x='Population',color='',fill='')
   g = plot.clean(g,legend.position='none')
-  fig.save(uid,N$sam,'art.2.cascade',w=5,h=9)
+  fig.save(uid,nid,'art.2.cascade',w=5,h=9)
 }
 
 load.2.data = function(rdata=''){
@@ -148,11 +148,11 @@ load.2.data = function(rdata=''){
 }
 
 clean.2.data = function(X.list,t.hor=2030){
-  s.list = lapply(X.list,grep.s.col)
-  x.out = function(...){ c(t(filter.cols(X.list$out,...)[,s.list$out])) }
-  x.par = function(par){ c(t(filter.cols(X.list$par,par=par)[,s.list$par])) }
+  i.list = lapply(X.list,grep.i.col)
+  x.out = function(...){ c(t(filter.cols(X.list$out,...)[,i.list$out])) }
+  x.par = function(par){ c(t(filter.cols(X.list$par,par=par)[,i.list$par])) }
   X = data.frame(
-    seed    = seed.nums(colnames(X.list$par[s.list$par])),
+    id      = colnames(X.list$par[i.list$par]),
     cai     = (x.out(case='sens',pop='all',t=t.hor,out='cuminfect') - x.out(case='base',pop='all',t=t.hor,out='cuminfect')) /
                x.out(case='sens',pop='all',t=t.hor,out='cuminfect'),
     air     = (x.out(case='sens',pop='all',t=t.hor,out='incidence') - x.out(case='base',pop='all',t=t.hor,out='incidence')) /
@@ -162,11 +162,11 @@ clean.2.data = function(X.list,t.hor=2030){
     du.cli  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='cli',t=2020,out='vls_u'),
     ir.fsw  =  x.out(case='sens',pop='fsw',t=2000,out='incidence') / x.out(case='sens',pop='w',t=2000,out='incidence'),
     ir.cli  =  x.out(case='sens',pop='cli',t=2000,out='incidence') / x.out(case='sens',pop='m',t=2000,out='incidence'),
-    tur.fsw = 1/(.8 * x.par('dur_fsw_l') + .2 * x.par('dur_fsw_h')),
+    tur.fsw = 1/x.par('dur_fsw'),
     tur.cli = 1/x.par('dur_cli'),
     px.fsw  = x.par('PX_fsw'),
     px.cli  = x.par('PX_cli'))
-  X = X[order(X$seed),]
+  X = X[order(X$id),]
 }
 
 fit.2.glm = function(X,y,std=TRUE){
@@ -179,7 +179,7 @@ fit.2.glm = function(X,y,std=TRUE){
     term.fun(pred.vars),'+',
     term.fun(pred.vars),':',term.fun(mod.vars))
   # print(f) # DEBUG
-  M = geeglm(formula(f),'gaussian',X[order(X$seed),],id=factor(X$seed),corstr='e')
+  M = geeglm(formula(f),'gaussian',X[order(X$id),],id=factor(X$id),corstr='e')
   # print(M); print(anova(M)) # DEBUG
   return(M)
 }
@@ -207,7 +207,7 @@ plot.2.glm.effects = function(M.list,o.lab){
   g = ggplot(E,aes(y=var,x=100*Estimate,xmin=100*Est.low,xmax=100*Est.high,color=var)) +
     facet_grid('facet',scales='free',space='free') +
     geom_vline(xintercept=0,color=rgb(.8,.8,.8),lwd=1) +
-    geom_point(position=dodge,lwd=2) +
+    geom_point(position=dodge,size=1.5) +
     geom_errorbar(position=dodge,width=.25,lwd=.7) +
     scale_color_manual(values=clrs) +
     labs(x=paste('Effect on',o.lab,'(%)'),y='')
@@ -221,7 +221,7 @@ main.2.stats = function(){
     y = y.vars[[name]]
     M = fit.2.glm(X,y)
     g = plot.2.glm.effects(list(x=M),name)
-    fig.save(uid,N$sam,'art.2',y,w=6,h=5)
+    fig.save(uid,nid,'art.2',y,w=6,h=5)
   }
 }
 

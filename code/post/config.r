@@ -1,8 +1,11 @@
 source('utils/ops.r')
 source('utils/plot.r')
 
-uid = '2023-03-03'
-N = list(sam=100000,batchs=10,sens=10,topfit=.01)
+# N = list(batch=100,hsam=1000,isam=100,imis=100) # h1000i100b100
+N = list(batch=50,hsam=1000,isam=100,imis=25) # h1000i25b50
+# N = list(batch=5,hsam=100,isam=15,imis=15) # h100i15b5
+uid = '2023-10-10'
+nid = sprintf('h%di%db%d',N$hsam,N$imis,N$batch)
 slicers = list(
   'all'   = list(rgb(.40,.00,.40),'Overall'),
   'aq'    = list(rgb(.60,.20,.60),'Lower Risk'),
@@ -54,8 +57,7 @@ set.lts  = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.lts[
 set.labs$foi[4] = 'Effective Partners Adjustment'; set.cols$foi[4] = '#FF9900'
 
 gen.name = function(phase,key,case,b='all',ext='.csv'){
-  return(root.path('data','csv',uid,sprintf('%d',N$sam),
-    paste0( phase,'_',key,'_',case,'_',b,ext)))
+  return(root.path('data','csv',uid,nid,paste0( phase,'_',key,'_',case,'_',b,ext)))
 }
 read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
   if (rdata=='load'){ load(file=gen.name(phase,key,set,ext='.rdata')); return(X) }
@@ -72,12 +74,10 @@ read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
   return(X)
 }
 
-grep.s.col = function(X,...){ grep('^s\\d+$',colnames(X),...) }
-seed.nums = function(seeds){ as.numeric(gsub('^s','',seeds)) }
+grep.i.col = function(X,...){ grep('^i\\d+\\.\\d+\\.\\d+$',colnames(X),...) }
 
-melt.expo.s = function(X.wide,...){
-  X = melt(filter.cols(X.wide,...),measure=grep.s.col(X.wide),var='seed')
-  X$seed = seed.nums(X$seed)
+melt.expo.i = function(X.wide,...){
+  X = melt(filter.cols(X.wide,...),measure=grep.i.col(X.wide),var='id')
   return(X[order(X$case),])
 }
 
@@ -85,7 +85,7 @@ qs = c(0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1)
 q3 = c(.025,.5,.975)
 
 expo.qs = function(X,q=qs,trans=identity){
-  vars = colnames(X)[!grepl('^seed$|^value$|^ss$',colnames(X))]
+  vars = colnames(X)[!grepl('^id$|^value$|^ss$',colnames(X))]
   f = formula(paste('value ~',paste(vars,collapse='+')))
   fun = function(x){ trans(quantile(x,p=q)) }
   X.q = do.call(data.frame,aggregate(f,X,fun))
