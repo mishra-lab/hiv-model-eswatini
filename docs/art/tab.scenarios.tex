@@ -1,22 +1,19 @@
-\begin{tabular}{lCCCccc}
+\begin{tabular}{lcccccc}
   \toprule
-  & \multicolumn{3}{c}{ART cascade in 2020\tn{a}} 
+  & \multicolumn{3}{c}{ART cascade in 2020\tn{a}}
   & \multicolumn{3}{c}{Re-scaled cascade rates\tn{b}} \\
   \cmidrule(rl){2-4}\cmidrule(rl){5-7}
-  Scenario                                   &   FSW    & Clients  & Overall  & FSW & Clients & LR  \\
+  Scenario & FSW & Clients & Overall & FSW & Clients & Lower Risk \\
   \midrule
-  \emph{Base Case}                           & \cashigh &    ---   & \cashigh & --- &   ---   & --- \\
-  \emph{Leave Behind: FSW}                   & \caslow  &    ---   & \casmid  & \By &   \Bn   & \By \\
-  \emph{Leave Behind: Clients}               &    ---   & \caslow  & \casmid  & \Bn &   \By   & \By \\
-  \emph{Leave Behind: FSW \& Clients}        & \caslow  & \caslow  & \casmid  & \By &   \By   & \By \\
-  \emph{Leave Behind: Neither}               &    ---   &    ---   & \casmid  & \Bn &   \Bn   & \By \\
+  \emph{Base Case}                    & \cashi &   ---  & \cashi &  --- &  --- &  --- \\
+  \emph{Leave Behind: FSW}            & \caslo &   ---  & \casmd & \yes & \no  & \yes \\
+  \emph{Leave Behind: Clients}        &   ---  & \caslo & \casmd & \no  & \yes & \yes \\
+  \emph{Leave Behind: FSW \& Clients} & \caslo & \caslo & \casmd & \yes & \yes & \yes \\
+  \emph{Leave Behind: Neither}        &   ---  &   ---  & \casmd & \no  & \no  & \yes \\
   \bottomrule
-\end{tabular}\floatfoot
-\tnt[a]{Cascade: \% diagnosed among HIV+; \% on ART among diagnosed; \% virally suppressed among on ART};
-\tnt[b]{Rates of: diagnosis; ART initiation; treatment failure}.
-Notation ---
-FSW: female sex workers;
-Clients: of FSW;
-LR: lower risk.
-Figure~\ref{fig:obj.1.cascade} plots the resulting cascades over time.
-% TODO: explain counterfactual scenario re-fitting details?
+\end{tabular}
+\floatfoot{
+  \tnt[a]{Cascade: \% diagnosed among PLHIV; \% on ART among diagnosed; \% virally suppressed among on ART};
+  \tnt[b]{Rates of: diagnosis; ART initiation; treatment failure};
+  \ffpopz.
+  Figure~\ref{fig:obj.1.cascade} plots the modelled cascades over time.}
