@@ -1,8 +1,6 @@
-\clearpage
-\section{Results}\label{res}
-% JK: this section is trying to "set the stage" re. general epidemic conditions
-%     for contextualizing subsequent results.
-%     So, it's not specifically outlined in methods, but I think still useful to include?
+\section*{Results}\label{res}
+% TODO: big result update
+\newcommand{\xci}[1]{xx~(xx,~xx)\xspace}
 Early epidemic emergence was driven by regular sex work partnerships
 (Figures \ref{fig:inf.part}~and~\ref{fig:inf.alluvial}).
 However, casual partnerships contributed the majority of infections by 1994, % MAN (1997)
@@ -20,78 +18,72 @@ required \xci{Rdx.fsw} times the rate of testing.
 Sex work contributed a growing proportion of infections
 over 2020--2040: from 23\% to 28\% (Figure~\ref{fig:inf.part}). % MAN
 %===================================================================================================
-\subsection{Influence of differences in cascade between risk groups}\label{res.obj.1}
-Figure~\ref{fig:obj.1.inf.add} illustrates cumulative additional infections
-in each counterfactual scenario (\casmid overall by 2020) versus the base case (\cashigh overall by 2020);
-Figure~\ref{fig:obj.1.inc.add} illustrates additional incidence.
-Leaving behind both FSW and clients resulted the most additional infections:
-\xci{--/inf.add.2040}\% more than the base case by 2040.
+\subsection*{Objective~1: Influence of cascade differences between risk groups}\label{res.obj.1}
+Figure~\ref{fig:art.1.cascade} illustrates cascade attainment over time
+in each of the four counterfactual scenarios (\casmd overall by 2020),
+plus the base case (\cashi overall by 2020).
+Figure~\ref{fig:art.1.inc} illustrates overall HIV incidence in each scenario.
+Figure~\ref{fig:art.1.rai} then illustrates
+cumulative additional infections (CAI) and additional incidence rate (AIR)
+in each counterfactual scenario \vs the base case.
+Leaving behind both FSW and clients resulted the most additional infections: median [IQR]
+28.8~[17.5,~46.2]\,\% more than the base case by 2030. % MAN
 By contrast, leaving behind neither FSW nor clients resulted in the fewest additional infections:
-\xci{++/inf.add.2040}\% more than the base case by 2040 ---
-a \xci{++/inf.add.vs.--.2040}\% reduction. % in additional infections.
+13.0~[6.1,~25.6]\,\% more than the base case by 2030 --- % MAN
+a 54.2~[30.3,~73.2]\,\% reduction. % MAN
 Leaving behind either FSW or clients resulted in a similar number of additional infections:
-\xci{+-/inf.add.2040}\% and \xci{-+/inf.add.2040}\%, respectively.
-However, who acquired these additional infections differed (Figure~\ref{fig:inf.diff.to}),
+21.8~[12.5,~36.7]\,\% and 20.4~[11.8,~34.7]\,\%, respectively. % MAN
+Relative differences were similar for additional incidence rate.
+Which risk groups acquired additional infections differed across scenarios
+(Figure~\ref{fig:art.1.wiw.to}),
 with more additional infections among clients when FSW were left behind,
-versus among lower risk risk women when clients were left behind.
+\vs among lower risk risk women when clients were left behind.
 The majority of additional infections were transmitted
-via casual partnerships in all scenarios (Figure~\ref{fig:inf.diff.part}). % MAN
+via casual partnerships in all scenarios (Figure~\ref{fig:art.1.wiw.part}). % MAN
 \begin{figure}[h]
-  \centering
-  \includegraphics[width=\linewidth]{art_1_inf_add}
-  \caption{Cumulative additional HIV infections (\%) in counterfactual scenarios (\casmid overall by 2020)
-    vs the base case scenario (\cashigh by 2020).
-    Scenarios explore reduced cascades (\caslow by 2020) among FSW, clients of FSW, both, or neither
-    as part of reduced cascade overall.}
-  \label{fig:obj.1.inf.add}
+  \centering\includegraphics[width=.8\linewidth]{art.1.rai}
+  \caption{Relative additional infections under counterfactual scenarios \vs the base case}
+  \label{fig:art.1.rai}
+  \floatfoot{\ffart; \ffbox.}
 \end{figure}
 %===================================================================================================
-\subsection{Conditions under which cascade differences matter most}\label{res.obj.2}
-* under construction * \begingroup\color{lightgray}
-Figure~\ref{fig:obj.2.inf} illustrates the standardized effects of
-disproportionate viral unsuppression among FSW and clients versus the population overall ($d$)
-on cumulative additional infections versus the base case by 2040,
-controlling for population-overall unsuppression (effect not shown).
-Trends were consistent across multiple time horizons (Figure~\ref{fig:obj.2.inf.t})
-and for additional incidence in 2030 (Figure~\ref{fig:obj.2.inc}).
-However, when stratifying cumulative additional infections by sub-population
-(FSW, clients, and everybody else),
-some effect trends differed (Figure~\ref{fig:obj.2.inf.pop}).
-% For the same population-overall viral suppression,
-Consistent with Objective~\ref{obj:1} results,
-disproportionate viral unsuppression among FSW and clients versus the population overall
-was associated with more additional infections.
-\par
-Disproportionate unsuppression among FSW was associated with more infections in the context of:
-larger FSW and client population sizes; and
-larger HIV prevalence ratio among FSW versus lower risk women; and
-larger HIV prevalence ratio among clients versus lower risk men.
-Disproportionate unsuppression among clients was associated with more infections in the context of:
-larger client population size;
-larger HIV prevalence ratio among among clients versus lower risk men;
-smaller HIV prevalence ratio among FSW versus lower risk women; and
-shorter duration buying sex.
-\endgroup
-\begin{figure}
-  \begingroup\color{lightgray}
-  \includegraphics[draft,width=\linewidth]{example-image-a}%{art_2_inf}
-  \caption{Partial rank correlation coefficients reduced viral suppression (d) among FSW and clients
-    on cumulative additional infections by 2040,
-    plus effect modification by epidemic conditions,
-    controlling for population-overall viral suppression}
-  \label{fig:obj.2.inf}
+\subsection*{Objective~2: Conditions that maximize the influence of cascade differences}\label{res.obj.2}
+The fitted regression models \eqref{eq:art.glm} indicated that
+population-overall viral unsuppression ($D$) and
+group-specific unsuppression among FSW and clients ($d_i$)
+were each strongly and positively associated with the 2030 CAI and AIR outcomes ($p < 10^{-5}$).
+These associations support the results of Objective~\ref{obj:art.1}.
+Figure~\ref{fig:art.2} plots the estimated effects of
+group-specific unsuppression $d_i$, and
+effect modification by epidemic conditions $C_j$.
+The effect of unsuppression among FSW on CAI and AIR increased with:
+FSW and client population sizes, client turnover, and
+HIV incidence ratio among FSW \vs other women.
+The effect on AIR also decreased with: HIV incidence ratio among clients \vs other men.
+The effect of unsuppression among clients on CAI and AIR increased with:
+FSW and client population sizes and FSW turnover.
+The effect on AIR also modestly with:
+HIV incidence ratio among FSW \vs other women and client turnover.
+\begin{figure}[h]
+  \subcapoverlap\centering
+  \foreach \var in {cai,air}{\vskip1ex
+    \begin{subfigure}{.75\linewidth}
+      \includegraphics[width=\linewidth]{art.2.\var}
+      \caption{\raggedright}
+      \label{fig:art.2.\var}
+    \end{subfigure}}
+  \caption{Estimated effects on relative additional infections
+    of disproportionate viral unsuppression ($d$) among FSW and clients \vs population overall,
+    plus effect modification by epidemic conditions}
+  \label{fig:art.2}
   \floatfoot{
-    Points and lines show the mean and 95\% confidence interval for $\beta$ terms from Eq.~(\ref{eq:obj.2}).
-    d\,X: absolute difference in viral suppression among group X versus the population overall;
-    FSW: female sex workers;
-    Clients: of FSW;
-    LR: lower risk;
-    Duration: average time spent in the risk group;
-    \% Pop: relative population size;
-    HIV PR: HIV prevalence ratio.
-    All model variables were standardized like
-    $\hat{x}_k = (x_k - \mu_{x_k}) / \sigma_{x_k}$
-    to reflect the relative influence of variables.}
-  \endgroup
+    \sfref{fig:art.2.cai} cumulative additional infections,
+    \sfref{fig:art.2.air} additional incidence rate
+    by 2030 \vs base case;
+    FSW: female sex workers; Clients: of FSW;
+    IR: incidence ratio in 2000;
+    $d_i$: difference in group-$i$-specific viral unsuppression
+      \vs population overall within counterfactual scenario;
+  \ffpbar[effect estimated via \eqref{eq:art.glm}].}
 \end{figure}
-\par
+\pagebreak % TEMP
