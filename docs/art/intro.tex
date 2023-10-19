@@ -1,54 +1,59 @@
-\section{Introduction}\label{intro}
-% \begin{itemize}
-%   \item global burden of HIV, role of ART in prevention
-%   \item scale-up of ART, UTT, mixed trial results
-%   \item risk heterogeneity theory, intersections with ART barriers, key pops, evidence of gaps
-% \end{itemize}
-Despite sustained efforts and advances in HIV prevention,
-2021 saw an estimated 1.5 million new HIV infections globally \cite{AIDSinfo}.
-A core pillar of HIV prevention remains treatment via antiretroviral therapy (ART).
-Since 2016, WHO has recommended universal ART eligibility~\cite{WHO2016ART},
-and efforts to scale-up ART coverage around the world continue \cite{AIDSinfo}.
-Such efforts are often measured through the ART cascade,
-as reflected in the UNAIDS \mbox{90-90-90} \cite{909090} and \mbox{95-95-95} \cite{959595} targets,
-corresponding to the percentage of people living with HIV who know their status,
-of whom, the percentage who are on ART,
-of whom, the percentage who have undetectable viral load.
+\section*{Introduction}\label{intro}
+% TODO (~): cite Akullian2020
+Early HIV treatment via antiretroviral therapy (ART) offers
+numerous individual-level health benefits \cite{Gabillard2013,Maartens2014,Danel2015,Lundgren2015},
+and can prevent transmission in serodiscordant partnerships \cite{Anglemyer2013,Cohen2016,Rodger2019}.
+As such, immediate initiation of ART has been recommended by WHO since 2016 \cite{WHO2016art}.
+Alongside expanding ART eligibility,
+interest has grown in the potential population-level prevention impacts of ART, motivating
+numerous modelling studies \cite{Granich2009,Eaton2012,Eaton2014art,Knight2022sr} and
+several large community-based trials \cite{Makhema2019,Havlir2019,Hayes2019,Iwuji2018}
+of ART scale-up as ``treatment as prevention'', especially across Sub-Saharan Africa.
+In general, the prevention impacts estimated via these trials
+have not met expectations from modelling, prompting questions about
+the potential influence of modelling assumptions on predictions \cite{Baral2019}.
 \par
-Numerous modelling studies have sought to estimate
-the prevention impacts of ART scale-up in Sub-Saharan Africa,
-usually quantified as incidence reduction or cumulative infections averted
-in scenarios with higher cascade attainment versus scenarios with lower attainment
-\cite{Delva2012,Eaton2014a,Knight2022-sr}.
-Such studies often stratify modelled populations by risk,
-including key populations like female sex workers and their clients,
+Within these modelling studies, ART prevention impacts are usually quantified as
+incidence rate reduction or cumulative infections averted
+in scenarios with higher cascade attainment \vs scenarios with lower attainment \cite{Knight2022sr}.
+Modelled populations are often stratified by risk,
+including key populations like FSW and their clients,
 to capture important epidemic dynamics related to risk heterogeneity
-\cite{Knight2022-sr,Garnett1996}.
-These studies almost always assume that cascade attainment, or rates of cascade progression
---- rates of diagnosis, treatment initiation, and treatment failure/discontinuation ---
-are equal across modelled risk groups \cite{Knight2022-sr}.
+\cite{Stigum1994,Garnett1996,Watts2010}.
+However, these studies almost always assume that cascade
+attainment (\ie proportions of PLHIV who are diagnosed, treated, and virally suppressed) or
+progression (\ie rates of diagnosis, treatment initiation, and treatment failure/discontinuation)
+are equal across modelled risk groups.
+For example, among the modelling studies reviewed in \cite{Knight2022sr},
+key populations were usually assumed to have ``average'' cascade progression,
+or ``above average'' progression in some scenarios, but never ``below average'',
+as compared to the population overall.
 \par
-Yet, there is growing evidence of differential ART cascade across population strata
-\cite{Hakim2018,Green2020}.
+Yet, there is growing evidence of differential ART cascade across population strata,
+including age, gender, mobility, and risk \cite{Hakim2018,Green2020}.
 These differences can be driven by
 unique barriers to engagement in care faced by vulnerable populations,
 which intersect with drivers of HIV risk \cite{Wanyenze2016,Schwartz2017,Schmidt-Sane2022}.
+Moreover, the lowest cascades likely remain unmeasured \cite{Hakim2018,Boothe2021}.
+% TODO: (*) clarify above
 These intersections of risk and cascade heterogeneity
 could potentially undercut the prevention impacts of ART scale-up
 anticipated from model-based evidence \cite{Baral2019}.
 Therefore, we sought to examine the following questions
 in an illustrative modelling analysis:
 \begin{enumerate}
-  \item\label{obj:1} How are projections of ART prevention impacts influenced by
-    differences in ART cascade across risk groups?
-  \item\label{obj:2} Under which epidemic conditions do such differences have the largest influence?
+  \item\label{obj:1} How are projections of ART prevention impacts
+    influenced by differences in ART cascade across risk groups?
+  \item\label{obj:2} Under which epidemic conditions
+    do such differences have the largest influence?
 \end{enumerate}
 We examined these questions using
-a deterministic compartmental model of heterosexual HIV transmission in eSwatini \cite{Knight2019},
+a deterministic compartmental model of heterosexual HIV transmission in Eswatini \cite{Knight2019},
 focusing on differential risk related to sex work.
-eSwatini has the highest national HIV prevalence in the world \cite{UNAIDS2021},
+Eswatini has the highest national HIV prevalence in the world \cite{UNAIDS2021},
 but has recently achieved outstanding cascade gains --- surpassing 95-95-95 ---
 through multiple interventions led by the MaxART Consortium \cite{Walsh2020,AIDSinfo}.
-As such, we use observed ART scale-up in eSwatini as a gold-standard base case for what is possible,
-and explore counterfactual scenarios in which scale-up is slower,
-and specific risk groups may be left behind.
+As such, we used observed ART scale-up in Eswatini as a \emph{base case}
+reflecting evidently attainable scale-up,
+and explored \emph{counterfactual} scenarios in which scale-up was slower,
+and where specific risk groups could have been ``left behind''.
