@@ -74,6 +74,16 @@ def load_csv(fname,fmt='rows',cast=float,castbak=str,**kwds):
       keys = next(r)
       return [keys]+[[castfun(x) for x in row] for row in r]
 
+def load_txt(fname):
+  log(2,'fio.load_txt: '+fname)
+  with open(fname,'r') as f:
+    return(f.read())
+
+def save_txt(fname,obj):
+  log(2,'fio.save_txt: '+fname)
+  with open(fname,'w') as f:
+    return(f.write(str(obj)))
+
 def datestamp(date=None):
   # standard formatted datestamp
   if date is None: date = datetime.now()
