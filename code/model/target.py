@@ -92,16 +92,16 @@ def get_all_esw(T=None,**kwds):
 
 # (JK): my analysis
 # SR: self-report
+# TODO: finalize weights
 
 def get_prevalence_esw():
   return [
-    # TODO - check
     # prevalence ratios
     Target(stats.ratio_binom(p1=.605,n1=127,p2=.388,n2=6015),'prevalence',dict(t=2011.0,s=0,i=(2,3)),dict(t=2011.0,s=0,i=(0,1,2,3)),vsop='1/2',weight=10), # FSW vs W
-    Target(stats.gamma(m=1.46,sd=.0842),'prevalence',dict(t=2011.0,s=0,i=3),dict(t=2011.0,s=0,i=2),vsop='1/2',weight=10), # FSW.H vs FSW.L JK
-    # W.2+ vs W.0-1 & M.2+ vs M.0-1 JK
-    Target(stats.invgauss(m=2.01,sd=.129,z=1.76),'prevalence',dict(t=2006.5,s=0,i=(1,2,3)),dict(t=2006.5,s=0,i=0),vsop='1/2'), # SDHS20067 (JK)
-    Target(stats.invgauss(m=3.07,sd=.907,z=1.71),'prevalence',dict(t=2006.5,s=1,i=(1,2,3)),dict(t=2006.5,s=1,i=0),vsop='1/2'), # SDHS20067 (JK)
+    Target(stats.ratio_binom(p1=.588,n1=394,p2=.316,n2=2561),'prevalence',dict(t=2021.0,s=0,i=(2,3)),dict(t=2021.0,s=0,i=(0,1,2,3)),vsop='1/2',weight=10), # FSW vs W
+    # W.2+ vs W.0-1 & M.2+ vs M.0-1 (JK)
+    Target(stats.invgauss(m=2.01,sd=.129,z=1.76),'prevalence',dict(t=2006.5,s=0,i=(1,2,3)),dict(t=2006.5,s=0,i=0),vsop='1/2'), # SDHS2006 (JK)
+    Target(stats.invgauss(m=3.07,sd=.907,z=1.71),'prevalence',dict(t=2006.5,s=1,i=(1,2,3)),dict(t=2006.5,s=1,i=0),vsop='1/2'), # SDHS2006 (JK)
     Target(stats.invgauss(m=1.54,sd=.050,z=1.42),'prevalence',dict(t=2011.0,s=0,i=(1,2,3)),dict(t=2011.0,s=0,i=0),vsop='1/2'), # Bicego2013 (JK)
     Target(stats.invgauss(m=1.25,sd=.038,z=1.18),'prevalence',dict(t=2011.0,s=1,i=(1,2,3)),dict(t=2011.0,s=1,i=0),vsop='1/2'), # Bicego2013 (JK)
     Target(stats.invgauss(m=1.42,sd=.036,z=1.34),'prevalence',dict(t=2016.5,s=0,i=(1,2,3)),dict(t=2016.5,s=0,i=0),vsop='1/2'), # SHIMS2 (JK)
@@ -129,7 +129,7 @@ def get_incidence_esw():
     Target(stats.invgauss(m=6.93,sd=3.47,z=4.18),'incidence',dict(t=2011.0,s=0,i=(1,2,3)),dict(t=2011.0,s=0,i=0),vsop='1/2'), # Justman2016
     Target(stats.invgauss(m=4.97,sd=3.39,z=2.85),'incidence',dict(t=2011.0,s=1,i=(1,2,3)),dict(t=2011.0,s=1,i=0),vsop='1/2'), # Justman2016
     # EswIBBS2022 (Table 13)
-    Target(stats.invgauss(m=.1195,sd=.0222,z=.0505),'incidence',dict(t=2021.0,s=0,i=(2,3))),
+    Target(stats.invgauss(m=.1195,sd=.0222,z=.0505),'incidence',dict(t=2021.0,s=0,i=(2,3)),weight=10),
     # SHIMS1 Justman2016 (Tables 2,1) - (adj 15-17)
     Target(stats.skewnorm(m=.0294,sd=.00242,a=  2),'incidence',dict(t=2011.0,s=0,i=(0,1,2,3))),
     Target(stats.skewnorm(m=.0150,sd=.00173,a=  0),'incidence',dict(t=2011.0,s=1,i=(0,1,2,3))),
@@ -138,9 +138,9 @@ def get_incidence_esw():
     Target(stats.skewnorm(m=.0970,sd=.03619,a=  8),'incidence',dict(t=2011.0,s=0,i=(1,2,3))),
     Target(stats.skewnorm(m=.0342,sd=.00697,a=  2),'incidence',dict(t=2011.0,s=1,i=(1,2,3))),
     # SHIMS2 (Table 5.3.A, 5.3.B)
-    Target(stats.skewnorm(m=.0148,sd=.00263),'incidence',dict(t=2016.5,s=(0,1),i=(0,1,2,3)),weight=10),
-    Target(stats.skewnorm(m=.0198,sd=.00418),'incidence',dict(t=2016.5,s=0,    i=(0,1,2,3)),weight=10),
-    Target(stats.skewnorm(m=.0099,sd=.00306),'incidence',dict(t=2016.5,s=1,    i=(0,1,2,3)),weight=10),
+    Target(stats.skewnorm(m=.0148,sd=.00263),'incidence',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
+    Target(stats.skewnorm(m=.0198,sd=.00418),'incidence',dict(t=2016.5,s=0,    i=(0,1,2,3))),
+    Target(stats.skewnorm(m=.0099,sd=.00306),'incidence',dict(t=2016.5,s=1,    i=(0,1,2,3))),
   ]
 
 def get_cd4_esw(w=0):
@@ -202,7 +202,7 @@ def get_cascade_2020(which,w=1):
 
 def get_pop_total_esw():
   return [ # ages 15-49
-    Target(stats.gamma(m=Xt/1000,sd=np.sqrt(Xt/1000)),'NX',dict(t=t,s=(0,1),i=(0,1,2,3)),weight=.1)
+    Target(stats.gamma(m=Xt/1000,sd=np.sqrt(Xt/1000)),'NX',dict(t=t,s=(0,1),i=(0,1,2,3)))
       for t,Xt in zip(range(1980,2021+1),[
     243151,251090,259122,267588,276979,287513,299011,312027,326013,340165, # 1980-1989
     354047,367323,379398,390945,402993,416073,427619,440611,454193,466912, # 1990-1999
