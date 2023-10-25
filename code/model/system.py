@@ -33,6 +33,7 @@ def run(P,t=None,T=None,RPts=None):
     R.update({k:np.rollaxis(P[k](t),-1) for k in RPts})
   return R
 
+#@profile
 def solve(P,t):
   X   = get_X(P['X0'],t)
   inc = get_X(np.zeros([4,2,4,2,4]),t)

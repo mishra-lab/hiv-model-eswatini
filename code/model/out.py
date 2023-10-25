@@ -230,7 +230,7 @@ def expo(R1s,tvec,t,onames,snames,R2s=None,vsop='raw',ecols=None,mode='q',**kwds
     cols = ['q'+str(q) for q in qs]
   if mode == 'id':
     aggrop = lambda os: np.array(os)
-    cols = ['s'+str(R['P']['id']) for R in R1s]
+    cols = ['i'+str(R['P']['id']) for R in R1s]
   sg,og,tg = [g.flatten().tolist() for g in np.meshgrid(snames,onames,t)]
   if ecols is None: ecols = {}
   ecols.update(op=vsop)
