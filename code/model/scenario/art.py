@@ -35,12 +35,15 @@ def rerun_rf():
     Ps = fio.load(fname('npy','fit' if base else 'art-rf','Ps',case=case))
     R1s = system.run_n(Ps,t=tvec['main'],T=T)
     fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkwds))
-    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s=R1s,**tkwds,mode='id',
+    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s,**tkwds,mode='id',
       snames=['all','w','m','aq','fsw','cli'],
       onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
     fit.plot_sets(tvec['main'],R1s,T=T,tfname=fname('fig','art-rf','{}',case=case),
       sets='cascade',snames=['all','aq','fsw','cli'])
     if base:
+      fio.save_csv(fname('csv','art-ss','expo',case=case),out.expo(R1s,tvec=tvec['main'],t=tvec['outs'],mode='id',
+        snames=['all','w','m','aq','fsw','cli'],
+        onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
       R2s = deepcopy(R1s)
     else:
       fio.save_csv(fname('csv','art-rf','wiw-diff',case=case),out.wiw(R1s,**tkwds,R2s=R2s,vsop='1-2'))

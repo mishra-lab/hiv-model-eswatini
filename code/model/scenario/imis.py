@@ -86,8 +86,9 @@ def sample_post(case,seed=0):
   np.random.seed(seed)
   wll = rescale(xform_ll([P['ll'] for P in P0xs])) # weights
   Pxs = np.random.choice(P0xs,N['post'],replace=False,p=wll) # sample
-  Ps = [params.get_all(P,id='{}.{}.{}'.format(P['batch'],P['imis'],P['id'])) for P in Pxs]
-  fio.save(fname('npy','fit','Ps',case=case),Ps)
+  for P in Pxs: P.update(id='{}.{}.{}'.format(P['batch'],P['imis'],P['id']))
+  fio.save_csv(fname('csv','fit','Ps',case=case),Pxs)
+  fio.save(fname('npy','fit','Ps',case=case),[params.get_all(P) for P in Pxs])
 
 def rerun(case):
   log(0,'imis.rerun: {}'.format(case))
