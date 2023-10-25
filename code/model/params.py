@@ -102,23 +102,24 @@ def def_sample_distrs():
   'C12m_cas_xl':          stats.betabin(p=.366,n=28),
   'C12m_cas_wm':          stats.gamma(m=1.575,sd=0.204),
   'RC_cas_cli:wm':        stats.uniform(l=.25,h=1),
-  'C1m_swo_fsw_l':        stats.gamma(m=4.06,sd=0.897),
-  'C1m_swr_fsw_l':        stats.gamma(m=6.93,sd=1.065),
-  'RC_swo_fsw_h:l':       stats.gamma(m=2.02,sd=0.230),
-  'RC_swr_fsw_h:l':       stats.gamma(m=1.49,sd=0.102),
-  'KF_swx_cli':           stats.gamma(m=59.3,sd=14.1),
+  'C1m_swo_fsw_l':        stats.gamma(m=3.5,sd=0.7),
+  'C1m_swr_fsw_l':        stats.gamma(m=6.0,sd=1.2),
+  'C1m_swo_fsw_h':        stats.gamma(m=14,sd=2.8),
+  'C1m_swr_fsw_h':        stats.gamma(m=21,sd=4.2),
+  'KF_swx_cli':           stats.gamma(m=40.5,sd=13.9),
   'RKF_swx_cli_h:l':      stats.gamma(m=2.03,sd=0.230),
   # sex
   'F_msp':                stats.gamma(m=77.3,sd=33.7),
-  'RF_cas:msp':           stats.uniform(l=.5,h=1),
+  'RF_cas:msp':          stats.uniform(l=.5,h=2),
   'dur_msp':              stats.uniform(l=14.5,h=18.5),
   'dur_cas':              stats.gamma(m=.743,sd=0.324),
-  'dur_swr':              stats.gamma(m=1.125,sd=0.386),
+  'dur_swr':              stats.gamma(m=0.495,sd=0.216),
   'F_swr':                stats.uniform(l=12,h=36),
-  'PF_ai':                stats.gamma(m=.0573,sd=.0423),
+  'PF_ai_mcx':            stats.gamma(m=.0573,sd=.0423),
+  'RPF_ai_swx:mcx':       stats.uniform(l=1,h=2),
   # mixing
-  'pref_msp_xl':          stats.gamma(m=2.19,sd=.384),
-  'pref_mcx_swx':         stats.gamma(m=8.3,sd=4.44),
+  'lpref_msp_xl':         stats.uniform(l=-2,h=+2),
+  'lpref_mcx_swx':        stats.uniform(l=-2,h=+2),
   # condoms
   'Rbeta_condom':         stats.betabin(p=.734,n= 32),
   'RPF_condom_a:v':       stats.betabin(p=.768,n= 12),
@@ -143,9 +144,9 @@ def def_sample_distrs():
   'aRbeta_gud_sus':       stats.gamma(m=2.05,sd=1.546),
   'aRbeta_gud_inf':       stats.gamma(m=0.99,sd=0.577),
   'dur_acute':            stats.gamma(m=.172,sd=.1285),
-  'P_gud_fsw_l':          stats.betabin(p=.232,n=29),
-  'RP_gud_fsw_h:l':       stats.gamma(m=3.00,sd=0.900),
-  'RP_gud_2050':          stats.uniform(l=.2,h=1),
+  'P_gud_fsw_l':          stats.betabin(p=.295,n=78),
+  'RP_gud_fsw_h:l':       stats.gamma(m=1.283,sd=0.153),
+  'RP_gud_2030':          stats.uniform(l=.2,h=1),
   'iP_gud_h:l':           stats.uniform(l=0,h=1),
   'Rbeta_uvls':           stats.betabin(p=.244,n=5),
   # diagnosis
@@ -231,12 +232,12 @@ def get_PX_swx(P):
   P['PX_cli_h'] = .2  # REF: assume
   P['F_swo']    = 12  # see get_F()
   P['PX_fsw']   = P['PX_w'] * P['PX_w_fsw']
-  P['XKF_swo']  = P['PX_fsw'] * P['C2K_p'][2] * P['C1m_swo_fsw_l'] * P['F_swo'] * \
-    linear_comb(P['PX_fsw_h'],P['RC_swo_fsw_h:l'],1)
-  P['XKF_swr']  = P['PX_fsw'] * P['C2K_p'][3] * P['C1m_swr_fsw_l'] * P['F_swr'] * \
-    linear_comb(P['PX_fsw_h'],P['RC_swr_fsw_h:l'],1)
+  P['XKF_swo']  = P['PX_fsw'] * P['C2K_p'][2] * P['F_swo'] * \
+    linear_comb(P['PX_fsw_h'],P['C1m_swo_fsw_h'],P['C1m_swo_fsw_l'])
+  P['XKF_swr']  = P['PX_fsw'] * P['C2K_p'][2] * P['F_swr'] * \
+    linear_comb(P['PX_fsw_h'],P['C1m_swr_fsw_h'],P['C1m_swr_fsw_l'])
   P['PX_cli'] = (P['XKF_swo'] + P['XKF_swr']) / P['KF_swx_cli']
-  # NOTE: KF_swx_cli is true client average, not KF_swx_cli_l; see get_C()
+  # NOTE: KF_swx_cli is true client average: see get_K()
   return P
 
 def get_birth_death(P): # [OK]
@@ -265,7 +266,7 @@ def get_turnover(P):
     A[s,3,:] = (0,0,0,NAN,    0,    0,+x[0],    0,    0,+x[1],    0,    0,+x[2],-x[3],-x[3],-x[3])
     A[s,4,0:4],b[s,4] = 1, x.sum() # e.sum = x.sum
     A[s,5,1],b[s,5] = 1, x[1]*1.0 # e1 = x1
-    A[s,6,2],b[s,6] = 1, NAN # e2 = (x1+x2)*{R}
+    A[s,6,2],b[s,6] = 1, NAN # e2 = (x2+x3)*{R}
     A[s,7,3],b[s,7] = 1, 0.0 # e3  = 0
     A[s,8,10:12],b[s,8] = 1, (1/dur - P['death'])/(1-p) # dur 2 (adj for +3)
     A[s,9,15],   b[s,9] = 1, (1/P['dur_sw_h'] - P['death']) # dur 3
@@ -308,15 +309,14 @@ def get_beta_a(P): # [OK]
   Rbeta_as = np.array([[P['Rbeta_vi_rec'],1],[Rbeta_ar,1]]).reshape([2,1,2,1,1,1,1,1])
   Rbeta_as = Rbeta_as / Rbeta_as[0,:].mean()
   P_gud_0     = .07 # REF: SDHS2006
-  P_gud_m     = linear_comb(P['iP_gud_h:l'],  P_gud_0,P['P_gud_fsw_l'])
-  P_gud_cli_l = linear_comb(P['iP_gud_h:l']/2,P_gud_0,P['P_gud_fsw_l'])
-  P_gud_cli_h = linear_comb(P['iP_gud_h:l'],1,P['RP_gud_fsw_h:l']) * P['P_gud_fsw_l']
-  # TODO: (+) remove .81 .68 b/c sexually active = at risk for transmission
+  P_gud_m     = linear_comb(P['iP_gud_h:l'],P_gud_0,P['P_gud_fsw_l'])
+  P_gud_cli_l = linear_comb(.5,P_gud_m,P['P_gud_fsw_l'])
+  P_gud_cli_h = P['P_gud_fsw_l']
   P_gud = np.array([
-    [P_gud_0*.81, P_gud_m, P['P_gud_fsw_l'], P['P_gud_fsw_l']*P['RP_gud_fsw_h:l']],
-    [P_gud_0*.68, P_gud_m, P_gud_cli_l, P_gud_cli_h],
+    [P_gud_0, P_gud_m, P['P_gud_fsw_l'], P['P_gud_fsw_l']*P['RP_gud_fsw_h:l']], # MAN
+    [P_gud_0, P_gud_m, P_gud_cli_l, P_gud_cli_h], # MAN
   ])
-  RP_gud_t = ta.tarray([1980,2000,2020,2050,2051],[1,1,1,*2*[P['RP_gud_2050']]])
+  RP_gud_t = ta.tarray([1980,2000,2010,2030,2051],[1,1,1,*2*[P['RP_gud_2030']]])
   Rbeta_h = np.array([0,P['Rbeta_acute'],1,1,P['Rbeta_350'],P['Rbeta_200']]).reshape([1,1,1,1,1,1,6,1])
   Rbeta_c = np.array([1,1,1-(1-P['Rbeta_uvls'])/2,P['Rbeta_uvls'],.00]).reshape([1,1,1,1,1,1,1,5])
   return {
@@ -339,8 +339,9 @@ def check_gud(P):
 
 def get_F(P): # [OK]
   # F_ap.shape = (a:2, p:4)
+  PF_ai = P['PF_ai_mcx'] * np.array([1,1,P['RPF_ai_swx:mcx'],P['RPF_ai_swx:mcx']])
   F_p   = np.array([ P['F_msp'], P['F_msp']*P['RF_cas:msp'], 12, P['F_swr'] ])
-  F_ap  = F_p.reshape([1,4]) * np.array([1-P['PF_ai'],P['PF_ai']]).reshape([2,1])
+  F_ap  = F_p.reshape([1,4]) * np.array([1-PF_ai,PF_ai]).reshape([2,4])
   dur_p = np.array([ P['dur_msp'], P['dur_cas'], 1/12, P['dur_swr'] ])
   dur_p_1 = np.minimum(dur_p,1)
   C2K_p = dur_p / (dur_p + np.array([1, 1, 1/12, 1/12]))
@@ -352,12 +353,12 @@ def get_F(P): # [OK]
   }
 
 def check_F(P):
-  C2K_swo = 1/2
+  C2K_swo = 1/2 # (1/12) / (1/12 + 1/12)
   C2K_swr = P['dur_swr'] / (P['dur_swr'] + 1/12)
-  return ( # TOO
-    P['C1m_swo_fsw_l'] * C2K_swo * P['RC_swo_fsw_h:l'] * 12 + \
-    P['C1m_swr_fsw_l'] * C2K_swr * P['RC_swr_fsw_h:l'] * P['F_swr'] < 2*365
-  )
+  return (
+    P['C1m_swo_fsw_h'] * C2K_swo * 12 + \
+    P['C1m_swr_fsw_h'] * C2K_swr * P['F_swr']
+  ) < 2*365
 
 def get_K(P):
   # .shape = (p:4, s:2, i:4)
@@ -387,9 +388,9 @@ def get_K(P):
   K_psi[1] *= P['C2K_p'][1]
   # swx: fsw
   K_psi[2,0,2] = P['C2K_p'][2] * P['C1m_swo_fsw_l']
-  K_psi[2,0,3] = P['C2K_p'][2] * P['C1m_swo_fsw_l'] * P['RC_swo_fsw_h:l']
+  K_psi[2,0,3] = P['C2K_p'][2] * P['C1m_swo_fsw_h']
   K_psi[3,0,2] = P['C2K_p'][3] * P['C1m_swr_fsw_l']
-  K_psi[3,0,3] = P['C2K_p'][3] * P['C1m_swr_fsw_l'] * P['RC_swr_fsw_h:l']
+  K_psi[3,0,3] = P['C2K_p'][3] * P['C1m_swr_fsw_h']
   # swx: clients
   wPX = (PX_si[1,2] + P['RKF_swx_cli_h:l'] * PX_si[1,3])
   K_psi[2,1,2] = P['XKF_swo'] / F[2] / wPX
@@ -456,8 +457,8 @@ def get_circumcision(P): # [OK]
 def get_mix(P): # [OK]
   # pref_pii.shape = (p:4, i:4, i':4)
   pref_pii = np.zeros((4,4,4))
-  pref_pii[0,0,0] = P['pref_msp_xl']
-  pref_pii[0:2,2:,2:] = P['pref_mcx_swx']
+  pref_pii[0,0,0] = np.exp(P['lpref_msp_xl'])
+  pref_pii[0:2,2:,2:] = np.exp(P['lpref_mcx_swx'])
   return {
     'pref_pii': pref_pii,
     'mix': np.zeros((4,2,4,2,4)), # initialize
