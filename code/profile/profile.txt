@@ -1,186 +1,217 @@
-Thu 02 Mar 2023 04:25:49 PM EST
- > params.get_n_all: 10
- > system.run_n: 10
-  None   None   None   None   None   None   None   None   None   None 
+Tue 24 Oct 2023 09:20:44 PM PDT
+ > params.get_n_all: N = 10
+ > system.run_n: N = 10
+        0         1         2         3         4         5         6         7         8         9 
 Wrote profile results to test.py.lprof
 Timer unit: 1 s
 
-Total time: 2.02003 s
+Total time: 2.11173 s
 File: /home/jesse/sci/proj/esw/code/model/foi.py
-Function: get_beta at line 14
+Function: get_beta at line 13
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    14                                           @profile
-    15                                           def get_beta(P,t):
-    16                                             # return.shape = (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-    17      9000          1.0      0.0     47.3    RbA_condom = linear_comb(P['PF_condom_t'](t) * P['RPF_condom_a'], P['Rbeta_condom'], 1)
-    18      9000          0.3      0.0     15.8    RbA_circum = linear_comb(P['PF_circum_t'](t), P['Rbeta_circum'], 1)
-    19      9000          0.3      0.0     12.6    P_gud_t = P['P_gud'] * P['RP_gud_t'](t)
-    20      9000          0.1      0.0      3.0    Rbeta_gud_sus = linear_comb(P_gud_t,1+P['aRbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
-    21      9000          0.0      0.0      2.2    Rbeta_gud_inf = linear_comb(P_gud_t,1+P['aRbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
-    22      9000          0.4      0.0     19.0    return np.minimum(.5, P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf * RbA_condom * RbA_circum)
+    13                                           @profile
+    14                                           def get_beta(P,t):
+    15                                             # return.shape = (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5)
+    16      9000          1.0      0.0     45.6    RbA_condom = linear_comb(P['PF_condom_t'](t) * P['RPF_condom_a'], P['Rbeta_condom'], 1)
+    17      9000          0.3      0.0     15.8    RbA_circum = linear_comb(P['PF_circum_t'](t), P['Rbeta_circum'], 1)
+    18      9000          0.3      0.0     12.6    P_gud_t = P['P_gud'] * P['RP_gud_t'](t)
+    19      9000          0.1      0.0      2.6    Rbeta_gud_sus = linear_comb(P_gud_t,1+P['aRbeta_gud_sus'],1).reshape([1,1,2,4,1,1,1,1])
+    20      9000          0.0      0.0      2.1    Rbeta_gud_inf = linear_comb(P_gud_t,1+P['aRbeta_gud_inf'],1).reshape([1,1,1,1,2,4,1,1])
+    21      9000          0.4      0.0     21.2    return np.minimum(.5, P['beta_a'] * Rbeta_gud_sus * Rbeta_gud_inf * RbA_condom * RbA_circum)
 
-Total time: 7.13651 s
+Total time: 2.9821 s
 File: /home/jesse/sci/proj/esw/code/model/foi.py
-Function: get_mix at line 24
+Function: get_mix at line 23
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    24                                           @deco.nowarn
-    25                                           @profile
-    26                                           def get_mix(XC,P):
-    27                                             # return.shape = (p:4, s:2, i:4, s':2, i':4)
-    28      9000          0.2      0.0      3.4    M0 = XC[:,0,:,_] * XC[:,1,_,:] / XC.sum(axis=2).mean(axis=1)[:,_,_] + tol/10
-    29      9000          0.0      0.0      0.4    m1 = M0.sum(axis=1)
-    30      9000          0.0      0.0      0.3    m2 = M0.sum(axis=2)
-    31                                             # print(m1 / XC[:,1,:]) # DEBUG == 1, unless XC unbalanced
-    32                                             # print(m2 / XC[:,0,:]) # DEBUG == 1, unless XC unbalanced
-    33      9000          0.0      0.0      0.3    M = M0 * np.exp(P['pref_pii'])
-    34    523425          0.2      0.0      2.3    for k in range(100):
-    35    522820          1.4      0.0     19.9      r1 = m1 / M.sum(axis=1)
-    36    522820          0.9      0.0     12.0      M *= r1[:,_,:]
-    37    522820          1.3      0.0     18.8      r2 = m2 / M.sum(axis=2)
-    38    522820          0.8      0.0     11.3      M *= r2[:,:,_]
-    39    522820          2.2      0.0     30.2      if (abs(r1-1) < tol).all() and (abs(r2-1) < tol).all():
-    40      8395          0.0      0.0      0.0        break
-    41      9000          0.0      0.0      0.5    M[abs(M)<tol] = 0
-    42      9000          0.0      0.0      0.3    P['mix'][:,0,:,1,:] = M
-    43      9000          0.0      0.0      0.3    P['mix'][:,1,:,0,:] = M.swapaxes(1,2)
-    44                                             # n.b. returning on population-level scale
-    45      9000          0.0      0.0      0.0    return P['mix']
+    23                                           @deco.nowarn
+    24                                           @profile
+    25                                           def get_mix(XC,P):
+    26                                             # return.shape = (p:4, s:2, i:4, s':2, i':4)
+    27      9000          0.3      0.0     10.7    M0 = XC[:,0,:,_] * XC[:,1,_,:] / XC.sum(axis=2).mean(axis=1)[:,_,_] + tol/10
+    28      9000          0.0      0.0      1.1    m1 = M0.sum(axis=1)
+    29      9000          0.0      0.0      0.7    m2 = M0.sum(axis=2)
+    30                                             # print(m1 / XC[:,1,:]) # DEBUG == 1, unless XC unbalanced
+    31                                             # print(m2 / XC[:,0,:]) # DEBUG == 1, unless XC unbalanced
+    32      9000          0.0      0.0      0.7    M = M0 * np.exp(P['pref_pii'])
+    33    174014          0.1      0.0      2.1    for k in range(100):
+    34    173114          0.5      0.0     17.2      r1 = m1 / M.sum(axis=1)
+    35    173114          0.3      0.0     10.8      M *= r1[:,_,:]
+    36    173114          0.5      0.0     16.0      r2 = m2 / M.sum(axis=2)
+    37    173114          0.3      0.0     10.2      M *= r2[:,:,_]
+    38    173114          0.8      0.0     28.1      if (abs(r1-1) < tol).all() and (abs(r2-1) < tol).all():
+    39      8100          0.0      0.0      0.1        break
+    40      9000          0.0      0.0      1.1    M[abs(M)<tol] = 0
+    41      9000          0.0      0.0      0.6    P['mix'][:,0,:,1,:] = M
+    42      9000          0.0      0.0      0.6    P['mix'][:,1,:,0,:] = M.swapaxes(1,2)
+    43                                             # n.b. returning on population-level scale
+    44      9000          0.0      0.0      0.1    return P['mix']
 
-Total time: 11.7725 s
+Total time: 7.11155 s
 File: /home/jesse/sci/proj/esw/code/model/foi.py
-Function: get_apply_inc at line 47
+Function: get_apply_inc at line 46
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    47                                           @deco.nowarn
-    48                                           @profile
-    49                                           def get_apply_inc(dX,X,t,P):
-    50                                             # return.shape = (p:4, s:2, i:4, s':2, i':4)
-    51                                             # NOTE: if foi_mode in ['base','li','rd','ry']: return *absolute* infections (not per susceptible)
-    52                                             #       if foi_mode in ['pd','py']: return *probability* of infection (aggr must be deferred)
-    53                                             # partner numbers (K) or rates (Q)
-    54      9000          0.0      0.0      0.1    if P['foi_mode'] in ['base']: # K
-    55      9000          0.0      0.0      0.3      C_psik = P['K_psi'] - P['aK_pk']
-    56                                             elif P['foi_mode'] in ['lin']: # K
-    57                                               C_psik = P['K_psi']
-    58                                             elif P['foi_mode'] in ['rd','pd']: # Q
-    59                                               C_psik = P['K_psi'] / P['dur_p'][:,_,_,_]
-    60                                               A_ap = P['F_ap'] * P['dur_p']
-    61                                             elif P['foi_mode'] in ['ry','py']: # Q_1
-    62                                               C_psik = P['K_psi'] / P['dur_p_1'][:,_,_,_]
-    63                                               A_ap = P['F_ap'] * P['dur_p_1']
-    64                                             # compute mixing
-    65      9000          0.1      0.0      1.3    XC = (X[_,:,:,:,:,:] * C_psik[:,:,:,:,_,_]).sum(axis=3)
-    66      9000          0.0      0.0      0.4    XC[XC<0] = 0 # TODO: double check this is safe
-    67      9000          0.0      0.0      0.3    SXC = XC.sum(axis=(3,4))  # shape = (p:4, s:2, i:4)
-    68      9000          0.1      0.0      0.4    PXC_hc = XC / (SXC[:,:,:,_,_] + tol/10) # shape = (p:4, s:2, i:4, h:6, c:5)
-    69                                             # note: PXC_hc = PX_hc, i.e. X / X.sum(axis=(2,3)), unless foi_mode = 'base'
-    70      9000          8.2      0.0     69.5    mix = get_mix(SXC,P) * P['mix_mask']
-    71                                             # compute per-act probability
-    72      9000          2.1      0.0     17.6    beta = get_beta(P,t) # shape: (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5)
-    73                                             # compute & apply force of infection
-    74      9000          0.0      0.0      0.1    if P['foi_mode'] in ['base']:
-    75      9000          0.2      0.0      1.4      Fbeta = (beta * P['F_ap'][:,:,_,_,_,_,_,_]).sum(axis=0)
-    76      9000          0.2      0.0      1.6      inc = mix[:,:,:,:,:,_,_] * PXC_hc[:,:,:,0,0,_,_,_,_] * Fbeta * PXC_hc[:,_,_,:,:,:,:]
-    77      9000          0.1      0.0      0.4      dXi = inc.sum(axis=(3,4,5,6)) # acquisition: (p:4, s:2, i:4)
-    78      9000          0.1      0.0      0.5      dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
-    79      9000          0.2      0.0      1.8      dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
-    80      9000          0.1      0.0      0.5      dXi = inc.sum(axis=(1,2)) # transmission: (p:4, s':2, i':4, h':6, c':5)
-    81      9000          0.1      0.0      0.5      dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
-    82      9000          0.1      0.0      1.2      dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
-    83      9000          0.1      0.0      0.4      dXi = X[:,:,1:,:,:] / P['dur_p'][_,_,:,_,_] # new partnerships: (s:2, i:4, k:4, h:6, c:5)
-    84      9000          0.0      0.0      0.3      dX[:,:,1:,:,:] -= dXi
-    85      9000          0.1      0.0      0.6      dX[:,:,0 ,:,:] += dXi.sum(axis=2)
-    86      9000          0.1      0.0      0.7      return inc.sum(axis=(5,6))
-    87                                             elif P['foi_mode'] in ['lin']:
-    88                                               Fbeta = (beta * P['F_ap'][:,:,_,_,_,_,_,_]).sum(axis=0)
-    89                                               inc = mix * PXC_hc[:,:,:,0,0,_,_] * (Fbeta * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
-    90                                               dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
-    91                                             elif P['foi_mode'] in ['rd','ry']:
-    92                                               B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
-    93                                               inc = mix * PXC_hc[:,:,:,0,0,_,_] * (B_p * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
-    94                                               dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
-    95                                             elif P['foi_mode'] in ['pd','py']:
-    96                                               B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
-    97                                               QA = mix[:,:,:,:,:,_,_] / X.sum(axis=(2,3,4))[_,:,:,_,_,_,_]
-    98                                               inc = 1 - ((1 - B_p * PXC_hc[:,_,_,:,:,:,:]) ** QA).prod(axis=(5,6))
-    99                                               dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4),Xsus=X[:,:,0,0,0])
-   100                                             # all non-base cases
-   101                                             dX[:,:,0,0,0] -= dXi
-   102                                             dX[:,:,0,1,0] += dXi
-   103                                             return inc
+    46                                           @deco.nowarn
+    47                                           @profile
+    48                                           def get_apply_inc(dX,X,t,P):
+    49                                             # return.shape = (p:4, s:2, i:4, s':2, i':4)
+    50                                             # NOTE: if foi_mode in ['base','li','rd','ry']: return *absolute* infections (not per susceptible)
+    51                                             #       if foi_mode in ['py']: return *probability* of infection (aggr must be deferred)
+    52                                             # partner numbers (K) or rates (Q)
+    53      9000          0.0      0.0      0.1    if P['foi_mode'] in ['base']: # K
+    54      9000          0.0      0.0      0.5      C_psik = P['K_psi'] - P['aK_pk']
+    55                                             elif P['foi_mode'] in ['lin']: # K
+    56                                               C_psik = P['K_psi']
+    57                                             elif P['foi_mode'] in ['rd']: # Q
+    58                                               C_psik = P['K_psi'] / P['dur_p'][:,_,_,_]
+    59                                               A_ap = P['F_ap'] * P['dur_p']
+    60                                             elif P['foi_mode'] in ['ry','py']: # Q_1
+    61                                               C_psik = P['K_psi'] / P['dur_p_1'][:,_,_,_]
+    62                                               A_ap = P['F_ap'] * P['dur_p_1']
+    63                                             # compute mixing
+    64      9000          0.2      0.0      2.2    XC = (X[_,:,:,:,:,:] * C_psik[:,:,:,:,_,_]).sum(axis=3)
+    65      9000          0.0      0.0      0.6    XC[XC<0] = 0 # TODO: double check this is safe
+    66      9000          0.0      0.0      0.5    SXC = XC.sum(axis=(3,4))  # shape = (p:4, s:2, i:4)
+    67      9000          0.1      0.0      0.7    PXC_hc = XC / (SXC[:,:,:,_,_] + tol/10) # shape = (p:4, s:2, i:4, h:6, c:5)
+    68                                             # note: PXC_hc = PX_hc, i.e. X / X.sum(axis=(2,3)), unless foi_mode = 'base'
+    69      9000          3.4      0.0     48.3    mix = get_mix(SXC,P) * P['mix_mask']
+    70                                             # compute per-act probability
+    71      9000          2.2      0.0     30.4    beta = get_beta(P,t) # shape: (a:2, p:4, s:2, i:4, s':2, i':4, h':6, c':5)
+    72                                             # compute & apply force of infection
+    73      9000          0.0      0.0      0.1    if P['foi_mode'] in ['base']:
+    74      9000          0.2      0.0      2.5      Fbeta = (beta * P['F_ap'][:,:,_,_,_,_,_,_]).sum(axis=0)
+    75      9000          0.2      0.0      2.4      inc = mix[:,:,:,:,:,_,_] * PXC_hc[:,:,:,0,0,_,_,_,_] * Fbeta * PXC_hc[:,_,_,:,:,:,:]
+    76      9000          0.1      0.0      0.7      dXi = inc.sum(axis=(3,4,5,6)) # acquisition: (p:4, s:2, i:4)
+    77      9000          0.1      0.0      0.8      dX[:,:,0 ,0,0] -= dXi.sum(axis=0)
+    78      9000          0.2      0.0      2.7      dX[:,:,1:,1,0] += np.moveaxis(dXi,0,2)
+    79      9000          0.1      0.0      0.8      dXi = inc.sum(axis=(1,2)) # transmission: (p:4, s':2, i':4, h':6, c':5)
+    80      9000          0.1      0.0      0.9      dX[:,:,0 ,:,:] -= dXi.sum(axis=0)
+    81      9000          0.2      0.0      2.1      dX[:,:,1:,:,:] += np.moveaxis(dXi,0,2)
+    82      9000          0.1      0.0      0.8      dXi = X[:,:,1:,:,:] / P['dur_p'][_,_,:,_,_] # new partnerships: (s:2, i:4, k:4, h:6, c:5)
+    83      9000          0.0      0.0      0.5      dX[:,:,1:,:,:] -= dXi
+    84      9000          0.1      0.0      1.0      dX[:,:,0 ,:,:] += dXi.sum(axis=2)
+    85      9000          0.1      0.0      1.3      return inc.sum(axis=(5,6))
+    86                                             elif P['foi_mode'] in ['lin']:
+    87                                               Fbeta = (beta * P['F_ap'][:,:,_,_,_,_,_,_]).sum(axis=0)
+    88                                               inc = mix * PXC_hc[:,:,:,0,0,_,_] * (Fbeta * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
+    89                                               dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
+    90                                             elif P['foi_mode'] in ['rd','ry']:
+    91                                               B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
+    92                                               inc = mix * PXC_hc[:,:,:,0,0,_,_] * (B_p * PXC_hc[:,_,_,:,:,:,:]).sum(axis=(5,6))
+    93                                               dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4))
+    94                                             elif P['foi_mode'] in ['py']:
+    95                                               B_p = 1 - ((1 - beta) ** A_ap[:,:,_,_,_,_,_,_]).prod(axis=0)
+    96                                               QA = mix[:,:,:,:,:,_,_] / X.sum(axis=(2,3,4))[_,:,:,_,_,_,_]
+    97                                               inc = 1 - ((1 - B_p * PXC_hc[:,_,_,:,:,:,:]) ** QA).prod(axis=(5,6))
+    98                                               dXi = aggr_inc(inc,P['foi_mode'],axis=(0,3,4),Xsus=X[:,:,0,0,0])
+    99                                             # all non-base cases
+   100                                             dX[:,:,0,0,0] -= dXi
+   101                                             dX[:,:,0,1,0] += dXi
+   102                                             return inc
 
 Total time: 0 s
 File: /home/jesse/sci/proj/esw/code/model/foi.py
-Function: aggr_inc at line 105
+Function: aggr_inc at line 104
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-   105                                           @profile
-   106                                           def aggr_inc(inc,foi_mode,axis,Xsus=None,Xinf=None,keepdims=False):
-   107                                             # returns absolute infections after appropriately aggregating "inc"
-   108                                             # Xsus only needed if 'foi_mode' in ['pd','py']
-   109                                             if foi_mode in ['base','lin','rd','ry']:
-   110                                               return inc.sum(axis=axis,keepdims=keepdims)
-   111                                             if foi_mode in ['pd','py']:
-   112                                               return (1 - (1 - inc).prod(axis=axis,keepdims=keepdims)) * Xsus
+   104                                           @profile
+   105                                           def aggr_inc(inc,foi_mode,axis,Xsus=None,Xinf=None,keepdims=False):
+   106                                             # returns absolute infections after appropriately aggregating "inc"
+   107                                             # Xsus only needed if 'foi_mode' in ['py']
+   108                                             if foi_mode in ['base','lin','rd','ry']:
+   109                                               return inc.sum(axis=axis,keepdims=keepdims)
+   110                                             if foi_mode in ['py']:
+   111                                               return (1 - (1 - inc).prod(axis=axis,keepdims=keepdims)) * Xsus
 
-Total time: 18.7047 s
+Total time: 14.8217 s
 File: /home/jesse/sci/proj/esw/code/model/system.py
-Function: get_dX at line 72
+Function: solve at line 36
 
 Line #      Hits         Time  Per Hit   % Time  Line Contents
 ==============================================================
-    72                                           @profile
-    73                                           def get_dX(X,t,P):
-    74                                             # initialize
-    75      9000          0.0      0.0      0.1    dX = 0*X # (s:2, i:4, k:4, h:6, c:5)
-    76                                             # force of infection
-    77      9000         12.1      0.0     64.5    inc = foi.get_apply_inc(dX,X,t,P) # (p:4, s:2, i:4, s':2, i':4)
-    78                                             # TODO: reorder these steps?
-    79                                             # HIV transitions
-    80      9000          0.0      0.0      0.2    dXi = X[:,:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
-    81      9000          0.0      0.0      0.2    dX[:,:,:,1:5,0:3] -= dXi
-    82      9000          0.0      0.0      0.2    dX[:,:,:,2:6,0:3] += dXi
-    83                                             # CD4 recovery
-    84      9000          0.0      0.0      0.2    dXi = X[:,:,:,3:6,3:5] * P['unprog_h'] # low CD4 & treated
-    85      9000          0.0      0.0      0.2    dX[:,:,:,3:6,3:5] -= dXi
-    86      9000          0.0      0.0      0.2    dX[:,:,:,2:5,3:5] += dXi
-    87                                             # births & deaths
-    88      9000          1.1      0.0      5.9    birth, PXe, turn = params.solve_turnover(P,t)
-    89      9000          0.4      0.0      2.0    dX[:,:,0,0,0] += X.sum() * P['birth_t'](t) * PXe
-    90      9000          0.0      0.0      0.2    dX -= X * P['death']
-    91      9000          0.0      0.0      0.2    dX -= X * P['death_hc']
-    92                                             # turnover
-    93      9000          0.1      0.0      0.4    dXi = turn[:,:,:,_,_,_] * X[:,:,_,:,:,:]
-    94      9000          0.1      0.0      0.4    dX -= dXi.sum(axis=2) # (s:2, i:4, k:5, h:6, c:5)
-    95      9000          0.0      0.0      0.3    dX += dXi.sum(axis=1) # (s:2, i':4, k:5, h:6, c:5)
-    96                                             # cascade: diagnosis
-    97      9000          1.5      0.0      7.8    dXi = X[:,:,:,1:6,0] * P['dx_sit'](t) * P['Rdx_scen']
-    98      9000          0.0      0.0      0.2    dX[:,:,:,1:6,0] -= dXi # undiag
-    99      9000          0.0      0.0      0.2    dX[:,:,:,1:6,1] += dXi # diag
-   100                                             # cascade: treatment
-   101      9000          2.3      0.0     12.3    dXi = X[:,:,:,1:6,1] * P['tx_sit'](t) * P['Rtx_ht'](t) * P['Rtx_scen']
-   102      9000          0.0      0.0      0.2    dX[:,:,:,1:6,1] -= dXi # diag
-   103      9000          0.0      0.0      0.1    dX[:,:,:,1:6,3] += dXi # treat
-   104                                             # cascade: VLS
-   105      9000          0.0      0.0      0.2    dXi = X[:,:,:,1:6,3] * P['vx']
-   106      9000          0.0      0.0      0.1    dX[:,:,:,1:6,3] -= dXi # treat
-   107      9000          0.0      0.0      0.1    dX[:,:,:,1:6,4] += dXi # vls
-   108                                             # cascade: fail
-   109      9000          0.3      0.0      1.6    dXi = X[:,:,:,1:6,4] * P['unvx_t'](t) * P['Runvx_si'] * P['Rux_scen']
-   110      9000          0.0      0.0      0.2    dX[:,:,:,1:6,4] -= dXi # vls
-   111      9000          0.0      0.0      0.1    dX[:,:,:,1:6,2] += dXi # fail
-   112                                             # cascade: re-VLS
-   113      9000          0.3      0.0      1.4    dXi = X[:,:,:,1:6,2] * P['revx_t'](t)
-   114      9000          0.0      0.0      0.2    dX[:,:,:,1:6,2] -= dXi # fail
-   115      9000          0.0      0.0      0.1    dX[:,:,:,1:6,4] += dXi # vls
-   116      9000          0.0      0.0      0.0    return {
-   117      9000          0.0      0.0      0.0      'dX': dX,
-   118      9000          0.0      0.0      0.0      'inc': inc,
-   119                                             }
+    36                                           @profile
+    37                                           def solve(P,t):
+    38        10          0.0      0.0      0.1    X   = get_X(P['X0'],t)
+    39        10          0.0      0.0      0.1    inc = get_X(np.zeros([4,2,4,2,4]),t)
+    40        10          0.0      0.0      0.0    b_hiv,b_tpaf = True,True
+    41      9010          0.0      0.0      0.0    for i in range(1,t.size):
+    42                                               # Ri = rk4step(X[i-1],t[i-1],(t[i]-t[i-1]),get_dX,P=P)
+    43      9000         14.5      0.0     97.6      Ri = get_dX(X[i-1],t[i-1],P) # DEBUG: Euler
+    44      9000          0.1      0.0      0.4      X[i] = X[i-1] + (t[i] - t[i-1]) * Ri['dX']
+    45      9000          0.0      0.0      0.1      inc[i] = Ri['inc']
+    46      9000          0.0      0.0      0.0      if b_hiv and t[i] >= P['t0_hiv']: # introduce HIV
+    47        10          0.0      0.0      0.0        b_hiv = False
+    48        10          0.0      0.0      0.0        X[i,:,:,0,:,0] = X[i,:,:,0,0,0,_] * P['PX_h_hiv'][_,_,:]
+    49      9000          0.0      0.0      0.1      if b_tpaf and t[i] >= P['t0_tpaf']: # start accumulating tPAF
+    50                                                 b_tpaf = False
+    51                                                 P['mix_mask'] = P['mix_mask_tpaf']
+    52      9000          0.2      0.0      1.6      if np.any(X[i].sum(axis=2) < 0) or np.any(inc[i] < 0): # abort / fail
+    53                                                 return False
+    54        10          0.0      0.0      0.0    return {
+    55        10          0.0      0.0      0.0      'P': P,
+    56        10          0.0      0.0      0.1      'X': X.sum(axis=3), # sum_k
+    57        10          0.0      0.0      0.0      't': t,
+    58        10          0.0      0.0      0.0      'inc': inc,
+    59                                             }
+
+Total time: 14.2942 s
+File: /home/jesse/sci/proj/esw/code/model/system.py
+Function: get_dX at line 61
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    61                                           @profile
+    62                                           def get_dX(X,t,P):
+    63                                             # initialize
+    64      9000          0.0      0.0      0.2    dX = 0*X # (s:2, i:4, k:4, h:6, c:5)
+    65                                             # force of infection
+    66      9000          7.4      0.0     51.7    inc = foi.get_apply_inc(dX,X,t,P) # (p:4, s:2, i:4, s':2, i':4)
+    67                                             # TODO: reorder these steps?
+    68                                             # HIV transitions
+    69      9000          0.0      0.0      0.3    dXi = X[:,:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
+    70      9000          0.0      0.0      0.3    dX[:,:,:,1:5,0:3] -= dXi
+    71      9000          0.0      0.0      0.3    dX[:,:,:,2:6,0:3] += dXi
+    72                                             # CD4 recovery
+    73      9000          0.0      0.0      0.3    dXi = X[:,:,:,3:6,3:5] * P['unprog_h'] # low CD4 & treated
+    74      9000          0.0      0.0      0.3    dX[:,:,:,3:6,3:5] -= dXi
+    75      9000          0.0      0.0      0.3    dX[:,:,:,2:5,3:5] += dXi
+    76                                             # births & deaths
+    77      9000          1.1      0.0      7.5    birth, PXe, turn = params.solve_turnover(P,t)
+    78      9000          0.4      0.0      2.7    dX[:,:,0,0,0] += X.sum() * P['birth_t'](t) * PXe
+    79      9000          0.0      0.0      0.2    dX -= X * P['death']
+    80      9000          0.0      0.0      0.2    dX -= X * P['death_hc']
+    81                                             # turnover
+    82      9000          0.1      0.0      0.5    dXi = turn[:,:,:,_,_,_] * X[:,:,_,:,:,:]
+    83      9000          0.1      0.0      0.4    dX -= dXi.sum(axis=2) # (s:2, i:4, k:5, h:6, c:5)
+    84      9000          0.0      0.0      0.3    dX += dXi.sum(axis=1) # (s:2, i':4, k:5, h:6, c:5)
+    85                                             # cascade: diagnosis
+    86      9000          1.5      0.0     10.8    dXi = X[:,:,:,1:6,0] * P['dx_sit'](t) * P['Rdx_scen']
+    87      9000          0.0      0.0      0.3    dX[:,:,:,1:6,0] -= dXi # undiag
+    88      9000          0.0      0.0      0.2    dX[:,:,:,1:6,1] += dXi # diag
+    89                                             # cascade: treatment
+    90      9000          2.4      0.0     17.1    dXi = X[:,:,:,1:6,1] * P['tx_sit'](t) * P['Rtx_ht'](t) * P['Rtx_scen']
+    91      9000          0.0      0.0      0.3    dX[:,:,:,1:6,1] -= dXi # diag
+    92      9000          0.0      0.0      0.2    dX[:,:,:,1:6,3] += dXi # treat
+    93                                             # cascade: VLS
+    94      9000          0.0      0.0      0.2    dXi = X[:,:,:,1:6,3] * P['vx']
+    95      9000          0.0      0.0      0.2    dX[:,:,:,1:6,3] -= dXi # treat
+    96      9000          0.0      0.0      0.2    dX[:,:,:,1:6,4] += dXi # vls
+    97                                             # cascade: fail
+    98      9000          0.3      0.0      2.2    dXi = X[:,:,:,1:6,4] * P['unvx_t'](t) * P['Runvx_si'] * P['Rux_scen']
+    99      9000          0.0      0.0      0.2    dX[:,:,:,1:6,4] -= dXi # vls
+   100      9000          0.0      0.0      0.2    dX[:,:,:,1:6,2] += dXi # fail
+   101                                             # cascade: re-VLS
+   102      9000          0.3      0.0      2.0    dXi = X[:,:,:,1:6,2] * P['revx_t'](t)
+   103      9000          0.0      0.0      0.2    dX[:,:,:,1:6,2] -= dXi # fail
+   104      9000          0.0      0.0      0.2    dX[:,:,:,1:6,4] += dXi # vls
+   105      9000          0.0      0.0      0.0    return {
+   106      9000          0.0      0.0      0.0      'dX': dX,
+   107      9000          0.0      0.0      0.0      'inc': inc,
+   108                                             }
 
