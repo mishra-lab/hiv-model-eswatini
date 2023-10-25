@@ -1,14 +1,17 @@
 full:
-	make clean && make tex && make bib && make tex && make bib && make tex && make tex
+	make tex && make bib && make tex && make tex
 
 tex:
 	pdflatex main
 
 bib:
-	bibtex main
+	biber main
 
 clean:
 	texclean .
+
+cls:
+	cp /home/jesse/dev/tex/pkg/ms/ms/ms.cls .
 
 words:
 	python3.8 wc/wc.py
