@@ -341,6 +341,10 @@ def prevalence():
   print_distr(ss.betabin,x=[.287,914],name='prev_all_nlr_2016')   # [omit->pr]
   print_distr(ss.betabin,x=[.453,263],name='prev_women_nlr_2016') # [omit->pr]
   print_distr(ss.betabin,x=[.228,651],name='prev_men_nlr_2016')   # [omit->pr]
+  # SHIMS 3 (Summary Sheet)
+  fit_distr(ss.betabin,m=.237,q=(.226,.249),name='prev_all_2021')
+  fit_distr(ss.betabin,m=.316,q=(.298,.334),name='prev_women_2021')
+  fit_distr(ss.betabin,m=.156,q=(.143,.169),name='prev_men_2021')
   return
 
 def incidence():
@@ -369,6 +373,10 @@ def incidence():
   fit_distr(ss.skewnorm,m=.0148,q=(.0096,.0199),name='inc_all_2016')
   fit_distr(ss.skewnorm,m=.0199,q=(.0116,.0280),name='inc_women_2016')
   fit_distr(ss.skewnorm,m=.0099,q=(.0039,.0159),name='inc_men_2016')
+  # SHIMS 3 (Summary Sheet)
+  fit_distr(ss.skewnorm,m=.0077,q=(.0039,.0115),name='inc_all_2021')
+  fit_distr(ss.skewnorm,m=.0145,q=(.0069,.0220),name='inc_women_2021')
+  fit_distr(ss.skewnorm,m=.0020,q=(.0005,.0048),a0=10,name='inc_men_2021')
   return
 
 def diagnosed():
@@ -420,6 +428,10 @@ def vls():
   fit_distr(ss.betabin,m=.682,q=(.661,.704),name='vls_u_all_2016')
   fit_distr(ss.betabin,m=.721,q=(.697,.745),name='vls_u_women_2016')
   fit_distr(ss.betabin,m=.599,q=(.561,.637),name='vls_u_men_2016')
+  # SHIMS 3 (Summary Sheet)
+  fit_distr(ss.betabin,m=.866,q=(.850,.881),name='vls_u_all_2021')
+  fit_distr(ss.betabin,m=.886,q=(.870,.902),name='vls_u_women_2021')
+  fit_distr(ss.betabin,m=.824,q=(.793,.855),name='vls_u_men_2021')
   return
 
 def cascade_ideal():

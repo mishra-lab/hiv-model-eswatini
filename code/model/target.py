@@ -121,6 +121,10 @@ def get_prevalence_esw():
     Target(stats.betabin(p=.272,n=3620),'prevalence',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
     Target(stats.betabin(p=.343,n=2994),'prevalence',dict(t=2016.5,s=0,    i=(0,1,2,3))),
     Target(stats.betabin(p=.189,n=2442),'prevalence',dict(t=2016.5,s=1,    i=(0,1,2,3))),
+    # SHIMS3 (Summary Sheet)
+    Target(stats.betabin(p=.237,n=5257),'prevalence',dict(t=2021.0,s=(0,1),i=(0,1,2,3))),
+    Target(stats.betabin(p=.316,n=2561),'prevalence',dict(t=2021.0,s=0,    i=(0,1,2,3))),
+    Target(stats.betabin(p=.156,n=2987),'prevalence',dict(t=2021.0,s=1,    i=(0,1,2,3))),
   ]
 
 def get_incidence_esw():
@@ -141,6 +145,10 @@ def get_incidence_esw():
     Target(stats.skewnorm(m=.0148,sd=.00263),'incidence',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
     Target(stats.skewnorm(m=.0198,sd=.00418),'incidence',dict(t=2016.5,s=0,    i=(0,1,2,3))),
     Target(stats.skewnorm(m=.0099,sd=.00306),'incidence',dict(t=2016.5,s=1,    i=(0,1,2,3))),
+    # SHIMS3 (Summary Sheet)
+    Target(stats.skewnorm(m=.0077,sd=.00194),     'incidence',dict(t=2021.0,s=(0,1),i=(0,1,2,3))),
+    Target(stats.skewnorm(m=.0145,sd=.00385),     'incidence',dict(t=2021.0,s=0,    i=(0,1,2,3))),
+    Target(stats.skewnorm(m=.0021,sd=.00116,a=10),'incidence',dict(t=2021.0,s=1,    i=(0,1,2,3))),
   ]
 
 def get_cd4_esw(w=0):
@@ -186,6 +194,10 @@ def get_cascade_esw():
     Target(stats.betabin(p=.909,n=1778),'vls_c',dict(t=2016.5,s=(0,1),i=(0,1,2,3))),
     Target(stats.betabin(p=.918,n=1292),'vls_c',dict(t=2016.5,s=0,    i=(0,1,2,3))),
     Target(stats.betabin(p=.886,n= 486),'vls_c',dict(t=2016.5,s=1,    i=(0,1,2,3))),
+    # SHIMS3 (Summary Sheet)
+    Target(stats.betabin(p=.866,n=1855),'vls_u',dict(t=2021.0,s=(0,1),i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.886,n=1508),'vls_u',dict(t=2021.0,s=0,    i=(0,1,2,3))), # SR
+    Target(stats.betabin(p=.825,n= 575),'vls_u',dict(t=2021.0,s=1,    i=(0,1,2,3))), # SR
   ]
 
 def make_targets_2020(p,n=None,t=2020.0,s=None,i=None,w=1):
