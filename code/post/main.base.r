@@ -1,5 +1,5 @@
 source('post/config.r')
-source('post/posterior.r')
+source('post/post.r')
 source('post/wiw.r')
 
 main.post = function(){
