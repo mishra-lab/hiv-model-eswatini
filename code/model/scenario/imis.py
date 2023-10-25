@@ -99,7 +99,7 @@ def rerun(case):
   fit.plot_sets(tvec['main'],Rs,T=T,tfname=fname('fig','fit','{}',case=case))
 
 if __name__ == '__main__':
-  # run(**akwds)
+  run(**akwds)
   # akwds.pop('b')
   # sample_post(**akwds)
   # rerun(**akwds)

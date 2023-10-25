@@ -3,7 +3,7 @@
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=40
 #SBATCH --time=1:00:00
-#SBATCH --array=0
+#SBATCH --array=0-99
 
 module load python/3.8
 # pip install --upgrade scipy pathos PyPDF2
