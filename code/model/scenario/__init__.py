@@ -10,7 +10,7 @@ N = dict(
   isam   = 100,     # [ 100] number to resample per imis iter
   imis   = 100,     # [ 100] number of imis iterations
   post   = 1000,    # [1000] number of posterior samples
-)
+) # h1000i100b100
 N = dict(batch=50,hsam=1000,isam=100,imis=25,post=1000) # h1000i25b50
 # N = dict(batch=5,hsam=100,isam=10,imis=15,post=100) # DEBUG: h100i15b5
 tvec = dict(
@@ -40,4 +40,4 @@ if akwds.pop('scinet'):
   os.environ['MPLCONFIGDIR'] = fio.tmpfile() # TODO: this may not work?
   parallel.cpus = 80
 
-uid = '2023-10-10'
+uid = '2023-10-25'
