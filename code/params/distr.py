@@ -110,11 +110,11 @@ def beta():
   fit_distr(ss.gamma,m=2.9, q=(1.03,2.9,5.69),p=p3,name='Rbeta_gud_inf') # Gray2001
   fit_distr(ss.gamma,m=2.15,q=(0.2,6.0),name='aRbeta_gud_sus_adj') # Boily2009
   fit_distr(ss.gamma,m=0.95,q=(0.2,2.4),name='aRbeta_gud_inf_adj') # Gray2001
-  fit_distr(ss.betabin,m=.2,q=(.1,.4),name='P_gud_fsw_l') # (JK) & 18/124 EswIBBS2022
-  fit_distr(ss.gamma,m=3,q=(1.5,5),name='P_gud_fsw_hl') # (JK)
+  fit_distr(ss.betabin,m=.3,q=(.2,.4),name='P_gud_fsw_l') # (JK) & 18/124 EswIBBS2022
+  fit_distr(ss.gamma,m=1.3,q=(1,1.6),name='RP_gud_fsw_h:l') # (JK)
   # @FYI SDHS2006 Table 13.14: ~.07 GUD among wider pop P12M
   # @FYI SDHS2006 Table 13.14: ~.61 GUD among STI/symp/GUD (7% of 11.4%)
-  fit_distr(ss.betabin,m=.25,q=(.015,.65),name='Rbeta_uvls') # Donnell2010 (CI adj)
+  # fit_distr(ss.betabin,m=.25,q=(.015,.65),name='Rbeta_uvls') # Donnell2010 (CI adj)
   return
 
 def circumcision():
@@ -141,13 +141,13 @@ def condoms():
   fit_distr(ss.betabin,m=.600*.5,q=(.600*.2,.600),name='PF_condom_swr_2002 (vi)') # SBSS2002
   fit_distr(ss.betabin,m=.848,q=(.772*.75,.924),name='PF_condom_swo_2011 (vi)') # Baral2014
   fit_distr(ss.betabin,m=.829,q=(.758*.75,.900),name='PF_condom_swr_2011 (vi)') # Baral2014
-  fit_distr(ss.betabin,m=.511,q=(.418,.604), name='PF_condom_npp_2011 (vi)') # Baral2014 [omit]
+  # fit_distr(ss.betabin,m=.511,q=(.418,.604), name='PF_condom_npp_2011 (vi)') # Baral2014 [omit]
   print_distr(ss.betabin,x=[.856,100],name='PF_condom_swo_2014') # EswKP2014 (n adj, was 620)
   print_distr(ss.betabin,x=[.885,100],name='PF_condom_swr_2014') # EswKP2014 (n adj, was 595)
-  print_distr(ss.betabin,x=[.806,100],name='PF_condom_npp_2014') # EswKP2014 (n adj, was 395) [omit]
+  # print_distr(ss.betabin,x=[.806,100],name='PF_condom_npp_2014') # EswKP2014 (n adj, was 395) [omit]
   fit_distr(ss.betabin,m=.884,q=(.549,.95),name='PF_condom_swo_2014 (vi)') # EswKP2014
   fit_distr(ss.betabin,m=.853,q=(.479,.95),name='PF_condom_swr_2014 (vi)') # EswKP2014
-  fit_distr(ss.betabin,m=.801,q=(.647,.90),name='PF_condom_npp_2014 (vi)') # EswKP2014 [omit]
+  # fit_distr(ss.betabin,m=.801,q=(.647,.90),name='PF_condom_npp_2014 (vi)') # EswKP2014 [omit]
   print_distr(ss.betabin,x=[.500,100],name='PF_condom_swx_2021 (vi)') # EswIBBS2022 always
   print_distr(ss.betabin,x=[.455,11],name='PF_condom_swx_2021 (ai)') # EswIBBS2022 always
   # wider pop
@@ -166,40 +166,47 @@ def PX():
   fit_distr(ss.betabin,m=.029, q=(.007,.065),name='PX_w_fsw_2011') # EswKP2014 Table 4
   fit_distr(ss.betabin,m=.0243,q=(.0117,.0502),name='PX_w_fsw_2021') # EswKP2014 Table 4
   fit_distr(ss.betabin,m=.164,q=(.096,.278),name='PX_w_h') # (JK)
-  fit_distr(ss.betabin,m=.252,q=(.150,.440),name='PX_m_h') # (JK) [omit]
+  # fit_distr(ss.betabin,m=.252,q=(.150,.440),name='PX_m_h') # (JK) [omit]
   fit_distr(ss.betabin,m=.130,q=(.100,.170),name='PX_m_m') # (JK)
-  fit_distr(ss.betabin,m=.130,q=(.021,.385),name='PX_m_cli') # (JK) [omit]
+  # fit_distr(ss.betabin,m=.130,q=(.021,.385),name='PX_m_cli') # (JK) [omit]
   return
 
 def CF():
   section('partnership numbers')
-  fit_distr(ss.betabin,m=.38,q=(.21,.57),name='C_msp_wl') # (JK) [omit]
-  fit_distr(ss.betabin,m=.32,q=(.09,.55),name='C_msp_wh') # (JK) [omit]
-  fit_distr(ss.betabin,m=.35,q=(.23,.50),name='C_msp_ml') # (JK) [omit]
+  # fit_distr(ss.betabin,m=.38,q=(.21,.57),name='C_msp_wl') # (JK) [omit]
+  # fit_distr(ss.betabin,m=.32,q=(.09,.55),name='C_msp_wh') # (JK) [omit]
+  # fit_distr(ss.betabin,m=.35,q=(.23,.50),name='C_msp_ml') # (JK) [omit]
   fit_distr(ss.betabin,m=.37,q=(.25,.50),name='C_msp_xl') # (JK) synthesis
   fit_distr(ss.betabin,m=.35,q=(.20,.55),name='C_cas_xl') # (JK) synthesis
   fit_distr(ss.gamma,m=1.5,q=(1.2,2),name='C_cas_wm') # assume
   print_distr(ss.uniform,x=[.25,1],name='RC_cas_cli:wm') # assume
   fit_distr(ss.gamma,m=8.4,q=(6,11),name='CF_swr_l') # (JK)
-  fit_distr(ss.gamma,m=4.1,q=(2.5,6.0),name='C_swo_fsw_l') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RC_swo_fsw_h:l') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=8.4,q=(6.0,11.0),name='C_swr_fsw_l') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=8.4*5/6,q=(6.0*5/6,11.0*5/6),name='C_swr_fsw_l_adj') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=1.5,q=(1.3,1.7),name='RC_swr_fsw_h:l') # (JK) Baral2014,EswKP2014
-  fit_distr(ss.gamma,m=60,q=(35,90),name='KF_swx_cli') # assume
+  print_distr(ss.gamma,x=[3.5,.70],name='C_swo_fsw_l') # (JK) Baral2014,EswKP2014
+  print_distr(ss.gamma,x=[6.0,1.2],name='C_swr_fsw_l') # (JK) Baral2014,EswKP2014
+  print_distr(ss.gamma,x=[14,2.8], name='C_swo_fsw_h') # (JK) Baral2014,EswKP2014
+  print_distr(ss.gamma,x=[21,4.2], name='C_swr_fsw_h') # (JK) Baral2014,EswKP2014
+  # fit_distr(ss.gamma,m=4.1,q=(2.5,6.0),name='C_swo_fsw_l') # (JK) Baral2014,EswKP2014 [omit]
+  # fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RC_swo_fsw_h:l') # (JK) Baral2014,EswKP2014 [omit]
+  # fit_distr(ss.gamma,m=8.4,q=(6.0,11.0),name='C_swr_fsw_l') # (JK) Baral2014,EswKP2014 [omit]
+  # fit_distr(ss.gamma,m=8.4*5/6,q=(6.0*5/6,11.0*5/6),name='C_swr_fsw_l_adj') # (JK) Baral2014,EswKP2014 [omit]
+  # fit_distr(ss.gamma,m=1.5,q=(1.3,1.7),name='RC_swr_fsw_h:l') # (JK) Baral2014,EswKP2014 [omit]
+  fit_distr(ss.gamma,m=36,q=(18,72),name='KF_swx_cli') # assume
   fit_distr(ss.gamma,m=2.0,q=(1.6,2.5),name='RKF_swx_cli_h:l') # assume
   section('sex frequency')
-  fit_distr(ss.gamma,m=52*1.5,q=(.5*52,3*52),name='F_mcx') # Shisana2005,Delva2013
+  fit_distr(ss.gamma,m=52*1.5,q=(.5*52,3*52),name='F_msp') # Shisana2005,Delva2013
   print_distr(ss.uniform,x=[12,48],name='F_swr') # assume
   fit_distr(ss.gamma,m=.05,q=(.006,.165),sd0=.01,name='PF_ai_mcx') # Owen2017
-  fit_distr(ss.gamma,m=.08,q=(.006,.292),sd0=.01,name='PF_ai_swx_old') # Owen2017 [omit]
-  fit_distr(ss.gamma,m=.08,q=(.024,.159),sd0=.01,name='PF_ai_swx') # Owen2020
+  print_distr(ss.uniform,x=[1,2],name='RPF_ai_swx:mcx') # Owen2017
+  # fit_distr(ss.gamma,m=.08,q=(.006,.292),sd0=.01,name='PF_ai_swx_old') # Owen2017 [omit]
+  # fit_distr(ss.gamma,m=.08,q=(.024,.159),sd0=.01,name='PF_ai_swx') # Owen2020 [omit]
   return
 
 def mixing():
   section('mixing')
-  fit_distr(ss.gamma,m=9,q=(2,19),name='pref_mcx_swx') # assume
-  fit_distr(ss.gamma,m=2,q=(1.5,3),name='pref_mcx_xl') # (JK)
+  # fit_distr(ss.gamma,m=9,q=(2,19),name='pref_mcx_swx') # assume [omit]
+  # fit_distr(ss.gamma,m=2,q=(1.5,3),name='pref_msp_xl') # (JK) [omit]
+  print_distr(ss.uniform,x=[-2,+2],name='lpref_mxc_swx') # assume
+  print_distr(ss.uniform,x=[-2,+2],name='lpref_msp_xl') # assume
   return
 
 def dur():
@@ -227,9 +234,9 @@ def dur():
   fit_distr(ss.betabin,m=.60,q=(.25,.90),name='Pturn_cli_m:l') # assume
   section('durations: partnership types')
   print_distr(ss.uniform,x=[14.5,18.5],name='dur_msp') # (JK)
-  print_distr(ss.uniform,x=[.01,.02],name='pcr_msp') # (JK)
+  # print_distr(ss.uniform,x=[.01,.02],name='pcr_msp') # (JK) [omit]
   fit_distr(ss.gamma,m=.75,q=(.25,1.5),name='dur_cas') # (JK)
-  fit_distr(ss.gamma,m=1,q=(.5,2.0),name='dur_swr') # (JK)
+  fit_distr(ss.gamma,m=.5,q=(1/6,1),name='dur_swr') # (JK)
   return
 
 def dx():
