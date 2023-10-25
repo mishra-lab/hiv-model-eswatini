@@ -1,0 +1,197 @@
+%===================================================================================================
+\section{Force of Infection}\label{mod.foi}
+The force of infection equation defines the rate at which susceptible individuals acquire infection.
+This equation thus integrates mechanistic assumptions and data regarding
+sexual partnership dynamics and modifiers of transmission risk.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Conventional Approach}
+In compartmental HIV transmission models,
+sexual partnerships are typically quantified using a ``change rate''
+because each ``compartment'' represents a homogeneous and memoryless population,
+and so individual partnerships cannot be modelled \cite{Rao2021}.
+In this approach, the probability of transmission per sex act is adjusted (reduced)
+to account for additional sex with the same partner after transmission has occurred
+--- sometimes called ``post-transmission sex acts'' \cite{Knight2022smdm}.
+This adjustment takes the general form:
+\begin{equation}\label{eq:foi.B}
+  B = 1 -\,{(1-\beta)}^A
+\end{equation} where:
+$\beta$ is the probability of transmission per sex act,
+$A$ is the number of sex acts per partnership, and
+$B$ is the total probability of transmission per-partnership.
+However, this adjustment entails a trade-off \cite{Knight2022smdm}:
+\begin{itemize}
+  \item If $A$ is chosen to reflect the complete partnership duration, then
+  the probability of transmission is reduced ``now''
+  in anticipation of future post-transmission sex acts,
+  thereby underestimating early transmission within partnerships;
+  moreover, the true probability of transmission per sex act $\beta$
+  likely evolves over long partnerships due to
+  HIV progression and/or prevention interventions,
+  but this evolution is rarely included in \eqref{eq:foi.B}.
+  \item If $A$ is chosen to reflect an average ``partnership-year'', then
+  early transmission is not underestimated,
+  but transmission within longer partnerships can be overestimated,
+  because the adjustment in \eqref{eq:foi.B} may actually have little effect.
+\end{itemize}
+Considering these limitations, we developed
+a new approach to account for post-transmission sex acts in the force of infection equation,
+which we call the \emph{Effective Partnerships Adjustment} \cite{Knight2022smdm}, described below.
+%===================================================================================================
+\subsection{Conceptual Development}\label{mod.foi.concept}
+The conventional adjustment \eqref{eq:foi.B} estimates
+the proportion of sex acts which occur after transmission within each partnership.
+An alternate approach could estimate
+the proportion of partnerships where transmission has already occurred.
+In a compartmental model, these partnerships can be tracked as proportions of individuals: namely,
+all individuals who recently acquired infection \emph{and}
+all individuals who recently transmitted infection.
+Here, ``recent'' means ``before individuals change partners''.
+If some individuals have multiple concurrent partners,
+then these individuals should not be removed entirely,
+but their numbers of ``effective partnerships'' should be reduced by 1.
+If multiple types of partnerships are considered,
+then only the partnership type involved in the transmission should be reduced.
+This adjustment to ``effective partnerships'' can then be applied
+until these individuals change partners
+--- at a rate inversely related to the partnership duration: $\delta^{-1}$.
+However, during this period, these individuals can still be modelled
+to progress as usual through different stages of infection, treatment, etc.
+\par
+Using this conceptual basis, the \emph{Effective Partnerships Adjustment}
+introduces a new stratification of the modelled population, denoted $\p$.
+The stratum $\p = 0$ corresponds to no recent transmission,
+or all ``new'' (potentially serodiscordant) partnerships.
+Other strata $\p \ne 0$ correspond to recent transmission via (to or from) partnership type $\p$.
+Figure~\ref{fig:model.hiv.p} illustrates the new stratification
+together with with the existing HIV infection stratification (Figure~\ref{fig:model.hiv}).
+Following infection, all individuals enter a stratum $\p \ne 0$
+corresponding to the partnership type $p$ by which they were infected.
+Thus, the rate of entry to this stratum from $S_i$ is defined by
+the force of infection without aggregating across partnership types: $\lambda_{ip}$.
+Individuals may then transition from $\p \ne 0$ to $\p = 0$
+upon forming a new partnership, at a rate $\delta_p^{-1}$.
+Finally, individuals may re-enter any stratum $\p \ne 0$
+if they transmit infection via partnership type $p$.
+We denote the corresponding rate as $\lambda'_{ip}$,
+representing the per-person rate of \emph{transmission},
+not \emph{acquisition} as in $\lambda_{ip}$.
+This rate $\lambda'_{ip}$ is not defined or needed in prior models
+but we develop the necessary equations below in \sref{mod.foi.eq}.
+The issue of transmission via multiple partnerships is discussed in \sref{mod.foi.mp}.
+\begin{figure}
+  \centering\includegraphics[scale=1]{model.hiv.p}
+  \caption{Modelled states and transitions related to HIV infection,
+    and a new stratification $\p$ to track
+    the proportions of individuals in partnerships where transmission already occurred}
+  \label{fig:model.hiv.p}
+  \floatfoot{
+    $S$: susceptible;
+    $I_{h}$: infectious in stage $h$;
+    $p$: partnership type;
+    $\p$: new stratification, where
+      $\p = 0$ reflects no recent transmission (all new partnerships), and
+      $\p \ne 0$ reflects recent transmission via a type-$p$ partnership;
+    $\lambda$: force of infection per susceptible;
+    $\lambda'$: force of infection per infectious;
+    $\eta$: rate of progression between infection stages;
+    $\delta$: partnership duration.}
+\end{figure}
+%===================================================================================================
+\subsection{Equations}\label{mod.foi.eq}
+Since partnership duration is now considered separately and explicitly,
+we do not define any probability of transmission per partnership $B$.
+Rather, we define the force of infection to directly include
+the frequency of sex per partnership $F$ and probability of transmission per sex act $\beta$.
+However, the mixing is slightly more complicated than usual,
+since the number of ``effective partnerships'' depends on infection status.
+In addition, these partnerships are now defined as numbers of current partners~$K$,
+rather than rates of partnership formation~$Q$.
+\par
+Let $M_{pii'}$ be the total (population-level, not per-person)
+number of type-$p$ partnerships between group $i$ and group $i'$
+(here we omit sex notation $s,s'$ for simplicity).
+As described \sref{mod.par.mix}, this ``mixing matrix'' $M_{pii'}$ can be defined in several ways,
+based on the total numbers of ``effective partnerships'' among each group: $M_{pi}, M_{pi'}$,
+plus some parameter(s) specifying mixing patterns (\eg $\Phi$).
+Working backwards, we start by defining $M_{pi}$ (and likewise $M_{pi'}$) via
+the sum across health statuses --- \ie susceptible, and different stages of infection $h$:
+\begin{equation}\label{eq:M.SI}
+  M_{pi} = M_{S,pi} + \sum_h M_{I,pih}
+\end{equation}
+We then define the total numbers of partnerships among susceptible individuals as:
+\begin{equation}
+  M_{S,pi} = S_{i} K_{pi} \label{eq:M.S}
+\end{equation}
+and likewise for individuals in infection stage $h$:
+\begin{equation}
+  M_{I,pih} = I_{ih,\p=p} (K_{pi}-1) + \sum\nolimits_{\p \ne p} I_{ih\p}\,K_{pi} \label{eq:M.I}
+\end{equation}
+This \eqref{eq:M.I} is the key equation whereby
+the  numbers of ``effective type-$p$ partnerships'' among
+individuals in stratum $\p$ are reduced by 1.
+This reduction is then propagated through the mixing patterns when defining $M_{pii'}$.
+Next, we define the total (population-level, not per-person) rate of transmission
+from group $i'$ and infection stage $h'$ to group $i$ via type-$p$ partnerships as:
+\begin{equation}
+  \Lambda_{pii'h'} = F_p \beta_{pii'h'} M_{pii'}
+  \left(\frac{M_{S,pi}}{M_{pi}}\right)
+  \left(\frac{M_{I,pi'h'}}{M_{pi'}}\right)
+\end{equation}
+where the two fractions represent the proportions of all partnerships $M_{pii'}$
+formed between susceptible individuals from group $i$ ($M_{S,pi}$)
+and infectious individuals in group/infection stage $i'h'$ ($M_{I,pi'h'}$).
+The per-person transmission rates to group $i$, and from group $i'h'$ can then be defined as:
+\begin{alignat}{1}
+  \lambda_{pi} &= \sum_{i'h'} \Lambda_{pii'h'}\,{S_{i}}^{-1} \label{eq:foi.i} \\
+  \lambda'_{pi'h'} &= \sum_{i} \Lambda_{pii'h'}\,{I_{i'h'}}^{-1} \label{eq:foi.jh}
+\end{alignat}
+For the purposes of solving the model,
+we can skip division by $S_{i}$ and $I_{i'h'}$ in \eqref{eq:foi.i}~and~\eqref{eq:foi.jh},
+since $\lambda'_{pi}$ and $\lambda'_{pi'h'}$ are immediately multiplied by $S_{i}$ and $I_{i'h'}$,
+respectively, in the system of differential equations.
+\par
+Finally, and to reiterate from above, infected individuals in stratum $I_{ih\p}$
+are assumed to form new partnerships at a rate $\delta_p^{-1}$,
+and thereby transition to stratum $I_{ih\p_0}$ (``all new partners''); and
+otherwise transition between infection stages, cascade of care, activity groups, etc. as usual,
+as illustrated in Figure~\ref{fig:model.hiv.p}.
+%===================================================================================================
+\subsection{Transmission via Multiple Partnerships}\label{mod.foi.mp}
+We do not explicitly model the proportions of infected individuals
+who recently acquired and/or transmitted infection via
+two different partnership types, or two partnerships of the same type.
+To do so, the required size of the new dimension $\p$ would be at least $2^{P}$, not $P+1$,
+where $P$ is the number of different partnership types modelled.
+For transmission via three different partnerships,
+the required size would be at least $3^{P}$, and so on.
+Indeed, this exponential relationship is related to the challenge of specifying
+all possible combinations of partnership states in pair-based models \cite{Kretzschmar2017}.
+However, under frequentist assumptions, we can equivalently model
+two transmissions by one individual as one transmission each by two individuals.
+Thus, we can transfer two individuals from $I_{ih\p_0}$ to
+$I_{ih\p_1}$ and $I_{ih\p_2}$ (one each) under the $P+1$ stratification,
+instead of just one individual from $I_{ih\p_0}$ to
+``$I_{ih\p_{12}}$'' under one of the exponential $x^P$ stratifications.
+\par
+In fact, $I_{ih\p_0}$ can be \emph{negative} (but only for $\p = 0$),
+because the dimension $\p$ is only relevant to \eqref{eq:M.I};
+in all other contexts and equations,
+we use $I_{ih} = \sum_{\p} I_{ih\p}$, which must be positive as usual.
+Moreover, we can also have $I_{ih\p} > I_{ih}$, provided that:
+\begin{equation}\label{eq:I.constr}
+  I_{ih\p} \le I_{ih} K_{pi}
+\end{equation}
+reflecting the situation where 100\% of $I_{ih}$
+have recently acquired and/or transmitted infection via at least one type-$p$ partnership,
+or 50\% via at least two partnerships, etc.
+This situation can therefore only arise in the context of
+multiple concurrent type-$p$ partnerships: $K_{pi} > 1$.
+If $I_{ih\p} > I_{ih}$, then $I_{ih\p_0}$ \emph{must} be negative,
+but we can show that \eqref{eq:M.I} still yields the correct value of $M_{I,pih}$.
+With this perspective, the constraint in \eqref{eq:I.constr} may be more intuitive:
+we cannot ``remove'' more than the total number of partnerships.
+This constraint should also be easy to guarantee for a small enough timestep,
+because $M_{I,pih}$ approaches zero as $I_{ih\p}$ approaches $I_{ih} K_{pi}$
+--- i.e. all type-$p$ partnerships become HIV+ seroconcordant,
+and no more transmission can occur via these partnerships until partners change.

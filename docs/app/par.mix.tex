@@ -1,0 +1,104 @@
+%===================================================================================================
+\subsection{Mixing}\label{mod.par.mix}
+In addition to more transmission among FSW and their clients
+via regular and occasional sex work partnerships
+--- which are \emph{only} formed among FSW and clients ---
+other types of partnerships may be formed
+preferentially between particular activity groups.
+For example, FSW and clients may be more likely to form main partnerships
+with each other than with other activity groups.
+Such preferences are captured in a ``mixing matrix'' $M$, where $M_{pii'}$ denotes
+the total number of type-$p$ partnerships formed between groups $i$ and $i'$ in the population
+(ignoring sex indices $s,s'$ temporarily)
+--- \ie who has sex with whom.
+The mixing matrix $M_{pii'}$ must be symmetric,
+and have row/column sums equal to the total numbers of partnerships ``offered'' by any group:
+$M_{pi} = P_{i} K_{pi}$ (group size $\times$ partnerships per-person).
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Log-Linear Mixing}\label{mod.par.mix.ll}
+Many risk/activity-stratified compartmental transmission models
+parameterize mixing via a single parameter $\epsilon \in [0,1]$,
+which controls the degree of like-with-like mixing \cite{Nold1980,Garnett1994}.
+However, the simplicity of this approach precludes more complex mixing patterns
+--- such as preferential mixing among two of four total groups.
+A more general approach to mixing is developed in \cite{Morris1991ll}.
+This ``log-linear'' approach defines the mixing matrix elements $M_{pii'}$ as follows.
+The expected total numbers of partnerships between risk groups under random mixing are defined as:
+\begin{equation}\label{eq:mix.rand}
+  \Pi_{pii'} = \frac{M_{pi} M_{pi'}}{\sum_{j} M_{pj}}
+\end{equation}
+Next, a matrix $\Phi_{pii'}$ is defined, representing the odds of
+a type-$p$ partnership forming between groups $i$ and $i'$, compared to random mixing.
+The matrix $\Phi$ must be symmetric,
+and can be estimated directly from the right kind of data
+(which is rarely available) \cite{Morris1991ll}.
+Then, an initial estimate of $M_{pii'}$ is:
+\begin{alignat}{1}
+  M_{pii'}^{\,(0)} &= \exp{\left[\log{\left(\Pi_{pii'}\right)} + \Phi_{pii'} \right]} \nonumber\\
+                 &= \Pi_{pii'} \exp{\left(\Phi_{pii'}\right)} \label{eq:mix.M0}
+\end{alignat}
+However, this estimate changes the total numbers of partnerships formed by each group:
+$M_{pi}^{\,(0)} \ne \Pi_{pi}$, where
+$M_{pi} = \sum_{i'} M_{pii'}$ and $\Pi_{pi} = \sum_{i'} \Pi_{pii'}$.
+There is no \textit{a priori} definition of $M_{pii'}$ or adjustment to $\Phi_{pii'}$
+that can guarantee the numbers of partnerships will not change.
+However, an iterative proportional fitting procedure \cite{Ruschendorf1995}
+can resolve an estimate $M_{pii'}^{\,(\infty)}$ that maintains the total numbers of partnerships:
+\begin{equation}\label{eq:mix.iter}
+  M_{pii'}^{\,(n+1)} = M_{pii'}^{\,(n)} \frac{\Pi_{pf}}{M_{pf}^{\,(n)}}
+  \qquad f = \begin{cases}
+    ~i  & \txn{if $n$ is even} \\
+    ~i' & \txn{if $n$ is odd}
+  \end{cases}
+\end{equation}
+Each step of this procedure can be understood as
+a re-scaling of the current estimate $M_{pii'}^{\,(n)}$
+row-wise ($i$) or column-wise ($i'$) to match the numbers of partnerships
+offered by individuals ($\Pi_{pi}$) or their partners ($\Pi_{pi'}$).
+Each row-step re-introduces discrepancies in the columns, and vice versa,
+but overall convergence is guaranteed~\cite{Sinkhorn1964}.
+\par
+In practice, \eqref{eq:mix.iter} adds approximately
+one decimal of precision per $2n$ for the $4\times4$ case,
+thus 15--20 iterations is often sufficient to come within computational precision limits.
+Since the partnerships matrix $M_{pii'}$ should adapt to reflect changes in
+group sizes (\eg due to HIV mortality) or
+numbers of partnerships offered (\eg see \sref{mod.foi}),
+the matrix must be re-computed at every time point.
+Thus, the procedure \eqref{eq:mix.iter} could be considered computationally expensive.
+However, this approach provides great flexibility and interpretability
+to specify complex mixing patterns via the odds matrix $\Phi_{pii'}$.
+\par
+Two final adjustments are needed for the bipartite (\ie heterosexual) system,
+after adding back the sex dimension indices $i \rightarrow si, ~ i' \rightarrow s'i'$.
+First, we ensure that $M_{s=s'} = \Pi_{s=s'} = 0$.
+Second, for the case when the total numbers of partnerships offered by women and men
+do not balance ($\sum_j M_{ps_{1}j} \ne \sum_j M_{ps_{2}j}$),
+We revise the denominator of \eqref{eq:mix.rand} to $\sum_{j} \psi_s M_{psj}$,
+where $\psi_s$ are weights such that $\sum_s \psi_s = 1$.
+Similar to the ``compromise'' parameter $\theta$ in \cite{Garnett1994},
+if $\psi = \{1,0\}$, then women's partnership numbers are matched exactly
+while men adapt their partner numbers to balance;
+and conversely for $\psi = \{0,1\}$.
+We fixed $\psi = \{0.5,0.5\}$ for equal adaptation among women and men.
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Odds of Mixing}\label{mod.par.mix.odds}
+Despite the flexibility in the odds of mixing matrix $\Phi_{pii'}$,
+and the importance of mixing patterns for transmission dynamics \cite{Garnett1993hiv},
+there are limited data to inform mixing patterns for Eswatini.
+In Kenya \cite{Voeten2007}, Benin, Guinea, and Senegal \cite{Godin2008}, and Uganda \cite{Mbonye2022},
+a disproportionate fraction of non-paying partners of FSW were former and/or current clients.
+However, its not clear whether such partnerships reflect main/spousal and/or casual partnerships.
+As such, we sampled a common value for both partnership types
+$\sim \exp[\opname{Unif}(-2,+2)]$,
+applied equally to higher and lower risk FSW and clients.
+We further assumed that lowest activity women and men had
+greater odds of forming main/spousal partnerships with each other,
+based loosely on age cohorting effects \cite{Leclerc-Madlala2008},
+observed like-with-like sexual mixing preferences in other contexts
+\cite{Morris1991ll,Garnett1993gon,Admiraal2016},
+and prior models \cite{Knight2022sr}.
+We sampled this odds ratio from an equal prior: $\exp[\opname{Unif}(-2,+2)]$.
+We made no further assumptions about preferential mixing (\ie all other elements $\Phi = 0$).
+Thus, we assumed that occasional and regular sex work partnerships form
+randomly with respect to higher \vs lower FSW and their clients.

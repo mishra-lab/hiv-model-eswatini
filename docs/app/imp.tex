@@ -1,0 +1,11 @@
+\paragraph{Implementation}
+The model was implemented in Python~v3.8.10 with Numpy~v1.24.4,
+and solved numerically using 4th order Runge-Kutta \cite{Gill1951} using a timestep of 0.05 years.
+Post-hoc analysis was conducted in R~v3.6.3.
+All code and most results are available on GitHub:
+\hreftt{github.com/mishra-lab/hiv-model-eswatini}.%
+\footnote{\label{foot:code.note}%
+  In the code: R uses 1-based indexing, which match the notation here directly,
+  while Python uses 0-based indexing, which therefore appear as $i \rightarrow i-1$ in the code.
+  Also, the model code reorders states in the ART cascade dimension for computational efficiency,
+  with $c={}$1:~Undiagnosed; 2:~Diagnosed; 3:~Virally~Un-suppressed; 4:~On~ART; 5:~Virally~Suppressed.}

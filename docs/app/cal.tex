@@ -1,0 +1,19 @@
+\input{\app/tab.par} % MAN: placement
+\section{Model Calibration}\label{mod.cal}
+We considered uncertainty in 73 model input parameters (Table~\ref{tab:par.cal}).
+For each uncertain parameter, we specified a univariate prior distribution
+based on the available data and/or assumptions (\sref{mod.par}).
+Model calibration aims to reduce this uncertainty
+--- \ie estimate the (joint) parameter posterior distribution ---
+by comparing model outputs to ``calibration targets''
+under different combinations of input parameters.
+Table~\ref{tab:par.cal} summarizes the calibrated parameters,
+including the mean (95\%~CI) for prior and posterior distributions;
+\sref{mod.cal.appr} describes our approach to calibration, and
+\sref{mod.cal.targ} details the calibration targets used.
+These targets include estimates of HIV incidence, prevalence, and the cascade of care
+for the population overall, and stratified by risk group where possible.
+Results of model calibration are given in \sref{sr.cal}.
+\input{\app/cal.appr}
+\input{\app/cal.targ}
+

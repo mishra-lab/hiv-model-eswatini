@@ -1,0 +1,149 @@
+%===================================================================================================
+\subsection{Calibration Targets}\label{mod.cal.targ}
+The data sources for Eswatini calibration targets
+are mainly the same as for Eswatini-specific parameters.
+We assumed that population-level surveys in
+2006 \cite{SDHS2006}, 2011 \cite{Bicego2013,Justman2016}, and 2016 \cite{SHIMS2}
+reached FSW and their clients,
+although respondents may not report selling or buying sex in the context of these surveys.
+%---------------------------------------------------------------------------------------------------
+\subsubsection{HIV Prevalence}\label{mod.cal.targ.prev}
+% TODO: (*) clients prevalence ratio Carrasco2020 Table 2
+\begin{table}
+  \centering
+  \caption{Estimates of HIV prevalence in Eswatini}
+  \label{tab:targ.prev}
+  \input{\app/tab.targ.prev}
+\end{table}
+Table~\ref{tab:targ.prev} summarizes the available HIV prevalence data for Eswatini.
+Uncertainty around each estimate was modelled using a BAB distribution.
+We made several adjustments to the estimates as follows.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Sampling Error}
+Population-level HIV prevalence estimates in 2006 and 2016 included
+expanded 95\%~CI (\vs standard binomial 95\%~CI)
+due to sampling error for women, men, and the population overall
+(Table~B.2 in \cite{SDHS2006} and Table~C.2 in \cite{SHIMS2}).
+This expanded 95\%~CI corresponds to a reduction in effective $N$ \vs the sample $N$
+for the binomial distribution, by a factor of 41--75\%.
+We applied this factor to equivalently expand the estimated 95\%~CI for
+the corresponding lower risk and non-lower risk women, men, and population overall in 2006 and 2016,
+and also for all 2011 HIV prevalence estimates \cite{Bicego2013}.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Biased Partner Number Reporting}
+As discussed in \sref{mod.par.wp}, we assumed that
+the proportion of the population reporting 0--1 sexual partners p6m
+(``lower risk'') is overestimated,
+and the proportion reporting 2+ (``non-lower risk'') is underestimated.
+While overall HIV prevalence estimates would not be affected by this reporting bias,
+HIV prevalence among the lower risk group would be overestimated.
+To correct this overestimate, we further assumed that
+HIV prevalence among ``observed'' non-lower risk (had 2+ partners p6m, reported 2+)
+was representative of HIV prevalence among ``unobserved'' non-lower risk (had 2+, reported 0--1).
+Thus, HIV prevalence among the ``true'' lower risk (had 0--1, reported 0--1) can be estimated as:
+\begin{equation}
+  H_{01} = \frac{H - H_{2+}W'_{2+}}{W'_{01}}
+\end{equation}
+where $H$ denotes HIV prevalence,
+and $W'$ denotes the adjusted proportions calculated in \sref{mod.par.wp}.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Age Range}
+The model aims to capture the Swati population aged 15--49.
+While the 2006 and 2016 surveys provide data for ages 15--49,
+the 2011 survey was limted to ages 18--49.
+Since HIV prevalence is much lower among ages 15--17,
+the 2011 estimates would be biased high.
+We therefore adjusted all 2011 HIV prevalence estimates in as follows.
+Drawing on age-stratified data in 2006 \cite{SDHS2006} and 2011 \cite{Bicego2013},
+we assumed that HIV prevalence among ages 15--17 was
+5\% among girls/women, 2\% among boys/men, and 3.5\% overall.
+Next, we estimated the fraction of women aged 15--17 among all women aged 15--49 (13.5\%),
+and likewise for men (15.4\%) and overall (14.4\%) \cite{DataBank}.
+We then estimated HIV prevalence among women, men, and overall for ages 15--49
+using a weighted average of the 15--17 and 18--49 estimates.
+Finally, we computed the resulting relative reduction in HIV prevalence for women overall,
+and applied this reduction equally to the HIV prevalence estimates for
+lower risk and non-lower risk women, and likewise for men and the population overall.
+% This concludes the adjustments.
+\par
+\begin{table}
+  \centering
+  \caption{Estimated HIV prevalence ratios in Eswatini}
+  \label{tab:targ.pr}
+  \input{\app/tab.targ.pr}
+\end{table}
+Since risk heterogeneity is a key determinant of epidemic dynamics,
+it is important to capture HIV prevalence ratios across risk groups.
+For this objective, directly specifying prevalence ratio targets is more efficient than
+using independent prevalence targets for lower risk and non-lower risk.
+Based on the available data, we defined the prevalence ratio targets in Table~\ref{tab:targ.pr}.
+\par
+The raw (unadjusted) estimates suggest that HIV prevalence strongly peaked between 2006 and 2016.
+After adjustment for respondent ages, 2011 estimates remained highest,
+but the magnitude of differences with 2006 and 2016 was reduced substantially.
+The largest reduction in HIV prevalence via adjustment
+was among lower risk women in 2011: from 38.2\% to 30.8\%, due to the modelled
+``addition'' of women/girls aged 15--17 (lower HIV prevalence), and
+``subtraction'' of women with 2+ partners p6m (higher HIV prevalence).
+%---------------------------------------------------------------------------------------------------
+\subsubsection{HIV Incidence}\label{mod.cal.targ.inc}
+Population-level incidence was first measured in the 2011
+Swaziland HIV Incidence Measurement Survey (SHIMS)
+via 6-month cohort (gold standard) \cite{SHIMS1,Justman2016},
+in which 145 seroconversions were observed among 11,232 re-tested (LTFU was 5.6\%).
+The follow-up SHIMS2 study in 2016--17 used
+the HIV-1 Limiting Antigen Enzyme Immunoassay (LAg~EIA) ``recency test'',
+which detects infections acquired within the past 141 days, 95\%CI: (119,~160) \cite{Duong2012};
+this LAg~EIA incidence measure was validated during SHIMS1 \cite{SHIMS1}.
+Recency testing was also recently integrated into Eswatini standard of care \cite{EswCOP21}.
+\par
+\begin{table}
+  \centering
+  \caption{Estimates of HIV incidence in Eswatini}
+  \label{tab:targ.inc}
+  \input{\app/tab.targ.inc}
+\end{table}
+Table~\ref{tab:targ.inc} summarizes the available HIV incidence data for Eswatini.
+Uncertainty around each estimate was modelled using a skewnormal or inverse gaussian distribution.
+As with prevalence, the 2011 estimates were adjusted for the missing 15--17 age range,
+this time assuming 2\% and 0.4\% annual incidence
+among girls/women and boys/men aged 15--17, respectively
+(extrapolating from age-stratified incidence estimates from \cite{Justman2016}).
+The 2011 estimates for lower risk women and men were also adjusted
+for biased partner number reporting using the same approach as for HIV prevalence.
+Two incidence ratios were also defined (Table~\ref{tab:targ.ir}).
+\par
+No study of FSW in Eswatini estimated incidence directly,
+but \cite{EswIBBS2022} reported that 30 of 676 prevalent HIV infections among FSW
+were identified as recent via LAg~EIA per national guidelines \cite{SHIMS2,EswCOP21}.
+Using \eqref{eq:exp.decay} with $\rho = 30/676 = 4.44\%$ and $T = 130$ days,
+we computed an incidence rate of $\lambda = 11.7\%$ per year.
+We further estimated uncertainty for this rate by combining
+the 95\%~CI from $\rho \sim \opname{Binom}(p = 4.44\%, N = 676)$ and $T \in (118,~140)$,
+yielding 95\%~CI for $\lambda$ of (8.3,~16.9).
+\begin{table}
+  \centering
+  \caption{Estimated HIV incidence ratios in Eswatini}
+  \label{tab:targ.ir}
+  \input{\app/tab.targ.ir}
+\end{table}
+%---------------------------------------------------------------------------------------------------
+\subsubsection{HIV Cascade of Care}\label{mod.cal.targ.cascade}
+Table~\ref{tab:targ.cascade} summarizes the available data for the HIV cascade of care in Eswatini,
+including estimates stratified by risk group where possible.
+Both conditional (\eg on ART among diagnosed, ``90-90-90'')
+and unconditional (\eg on ART among PLHIV, ``90-81-73'') cascade data were included,
+which is redundant but may improve calibration quality.
+Unlike HIV prevalence and incidence calibration targets, no adjustments were applied to these data.
+A recent meta-analysis \cite{Soni2021} suggested substantial under-reporting of known HIV+ status,
+including 9~(4,~15)\% among the population overall (10~studies),
+and 32~(22,~44)\% among FSW specifically (2~studies).
+However, data from SHIMS2 \cite{SHIMS2} suggested much lower under-reporting (2.2\%) in Eswatini.
+% TODO: (?) consider adjustments ...
+\begin{table}
+  \centering
+  \caption{Estimated HIV cascade of care in Eswatini}
+  \label{tab:targ.cascade}
+  \input{\app/tab.targ.cascade}
+\end{table}
+\par

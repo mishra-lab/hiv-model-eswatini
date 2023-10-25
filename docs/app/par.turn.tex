@@ -1,0 +1,131 @@
+%===================================================================================================
+\subsection{Turnover}\label{mod.par.turn}
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Births \& Deaths}\label{mod.par.turn.bd}
+The modelled population considers ages 15--49,
+reflecting commonly reported data and the majority of sexual activity.
+In the absence of mortality, individuals would therefore
+remain within the modelled ``open cohort'' population for 35 years.
+The estimated average yearly mortality rate for these ages was 1.44\% around 2006
+\cite[Table~15.2]{SDHS2006}.
+However, this estimate includes HIV/AIDS-attributable mortality,
+which we model separately (see \sref{mod.par.hiv.mort}),
+accounting for approximately 64\% of deaths around that time \cite{WHO2006esw}.
+Thus, the overall exit rate from the modelled cohort
+due to reaching age 50 (``aging out'') and non-HIV-attributable mortality was:
+$\mu = 1/35 + (1-.64) 1.44\% = 3.78\%$.
+\par
+We estimated the rate of entry into the modelled population $\nu$
+to fit population size of ages 15--49 in Eswatini \cite{WorldBank},
+and approximate population growth rates \cite{UNWPP2019},
+given that we model HIV/AIDS-attributable mortality separately.
+Specifically, we assumed a population growth rate $g = \nu - \mu$ in the absence of HIV/AIDS of
+4\% in 1980, 3\% in 2000, 1.5\% in 2010, and 1.5\% in 2020 (monotonic cubic interpolation).
+We sampled $g$ in 2050 from a uniform prior with 95\% CI (0.7\%,~1.5\%),
+reflecting uncertainty in estimated projections \cite{UNWPP2019}.
+Finally, we calculated the population entry rate as $\nu = g + \mu$.
+These parameter values were informally validated by comparison of model outputs with
+Swati population sizes for ages 15--49 from \cite{WorldBank}.
+The distribution of activity groups among individuals \emph{entering} the model, denoted $E_{si}$,
+is different from the distribution among individuals \emph{currently} in the model $P_{si}$,
+but $E_{si}$ is computed automatically as described below in \sref{mod.par.turn.act}.
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Activity Group Turnover}\label{mod.par.turn.act}
+In addition to overall population turnover (entry/exit from the open population),
+we model movement of individuals between activity groups within the model.
+Activity group turnover reflects the fact that risk is not constant over sexual life course,
+and reported duration in higher activity contexts can be short \cite{Scorgie2012}.
+Previous modelling has shown that activity group turnover (sometimes called ``episodic risk'')
+can strongly influence parameter fitting and intervention impact \cite{Henry2015,Knight2020}.
+We model turnover from activity group $si$ to $si'$ as a constant rate $\theta_{sii'}$,
+which implies an assumption that (in the absence of HIV) duration in group $si$ is
+exponentially distributed with mean $D_{si}$ \cite{Roberts2015}:
+\begin{equation}\label{eq:model.par.dur}
+  D_{si} = \frac{1}{\mu + \sum_{i'}\theta_{sii'}}
+\end{equation}
+where $\mu$ is the overall exit rate from \sref{mod.par.turn.bd}.
+As shown previously \cite{Knight2020}, the relative sizes of each sex-activity group $P_{si}$
+can be maintained at fixed values by satisfying the following ``mass-balance'' equation:
+\begin{equation}
+  \nu P_{si} = \nu E_{si} + \sum_{i'} \theta_{si'i} P_{si'} - \sum_{i} \theta_{sii'} P_{si}
+\end{equation}
+Specific turnover rates $\theta_{sii'}$ and entrant activity group sizes $E_{si}$
+can then be uniquely resolved by specifying
+$N_i\,(N_i-1) = 12$ non-redundant and compatible constraints,
+where specifying each $D_{si}$ is one such constraint.
+% ---------------------------------------------------------------------------------------------------
+\paragraph{Selling Sex}
+Estimating durations (\eg in sex work) from cross-sectional data
+should consider several potential sources of bias \cite{Fazito2012,Knight2023bias},
+including distributional, sampling, censoring, and measurement biases.
+We previously explored these biases using the 2011 Eswatini FSW survey data \cite{Baral2014}
+and inferred adjusted estimates of sex work duration
+via a Bayesian Bayesian hierarchical model \cite{Knight2023bias}.
+We estimated a mean duration of 4.06~(2.29,~6.34) years,
+with durations distributed approximately exponentially
+--- compatible with the implicit assumption of compartmental models \cite{Anderson1991}.
+Thus, we sampled overall duration in sex work from a gamma prior with 95\%~CI (2.29,~6.34) years.
+As noted in \sref{mod.par.fsw}, we conceptualized higher risk sex work as
+a transient period, with short duration.
+We sampled this duration from a gamma prior with 95\%~CI (2,~12) months.
+We then modelled turnover for higher risk sex work as
+exclusively coming from / going to lower risk sex work,
+including no direct entry from outside the model: $E_{si} = 0$.
+By contrast, women entering lower risk sex work could
+enter directly from outside the model ($E_{si} > 0$),
+and turnover from / to any other activity group.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Buying Sex}
+Data to inform the average duration spent buying sex among clients is limited.
+\citet{Fazito2012} estimated mean durations of 4.6--5.5 years
+based on studies in Benin \cite{Lowndes2000} and Kenya \cite{Voeten2002}.
+\citet[Table~G]{Hodgins2022} also gives pooled estimates for
+the proportions of men in Sub-Saharan Africa
+who paid for sex \emph{ever} \vs in \emph{p12m} during 2000--2020.
+Estimates ranged from 8.8~(6.5,~11.7)\% of men aged 25--34 who ever bought sex,
+to 2.2~(1.5,~3.2)\% of men aged 35--54 who bought sex in p12m.
+Based on these data, we defined a gamma prior distribution for
+the total duration buying sex with 95\%~CI (4,~15) years.
+We conceptualized higher risk clients as a transient period
+with the same duration as higher risk sex work,
+and assumed an equal pattern of possible turnover between activity groups
+among men buying sex as women selling sex.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Lowest \& Medium Activity Groups}
+Data on individual-level changes to numbers of non-sex work partners in p12m
+is even more sparse than data related to sex work;
+so, it's unclear to what extent individuals move between the lowest and medium activity groups
+throughout their sexual life course.
+Data from Uganda, Zimbabwe, and South Africa \cite{Todd2009}
+suggested that sexual activity (proportion sexually active and mean numbers of partners)
+was approximately stable with age (after sexual debut and and before age 49),
+with modest trends toward lower activity at older age.
+However, these population-level data do not necessarily suggest that
+the \emph{same} individuals have multiple partnerships each year.
+Reflecting this uncertainty, we sampled
+the rate of turnover from medium to lowest activity for both women and men
+from a gamma prior with 95\%~CI (5,~50)\% per year.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Additional Turnover Assumptions}
+The above assumptions specify 8 constraints for each sex:
+2 durations $D_{si}$, 1 entry rate $E_{si} = 0$, and
+5 turnover rates $\theta_{sii'}$ (4 zero, 1 nonzero).
+Next, since FSW often enter sex work shortly after sexual debut \cite{Cheuk2020,Ma2020},
+and sexual activity is roughly constant or slightly declining with age \cite{Todd2009},
+we assumed that $E_{si} = f\,P_{si}$,%
+\footnote{Subject to $f \le (\nu - \mu + D_{si}^{-1})\,\nu^{-1}$,
+  which can be derived from Eq.~(10) in \cite{Knight2020}.}
+with $f = 2$ for lower risk FSW, $f = 1.5$ for lower risk clients,
+and $f = 1$ for medium activity women and men (+2~constraints);
+then $f < 1$ for the lowest activity women and men is computed automatically.
+Finally, since exiting sex work is unlikely to be
+an abrupt transition to monogamous or zero sexual activity \cite{Scorgie2012,Learmonth2015},
+we further assumed that (50,~90)\% of women exiting sex work
+transition to the medium activity group (BAB prior) (+1~constraint);
+in the absence of relevant data, we made a similar assumption regarding clients,
+with (25,~90)\% former clients transitioning to the medium activity group (+1~constraint).
+These $10 < 12$ total constraints then allow two degrees of freedom to resolve
+the values of $\theta_{sii'}$ and $E_{si}$.
+A non-negative solution to the system of constraints is solved as described in \cite{Knight2020},%
+\footnote{Using \hreftt{docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.nnls.html}}
+repeated at each timestep since $\nu$ varies with time.

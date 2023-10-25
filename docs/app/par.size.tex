@@ -1,0 +1,75 @@
+%===================================================================================================
+\subsection{Activity Group Sizes}\label{mod.par.size}
+We model population sizes of all activity groups as proportions of the total population,
+which are assumed to remain roughly constant.
+Individuals can, however, move between groups (see \sref{mod.par.turn.act})
+--- \ie groups are open populations ---
+and disproportionate mortality due to HIV between groups
+may cause higher risk groups to shrink over time.
+Overall population growth is discussed in \sref{mod.par.turn.bd}.
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Female Sex Workers}\label{mod.par.size.fsw}
+The proportion of women who report sex work in national demographic and health surveys
+is generally considered unreliable due to social desirability bias,
+particularly if the survey is face-to-face and household-based
+\cite{Konings1995,Gregson2002bias,Gregson2004,Lowndes2012,Behanzin2013}.
+Therefore, FSW population size estimates require
+targeted surveys and unique methodologies \cite{UNAIDS2010kps,Abdul-Quader2014}.
+In both \cite{EswKP2014} and \cite{EswIBBS2022}, the Swati FSW population size
+was estimated using a combination of
+unique object method, service multiplier method, prior survey participation,
+and network scale-up method (NSUM) \cite{UNAIDS2010kps}.
+In 2011 \cite{EswKP2014}, regional FSW population size estimates
+ranged from 0.7\% to 6.5\% of all women,
+with overall population-weighted mean across regions of 2.9\%;
+in 2021 \cite{EswIBBS2022}, the mean (95\%~CI) estimates were 2.43~(1.17,~5.02)\%.
+To reflect this uncertainty in the model, we fit a BAB distribution
+such that 95\% of the probability fell between 0.7\% and 6.5\%,
+and used as the prior distribution for the proportion of women who are FSW.
+Then, following the analysis in \sref{mod.par.fsw},
+we fixed the proportion of all FSW in the higher risk FSW group at 20\%,
+and likewise the lower risk group at 80\%.
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Clients of FSW}\label{mod.par.size.cli}
+Similar to FSW, household-based surveys are not considered reliable data sources
+for estimating the population size of clients of FSW \cite{Behanzin2013}.
+However, few surveys are designed to reach clients of FSW,
+and no direct estimates of FSW size exist for Eswatini.
+So, we use a common approach for inferring the FSW client size \cite{Cote2004},
+similar to the ``multiplier method'' \cite{Morison2001}.
+Given the FSW population proportion $P_{\txc{fsw}}$,
+the average number of yearly new and regular sex work clients per FSW $\bar{Q}_{\,\txc{fsw}}$,
+the frequency of sex per partnership-year $F_{\txc{sw}}$, and
+the average total number of yearly sex acts per client
+$\bar{Q}_{\,\txc{Cli}} F_{\txc{sw}}$,
+we define the total client population $P_{\txc{cli}}$ as:
+\begin{equation}
+  P_{\txc{cli}} = \frac{P_{\txc{fsw}}\,\bar{Q}_{\,\txc{fsw}}\,F_{\txc{sw}}}
+                                            {\bar{Q}_{\,\txc{cli}}\,F_{\txc{sw}}}
+\end{equation}
+Then, as with FSW, the proportion of total clients in the higher risk client group
+is defined as 20\% of all clients, and likewise for the lower risk group at 80\%.
+Using $\bar{Q}_{\,\txc{fsw}}$, $\bar{Q}_{\,\txc{cli}}$, and $F_{\txc{sw}}$
+as defined below in \sref{mod.par.pnum.sw}, the prior client population size $P_{\txc{cli}}$
+estimated by this method was 11.6~(2.1,~34.4)\% of men.
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Wider Population}\label{mod.par.size.wp}
+Based on the results of \sref{mod.par.wp},
+we defined the sizes of the modelled lower and medium activity groups,
+and the average numbers of main/spousal partnerships per person.
+We assumed that $W'_{2+}$ and $M'_{2+}$ included FSW and client population sizes, respectively.
+Thus, we defined the populations size of medium activity women as
+$W_{\txc{m}} = W'_{2+} - W_{\txc{fsw}}$.
+Sampling $W'_{2+}$ from a BAB distribution with 95\%~CI (10,~27)\%,
+the resulting 95\%~CI for medium activity women $W_{\txc{m}}$ was (6,~25)\% of women.
+We then defined the lowest activity women population size as $W_{\txc{l}} = 1 - W'_{2+}$,
+representing (72,~90)\% of women.
+Since there is greater uncertainty in the client population size,
+the same approach for the medium activity men population size could yield negative values.
+Instead, we sampled the proportion of medium activity men $M_{\txc{m}}$ directly from
+a BAB distribution with 95\%~CI (10,~17)\%, yielding
+95\%~CI for $M_{\txc{m}} + M_{\txc{cli}}$ of (14,~52)\% of men,
+which is close to (15,~44)\% from $M_{2+}$.
+We then defined the lowest activity men were as
+$M_{\txc{l}} = 1 - M_{\txc{m}} + M_{\txc{cli}}$,
+representing (48,~86)\% of men.

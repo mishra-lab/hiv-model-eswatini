@@ -1,0 +1,19 @@
+\subsection{Initialization}\label{mod.par.init}
+The first cases of HIV and AIDS in Eswatini
+were diagnosed in 1986 and 1987, respectively \cite{Whiteside2007},
+although HIV may have been present several years earlier \cite{Iliffe2005}.
+As such, we initialize the model in 1980 with no HIV,
+and simulate introduction of HIV at a random year between 1980 and 1985 (uniform prior).
+HIV introduction is modelled as
+exogenous infection of 0.01\% (\ttilde\,24) individuals in the model,%
+\footnote{No further import/export of HIV to/from Eswatini is considered thereafter in the model.
+  HIV transmission between Eswatini and neighbouring countries,
+  including South Africa and Mozambique,
+  has likely continued throughout the epidemic
+  due to labour migration and other factors \cite{Iliffe2005}.
+  However, we assume that such transmissions have low overall influence on epidemic dynamics.}
+distributed across activity groups in proportion to their size, comprising:
+5\% acute HIV ($h=2$), 65\% with \cdf{500}{} ($h=3$) and 30\% with \cdf{350}{500} ($h=4$),
+all undiagnosed ($c=1$).
+The population size of EmaSwati aged 15--49 in 1980
+was defined as 243,000 from \cite{WorldBank}.

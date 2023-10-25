@@ -1,0 +1,48 @@
+%===================================================================================================
+\subsection{Risk Differences Within Sex Work}\label{mod.par.fsw}
+Compartmental HIV transmission models which include FSW
+have rarely sub-stratified FSW (besides age) \cite{Knight2022sr,Cremin2017,Low2015,Shannon2015},
+such as to reflect differential HIV risk or distinct typologies of sex work
+\cite{Blanchard2008,Scorgie2012};
+yet such heterogeneities may influence transmission dynamics.
+Our model structure (Figure~\ref{fig:model.risk})
+was designed to capture \emph{within}-FSW risk heterogeneity.
+The objective of the following analysis was therefore to parameterize higher \vs lower risk sex work.
+For this analysis, we used individual-level data from
+two biobehavioural surveys among Swati FSW in
+2011 \cite{Baral2014,Yam2013cond} (N = 325) and 2014 \cite{EswKP2014} (N = 781).
+More details about each study are given in \sref{mod.par.data}.
+\par
+Based on community input,%
+\footnote{Personal communication: Lungile Khumalo, \emph{Voice of Our Voices}, Eswatini}
+we conceptualized risk differences within sex work as transient periods of higher \vs lower risk,
+rather than distinct types of sex worker.
+As such, we modelled rapid turnover between higher and lower risk FSW (see \sref{mod.par.turn}),
+and distinguished these states via the total numbers of clients in p1m.
+Specifically, we stratified survey respondents into the top 20\% / bottom 80\%
+in total numbers of new and regular clients reported for p1m.
+We then summarized key variables within the two strata (Table~\ref{tab:fsw.ratios})
+and estimated the ratio of means per \cite{Hauschke1999}.
+We repeated this analysis using 2011, 2014, and combined datasets.
+\par
+Years selling sex, non-paying partners, condom use, anal sex, and HIV status (2011 data only)
+did not differ substantially between strata,
+while reported numbers of clients and STI symptoms did.
+We sampled reported numbers of clients in p1m from gamma distributions with $\alpha = 25$,
+reflecting an assumption of mean / 5 = standard deviation;
+means were specified as:
+14 and 21 for new and regular clients in higher risk sex work, and
+3.5 and 6 for new and regular clients in lower risk sex work.
+We further use data in Table~\ref{tab:fsw.ratios} regarding:
+partners and clients in \sref{mod.par.pnum},
+STI symptoms in \sref{mod.par.beta.gud},
+condom use in \sref{mod.par.tm.condom},
+anal sex in \sref{mod.par.fsex},
+years selling sex in \sref{mod.par.turn}.
+% TODO: (?) anal sex declining?
+\begin{table}
+  \centering
+  \caption{Ratios of variables among higher \vs lower risk FSW in Eswatini}
+  \label{tab:fsw.ratios}
+  \input{\app/tab.fsw.ratios}
+\end{table}

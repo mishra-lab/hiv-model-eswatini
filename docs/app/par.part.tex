@@ -1,0 +1,109 @@
+%===================================================================================================
+\subsection{Sex Frequency}\label{mod.par.fsex}
+The Eswatini general population data sources \cite{SDHS2006,SHIMS1,SHIMS2}
+did not report on frequency of sex. % TODO: (*) SDHS2006: Table 6.10
+In South Africa, average numbers of sex acts per week per partnership (non-sex work)
+was reported as mean 2.5~(IQR: 1--3) \cite{Delva2013},
+with consistent reports across main/spousal partnerships and casual partnerships.
+Sex frequency among South Africans per month overall (not per-partnership)
+is also summarized in \cite[Figure~3.15]{Shisana2005},
+which is roughly consistent with \cite{Delva2013}, but motivates a smaller lower bound.
+Median sex frequency per partnership-year in 1998 Rakai, Uganda was
+approximately 90 acts with the ``more frequent'' of concurrent partners, and
+approximately 20 acts with the ``less frequent'' \cite{Morris2010}.
+Considering these data,
+we sampled the number of sex acts per year in main/spousal partnerships
+from a gamma prior distribution with 95\%~CI (26,~156),
+and a relative rate for casual partnerships from $\opname{Unif}(0.5,2)$.
+As described in \sref{mod.par.pnum.sw},
+we defined $F_{\txc{swo}} = 12$ for occasional sex work partnerships,
+and $F_{\txc{swr}} \sim \opname{Unif}(12,36)$ for regular sex work partnerships.
+We also constrained samples of $F_{p_{4}}$ such that
+higher risk FSW never have commercial sex more than twice daily, on average.
+% TODO: (?) Coital frequency is not thought to be influenced by concurrent partnerships \cite{Delva2013}.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Anal Sex}
+Among Eswatini data sources, only \cite{EswKP2014} (FSW, 2014)
+counted sex acts separately for anal and vaginal sex.%
+\footnote{\citet{Owen2020esw} examined prevalence of anal sex in p1m among Swati FSW in 2011,
+  but could not comment on frequency due the survey questions.}
+Among all FSW, the proportion of ``average sex acts per week'' that were anal (vs vaginal) was 2.9\%.
+However, a previous coital diary study in neighbouring KwaZulu-Natal suggested
+much higher proportions were anal \cite{Ramjee1999},
+and face-to-face interview survey design may result in under-reporting \cite{Owen2020sr}.
+Owen et al. review studies of anal sex in South Africa, and estimate that
+0.6--16.5\% of sex acts among the general population are anal \cite{Owen2017}, \vs
+2.4--15.9\% among FSW \cite{Owen2020sr}.
+To reflect this data, we sampled the proportions of sex acts which are anal
+in main/spousal and casual partnerships from
+a gamma prior distribution with 95\%~CI (0.6,~16.5)\%,
+and a relative proportion in all sex work partnerships from $\opname{Unif}(1,2)$.
+%===================================================================================================
+\subsection{Partnership Duration}\label{mod.par.pdur}
+Eswatini-specific data on partnership duration are lacking.
+Moreover, accurate estimation of partnership duration remains challenging even when data exist,
+due to censoring, truncation, and sampling biases \cite{Burington2010,Knight2023bias}.
+Similar to challenges in estimating sex work duration,
+we must distinguish the definition of an ``average partnership'' as
+(a) among all partnerships in a population over a given \emph{time period}, \vs
+(b) among all partnerships in a population \emph{cross-section}.
+Case (b) will be biased by partnership duration,
+so the estimated mean duration will longer,
+while case (a) reflects an unbiased estimate.%
+\footnote{If case (a) durations are exponentially distributed,
+  the durations in case (b) will be gamma-distributed with $\alpha = 2, \beta = \lambda$;
+  thus the mean duration in case (b) will be $\alpha/\beta = 2\lambda$ (twice as long).}
+The difference between the exponential distribution
+mean ($1/\lambda$) and median ($\log2/\lambda$) should also be kept in mind.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Main/Spousal Partnerships}
+Detailed data on marriage in Eswatini was only captured in 2006 \cite[Table~6.1]{SDHS2006}.
+The median age of first marriage was 24.3 among women and 27.7 among men (26.0 overall).
+Approximately 64\% of women and 88\% of men (76\% overall) who were ever married or living together
+were in a union at age 50--54.
+However, no data indicated whether any respondents had remarried or entered into a secondary union.
+Among women aged 40--49, the most recent data on
+median age of first marriage and proportions ever remarried were
+33 years old and 6.6\% in South Africa,
+20.9 and 3.7\% in Lesotho, and 18.7 and 28.4\% in Mozambique \cite{John2022};
+such data may not capture non-marital secondary unions.
+Thus, we assumed $\rho = {}$5--20\% of unions among EmaSwati aged 50--54 were secondary.
+Considering that the modelled population only includes ages 15--49,
+we then defined the mean durations of main/spousal partnerships as
+$\delta_{\txc{msp}} =  (0.76 - \rho)\,(49 - 26) \in (14.5, 18.5)$ years.
+\par
+In some models, partnership duration is used to define both
+the total numbers of sex acts per partnership and the partnership change rate (see \sref{mod.foi}).
+This change rate might be overestimated by the above definition,
+since the rate should also consider whether and when
+divorced/separated individuals form \emph{new} main/spousal partnerships.
+The change rate could even be tied to the modelled baseline and HIV-attributable mortality,
+given that the majority of Swati unions ended via spousal death
+(83\% of unions among women and 56\% among men by age 50--54) \cite{SDHS2006}.
+% TODO: (?) add exit from "k=1" state, rate proportional to HIV-attrib-mort of opposite sex?
+For simplicity and consistency with prior approaches,
+we used the effective duration of 14.5--18.5 years throughout (uniform prior).
+%---------------------------------------------------------------------------------------------------
+\paragraph{Casual Partnerships}
+No data is available regarding durations of non-marital sexual partnerships in Eswatini,
+and regional data on are also limited.
+We synthesized the available partnership duration data from
+South Africa \cite{Harrison2008,Hargreaves2009,Nguyen2015},
+Rural Tanzania \cite{Nnko2004},
+and four cities in Kenya, Zambia, Benin, and Cameroon \cite{Ferry2001}.
+Based on these data, we defined a gamma prior distribution for
+the mean duration of casual partnerships $\delta_{\txc{cas}}$ with 95\%~CI (0.25,~1.5) years,
+roughly consistent with prior models \cite{Johnson2009}.
+A gamma distribution was chosen \vs uniform or normal
+to reflect non-uniform belief while preventing negative values.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Sex Work Partnerships}
+As noted in \sref{mod.par.pnum.sw}, duration of occasional sex work partnerships
+is ill defined, but can be defined to comprise a single sex act with
+$F_{\txc{swo}}\delta_{\txc{swo}} = 1$.
+Data on regular sex work partnerships is severely limited, and
+sometimes regular paying clients later become
+non-paying emotional partners \cite{Voeten2007,Mbonye2022}.
+Based on \cite{Voeten2002}, I defined a gamma prior distribution for
+the mean duration of regular sex work partnerships $\delta_{\txc{swr}}$
+with 95\%~CI (2,~12) months.
