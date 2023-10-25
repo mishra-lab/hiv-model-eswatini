@@ -26,6 +26,7 @@ code/tikz/main.pdf
 *.blg
 *-blx.bib
 *.bcf
+*.ptc
 *.nav
 *.snm
 *.vrb
