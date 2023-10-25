@@ -58,6 +58,9 @@ filter.cols = function(X,...){
   for (col in names(filter)){ bool = bool & X[[col]] %in% filter[[col]] }
   X[bool,]
 }
+rescale = function(x){
+  (x - min(x)) / (max(x) - min(x))
+}
 iqr = function(x){
   unname(diff(quantile(x,c(.25,.75))))
 }
@@ -82,4 +85,7 @@ par.lapply = function(...,cores=.n.cores,.par=TRUE){
   } else {
     lapply(...)
   }
+}
+rbind.lapply = function(...,.par=TRUE){
+  do.call(rbind,par.lapply(...,.par=.par))
 }

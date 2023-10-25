@@ -6,6 +6,7 @@ suppressPackageStartupMessages({
   library('reshape2')
   library('scales')
 })
+clr = '#CC0033'
 clr.map = RColorBrewer::brewer.pal
 q.aes = function(q,grp,x='t',scale=1,...){
   qq = function(qi,op){ paste0(scale,'*',op,'(q',1-(1-qi)/2,',q',(1-qi)/2,')') }
@@ -34,8 +35,8 @@ plot.hist = function(X,x,bw=1,...){
     geom_histogram(binwidth=bw,alpha=.6,lwd=.1)
   g = plot.clean(g)
 }
-fig.save = function(uid,sam,...,w=7,h=7){
-  fig.name = root.path('out','fig',uid,sam,paste0(paste(...,sep='.'),'.pdf'))
+fig.save = function(uid,nid,...,w=7,h=7){
+  fig.name = root.path('out','fig',uid,nid,paste0(paste(...,sep='.'),'.pdf'))
   print(paste('saving:',fig.name))
   ggsave(fig.name,w=w,h=h)
 }
