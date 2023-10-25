@@ -1,0 +1,30 @@
+\begin{landscape}
+  \singlespacing
+  \small\setlength{\tabcolsep}{3pt}
+  \def\unsep{\null\hspace{-3pt}\null}
+  \begin{longtable}{rllRRlRRl}
+    \caption{Definitions and distributions of calibrated parameters}
+    \label{tab:par.cal} \\
+    \toprule
+    & & \multicolumn{4}{c}{Prior} & \multicolumn{3}{c}{Posterior} \\
+    \cmidrule(rl){3-6}\cmidrule(rl){7-9}
+    Parameter & Definition & Type & Mean & \multicolumn{2}{c}{(95\%~CI)} & Mean & \multicolumn{2}{c}{(95\%~CI)} \\
+    \midrule \endfirsthead
+    \multicolumn{3}{l}{continued \dots} \\ \midrule \endhead
+    \midrule \multicolumn{3}{l}{continued \dots} \\ \endfoot
+    \bottomrule \noalign{\vskip\abovecaptionskip} \multicolumn{9}{c}{\begin{minipage}{\linewidth}\footnotesize
+    FSW: female sex worker;
+    p12m: past 12 months;
+    $\beta$: per-act probability of HIV transmission;
+    GUD: any genital ulcer disease in p12m;
+    ART: antiretroviral therapy;
+    VLS: viral load suppression;
+    additional relative (aR): relative value beyond one, \eg $R = 1.5 \rightarrow aR = 0.5$;
+    prevalence interpolator (iP): \eg $P_0 = 0.2, P_1 = 0.4, iP_x = 0.5 \rightarrow P_x = 0.3$;
+    all rates in per-year;
+    all durations in years;
+    all parameters reflect stratum averages.
+    \end{minipage}} \endlastfoot
+{{ rows }} %
+  \end{longtable}
+\end{landscape}

@@ -20,6 +20,8 @@ do.post.art:
 	Rscript post/main.art.r && echo [OK]
 do.params.distr:
 	python3.8 params/distr.py && echo [OK]
+do.params.tab:
+	python3.8 params/tab/main.py && echo [OK]
 do.params.fsw:
 	Rscript params/fsw/main.r && echo [OK]
 do.params.wp:
