@@ -48,6 +48,7 @@
   \renewcommand{\thepart}{\Alph{part}}
   \renewcommand{\thesection}{\thepart.\arabic{section}}
   \refsection
+  \counterwithin{section}{part}
   \counterwithin{table}{part}
   \counterwithin{figure}{part}
   \counterwithin{equation}{part}

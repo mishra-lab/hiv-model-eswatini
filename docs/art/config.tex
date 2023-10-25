@@ -1,86 +1,27 @@
 %---------------------------------------------------------------------------------------------------
 % style
-\usepackage{newtxsf,bm,underscore}
+\usepackage{newtxsf}
 \usepackage[sfdefault,tabular,osf]{AlegreyaSans}
 \usepackage[italic]{mathastext}
 \usepackage[scale=.8]{FiraMono}
-\usepackage{microtype}
 \usepackage{xcolor}
-\usepackage[marginal,bottom,stable]{footmisc}
 \fontdimen2\font=.2em
 \frenchspacing
 \renewcommand{\labelitemi}{$\bullet$}
-\let\xtoc\tableofcontents
-\def\tableofcontents{{\singlespacing\xtoc}}
-\let\xitemize\itemize
-\renewcommand{\itemize}{\xitemize\itemsep0pt}
+\let\xitemize\itemize\renewcommand{\itemize}{\xitemize\itemsep0pt}
+% \input{markdraft}
 %---------------------------------------------------------------------------------------------------
-% figures
-\usepackage{tikz,subcaption,graphicx}
-\newcommand{\subcapoverlap}{\captionsetup[subfigure]{skip=-\baselineskip,margin=0pt}}
-\newcommand{\figroot}{../../out/fig}
-\graphicspath{
-  {\figroot/2023-10-10/h1000i25b50/}
-  {\figroot/2023-10-10/h1000i25b50/fit/}
-  {\figroot/wp/}
-  {\figroot/tikz/}}
-\def\fitscale{.475}
+% appendix config
+\def\app{../app}
+\input{../app/config}
 %---------------------------------------------------------------------------------------------------
-% tables
-\usepackage{booktabs,multicol,array}
-\newcolumntype{R}{r<{\null\hskip-\arraycolsep\null}}
-%---------------------------------------------------------------------------------------------------
-% floatfoot
-\newcommand{\floatfoot}[2][1]{\nopagebreak\vskip\abovecaptionskip\par
-  \parbox{#1\linewidth}{\footnotesize#2}}
-\newcommand{\ffpbar}[1][calibration target]{points and error bars: mean and 95\%~CI for each #1}
-\newcommand{\ffbox}[1][model fits]{whiskers, boxes, and midlines: 95\%~CI, 50\%~CI, median of #1}
-\newcommand{\ffribbon}[1][model fits]{ribbon and curve: range and median of #1}
-\newcommand{\fffit}{1000 model fits (posterior parameter sets)}
-\newcommand{\ffwiw}{median numbers of infections across all model fits shown}
-\newcommand{\ffpops}{Low: lowest activity; Med: medium activity;
-  LR/HR: lower/higher risk; FSW: female sex workers; Clients: of FSW}
-\newcommand{\ffpopz}{Lower Risk: all women and men not involved in sex work;
-  FSW: female sex workers; Clients: of FSW}
-\newcommand{\ffart}{Base case: \cashi by 2020;
-  ``left behind'' counterfactual scenarios: \casmd overall by 2020,
-  with reduced cascade (\caslo) among FSW, clients of FSW, both, or neither}
-\newcommand{\ffcas}{PLHIV: people living with HIV; VLS: viral load unsuppressed}
-%---------------------------------------------------------------------------------------------------
-% small macros
-\usepackage{pifont,xspace}
-\let\txn\textnormal
-\newcommand{\ie}{\emph{i.e.,}\xspace}
-\newcommand{\eg}{\emph{e.g.,}\xspace}
-\newcommand{\vs}{\emph{vs}\xspace}
-\newcommand{\p}{\bar{p}}
-\newcommand{\yes}{{\ding{51}}}
-\newcommand{\no}{{\ding{55}}}
+% misc
 \newcommand{\caslo}{\mbox{60-40-80}\xspace}
 \newcommand{\casmd}{\mbox{80-80-80}\xspace}
 \newcommand{\cashi}{\mbox{95-95-95}\xspace}
-\newcommand{\ttilde}{\raisebox{-.7ex}{\textasciitilde}\,}
-\newcommand{\tsub}[1]{\textsubscript{#1}}
-\newcommand{\tsup}[1]{\textsuperscript{#1}}
-\newcommand{\sref}[1]{\S\,\ref{#1}}
-\newcommand{\sfref}[1]{(\subref{#1})}
-\renewcommand{\eqref}[1]{Eq.~(\ref{#1})}
-\newcommand{\tn}[1]{\textsuperscript{\rlap{\,#1}}}
-\newcommand{\tnt}[2][*]{\textsuperscript{#1\,}{#2}}
-\newcommand{\cdf}[2]{\ifempty{#2}{CD4\,$>$\,#1}{\ifempty{#1}{}{#1\,$<$\,}CD4\,$<$\,#2}}
 \newcommand{\tdef}[2]{#1{\,:\,}\txn{#2}}
-\newcommand{\opname}[1]{\textnormal{#1}\,}
-\newcommand{\shortquote}[1]{``\emph{#1}''}
-\newcommand{\hreftt}[2][https://]{\href{#1#2}{\texttt{#2}}}
 %---------------------------------------------------------------------------------------------------
 % bib
 \addbibresource{/home/jesse/refs/library.bib}
 \renewcommand{\bibfont}{\footnotesize}
-\renewcommand*{\multicitedelim}{\addcomma}
-\DeclareSourcemap{\maps[datatype=bibtex]{%
-  \map{\step[fieldset=abstract,null]}}}
-\DeclareSourcemap{\maps[datatype=bibtex]{%
-  \map{\step[typesource=techreport,typetarget=report]}}}
-\DeclareFieldFormat{url}{\url{#1}}
-\renewbibmacro{in:}{}
 \usepackage[colorlinks,citecolor=violet,linkcolor=purple,urlcolor=blue]{hyperref}
