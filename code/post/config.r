@@ -1,10 +1,10 @@
 source('utils/ops.r')
 source('utils/plot.r')
 
-# N = list(batch=100,hsam=1000,isam=100,imis=100) # h1000i100b100
-N = list(batch=50,hsam=1000,isam=100,imis=25) # h1000i25b50
+N = list(batch=100,hsam=1000,isam=100,imis=100) # h1000i100b100
+# N = list(batch=50,hsam=1000,isam=100,imis=25) # h1000i25b50
 # N = list(batch=5,hsam=100,isam=15,imis=15) # h100i15b5
-uid = '2023-10-10'
+uid = '2023-10-25'
 nid = sprintf('h%di%db%d',N$hsam,N$imis,N$batch)
 slicers = list(
   'all'   = list(rgb(.40,.00,.40),'Overall'),
@@ -61,14 +61,14 @@ gen.name = function(phase,key,case,b='all',ext='.csv'){
 }
 read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
   if (rdata=='load'){ load(file=gen.name(phase,key,set,ext='.rdata')); return(X) }
-  X = do.call(rbind,lapply(sets[[set]],function(case){
+  X = rbind.lapply(sets[[set]],function(case){
     if (case %in% skip){ return(NULL) }
-    X.i = do.call(rbind,lapply(b,function(bi){
+    X.i = rbind.lapply(b,function(bi){
       read.csv(gen.name(phase,key,case,b=bi),as.is=TRUE)
-    }))
+    })
     X.i$case = case
     return(X.i)
-  }))
+  })
   X$case.lab = factor(X$case,levels=sets[[set]],labels=set.labs[[set]])
   if (rdata=='save'){ save(X,file=gen.name(phase,key,set,ext='.rdata')) }
   return(X)

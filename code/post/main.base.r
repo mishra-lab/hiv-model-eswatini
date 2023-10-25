@@ -1,33 +1,30 @@
 source('post/config.r')
 source('post/posterior.r')
 source('post/wiw.r')
-# N$sam = 1000 # DEBUG
-
-main.ll = function(){
-  X = read.csvs('fit','ll','base')
-  g = plot.hist(X,x='ll',bw=10,color='case',fill='case') +
-    scale_color_manual(values='white') +
-    scale_fill_manual(values='#CC0033') +
-    labs(x='Log Likelihood',y='Count') +
-    theme(legend.position='none')
-  fig.save(uid,N$sam,'fit.ll.base',w=5,h=3)
-}
 
 main.post = function(){
-  load(gen.name('sam','Ps','base',ext='.rdata'))
-  plot.post.cor(X.cor,thr=.2,rect=7) # MAN
+  X = load.post.data()
+  plot.post.cor(X$cor,thr=0)
   file.rename('Rplots.pdf','post.cor.pdf')
-  g = plot.post.uni(def.pp(X),ncol=7) + scale_color_manual(values=c('#000000','#CC0033'))
+  g = plot.post.uni(X$pp,ncol=7) + scale_color_manual(values=c('#000000',clr))
   ggsave('post.distr.pdf',w=12,h=16) # MAN
+}
+
+main.ll = function(){
+  X = read.csvs('imis','Ps','base',rdata='load')
+  pid = read.csvs('fit','Ps','base',rdata='load')$id
+  X$post = paste(X$batch,X$imis,X$id,sep='.') %in% pid
+  plot.ll.bi(X); fig.save(uid,nid,'ll.bi',w=5,h=8)
+  plot.ll.hist(X); fig.save(uid,nid,'ll.hist',w=5,h=3)
 }
 
 main.wiw = function(){
   X = clean.wiw.data(read.csvs('fit','wiw','base'))
-  do.ratio(X);         fig.save(uid,N$sam,'wiw.base.ratio',w=5,h=5);
-  do.margin(X,'part'); fig.save(uid,N$sam,'wiw.base.part', w=5,h=5.5);
-  do.margin(X,'from'); fig.save(uid,N$sam,'wiw.base.from', w=5,h=8);
-  do.margin(X,'to');   fig.save(uid,N$sam,'wiw.base.to',   w=5,h=8);
-  do.alluvial.facet(X,seq(1990,2040,10),nrow=2); fig.save(uid,N$sam,'wiw.base.alluvial',w=8,h=10)
+  do.ratio(X);         fig.save(uid,nid,'wiw.base.ratio',w=5,h=5)
+  do.margin(X,'part'); fig.save(uid,nid,'wiw.base.part', w=5,h=5.5)
+  do.margin(X,'from'); fig.save(uid,nid,'wiw.base.from', w=5,h=8)
+  do.margin(X,'to');   fig.save(uid,nid,'wiw.base.to',   w=5,h=8)
+  do.alluvial.facet(X,seq(1990,2040,10),nrow=2); fig.save(uid,nid,'wiw.base.alluvial',w=8,h=10)
 }
 
 # main.ll()
