@@ -14,16 +14,17 @@ load.post.data = function(case='base',rdata='load'){
     cor = cor(X.post[,p.vars(X.post)],method='p'))
 }
 
-plot.ll.bi = function(X,ll.min=-1e6){
+plot.ll.bi = function(X,brks=NULL,ll.min=-1e3){
   Xll = aggregate(ll~batch+imis,X,mean)
   Xll = rbind(
+    # cbind(Xll,g='Likelihood',     value=rescale(exp(Xll$ll))),
     cbind(Xll,g='Log Likelihood', value=rescale(pmax(Xll$ll,ll.min))),
     cbind(Xll,g='Rank Likelihood',value=rescale(rank(Xll$ll))))
   g = ggplot(Xll,aes(x=factor(imis),y=factor(batch),fill=value,color=value)) +
     facet_grid('g') +
     geom_tile() +
-    scale_x_discrete(labels=NULL,breaks=NULL) +
-    scale_y_discrete(labels=NULL,breaks=NULL) +
+    scale_x_discrete(labels=brks,breaks=brks) +
+    scale_y_discrete(labels=brks,breaks=brks) +
     scale_fill_viridis(option='inferno') +
     scale_color_viridis(option='inferno') +
     labs(x='IMIS Iteration',y='IMIS Batch')

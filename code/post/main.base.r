@@ -14,7 +14,8 @@ main.ll = function(){
   X = read.csvs('imis','Ps','base',rdata='load')
   pid = read.csvs('fit','Ps','base',rdata='load')$id
   X$post = paste(X$batch,X$imis,X$id,sep='.') %in% pid
-  plot.ll.bi(X); fig.save(uid,nid,'ll.bi',w=5,h=8)
+  brks = seq(0,100,10) # MAN
+  plot.ll.bi(X,brks=brks); fig.save(uid,nid,'ll.bi',w=5,h=8)
   plot.ll.hist(X); fig.save(uid,nid,'ll.hist',w=5,h=3)
 }
 
@@ -27,6 +28,6 @@ main.wiw = function(){
   do.alluvial.facet(X,seq(1990,2040,10),nrow=2); fig.save(uid,nid,'wiw.base.alluvial',w=8,h=10)
 }
 
-# main.ll()
 # main.post()
+# main.ll()
 # main.wiw()
