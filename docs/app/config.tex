@@ -27,10 +27,11 @@
 \RequirePackage{tikz,subcaption,graphicx}
 \newcommand{\subcapoverlap}{\captionsetup[subfigure]{skip=-\baselineskip,margin=0pt}}
 \newcommand{\figroot}{../../out/fig}
+\newcommand{\uid}{2023-10-25/h1000i100b100}
 \graphicspath{
   {\app/fig/}
-  {\figroot/2023-10-10/h1000i25b50/}
-  {\figroot/2023-10-10/h1000i25b50/fit/}
+  {\figroot/\uid/}
+  {\figroot/\uid/fit/}
   {\figroot/wp/}
   {\figroot/tikz/}}
 \def\fitscale{.475}
@@ -46,6 +47,7 @@
 \newcommand{\ffbox}[1][model fits]{whiskers, boxes, and midlines: 95\%~CI, 50\%~CI, median of #1}
 \newcommand{\ffribbon}[1][model fits]{ribbon and curve: range and median of #1}
 \newcommand{\fffit}{1000 model fits (posterior parameter sets)}
+\newcommand{\ffpar}{Table~\ref{tab:par.cal} gives parameter definitions}
 \newcommand{\ffwiw}{median numbers of infections across all model fits shown}
 \newcommand{\ffpops}{Low: lowest activity; Med: medium activity;
   LR/HR: lower/higher risk; FSW: female sex workers; Clients: of FSW}

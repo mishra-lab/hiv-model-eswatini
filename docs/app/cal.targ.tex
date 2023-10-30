@@ -1,9 +1,12 @@
 %===================================================================================================
 \subsection{Calibration Targets}\label{mod.cal.targ}
 The data sources for Eswatini calibration targets
-are mainly the same as for Eswatini-specific parameters.
+are mainly the same as for Eswatini-specific parameters (see \sref{mod.par.data}).
 We assumed that population-level surveys in
-2006 \cite{SDHS2006}, 2011 \cite{Bicego2013,Justman2016}, and 2016 \cite{SHIMS2}
+2006 (DHS)~\cite{SDHS2006},
+2011 (SHIMS1)~\cite{Bicego2013,Justman2016},
+2016 (SHIMS2)~\cite{SHIMS2}, and
+2021 (SHIMS3)~\cite{SHIMS3}
 reached FSW and their clients,
 although respondents may not report selling or buying sex in the context of these surveys.
 %---------------------------------------------------------------------------------------------------
@@ -17,7 +20,7 @@ although respondents may not report selling or buying sex in the context of thes
 \end{table}
 Table~\ref{tab:targ.prev} summarizes the available HIV prevalence data for Eswatini.
 Uncertainty around each estimate was modelled using a BAB distribution.
-We made several adjustments to the estimates as follows.
+We made several adjustments to these estimates as described below.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Sampling Error}
 Population-level HIV prevalence estimates in 2006 and 2016 included
@@ -49,14 +52,14 @@ and $W'$ denotes the adjusted proportions calculated in \sref{mod.par.wp}.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Age Range}
 The model aims to capture the Swati population aged 15--49.
-While the 2006 and 2016 surveys provide data for ages 15--49,
+While the 2006, 2016, and 2021 surveys provide data for ages 15--49,
 the 2011 survey was limted to ages 18--49.
 Since HIV prevalence is much lower among ages 15--17,
 the 2011 estimates would be biased high.
 We therefore adjusted all 2011 HIV prevalence estimates in as follows.
 Drawing on age-stratified data in 2006 \cite{SDHS2006} and 2011 \cite{Bicego2013},
 we assumed that HIV prevalence among ages 15--17 was
-5\% among girls/women, 2\% among boys/men, and 3.5\% overall.
+5\% among women, 2\% among men, and 3.5\% overall.
 Next, we estimated the fraction of women aged 15--17 among all women aged 15--49 (13.5\%),
 and likewise for men (15.4\%) and overall (14.4\%) \cite{DataBank}.
 We then estimated HIV prevalence among women, men, and overall for ages 15--49
@@ -64,19 +67,12 @@ using a weighted average of the 15--17 and 18--49 estimates.
 Finally, we computed the resulting relative reduction in HIV prevalence for women overall,
 and applied this reduction equally to the HIV prevalence estimates for
 lower risk and non-lower risk women, and likewise for men and the population overall.
-% This concludes the adjustments.
-\par
 \begin{table}
   \centering
   \caption{Estimated HIV prevalence ratios in Eswatini}
   \label{tab:targ.pr}
   \input{\app/tab.targ.pr}
 \end{table}
-Since risk heterogeneity is a key determinant of epidemic dynamics,
-it is important to capture HIV prevalence ratios across risk groups.
-For this objective, directly specifying prevalence ratio targets is more efficient than
-using independent prevalence targets for lower risk and non-lower risk.
-Based on the available data, we defined the prevalence ratio targets in Table~\ref{tab:targ.pr}.
 \par
 The raw (unadjusted) estimates suggest that HIV prevalence strongly peaked between 2006 and 2016.
 After adjustment for respondent ages, 2011 estimates remained highest,
@@ -85,13 +81,19 @@ The largest reduction in HIV prevalence via adjustment
 was among lower risk women in 2011: from 38.2\% to 30.8\%, due to the modelled
 ``addition'' of women/girls aged 15--17 (lower HIV prevalence), and
 ``subtraction'' of women with 2+ partners p6m (higher HIV prevalence).
+\paragraph{Prevalence Ratios}
+Since risk heterogeneity is a key determinant of epidemic dynamics,
+it is important to capture HIV prevalence ratios across risk groups.
+For this objective, directly specifying prevalence ratio targets is more efficient than
+using independent prevalence targets for lower risk and non-lower risk.
+Based on the available data, we defined the prevalence ratio targets in Table~\ref{tab:targ.pr}.
 %---------------------------------------------------------------------------------------------------
 \subsubsection{HIV Incidence}\label{mod.cal.targ.inc}
-Population-level incidence was first measured in the 2011
+Population-level HIV incidence was first measured in the 2011
 Swaziland HIV Incidence Measurement Survey (SHIMS)
 via 6-month cohort (gold standard) \cite{SHIMS1,Justman2016},
 in which 145 seroconversions were observed among 11,232 re-tested (LTFU was 5.6\%).
-The follow-up SHIMS2 study in 2016--17 used
+SHIMS2 and SHIMS3 in 2016--17 and 2021 used
 the HIV-1 Limiting Antigen Enzyme Immunoassay (LAg~EIA) ``recency test'',
 which detects infections acquired within the past 141 days, 95\%CI: (119,~160) \cite{Duong2012};
 this LAg~EIA incidence measure was validated during SHIMS1 \cite{SHIMS1}.
@@ -107,7 +109,7 @@ Table~\ref{tab:targ.inc} summarizes the available HIV incidence data for Eswatin
 Uncertainty around each estimate was modelled using a skewnormal or inverse gaussian distribution.
 As with prevalence, the 2011 estimates were adjusted for the missing 15--17 age range,
 this time assuming 2\% and 0.4\% annual incidence
-among girls/women and boys/men aged 15--17, respectively
+among women and men aged 15--17, respectively
 (extrapolating from age-stratified incidence estimates from \cite{Justman2016}).
 The 2011 estimates for lower risk women and men were also adjusted
 for biased partner number reporting using the same approach as for HIV prevalence.
