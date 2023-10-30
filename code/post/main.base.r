@@ -11,12 +11,11 @@ main.post = function(){
 }
 
 main.ll = function(){
+  plot.ll.tform(); fig.save('','toy','ll.tf',w=4,h=6) # DEBUG
   X = read.csvs('imis','Ps','base',rdata='load')
   pid = read.csvs('fit','Ps','base',rdata='load')$id
   X$post = paste(X$batch,X$imis,X$id,sep='.') %in% pid
-  brks = seq(0,100,10) # MAN
-  plot.ll.bi(X,brks=brks); fig.save(uid,nid,'ll.bi',w=5,h=8)
-  plot.ll.hist(X); fig.save(uid,nid,'ll.hist',w=5,h=3)
+  plot.ll.hist(X); fig.save(uid,nid,'ll.hist',w=5,h=4)
 }
 
 main.wiw = function(){

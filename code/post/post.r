@@ -11,35 +11,22 @@ load.post.data = function(case='base',rdata='load'){
     pp = rbind(
       cbind(X.imis[X.imis$imis==0,],distr='Prior'),
       cbind(X.post,distr='Posterior')),
-    cor = cor(X.post[,p.vars(X.post)],method='p'))
+    cor = cor(X.post[,p.vars(X.post)],method='s'))
 }
 
-plot.ll.bi = function(X,brks=NULL,ll.min=-1e3){
-  Xll = aggregate(ll~batch+imis,X,mean)
-  Xll = rbind(
-    # cbind(Xll,g='Likelihood',     value=rescale(exp(Xll$ll))),
-    cbind(Xll,g='Log Likelihood', value=rescale(pmax(Xll$ll,ll.min))),
-    cbind(Xll,g='Rank Likelihood',value=rescale(rank(Xll$ll))))
-  g = ggplot(Xll,aes(x=factor(imis),y=factor(batch),fill=value,color=value)) +
-    facet_grid('g') +
-    geom_tile() +
-    scale_x_discrete(labels=brks,breaks=brks) +
-    scale_y_discrete(labels=brks,breaks=brks) +
-    scale_fill_viridis(option='inferno') +
-    scale_color_viridis(option='inferno') +
-    labs(x='IMIS Iteration',y='IMIS Batch')
-  g = plot.clean(g,legend.position='none')
-}
-
-plot.ll.hist = function(X,ll.min=-1e3){
+plot.ll.hist = function(X,bw=5,ll.min=-1e3){
   X$ll[X$ll < ll.min] = NA
-  hargs = list(binwidth=10,color='white',lwd=.1,alpha=.5)
-  g = ggplot(map=aes(x=ll,y=after_stat(ndensity))) +
-    do.call(geom_histogram,c(hargs,list(data=X[X$post==FALSE,]))) +
-    do.call(geom_histogram,c(hargs,list(data=X[X$post==TRUE,],fill=clr))) +
+  X = rbind(
+    cbind(X[X$imis==0,],g='Initial Samples'),
+    cbind(X[X$imis >0,],g='IMIS Samples'),
+    cbind(X[X$post   ,],g='Posterior Samples'))
+  g = ggplot(X,aes(x=ll,y=after_stat(ndensity))) +
+    facet_grid('g') +
+    geom_histogram(binwidth=bw,lwd=.1,color='white',fill=clr) +
     scale_y_continuous(labels=NULL) +
+    lims(x=c(-1000,0)) +
     labs(x='Log Likelihood',y='Normalized Density')
-  g = plot.clean(g)
+  g = plot.clean(g,legend.position='none')
 }
 
 plot.post.uni = function(X,color='distr',ncol=NULL,bins=32,stats=FALSE,p.thr=1){
@@ -63,16 +50,33 @@ plot.post.uni = function(X,color='distr',ncol=NULL,bins=32,stats=FALSE,p.thr=1){
     axis.ticks.y=element_blank())
 }
 
-plot.post.cor = function(X.cor,thr=.1){
-  i.thr = apply(abs(X.cor)-diag(nrow(X.cor)) > thr,1,any) # symmetric
-  X.cor = X.cor[i.thr,i.thr]
-  corrplot(X.cor,method='color',order='hclust',hclust.method='ward.D2',
+plot.post.cor = function(X.cor,thr=0){
+  i.thr = apply((abs(X.cor)-diag(nrow(X.cor))) > thr,1,any) # symmetric
+  corrplot(X.cor[i.thr,i.thr],
+    type='upper',method='color',diag=FALSE,
     col = scales::brewer_pal(palette='RdBu',direction=-1)(11),
-    tl.cex=30/nrow(X.cor),tl.col='black')
+    tl.cex=3.33/sqrt(nrow(X.cor)),tl.col='black')
 }
 
 ad.tests = function(X,g='distr'){
   p.vals = par.lapply(p.vars(X),function(var){ print(var)
     p.val = kSamples::ad.test(split(X[[var]],X[[g]]))$ad[1,3]
   })
+}
+
+plot.ll.tform = function(){
+  lls = -1*10^seq(1,6,.01)
+  tform = function(x,q=.1){ quantile(x,1-q)/x }
+  X = rbind(
+    data.frame(ll=lls,y=-log10(-lls),g='Log Log Likelihood'),
+    data.frame(ll=lls,y=lls/1000,g='Log Likelihood / 1000'),
+    data.frame(ll=lls,y=1e3*exp(lls),g='Likelihood x 1000'),
+    data.frame(ll=lls,y=tform(lls),g='Transform'))
+  g = ggplot(X,aes(x=-log10(-ll),y=y)) +
+    geom_line(color=clr) +
+    geom_line(data=data.frame(ll=quantile(lls,c(0,.9,.9)),y=c(1,1,0),g='Transform'),lty=2) +
+    facet_grid('g',scales='free') +
+    scale_x_continuous(breaks=seq(-6,-1),labels=paste0('-10^',seq(6,1))) +
+    labs(x='Log Likelihood',y='Value')
+  plot.clean(g,axis.text.x=ggtext::element_markdown())
 }
