@@ -20,7 +20,8 @@ tvec = dict(
 )
 
 def fname(ftype,phase,key,case='base',b='all'):
-  subdirs = [uid,'h{hsam}i{imis}b{batch}'.format(**N)]
+  nid = 'h{hsam}i{imis}b{batch}'.format(**N)
+  subdirs = [uid,nid]
   if ftype=='npy':
     path,ext = ['data','npy',*subdirs],''
   if ftype=='csv':
@@ -40,3 +41,4 @@ if akwds.pop('scinet'):
   parallel.cpus = 80
 
 uid = '2023-10-25'
+nid = 'h{hsam}i{imis}b{batch}'.format(**N)

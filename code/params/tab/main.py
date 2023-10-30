@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from model import params
-from model.scenario import fname
+from model.scenario import fname,uid,nid
 from utils import fio
 
 def tfname(f):
@@ -19,20 +19,22 @@ tex = dict(
 
 PX = fio.load_csv(tfname('par.defs.csv'),fmt='dict') # definitions
 PD = params.def_sample_distrs()                      # prior
-# Ps = fio.load(fname('npy','fit','Ps'))               # posterior
+Ps = fio.load(fname('npy','fit','Ps'))               # posterior
 
 for X in PX:
   k = X['parameter']
   print(k)
+  v = np.array([P[k] for P in Ps])
   X.update(
     imu=fmt(PD[k].mean()),
     ilo=fmt(PD[k].ppf(.025)),
     ihi=fmt(PD[k].ppf(.975)),
-    omu=fmt(PD[k].mean()),    # TEMP
-    olo=fmt(PD[k].ppf(.025)), # TEMP
-    ohi=fmt(PD[k].ppf(.975)), # TEMP
+    omu=fmt(np.mean(v)),
+    olo=fmt(np.quantile(v,.025)),
+    ohi=fmt(np.quantile(v,.975)),
     distr=PD[k].dist.name.capitalize())
 rows = ''.join(tex['row'].format(**X) for X in PX)
 
 # NOTE: relies on docs/app/config.tex
-fio.save_txt(tfname('tab.par.tex'),tex['tab'].replace('{{ rows }}',rows))
+fio.save_txt(fio.rootpath('out','tex',uid,nid,'tab.par.tex'),
+  tex['tab'].replace('{{ rows }}',rows))
