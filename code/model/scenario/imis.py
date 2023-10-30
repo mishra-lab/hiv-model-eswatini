@@ -8,9 +8,9 @@ from model.scenario import akwds,N,tvec,fname,get_seeds
 PD = params.def_sample_distrs()
 
 def xform_ll(lls):
-  # hack transform of badly-scaled lls
+  # hack transform of badly-scaled lls WARNING: assume all lls < 0
   # TODO: quantile changes across batches
-  return np.quantile(lls,N['isam']/N['hsam']) / np.array(lls) * -np.sign(lls)
+  return np.quantile(lls,N['isam']/N['hsam']) / np.array(lls)
 
 def rescale(x):
   return np.array(x) / np.sum(x)

@@ -43,11 +43,11 @@ do.ratio = function(X){
   X. = merge(rename.cols(aggregate(infs~t+from,X.p,sum),infs='infs.fr',from='pop'),
              rename.cols(aggregate(infs~t+to,  X.p,sum),infs='infs.to',to='pop'))
   X.$infs.ratio = X.$infs.fr / X.$infs.to
-  b = 2^seq(-4,4)
+  b = 2^seq(-6,2)
   g = ggplot(X.,aes(y=infs.ratio,x=t,color=pop)) +
     geom_hline(yintercept=1,color=rgb(.8,.8,.8),lwd=1) +
     geom_line(lwd=.7) +
-    scale_y_continuous(trans='log2',breaks=b,labels=MASS::fractions(b),lim=c(1/11,11)) +
+    scale_y_continuous(trans='log2',breaks=b,labels=MASS::fractions(b),lim=range(b)) +
     scale_color_manual(values=set.cols$pop.all) +
     labs(x='Year',y='Yearly Infections Transmitted / Acquired ',color='',fill='')
   g = plot.clean(g,legend.position='top')

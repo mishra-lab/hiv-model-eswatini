@@ -6,7 +6,8 @@ suppressPackageStartupMessages({
   library('reshape2')
   library('scales')
 })
-clr = '#CC0033'
+clr     = '#CC0033'
+clr.alt = '#00CCCC'
 clr.map = RColorBrewer::brewer.pal
 q.aes = function(q,grp,x='t',scale=1,...){
   qq = function(qi,op){ paste0(scale,'*',op,'(q',1-(1-qi)/2,',q',(1-qi)/2,')') }
