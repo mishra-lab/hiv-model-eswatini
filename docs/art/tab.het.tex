@@ -1,48 +1,53 @@
+% MAN
 \footnotesize
-% TODO: update
-\begin{tabular}{llrclc}
+\begin{tabular}{llrcl}
   \toprule
-                          &                                &  \multicolumn{3}{c}{Prior}   &         \\
-  \cmidrule(rl){3-5}
-  Parameter               & Stratification                 & Mean & (95\% CI)  & Distrib. &  Ref. * \\
+  && \multicolumn{2}{c}{Posterior} &         \\
+  \cmidrule(rl){3-4}
+  Parameter               & Stratification                 & Mean & (95\% CI)    & Ref. \\
   \midrule
-  Population size         & FSW of women overall           &  2.8 & (0.6,~6.5) & Beta     &         \\
-  (\% of total)           & Clients of men overall         &   30 & (6.0,~70)  & ---      & See~XX  \\
-                          & HR FSW of FSW overall          &   20 &    ---     & ---      & Assumed \\
-                          & HR clients of clients overall  &   20 &    ---     & ---      & Assumed \\[1ex]
-  Duration in group       & HR FSW                         &  3.6 & (1.9,~5.8) & Gamma    & See~XX  \\
-  (mean years)            & LR FSW                         &   10 & (9.0,~11)  & Gamma    & See~XX  \\
-                          & All clients                    &   10 & (6.0,~15)  & Gamma    &         \\[1ex]
-  Relative infectiousness & Acute infection                &  5.3 & (1.0,~13)  & Gamma    &         \\
-                          & Any GUD p12m                   &  2.9 & (1.0,~5.7) & Gamma    &         \\[1ex]
-  Relative susceptibility & Receptive vaginal sex          & 1.45 & (1.0,~2.0) & Gamma    &         \\
-                          & Receptive anal sex             &   10 &    ---     & ---      &         \\
-                          & Any GUD p12m: women            &  5.3 & (1.5,~12)  & Gamma    &         \\
-                          & Any GUD p12m: men              &  7.7 & (2.0,~18)  & Gamma    &         \\[1ex]
-  Any GUD p12m            & LR FSW                         &   16 &  (7,~28)   & Beta     &         \\
-  prevalence (\%)         & HR FSW                         &   47 &  (19,~89)  & ---      &         \\
-                          & HR clients                     &   12 &  (7,~22)   & ---      &         \\
-                          & Everybody else                 &    7 &    ---     & ---      &         \\[1ex]
-  Sex acts per            & Main/spousal                   &   78 & (27,~156)  & Gamma    &         \\
-  partnership-year        & Casual                         &   30 & (4.4,~82)  & ---      & See~XX  \\
-                          & Occasional sex work            &   12 &    ---     & ---      & Assumed \\
-                          & Regular sex work               &   31 &  (18,~48)  & Gamma    &         \\[1ex]
-  Partnership anal sex    & Main/spousal \& casual         &  5.9 & (0.6,~17)  & Beta     &         \\
-  (\% of acts)            & Occasional \& regular sex work &  9.7 & (0.6,~29)  & Beta     &         \\[1ex]
-  Condom use in 2020      & Main/spousal                   &   42 &  (31,~54)  & Beta     & See~XX  \\
-  (\% of acts protected)  & Casual                         &   69 &  (65,~74)  & Beta     & See~XX  \\
-                          & Occasional sex work            &   88 &  (78,~97)  & Beta     & See~XX  \\
-                          & Regular sex work               &   79 &  (64,~90)  & Beta     & See~XX  \\
-                          & Anal vs vaginal sex            &   77 &  (50,~95)  & Beta     &         \\[1ex]
-  Partnerships per year   & LR FSW, occasional sex work    &   49 &  (30,~72)  & Gamma    &         \\
-                          & HR FSW, occasional sex work    &   98 & (58,~153)  & ---      &         \\
-                          & LR FSW, regular sex work       &  101 & (73,~133)  & Gamma    &         \\
-                          & HR FSW, regular sex work       &  151 & (107,~205) & ---      &         \\[1ex]
-  Sex work visits         & LR clients                     &   26 &  (11,~50)  & Gamma    &         \\
-  per year                & HR clients                     &   89 & (34,~174)  & Gamma    &         \\
-  % TODO: mixing!
+  Population size         & FSW of women overall           &  4.4 & (2.8,~6.7)   & \sref{mod.par.size.fsw} \\
+  (\% of total)           & Clients of men overall         & 10.0 & (4.7,~15.7)  & \sref{mod.par.size.cli} \\
+                          & HR of FSW / clients overall    &   20 & ---          & \sref{mod.par.fsw} \\[1ex]
+  Duration in group       & FSW overall                    &  3.5 & (2.7,~4.9)   & \sref{mod.par.turn.act} \\
+  (mean years)            & Clients overall                &  8.9 & (4.9,15.4)   & \sref{mod.par.turn.act} \\
+                          & HR sex work and clients        &  0.7 & (0.3,~1.2)   & \sref{mod.par.turn.act} \\[1ex]
+  Sex work clients        & HR FSW, occasional sex work    &   84 & (53,~126)    & \sref{mod.par.pnum.swx} \\
+  per year                & LR FSW, occasional sex work    &   20 & (13,~27)     & \sref{mod.par.pnum.swx} \\
+                          & HR FSW, regular sex work       &   50 & (23,~86)     & \sref{mod.par.pnum.swx} \\
+                          & LR FSW, regular sex work       &   11 & (6,~21)      & \sref{mod.par.pnum.swx} \\[1ex]
+  Sex work visits         & HR clients                     &   90 & (44,~154)    & \sref{mod.par.pnum.swx} \\
+  per year                & LR clients                     &   44 & (22,~74)     & \sref{mod.par.pnum.swx} \\[1ex]
+  Total partner change    & Medium activity women          & 0.99 & (0.72,~1.31) & \sref{mod.par.pnum.mcx} \\
+  rate per year           & Medium activity men            & 0.67 & (0.28,~1.27) & \sref{mod.par.pnum.mcx} \\
+                          & Lowest activity women \& men   & 0.23 & (0.15,~0.35) & \sref{mod.par.pnum.mcx} \\[1ex]
+  Any GUD p12m            & HR FSW                         &   38 & (25,~53)     & \sref{mod.par.tm.gud} \\
+  prevalence (\%)\tn{a}   & LR FSW \& HR clients           &   30 & (20,~41)     & \sref{mod.par.tm.gud} \\
+                          & LR clients                     &   24 & (15,~33)     & \sref{mod.par.tm.gud} \\
+                          & Medium activity                &   18 & (8,~29)      & \sref{mod.par.tm.gud} \\
+                          & Lowest activity                &    7 & ---          & \sref{mod.par.tm.gud} \\[1ex]
+  Relative infectiousness & Acute infection                & 10.6 & (5.3,~18.1)  & \sref{mod.par.beta.hiv} \\
+                          & Any GUD p12m                   &  2.1 & (1.3,~3.2)   & \sref{mod.par.beta.gud} \\[1ex]
+  Relative susceptibility & Receptive vaginal sex          &  1.7 & (1.2,~2.0)   & \sref{mod.par.beta.sex} \\
+                          & Receptive anal sex             & 10.0 & ---          & \sref{mod.par.beta.sex} \\
+                          & Any GUD p12m                   &  3.0 & (1.2,~6.3)   & \sref{mod.par.beta.gud} \\[1ex]
+  Sex acts per            & Main/spousal                   &   77 & (40,~125)    & \sref{mod.par.fsex} \\
+  partnership-year        & Casual                         &  120 & (62,~202)    & \sref{mod.par.fsex} \\
+                          & Occasional sex work            &   12 & ---          & \sref{mod.par.fsex} \\
+                          & Regular sex work               &   18 & (12,~30)     & \sref{mod.par.fsex} \\[1ex]
+  Anal sex acts           & Main/spousal \& casual         &   11 & (3,~21)      & \sref{mod.par.fsex} \\
+  (\% of all acts)        & Occasional \& regular sex work &   17 & (4,~34)      & \sref{mod.par.fsex} \\[1ex]
+  Condom use in 2020      & Main/spousal                   &   41 & (31,~51)     & \sref{mod.par.tm.condom} \\
+  (\% of acts protected)  & Casual                         &   70 & (62,~77)     & \sref{mod.par.tm.condom} \\
+                          & Occasional sex work            &   88 & (78,~95)     & \sref{mod.par.tm.condom} \\
+                          & Regular sex work               &   78 & (64,~87)     & \sref{mod.par.tm.condom} \\
+                          & Anal vs vaginal sex            &   74 & (63,~88)     & \sref{mod.par.tm.condom} \\[1ex]
+  Partnership duration    & Main/spousal                   & 16.4 & (14.6,~18.5) & \sref{mod.par.pdur} \\
+  (years)                 & Casual                         & 0.78 & (0.45,~1.24) & \sref{mod.par.pdur} \\
+                          & Occasional sex work            & 0.83 & ---          & \sref{mod.par.pdur} \\
+                          & Regular sex work               & 0.43 & (0.19,~0.83) & \sref{mod.par.pdur} \\[1ex]
   \bottomrule
 \end{tabular} 
-\floatfoot{
-  \ffpops;
-  p12m: past 12 months.}
+\floatfoot{\ffpops;
+  p12m: past 12 months;
+  \tnt[a]{GUD prevalence declines universally after 2010 as described in \sref{mod.par.tm.gud}}.}
