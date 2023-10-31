@@ -1,0 +1,236 @@
+\section{Model Calibration}\label{sr.cal}
+This section presents the results of model calibration, including:
+\sref{sr.cal.par}: posterior distributions of calibrated parameters
+(see Table~\ref{tab:par.cal} for definitions);
+\sref{sr.cal.targ}: model outputs \vs associated calibration targets; and
+\sref{sr.cal.wiw} modelled patterns of transmission among risk groups in Eswatini over time.
+%===================================================================================================
+\subsection{Posterior Parameter Distributions}\label{sr.cal.par}
+Figure~\ref{fig:post.distr} illustrates the distributions of calibrated model parameters,
+stratified by prior (IMIS iteration 0) \vs posterior (resampled 1000 parameter sets).
+Most prior \vs posterior distributions were significantly different
+(Anderson-Darling Test \cite{Scholz1987}).
+Such differences tended to favour increased overall transmission
+(\eg \texttt{beta_0}, \texttt{dur_acute}, \texttt{Rbeta_acute}),
+including via casual partnerships
+(\eg \texttt{C12m_cas_wm}, \texttt{RC_cas_cli.wm}, \texttt{RF_cas.msp}),
+but decreased accumulation of HIV prevalence among FSW
+(\eg \texttt{F_swr}, \texttt{dur_fsw}).
+These findings may reflect the difficulty of recreating high overall HIV prevalence
+despite relatively small prevalence ratios (\ttilde 2) for FSW \vs women overall.
+Relative transmission from men to women (\texttt{Rbeta_vi_rec}) was also high,
+perhaps because our model lacks age, and
+age-gender differences in sexual activity and/or mixing might better explain
+gender differences in HIV prevalence.
+\begin{figure}
+  \centering\includegraphics[width=\linewidth]{post.distr.stats}
+  \caption{Distributions of calibrated model parameters,
+    stratified by prior (all initial samples) \vs posterior (1000 resamples)}
+  \label{fig:post.distr}
+  \floatfoot{\ffpar;
+    lines and circles: normalized density and means for each parameter;
+    \ffast{Anderson-Darling Test \cite{Scholz1987} for comparing distributions}}
+\end{figure}
+\par
+Figure~\ref{fig:post.cor} further illustrates
+bivariate rank correlations among posterior parameter values.
+Several sex work condom use parameters had strong positive correlations,
+likely induced via relational constraints (see \sref{mod.cal.appr}).
+By contrast, the strongest negative correlation was between
+the rate of diagnosis for non-FSW women and a global relative rate for diagnosis,
+since these parameters served very similar roles.
+\begin{figure}
+  \centering\includegraphics[width=\linewidth]{post.cor}
+  \caption{Rank correlations among posterior samples for calibrated model parameters}
+  \label{fig:post.cor}
+  \floatfoot{\ffpar.}
+\end{figure}
+%===================================================================================================
+\subsection{Model Fits \vs Calibration Targets}\label{sr.cal.targ}
+This section presents the estimates of key model outputs from the \fffit,
+with comparison to the associated calibration targets.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Log Likelihoods}
+Figure~\ref{fig:ll.hist} illustrates the distributions of log likelihoods for
+initial prior / Latin hypercube samples (100,000),
+all IMIS iteration samples (1,000,000),
+and posterior samples (1000).
+See \sref{mod.cal.appr} regarding our adjusted IMIS weights
+due to the large variance in log likelihoods.
+\begin{figure}
+  \centering\includegraphics[scale=1]{ll.hist}
+  \caption{Distribution of log likelihoods across stages of calibration}
+  \label{fig:ll.hist}
+  \floatfoot{Only log likelihoods $\ge -1000$ shown.}
+\end{figure}
+\pagebreak % TEMP
+%---------------------------------------------------------------------------------------------------
+\subsubsection{HIV Prevalence \& Incidence}\label{sr.cal.hiv}
+Figure~\ref{fig:fit.hiv} illustrates modelled HIV
+prevalence \sfref{fig:fit.prev},
+prevalence ratios \sfref{fig:fit.prev1v2},
+incidence \sfref{fig:fit.inc}, and
+incidence ratios \sfref{fig:fit.inc1v2} among selected risk groups,
+with the associated calibration targets.
+Overall, model estimates agree well with the available calibration targets,
+with the following shortcomings.
+Relative to the calibration targets, the model tends to
+overestimate HIV prevalence among FSW in 2014,
+slightly overestimate HIV prevalence among men overall, and
+overestimate HIV prevalence ratios for non-lowest \vs lowest activity men.
+The discrepancies for men could arise due to population-level surveys
+failing to reach men at higher risk (\eg with high mobility) \cite{Camlin2016},
+considering that participation rates were consistently lower for men \vs women
+(\sref{mod.par.data}).
+\begin{figure}
+  \subcapoverlap
+  \foreach \var/\fw in {prev/1,prev1v2/1,inc/1,inc1v2/.67,prevanc/.33}{
+    \begin{subfigure}{\fw\linewidth}
+      \centering\includegraphics[scale=\fitscale]{fit.\var.base.all}
+      \caption{\raggedright}
+      \label{fig:fit.\var}
+    \end{subfigure}}
+  \caption{Modelled HIV prevalence, incidence, and ratios thereof among selected risk groups,
+    and associated calibration targets}
+  \label{fig:fit.hiv}
+  \floatfoot{\fffit; \ffribbon; \ffpbar;
+    \sfref{fig:fit.prevanc} targets from antenatal care data \cite{NERCHA2012rep,EswMOH2015rep}
+    (not used for calibration)}
+\end{figure}
+\par
+Few data are available to validate the modelled early epidemic dynamics.
+Modelled incidence among women and men peaked rapidly after introduction of HIV
+(Figure~\ref{fig:fit.inc}), corresponding to
+rapid acquisition and saturation among FSW and clients.
+Modelled incidence and prevalence continued to increase approximately linearly over 1990--2010,
+reflecting a balance of would-be exponential epidemic growth and build-up of mitigating factors,
+such as increasing condom use, male circumcision, ART coverage, and
+accumulation of seroconcordant partnerships (see \sref{mod.foi}).
+These trends can be compared with HIV prevalence from Eswatini antenatal care clinics
+over the same period (Figure~\ref{fig:fit.prevanc}), which suggest similar trends.%
+\footnote{Antenatal care data were not used as calibration targets because
+  such data are known to overestimate HIV prevalence among women overall
+  due to non-representative sampling \cite{Gouws2008,Marsh2014}.}
+Decline of HIV incidence and prevalence after 2010 can likely be attributed to
+rapid ART scale-up (see \sref{sr.cal.cascade})
+and further increases in condom use (Figure~\ref{fig:fit.condom}).
+Although modelled incidence declined rapidly, prevalence remained relatively higher
+due to increased survival of PLHIV with ART.
+In some model fits, prevalence among FSW declined faster than among women overall,
+likely due to high turnover of women in sex work.
+%---------------------------------------------------------------------------------------------------
+\subsubsection{ART Cascade}\label{sr.cal.cascade}
+Figure~\ref{fig:fit.cascade} illustrates the modelled ART cascade among selected risk groups,
+including both conditional and unconditional cascade steps,
+and the associated calibration targets.
+The model estimates agree quite well with these targets, for all risk groups.
+The non-monotonic increasing proportions virally suppressed among treated PLHIV
+reflect major changes in treatment eligibility (see \sref{mod.par.cascade.tx}), which caused
+influxes of newly ART-eligible PLHIV to
+temporarily decrease the proportions virally suppressed among treated PLHIV.
+\begin{figure}
+  \subcapoverlap
+  \foreach \var in {diag,treat.c,treat.u,vls.c,vls.u}{
+  \begin{subfigure}{\linewidth}
+    \centering\includegraphics[scale=\fitscale]{fit.\var.base.all}
+    \caption{\raggedright}
+    \label{fig:fit.\var}
+  \end{subfigure}}
+  \caption{Modelled ART cascade among selected risk groups
+    and associated calibration targets}
+  \label{fig:fit.cascade}
+  \floatfoot{\ffcas; \fffit; \ffribbon; \ffpbar.}
+\end{figure}
+%---------------------------------------------------------------------------------------------------
+\subsubsection{Additional Model Outputs}\label{sr.cal.other}
+Figure~\ref{fig:fit.Psi} illustrates
+the relative sizes of higher and lower risk FSW and clients over time,
+showing relative stability despite disproportionate HIV-attributable mortality.
+Figure~\ref{fig:fit.NX} illustrates the total population size over time,
+showing agreement with available data \cite{WorldBank} (see \sref{mod.par.turn.bd}).
+Figure~\ref{fig:fit.circum} illustrates
+the modelled proportion of men aged 15--49 who are circumcised,
+including uncertainty about future trends (see \sref{mod.par.tm.circ}).
+Figure~\ref{fig:fit.condom} illustrates
+modelled trends in condom use within different partnership types (see \sref{mod.par.tm.condom}).
+\begin{figure}
+  \centering\includegraphics[scale=\fitscale]{fit.Psi.base.all}
+  \caption{Modelled relative sizes of selected risk groups over time}
+  \label{fig:fit.Psi}
+  \floatfoot{\fffit; \ffribbon.}
+\end{figure}
+\begin{figure}
+  \begin{minipage}[t]{.45\linewidth}
+    \centering\includegraphics[scale=\fitscale]{fit.NX.base.all}
+    \caption{Modelled total population aged 15--49
+      and associated calibration targets}
+    \label{fig:fit.NX}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{.45\linewidth}
+    \centering\includegraphics[scale=\fitscale]{fit.circum.base.all}
+    \caption{Modelled proportion of men aged 15--49 who are circumcised}
+    \label{fig:fit.circum}
+  \end{minipage}
+  \floatfoot{\fffit; \ffribbon; \ffpbar.}
+\end{figure}
+\begin{figure}
+  \centering\includegraphics[scale=\fitscale]{fit.condom.base.all}
+  \caption{Modelled condom use within different partnership types}
+  \label{fig:fit.condom}
+  \floatfoot{\fffit; \ffribbon.}
+\end{figure}
+%===================================================================================================
+\subsection{Who Infected Whom}\label{sr.cal.wiw}
+As further model validation, and to gain insights into the modelled networks of transmission,
+this section presents several summaries of ``who infected whom''
+--- \ie distributions of yearly infections stratified by
+the transmitting group, acquiring group, and partnership type.
+Throughout the section, the numbers of yearly infections shown are obtained from
+the median value across all 1000 model fits.
+\par
+Figure~\ref{fig:wiw.base.frto} illustrates
+the total numbers and proportions of modelled yearly infections
+transmitted from \sfref{fig:wiw.base.from} and
+acquired among \sfref{fig:wiw.base.to} modelled risk groups.
+Figure~\ref{fig:wiw.base.ratio} then gives
+the \emph{ratio} of yearly infections transmitted \vs acquired.
+Figure~\ref{fig:wiw.base.part} stratifies yearly infections by partnership type, while
+Figure~\ref{fig:wiw.base.alluvial} illustrates
+the complete transmission network every 10 years from 1990.
+\begin{figure}
+  \begin{subfigure}{.5\linewidth}
+    \includegraphics[width=\linewidth]{wiw.base.from}
+    \caption{Transmitted from}
+    \label{fig:wiw.base.from}
+  \end{subfigure}%
+  \begin{subfigure}{.5\linewidth}
+    \includegraphics[width=\linewidth]{wiw.base.to}
+    \caption{Acquired among}
+    \label{fig:wiw.base.to}
+  \end{subfigure}
+  \caption{Modelled yearly HIV infections
+    \sfref{fig:wiw.base.from} transmitted from and \sfref{fig:wiw.base.to} acquired among risk groups}
+  \label{fig:wiw.base.frto}
+  \floatfoot{\ffpops; \ffwiw.}
+\end{figure}
+\begin{figure}
+  \begin{minipage}[b]{.49\linewidth}
+    \includegraphics[width=\linewidth]{wiw.base.ratio}
+    \caption{Ratio of modelled yearly infections transmitted from \vs acquired among risk groups}
+    \label{fig:wiw.base.ratio}
+  \end{minipage}\hfill
+  \begin{minipage}[b]{.49\linewidth}
+    \includegraphics[width=\linewidth]{wiw.base.part}
+    \caption{Modelled yearly HIV infections transmitted via different partnership types}
+    \label{fig:wiw.base.part}
+  \end{minipage}
+  \floatfoot{\ffpops; \ffwiw.}
+\end{figure}
+\begin{figure}
+  \includegraphics[width=\linewidth]{wiw.base.alluvial}
+  \caption{Alluvial diagram showing proportions of all yearly infections (ribbons)
+    transmitted from (left) to (right) modelled risk groups,
+    stratified by partnership type (color) and year (facets)}
+  \label{fig:wiw.base.alluvial}
+  \floatfoot{\ffpops; \ffwiw.}
+\end{figure}
