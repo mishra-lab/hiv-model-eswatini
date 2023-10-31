@@ -128,6 +128,9 @@ The non-monotonic increasing proportions virally suppressed among treated PLHIV
 reflect major changes in treatment eligibility (see \sref{mod.par.cascade.tx}), which caused
 influxes of newly ART-eligible PLHIV to
 temporarily decrease the proportions virally suppressed among treated PLHIV.
+Figure~\ref{fig:fit.rates} also illustrates
+rate of HIV diagnosis \sfref{fig:fit.dx.rate} and ART initiation \sfref{fig:fit.tx.rate}
+among selected risk groups over time.
 \begin{figure}
   \subcapoverlap
   \foreach \var in {diag,treat.c,treat.u,vls.c,vls.u}{
@@ -140,6 +143,18 @@ temporarily decrease the proportions virally suppressed among treated PLHIV.
     and associated calibration targets}
   \label{fig:fit.cascade}
   \floatfoot{\ffcas; \fffit; \ffribbon; \ffpbar.}
+\end{figure}
+\begin{figure}
+  \subcapoverlap
+  \foreach \var in {dx,tx}{
+    \begin{subfigure}{\linewidth}
+      \centering\includegraphics[scale=\fitscale]{fit.\var.rate.base.all}
+      \caption{\raggedright}
+      \label{fig:fit.\var.rate}
+    \end{subfigure}}
+  \caption{Modelled rates of HIV diagnosis and ART initiation among selected risk groups over time}
+  \label{fig:fit.rates}
+  \floatfoot{\fffit; \ffribbon.}
 \end{figure}
 %---------------------------------------------------------------------------------------------------
 \subsubsection{Additional Model Outputs}\label{sr.cal.other}
