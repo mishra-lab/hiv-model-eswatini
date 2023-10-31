@@ -12,6 +12,13 @@ cascade = dict( # 2020 cascade targets
 )
 cases = ['fsw+cli+','fsw+cli-','fsw-cli+','fsw-cli-']
 
+tkp = dict(tvec=tvec['main'],t=tvec['plot'])
+tko = dict(tvec=tvec['main'],t=tvec['outs'])
+ekwds = dict(
+  snames = ['all','w','m','aq','fsw','cli'],
+  onames = ['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u'],
+  mode = 'id')
+
 def parse_case(case):
   return re.findall('(.*?)(\+|\-)',case)
 
@@ -27,26 +34,21 @@ def run_rf(b):
 
 def rerun_rf():
   log(0,'art.rerun_rf')
-  tkwds = dict(tvec=tvec['main'],t=tvec['plot'])
   for case in ['base']+cases:
     log(1,case)
     base = (case == 'base')
     T = get_refit_T('fsw+cli+all+' if base else case+'all-')
     Ps = fio.load(fname('npy','fit' if base else 'art-rf','Ps',case=case))
     R1s = system.run_n(Ps,t=tvec['main'],T=T)
-    fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkwds))
-    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s,**tkwds,mode='id',
-      snames=['all','w','m','aq','fsw','cli'],
-      onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
+    fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkp))
+    fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s,**tkp,**ekwds))
     fit.plot_sets(tvec['main'],R1s,T=T,tfname=fname('fig','art-rf','{}',case=case),
       sets='cascade',snames=['all','aq','fsw','cli'])
     if base:
-      fio.save_csv(fname('csv','art-ss','expo',case=case),out.expo(R1s,tvec=tvec['main'],t=tvec['outs'],mode='id',
-        snames=['all','w','m','aq','fsw','cli'],
-        onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u']))
+      fio.save_csv(fname('csv','art-ss','expo',case=case),out.expo(R1s,**tko,**ekwds))
       R2s = deepcopy(R1s)
     else:
-      fio.save_csv(fname('csv','art-rf','wiw-diff',case=case),out.wiw(R1s,**tkwds,R2s=R2s,vsop='1-2'))
+      fio.save_csv(fname('csv','art-rf','wiw-diff',case=case),out.wiw(R1s,R2s=R2s,vsop='1-2',**tkp))
 
 def get_refit_T(case):
   Ts = {
@@ -98,18 +100,15 @@ def Rxs_update(P,Pu,q=None,**kwds):
 
 def run_ss(Ns=10,seed=0):
   log(0,'art.run_ss')
-  tkwds = dict(tvec=tvec['main'])
   P0s = fio.load(fname('npy','fit','Ps'))
   Ps = get_sens_sample(P0s,Ns,seed=seed)
   Rs = system.run_n(Ps,t=tvec['main'])
-  fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkwds,t=tvec['plot']))
+  fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkp))
   fio.save_csv(fname('csv','art-ss','P0s',case='sens'),get_par_expo(P0s,
     keys=[*params.def_sample_distrs().keys(),'PX_fsw','PX_cli','EHY_acute']))
   # TODO: base expo too?
   fio.save_csv(fname('csv','art-ss','expo',case='sens'),merge_expo([
-      out.expo([R for R in Rs if R['P']['ss']==ss],**tkwds,t=tvec['outs'],ecols=dict(ss=ss),mode='id',
-        snames=['all','w','m','aq','fsw','cli'],
-        onames=['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u'])
+      out.expo([R for R in Rs if R['P']['ss']==ss],ecols=dict(ss=ss),**tko,**ekwds)
       for ss in range(Ns)]))
   fit.plot_sets(tvec['main'],Rs,tfname=fname('fig','art-ss','{}',case='sens'),
     sets='cascade',snames=['all','aq','fsw','cli'])
