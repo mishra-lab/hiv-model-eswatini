@@ -21,7 +21,7 @@ We captured risk heterogeneity through risk-group-level factors, including
 group size, average duration in group, STI symptom prevalence, and numbers / types of partnerships per year;
 and partnership-level factors, including
 assortative mixing, partnership duration, frequency of sex, and levels of condom use.
-Table~\ref{tab.het} summarizes key parameter values and sampling distributions related to risk heterogeneity.
+Table~\ref{tab:het} summarizes key parameter values and sampling distributions related to risk heterogeneity.
 We assumed that only condom use varied (increased) over time (Figure~\ref{fig:fit.condom}).
 To parameterize higher versus lower risk FSW, we analyzed individual-level survey data
 from Swazi FSW in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014} (Appendix~\ref{mod.par.fsw}).
@@ -35,7 +35,7 @@ nor non-heterosexual HIV transmission.
   \centering
   \caption{Selected model parameters related to risk heterogeneity}
   \input{tab.het}
-  \label{tab.het}
+  \label{tab:het}
 \end{table}
 \paragraph{ART cascade}
 We modelled rates of HIV diagnosis among people living with HIV as monotonically increasing over time.
@@ -62,7 +62,7 @@ in addition to mortality benefits of CD4 recovery.
 \paragraph{Calibration}
 We calibrated the model to reflect
 available data from Eswatini on HIV prevalence, HIV incidence, and ART cascade of care,
-stratified by risk group \cite{SDHS2006,SHIMS1,SHIMS2,SHIMS3,Baral2014,EswKP2014}.
+stratified by risk group \cite{SDHS2006,SHIMS1,SHIMS2,SHIMS3,Baral2014,EswKP2014,EswIBBS2022}.
 using an adapted version of Incremental Mixture Importance Sampling (IMIS) \cite{Raftery2010}.
 Full methodology is given in Appendix~\ref{mod.cal},
 while calibration results are given in Appendix~\ref{sr.cal}.
@@ -72,7 +72,7 @@ while calibration results are given in Appendix~\ref{sr.cal}.
 \subsubsection{Objective~1: Influence of cascade differences between risk groups}\label{meth.obj.1}
 For Objective~\ref{obj:1},
 We defined the \emph{base case} scenario to reflect
-observed cascade scale-up in Eswatini, reaching \cashi by 2020 \cite{AIDSinfo}.
+observed cascade scale-up in Eswatini, reaching \cashi by 2020 \cite{SHIMS3,AIDSinfo}.
 Next, we defined 4 \emph{counterfactual} scenarios in which overall viral suppression was lower,
 such that the population overall reached \casmd by 2020,
 reflecting approximate trends in SSA cascades prior to universal ART \cite{AIDSinfo}.
@@ -175,9 +175,9 @@ Next, we defined the following measures of epidemic conditions ($C_{fj}$) relate
 as hypothesized modifiers of the effect of disproportionate unsuppression on relative CAI and RAI:
 FSW and client population sizes (\% of population overall);
 average rate of turnover among FSW and clients (per year, reciprocal of duration selling / buying sex); and
-HIV incidence ratios in the year 2000 among FSW \vs other women, and among clients \vs other men.
+HIV prevalence ratios in the year 2005 among FSW \vs other women, and among clients \vs other men.
 For these measures, we combined higher and lower risk FSW, and likewise higher and lower risk clients.
-We used HIV incidence ratios in 2000 to reflect summary measures of risk heterogeneity prior to ART,
+We used HIV prevalence ratios in 2005 to reflect summary measures of risk heterogeneity prior to ART,
 as compared to including all modelled risk factors for HIV acquisition,
 which could lead to overfitting and improper inference due to effect mediation.
 \par
