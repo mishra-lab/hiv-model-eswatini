@@ -1,22 +1,21 @@
 \section{Results}\label{res}
-% TODO: big result update
-\newcommand{\xci}[1]{xx~(xx,~xx)\xspace}
 Early epidemic emergence was driven by regular sex work partnerships
 (Figures \ref{fig:wiw.base.part}~and~\ref{fig:wiw.base.alluvial}).
-However, casual partnerships contributed the majority of infections by 1994, % MAN (1997)
-including 60\% (median) of new infections in 2020 in the base case. % MAN
+However, casual partnerships contributed the majority of infections by 1997, % MAN
+including 44\% (median) of new infections in 2020 in the base case. % MAN
 By 2020, clients of FSW had transmitted the most infections (Figure~\ref{fig:wiw.base.from})
 and lower risk women had acquired the most infections (Figure~\ref{fig:wiw.base.to}).
 Overall HIV prevalence in 2020 was median (95\% confidence interval):
-\xci{bc/prev.all.2020}\% (Figure~\ref{fig:fit.prev}),
-and overall incidence was \xci{bc/inc.all.2020} per 1000 person-years (Figure~\ref{fig:fit.inc}).
-The prevalence ratio among FSW versus lower risk women was \xci{bc/pr.fsw.2020},
-and among clients of FSW versus lower risk men it was \xci{bc/pr.cli.2020} (Figure~\ref{fig:fit.prev1v2}).
+24.4~(23.3,~25.4)\% (Figure~\ref{fig:fit.prev}), % MAN
+and overall incidence was 8.0~(6.7,~9.4) per 1000 person-years (Figure~\ref{fig:fit.inc}).
+The prevalence ratio among FSW versus women overall was 1.75~(1.69,~1.86), % MAN
+and among clients of FSW versus men overall it was 2.14~(1.55,~2.99) % MAN
+(Figure~\ref{fig:fit.prev1v2}).
 Due to turnover and higher HIV incidence among FSW,
 achieving similar rates of diagnosis among FSW versus other women (Figure~\ref{fig:fit.dx.rate})
-required \xci{Rdx.fsw} times the rate of testing.
+required approximately twice the rate of testing. % MAN
 Sex work contributed a growing proportion of infections
-over 2020--2040: from 23\% to 28\% (Figure~\ref{fig:wiw.base.part}). % MAN
+over 2020--2040: from 40\% to 52\% (Figure~\ref{fig:wiw.base.part}). % MAN
 %===================================================================================================
 \subsection{Objective~1: Influence of cascade differences between risk groups}\label{res.obj.1}
 Figure~\ref{fig:obj.1.cascade} illustrates cascade attainment over time
@@ -26,13 +25,13 @@ Figure~\ref{fig:obj.1.inc} illustrates overall HIV incidence in each scenario.
 Figure~\ref{fig:obj.1.rai} then illustrates
 cumulative additional infections (CAI) and additional incidence rate (AIR)
 in each counterfactual scenario \vs the base case.
-Leaving behind both FSW and clients resulted the most additional infections: median [IQR]
-28.8~[17.5,~46.2]\,\% more than the base case by 2030. % MAN
+Leaving behind both FSW and clients resulted the most additional infections: median (95\%~CI)
+26.7~(19.7,~33.8)\,\% more than the base case by 2030. % MAN
 By contrast, leaving behind neither FSW nor clients resulted in the fewest additional infections:
-13.0~[6.1,~25.6]\,\% more than the base case by 2030 --- % MAN
-a 54.2~[30.3,~73.2]\,\% reduction. % MAN
-Leaving behind either FSW or clients resulted in a similar number of additional infections:
-21.8~[12.5,~36.7]\,\% and 20.4~[11.8,~34.7]\,\%, respectively. % MAN
+13.3~(9.2,~18.7)\,\% more than the base case by 2030 --- % MAN
+a 50.9~(33.5,~62.5)\,\% reduction. % MAN
+Leaving behind either FSW or clients resulted in
+22.3~(16.5,~27.9)\,\% or 19.1~(12.9,~25.0)\,\% additional infections, respectively. % MAN
 Relative differences were similar for additional incidence rate.
 Which risk groups acquired additional infections differed across scenarios
 (Figure~\ref{fig:obj.1.wiw.to}),
@@ -41,7 +40,7 @@ with more additional infections among clients when FSW were left behind,
 The majority of additional infections were transmitted
 via casual partnerships in all scenarios (Figure~\ref{fig:obj.1.wiw.part}). % MAN
 \begin{figure}[h]
-  \centering\includegraphics[width=.8\linewidth]{art.1.rai}
+  \centering\includegraphics[width=.7\linewidth]{art.1.rai}
   \caption{Relative additional infections under counterfactual scenarios \vs the base case}
   \label{fig:obj.1.rai}
   \floatfoot{\ffart; \ffbox.}
@@ -51,29 +50,32 @@ via casual partnerships in all scenarios (Figure~\ref{fig:obj.1.wiw.part}). % MA
 The fitted regression models \eqref{eq:obj.2.glm} indicated that
 population-overall viral unsuppression ($D$) and
 group-specific unsuppression among FSW and clients ($d_i$)
-were each strongly and positively associated with the 2030 CAI and AIR outcomes ($p < 10^{-5}$).
+were each strongly and positively associated with 2030 CAI and AIR outcomes ($p < 10^{-5}$),
+though the effect size was larger for clients.
 These associations support the results of Objective~\ref{obj:1}.
 Figure~\ref{fig:obj.2} plots the estimated effects of
 group-specific unsuppression $d_i$, and
 effect modification by epidemic conditions $C_j$.
-The effect of unsuppression among FSW on CAI and AIR increased with: % MAN
-FSW and client population sizes, client turnover, and
-HIV incidence ratio among FSW \vs other women.
-The effect on AIR also decreased with: HIV incidence ratio among clients \vs other men.
-The effect of unsuppression among clients on CAI and AIR increased with:
-FSW and client population sizes and FSW turnover.
-The effect on AIR also modestly with:
-HIV incidence ratio among FSW \vs other women and client turnover.
+% MAN below
+The effect of unsuppression among both FSW and clients on CAI and AIR increased with:
+larger client population size,
+faster client turnover,
+larger HIV prevalence ratio among clients \vs other men, and
+smaller HIV prevalence ratio among FSW \vs other women.
+The effect of unsuppression among FSW further increased slightly with
+duration in sex work, while
+the effect of unsuppression among clients further increased slightly with
+\emph{smaller} FSW population size.
 \begin{figure}[h]
   \subcapoverlap\centering
   \vskip1ex
-  \begin{subfigure}{.75\linewidth}
+  \begin{subfigure}{.7\linewidth}
     \includegraphics[width=\linewidth]{art.2.cai}
     \caption{\raggedright}
     \label{fig:obj.2.cai}
   \end{subfigure}
   \vskip1ex
-  \begin{subfigure}{.75\linewidth}
+  \begin{subfigure}{.7\linewidth}
     \includegraphics[width=\linewidth]{art.2.air}
     \caption{\raggedright}
     \label{fig:obj.2.air}
