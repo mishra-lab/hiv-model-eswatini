@@ -1,18 +1,28 @@
 \section{Discussion}\label{disc}
-% TODO: update
 We sought to explore how intersections of risk heterogeneity and differential ART coverage
 may influence model-estimated prevention impacts of ART.
 We found that ART scale-up that ``leaves behind'' higher risk groups,
 such as female sex workers (FSW) and their clients,
 can result in substantially more HIV infections,
 even for the same population-overall coverage.
-We also found that the transmission impact of leaving behind higher risk groups
-generally increased with:
-the size of the risk group,
-the size of their predominant partner group (\ie clients for FSW and FSW for clients),
-and the rate of turnover among their predominant partner group.
+We also found that the transmission impact of
+leaving behind FSW and/or clients was largely determined by
+characteristics of the client population, including:
+population size, turnover, and relative HIV prevalence.
 \par
-% TODO: (!) add paragraph re. significance for Eswatini context before broadening
+Available data suggest that
+Eswatini has recently surpassed 95-95-95 for the population overall \cite{SHIMS3},
+and that FSW have not been ``left behind'' \cite{EswIBBS2022},
+though data on FSW viral suppression are lacking.
+These achievements coincide with rapid reductions in HIV incidence in recent years
+\cite{SHIMS1,SHIMS2,SHIMS3} (Figure~\ref{fig:fit.inc}).
+Other contexts might thus draw inspiration from
+Eswatini and the MaxART interventions \cite{Walsh2020}.
+Yet, even in Eswatini, familiar differences persist among men \vs women
+in cascade attainment and survey coverage \cite{SHIMS1,SHIMS2,SHIMS3}.
+Such differences should continue to be examined and addressed,
+since their drivers may overlap with drivers of HIV risk \cite{Akullian2017,Camlin2019}.
+\par
 Although our analysis only considered Eswatini,
 our findings are likely generalizeable to other epidemic contexts.
 In fact, HIV prevalence ratios between key populations and the population overall
@@ -23,7 +33,7 @@ Moreover, as HIV incidence declines in many settings,
 epidemics may become re-concentrated among key populations \cite{Brown2019,Garnett2021},
 further magnifying the transmission impact of cascade disparities.
 \par
-To our knowledge, this study is the first to explore the transmission impact of
+To our knowledge, our study is the first to explore the transmission impact of
 heterogeneity in ART coverage across risk groups, within consistent population-overall coverage.
 In a previous review of mathematical modelling of ART scale-up in Sub-Saharan Africa,
 we found that few studies have considered any cascade differences by risk group,
@@ -45,7 +55,7 @@ and contributing to population-level incidence declines \cite{Havlir2020}.
 However, efforts to maximize cascade coverage should not overlook
 populations that may be harder to reach,
 where barriers to engagement in HIV care often intersect with drivers of HIV risk
-\cite{Wanyenze2016,Schwartz2017,Schmidt-Sane2022,Baral2019}.
+\cite{Wanyenze2016,Schwartz2017,Schmidt-Sane2022,Camlin2019,Baral2019}.
 Such populations can be reached effectively through
 tailored services to meet their unique needs \cite{Ehrenkranz2019},
 services which can be designed and refined with ongoing community engagement
@@ -55,12 +65,14 @@ and accelerate the end of the HIV epidemic.
 \par
 Our study has three major strengths.
 First, drawing on our conceptual framework for risk heterogeneity \cite[Table~1]{Knight2022sr}
-and multiple sources of context-specific data \cite{SDHS2006,SHIMS1,Justman2016,Baral2014,EswKP2014},
+and multiple sources of context-specific data
+\cite{SDHS2006,SHIMS1,SHIMS2,Baral2014,EswKP2014,EswIBBS2022},
 we captured several dimensions of risk heterogeneity, including:
 heterosexual anal sex,
 four types of sexual partnerships,
 sub-stratification of FSW and clients into higher and lower risk,
-and risk group turnover.
+and risk group turnover
+(Table~\ref{tab:het}, Appendix~\ref{mod}).
 Second, whereas most modelling studies of ART scale-up
 project hypothetical future scenarios which may not be achievable,
 our base case scenario reflects observed scale-up in Eswatini.
@@ -74,19 +86,17 @@ and mainly explored risk heterogeneity related to sex work.
 However, our findings would likely generalize
 to other transmission networks and determinants of risk heterogeneity,
 including risk groups not always recognized as key populations,
-such as mobile populations and young women \cite{Tanser2015,Cheuk2020}.
-Second, we did not consider transmitted drug resistance.
+such as mobile populations and young women \cite{Camlin2019,Cheuk2020}.
+Second, our model structure did not include age.
+However, our calibrated model fits
+the available age-aggregated data well (Appendix~\ref{sr.cal}),
+and the qualitative interpretation of our findings
+is unlikely to be changed by adding age stratification.
+Finally, we did not consider transmitted drug resistance.
 Drug resistance is more likely to emerge
 in the context of barriers to viral suppression \cite{Pham2014};
 thus, cascade gaps among those at higher risk
 would likely accelerate emergence of transmitted drug resistance, and amplify impacts of such gaps.
-% TODO: calibration issues
-Third, even among the top 1\% of model fits,
-substantial uncertainty remained in the values of inferred parameters,
-yielding wide confidence intervals in the outputs of interest (additional infections and incidence).
-In the absence of additional data,
-such intervals reflect true uncertainty in the magnitude of these outputs,
-though more advanced calibration techniques could potentially improve precision.
 \par
 In conclusion, HIV prevention efforts should be rooted in
 context-specific understandings of prevention gaps.
@@ -94,3 +104,4 @@ In the ``treatment as prevention'' era, prevention gaps include cascade gaps.
 Thus, differential cascades within and between populations at higher risk of HIV
 must be described, modelled, and ultimately addressed
 to fully realize the anticipated prevention impacts of ART.
+\enlargethispage{2ex} % HACK
