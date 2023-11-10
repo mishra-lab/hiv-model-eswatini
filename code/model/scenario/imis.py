@@ -77,8 +77,8 @@ def run(case,b,**kwds):
     wts = update_weights(Ps,Rs,Gs,zi)
   kxs = ('id','batch','imis',*PD.keys(),'ll','lp')
   Pxs = [dict({k:P[k] for k in kxs},wt=wt) for P,wt in zip(Ps,wts)]
-  fio.save(fname('npy','imis','Ps',b=b),Pxs)
-  fio.save_csv(fname('csv','imis','Ps',b=b),Pxs)
+  fio.save(fname('npy','imis','Ps',case=case,b=b),Pxs)
+  fio.save_csv(fname('csv','imis','Ps',case=case,b=b),Pxs)
 
 def sample_post(case,seed=0):
   log(0,'imis.sample_post: {}'.format(case))
