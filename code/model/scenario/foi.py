@@ -28,7 +28,7 @@ def run_ep():
     fio.save_csv(fname('csv','foi-ep','expo',case=case),E)
 
 if __name__ == '__main__':
-  # imis.run(**akwds)
+  # imis.run(**akwds,foi_mode=akwds['case'])
   # akwds.pop('b')
   # imis.sample_post(**akwds)
   # imis.rerun(**akwds)
