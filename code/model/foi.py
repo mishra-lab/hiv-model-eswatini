@@ -7,7 +7,7 @@ foi_modes = [
   'rd', # rate duration
   'ry', # rate year
   'py', # proportion year
-  'base', # proposed model (partnership exclusion)
+  'base', # proposed model (epa)
 ]
 
 #@profile

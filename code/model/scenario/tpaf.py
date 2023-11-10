@@ -1,15 +1,13 @@
-# WARNING: needs imis update
-
 from utils import log,fio,dict_list_update
 from model import system,params,out
-from model.scenario import N,tvec,fname
+from model.scenario import tvec,fname
 
 def run(case='base'):
   log(0,'scenario.tpaf.run: '+case)
   P1s = fio.load(fname('npy','fit','Ps',case=case))
   R1s = system.run_n(P1s,t=tvec['main'])
   ekwds = dict(R1s=R1s,tvec=tvec['main'],t=tvec['plot'],vsop='1-2/1',
-    snames=['all','w','m','aq','asw','fsw','cli'])
+    snames=['all','w','m','aq','asw','fsw','cli'],onames=['cuminfect'])
   tpafs = dict(
     msp = dict(p=0),
     cas = dict(p=1),
@@ -32,6 +30,6 @@ def run(case='base'):
       log(1,'tpaf: '+name+'_'+str(t0))
       P2s = dict_list_update(P1s,mix_mask_tpaf=params.get_mix_mask(**spec),t0_tpaf=t0)
       R2s = system.run_n(P2s,t=tvec['main'])
-      Ei = out.expo(**ekwds,R2s=R2s,onames=['cuminfect'],t0=t0,ecols={'tpaf.pop':name,'tpaf.t0':str(t0)})
+      Ei = out.expo(**ekwds,R2s=R2s,t0=t0,ecols={'tpaf.pop':name,'tpaf.t0':str(t0)})
       E = {col:E[col]+Ei[col] for col in E}
   fio.save_csv(fname('csv','tpaf','expo',case=case),E)
