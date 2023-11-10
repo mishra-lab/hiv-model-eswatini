@@ -5,7 +5,7 @@ from utils import _,NAN,log,stats,flatten,dict_split,linear_comb,interval_qs
 from utils import tarray as ta
 from model import tol
 
-# main -------------------------------------------------------------------------
+# main ---------------------------------------------------------------------------------------------
 
 def get_all(P,**kwds):
   P['foi_mode'] = 'base'
@@ -110,7 +110,7 @@ def def_sample_distrs():
   'RKF_swx_cli_h:l':      stats.gamma(m=2.03,sd=0.230),
   # sex
   'F_msp':                stats.gamma(m=77.3,sd=33.7),
-  'RF_cas:msp':          stats.uniform(l=.5,h=2),
+  'RF_cas:msp':           stats.uniform(l=.5,h=2),
   'dur_msp':              stats.uniform(l=14.5,h=18.5),
   'dur_cas':              stats.gamma(m=.743,sd=0.324),
   'dur_swr':              stats.gamma(m=0.495,sd=0.216),
