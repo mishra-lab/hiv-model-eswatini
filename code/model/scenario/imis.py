@@ -101,7 +101,6 @@ def rerun(case):
 
 if __name__ == '__main__':
   # run(**akwds)
-  # akwds.pop('b')
   # sample_post(**akwds)
   # rerun(**akwds)
   pass

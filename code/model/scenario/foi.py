@@ -29,9 +29,8 @@ def run_ep():
 
 if __name__ == '__main__':
   # imis.run(**akwds,foi_mode=akwds['case'][4:])
-  # akwds.pop('b')
   # imis.sample_post(**akwds)
   # imis.rerun(**akwds)
-  # tpaf.run(**akwds)
+  # tpaf.run(case=cases[int(akwds['b'])])
   # run_ep()
   pass
