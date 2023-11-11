@@ -3,7 +3,7 @@ from utils import log,fio,dict_list_update
 from model import system,out
 from model.scenario import imis,tpaf,akwds,tvec,fname
 
-cases = ['base','rd','ry','py']
+cases = ['base','foi-rd','foi-ry','foi-py']
 
 tkp = dict(tvec=tvec['main'],t=tvec['plot'])
 ekwds = dict(
@@ -28,7 +28,7 @@ def run_ep():
     fio.save_csv(fname('csv','foi-ep','expo',case=case),E)
 
 if __name__ == '__main__':
-  # imis.run(**akwds,foi_mode=akwds['case'])
+  # imis.run(**akwds,foi_mode=akwds['case'][4:])
   # akwds.pop('b')
   # imis.sample_post(**akwds)
   # imis.rerun(**akwds)
