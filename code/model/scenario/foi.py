@@ -16,7 +16,7 @@ def run_ep():
   Ps = fio.load(fname('npy','fit','Ps',case='base'))
   for case in cases:
     log(1,case)
-    R1s = system.run_n(dict_list_update(Ps,foi_mode=case),t=tvec['main'])
+    R1s = system.run_n(dict_list_update(Ps,foi_mode=case[4:]),t=tvec['main'])
     E = out.expo(R1s,**tkp,**ekwds)
     fio.save_csv(fname('csv','foi-ep','wiw',case=case),out.wiw(R1s,**tkp))
     if case == 'base':
