@@ -37,4 +37,4 @@ def run(case='base'):
       R2s = system.run_n(P2s,t=tvec['main'])
       Ei = out.expo(R1s=R1s,R2s=R2s,**ekwds,**tkp,t0=t0,ecols={'tpaf.pop':name,'tpaf.t0':str(t0)})
       E = {col:E[col]+Ei[col] for col in E}
-  # fio.save_csv(fname('csv','tpaf','expo',case=case),E)
+  fio.save_csv(fname('csv','tpaf','expo',case=case),E)
