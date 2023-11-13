@@ -1,5 +1,5 @@
 import os
-from utils import fio,rootpath,genpath,parallel
+from utils import log,fio,rootpath,genpath,parallel
 from model import system
 
 uid = fio.datestamp()
@@ -42,3 +42,4 @@ if akwds.pop('scinet'):
 
 uid = '2023-10-25'
 nid = 'h{hsam}i{imis}b{batch}'.format(**N)
+log(0,'{}/{}'.format(uid,nid))
