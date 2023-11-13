@@ -64,15 +64,15 @@ def filter_targets(T,name=None,pop=None,pop1=None,pop2=None,vsop=None):
   if vsop is not None: T = [Ti for Ti in T if Ti.vsop == vsop]
   return T
 
-def get_model_ll(T,R,t,interval=None):
-  ll = 0.0
+def get_model_ll(T,R,t,interval=None,aggr=True):
+  ll = {}
   for Ti in T:
     if Ti.pop2 is None:
       x = out.by_name(Ti.name)(R,**Ti.pop,tvec=t)
     else:
       x = out.vs_pop(Ti.name,R,pop1=Ti.pop1,pop2=Ti.pop2,vsop=Ti.vsop,tvec=t)
-    ll += float(Ti.ll(x,interval=interval))
-  return ll
+    ll.update({repr(Ti):float(Ti.ll(x,interval=interval))})
+  return sum(ll.values()) if aggr else ll
 
 def top_ll(Rs,top=.1,ll='ll'):
   if isinstance(top,int): top = top / len(Rs)
