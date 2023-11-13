@@ -29,7 +29,7 @@ def run(P,t=None,T=None,RPts=None):
     return {'P':P,'t':t,'ll':-np.inf}
   R['foi_mode'] = R['P']['foi_mode']
   R['lls'] = target.get_model_ll(T,R,t,aggr=False) if T else {}
-  R['ll'] = sum(R['lls'].values())
+  R['ll'] = sum(R['lls'].values()) if T else None
   if RPts:
     R.update({k:np.rollaxis(P[k](t),-1) for k in RPts})
   return R
