@@ -26,9 +26,9 @@ slicers = list(
   'swo'   = list(rgb(.87,.32,.23),'Sex Work Occas.'),
   'swr'   = list(rgb(.99,.65,.04),'Sex Work Reg.'),
   'swx'   = list(rgb(.93,.48,.13),'Sex Work Overall'),
-  'rd'    = list('#00CC99','Partnership Duration','62'),
-  'ry'    = list('#0099CC','Partnership Year','22'),
-  'py'    = list('#CC00CC','All Partnerships Year','4212'),
+  'foi-rd'   = list('#00CC99','Partnership Duration','62'),
+  'foi-ry'   = list('#0099CC','Partnership Year','22'),
+  'foi-py'   = list('#CC00CC','All Partnerships Year','4212'),
   'fsw-cli+' = list('#FF0033','FSW','62'),
   'fsw+cli-' = list('#0066CC','Clients','22'),
   'fsw-cli-' = list('#990099','Both','3212'),
@@ -41,7 +41,7 @@ slicers$clif = slicers$clit = slicers$cli
 sets = list(
   base    = c('base'),
   sens    = c('sens'),
-  foi     = c('rd','ry','py','base'),
+  foi     = c('foi-rd','foi-ry','foi-py','base'),
   art     = c('fsw-cli+','fsw+cli-','fsw-cli-','fsw+cli+','base'),
   pop.all = c('wl','wm','fsw.l','fsw.h','ml','mm','cli.l','cli.h'),
   pop.cal = c('all','w','m','fsw'),
@@ -56,21 +56,23 @@ set.labs = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.labs
 set.lts  = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.lts[[id]] })) })
 set.labs$foi[4] = 'Effective Partners Adjustment'; set.cols$foi[4] = '#FF9900'
 
-gen.name = function(phase,key,case,b='all',ext='.csv'){
-  return(root.path('data','csv',uid,nid,paste0( phase,'_',key,'_',case,'_',b,ext)))
+gen.name = function(phase,key,case,b='all',ext='.csv',log=''){
+  fname = root.path('data','csv',uid,nid,paste0( phase,'_',key,'_',case,'_',b,ext))
+  if (nchar(log)){ pout(log,': ',fname) }
+  return(fname)
 }
 read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
-  if (rdata=='load'){ load(file=gen.name(phase,key,set,ext='.rdata')); return(X) }
+  if (rdata=='load'){ load(file=gen.name(phase,key,set,ext='.rdata',log='load')); return(X) }
   X = rbind.lapply(sets[[set]],function(case){
     if (case %in% skip){ return(NULL) }
     X.i = rbind.lapply(b,function(bi){
-      read.csv(gen.name(phase,key,case,b=bi),as.is=TRUE)
+      read.csv(gen.name(phase,key,case,b=bi,log='load'),as.is=TRUE)
     })
     X.i$case = case
     return(X.i)
   })
   X$case.lab = factor(X$case,levels=sets[[set]],labels=set.labs[[set]])
-  if (rdata=='save'){ save(X,file=gen.name(phase,key,set,ext='.rdata')) }
+  if (rdata=='save'){ save(X,file=gen.name(phase,key,set,ext='.rdata',log='save')) }
   return(X)
 }
 

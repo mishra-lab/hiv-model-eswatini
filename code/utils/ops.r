@@ -1,6 +1,7 @@
 library('parallel')
 options(width=200,scipen=99)
 len = length
+pout = function(...){ cat(paste0(...,'\n')) }
 root.path = function(...,create=FALSE){
   root = strsplit(file.path(getwd(),''),file.path('','code',''))[[1]][1]
   path = file.path(root,...)

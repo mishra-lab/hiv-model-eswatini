@@ -38,7 +38,7 @@ plot.hist = function(X,x,bw=1,...){
 }
 fig.save = function(uid,nid,...,w=7,h=7){
   fig.name = root.path('out','fig',uid,nid,paste0(paste(...,sep='.'),'.pdf'))
-  print(paste('saving:',fig.name))
+  cat(paste0('save: ',fig.name,'\n'))
   ggsave(fig.name,w=w,h=h)
 }
 plot.clean = function(g,...){
