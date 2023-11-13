@@ -1,9 +1,6 @@
-
-# TODO: rename infections.r -> wiw.r
-
 clean.wiw.data = function(X,infs='q0.5'){
   X$infs = X[[infs]]
-  X = X[X$infs>0,!grepl('^q\\d',names(X))]
+  X = X[,!grepl('^q\\d',names(X))]
   X$from  = factor(1+X$fs*4+X$fi,levels=1:8,labels=set.labs$pop.all)
   X$to    = factor(1+X$ts*4+X$ti,levels=1:8,labels=set.labs$pop.all)
   X$part  = factor(1+X$p,levels=1:4,labels=set.labs$part)
