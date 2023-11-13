@@ -14,19 +14,13 @@ load.post.data = function(case='base',rdata='load'){
     cor = cor(X.post[,p.vars(X.post)],method='s'))
 }
 
-plot.ll.hist = function(X,bw=5,ll.min=-1e3){
+plot.ll.hist = function(X,bw=5,ll.min=-1e3,...){
   X$ll[X$ll < ll.min] = NA
-  X = rbind(
-    cbind(X[X$imis==0,],g='Initial Samples'),
-    cbind(X[X$imis >0,],g='IMIS Samples'),
-    cbind(X[X$post   ,],g='Posterior Samples'))
-  g = ggplot(X,aes(x=ll,y=after_stat(ndensity))) +
-    facet_grid('g') +
-    geom_histogram(binwidth=bw,lwd=.1,color='white',fill=clr) +
-    scale_y_continuous(labels=NULL) +
-    lims(x=c(-1000,0)) +
-    labs(x='Log Likelihood',y='Normalized Density')
-  g = plot.clean(g,legend.position='none')
+  g = ggplot(X,aes(x=ll,...)) +
+    geom_histogram(binwidth=bw,lwd=.1,color='white') +
+    lims(x=c(ll.min,0)) +
+    labs(x='Log Likelihood',y='Density')
+  g = plot.clean(g)
 }
 
 plot.post.uni = function(X,color='distr',ncol=NULL,bins=32,stats=FALSE,p.thr=1){

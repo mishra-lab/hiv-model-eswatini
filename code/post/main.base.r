@@ -5,21 +5,43 @@ source('post/wiw.r')
 main.post = function(){
   X = load.post.data()
   plot.post.cor(X$cor,thr=0)
-  file.rename('Rplots.pdf','post.cor.pdf')
+  file.rename('Rplots.pdf','post.cor.pdf') # MAN
   g = plot.post.uni(X$pp,ncol=7) + scale_color_manual(values=c('#000000',clr))
-  ggsave('post.distr.pdf',w=12,h=16) # MAN
+  fig.save(uid,nid,'post.distr',w=12,h=16)
 }
 
 main.ll = function(){
-  plot.ll.tform(); fig.save('','toy','ll.tf',w=4,h=6) # DEBUG
+  plot.ll.tform(); fig.save('','toy','ll.tf',w=4,h=6) # TOY
   X = read.csvs('imis','Ps','base',rdata='load')
   pid = read.csvs('fit','Ps','base',rdata='load')$id
   X$post = paste(X$batch,X$imis,X$id,sep='.') %in% pid
-  plot.ll.hist(X); fig.save(uid,nid,'ll.hist',w=5,h=4)
+  X = rbind(
+    cbind(X[X$imis==0,],g='Initial Samples'),
+    cbind(X[X$imis >0,],g='IMIS Samples'),
+    cbind(X[X$post   ,],g='Posterior Samples'))
+  plot.ll.hist(X,y=after_stat(ndensity)) + facet_grid('g')
+  fig.save(uid,nid,'ll.hist',w=5,h=4)
+}
+
+main.num = function(){
+  X = melt.expo.i(read.csvs('art-ss','expo','base',rdata='load'))
+  xo = filter.cols
+  tf = function(f,d=1){ function(x){ round(x*f,d) } }
+  xo.vs = function(X,pop1,pop2,...){
+    X0 = xo(X,pop=pop1,...)
+    X0$value = X0$value / xo(X,pop=pop2,...)$value
+    X0$pop = paste0(pop1,':',pop2)
+    return(X0) }
+  print(expo.qs(xo(X,out='prevalence',pop='all',t=2020),q=q3,trans=tf(100)))
+  print(expo.qs(xo(X,out='incidence', pop='all',t=2020),q=q3,trans=tf(1000)))
+  print(expo.qs(xo.vs(X,'fsw','w',out='prevalence',t=2020),q=q3,trans=tf(1,2)))
+  print(expo.qs(xo.vs(X,'cli','m',out='prevalence',t=2020),q=q3,trans=tf(1,2)))
 }
 
 main.wiw = function(){
   X = clean.wiw.data(read.csvs('fit','wiw','base'))
+  X$infs.prop = X$infs / aggregate(infs~t,X,sum)$infs
+  print(aggregate(infs.prop~part+t,X,sum)) # NUM
   do.ratio(X);         fig.save(uid,nid,'wiw.base.ratio',w=5,h=5)
   do.margin(X,'part'); fig.save(uid,nid,'wiw.base.part', w=5,h=5.5)
   do.margin(X,'from'); fig.save(uid,nid,'wiw.base.from', w=5,h=8)
@@ -27,6 +49,7 @@ main.wiw = function(){
   do.alluvial.facet(X,seq(1990,2040,10),nrow=2); fig.save(uid,nid,'wiw.base.alluvial',w=8,h=10)
 }
 
+# main.num()
 # main.post()
 # main.ll()
 # main.wiw()

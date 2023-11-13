@@ -1,8 +1,7 @@
 source('post/config.r')
-source('post/posterior.r')
+source('post/post.r')
 source('post/wiw.r')
 source('post/tpaf.r')
-# N$sam = 1000 # DEBUG
 
 plot.clean.foi = function(g,leg='top',lab='FOI Approach'){
   g = g + labs(color=lab,fill=lab,linetype=lab) +
@@ -13,28 +12,32 @@ plot.clean.foi = function(g,leg='top',lab='FOI Approach'){
 }
 
 main.post = function(){
-  X = do.call(rbind,lapply(sets$foi,function(case){
-    load(gen.name('sam','Ps',case,ext='.rdata'))
-    X = cbind(X[s.post(X),],case=case)
-  }))
-  X$case.lab = factor(X$case,levels=sets$foi,labels=set.labs$foi)
-  g = plot.post.uni(X,'case.lab',ncol=6,p.thr=.1) # MAN
+  X = read.csvs('fit','Ps','foi',rdata='load')
+  g = plot.post.uni(X,'case.lab',ncol=7) # MAN
   g = plot.clean.foi(g)
-  ggsave('post.distr.foi.pdf',w=10,h=6)
+  fig.save(uid,nid,'post.distr.foi',w=12,h=16)
+}
+
+main.ll = function(){
+  X = read.csvs('fit','Ps','foi')
+  X$case.facet = factor(gsub(' ','\n',X$case.lab),gsub(' ','\n',levels(X$case.lab)))
+  g = plot.ll.hist(X,fill=case.lab,ll.min=-500) +
+    facet_grid('case.facet')
+  g = plot.clean.foi(g,leg='none')
+  fig.save(uid,nid,'ll.hist.foi',w=4,h=6)
 }
 
 plot.ep = function(Xepp,op,ylab,leg='top',oname='incidence'){
-    g = plot.expo.ribbon(filter.cols(Xepp,op=op),oname,grp='case.lab') +
-      facet_grid('pop ~ case.lab.x',scales='free_y') +
-      labs(x='Year',y=ylab)
-    g = plot.clean.foi(g,leg=leg)
+  g = plot.expo.ribbon(filter.cols(Xepp,op=op),oname,grp='case.lab') +
+    facet_grid('pop ~ case.lab.x',scales='free_y') +
+    labs(x='Year',y=ylab)
+  g = plot.clean.foi(g,leg=leg)
 }
 
 main.ep = function(){
   # load & clean data
   X = read.csvs('foi-ep','expo','foi')
   Xe = filter.cols(X,pop=c('aq','fsw','cli'),t=seq(1980,2035))
-  Xe$case.lab = factor(Xe$case.lab,labels=set.labs$foi)
   Xe$pop = factor(Xe$pop,levels=names(slice.labs),labels=slice.labs)
   Xe$case.lab.x = Xe$case.lab
   # duplicate base data for each other case
@@ -45,9 +48,9 @@ main.ep = function(){
   Xepp = rbind(Xe[!b.rows,],Xep)
   # plot raw & relative incidence
   plot.ep(Xepp,'raw','HIV Incidence (per person-year)')
-    fig.save(uid,N$sam,'foi.ep.incidence.raw',w=9,h=6.5)
-  plot.ep(Xepp,'1-2/2','Relative Difference in HIV Incidence (X - NP / NP)',leg='none')
-    fig.save(uid,N$sam,'foi.ep.incidence.rel',w=9,h=6)
+    fig.save(uid,nid,'foi.ep.incidence.raw',w=9,h=6.5)
+  plot.ep(Xepp,'1-2/2','Relative Difference in HIV Incidence (X - EPA / EPA)',leg='none')
+    fig.save(uid,nid,'foi.ep.incidence.rel',w=9,h=6)
 }
 
 main.wiw = function(){
@@ -57,7 +60,7 @@ main.wiw = function(){
   g = do.margin(X,'part',type='rel',strat=c('case.lab','par')) +
     facet_grid('par~case.lab') +
     labs(y='Yearly Infections (%)')
-  fig.save(uid,N$sam,'foi.wiw.part',w=11,h=5)
+  fig.save(uid,nid,'foi.wiw.part',w=11,h=5)
 }
 
 main.tpaf = function(){
@@ -69,11 +72,12 @@ main.tpaf = function(){
     g = plot.tpaf.box(X,tpaf.pop=pops[[pop]],tpaf.t0=c(1990,2000,2010)) +
       facet_grid('tpaf.t0 ~ tpaf.pop',scales='free_y')
     g = plot.clean.foi(g)
-    fig.save(uid,N$sam,'foi.tpaf',pop,w=8,h=7)
+    fig.save(uid,nid,'foi.tpaf',pop,w=8,h=7)
   }
 }
 
 # main.post()
+# main.ll()
 # main.ep()
 # main.wiw()
 # main.tpaf()
