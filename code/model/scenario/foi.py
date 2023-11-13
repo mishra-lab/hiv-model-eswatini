@@ -28,7 +28,8 @@ def run_ep():
     fio.save_csv(fname('csv','foi-ep','expo',case=case),E)
 
 if __name__ == '__main__':
-  # imis.run(**akwds,foi_mode=akwds['case'][4:])
+  # akwds.update(foi_mode=akwds['case'].replace('foi-',''))
+  # imis.run(**akwds)
   # imis.sample_post(**akwds)
   # imis.rerun(**akwds)
   # tpaf.run(case=cases[int(akwds['b'])])
