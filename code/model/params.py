@@ -365,7 +365,7 @@ def get_K(P):
   PX_si = P['PX_si']
   F = np.squeeze(P['F_ap'].sum(axis=0))
   # dimensions: p,s,i
-  K_psi = np.zeros((4,2,4,1))
+  K_psi = np.zeros((4,2,4,1)) # TODO: singleton is not needed?
   # main / spousal
   K_psi[0,0,0] = P['C12m_msp_xl']
   K_psi[0,0,1] = P['C12m_msp_xl']

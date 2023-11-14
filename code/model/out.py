@@ -89,7 +89,7 @@ def NX(X,s=None,i=None,aggr=True):
 @deco.tslice(tk=['X'])
 def Psi(X,s=None,i=None,aggr=True):
   X  = X.sum(axis=(3,4))
-  XS = X.sum(axis=(1,2),keepdims=True)
+  XS = xdi(X,{1:_,2:_})
   X  = xdi(X,{1:s,2:i})
   return aggratio(X,XS,aggr)
 
