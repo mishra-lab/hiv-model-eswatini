@@ -13,6 +13,7 @@ specs = dict(
   inc     = dict(oname='incidence',ymax=[.1,.1,.1,3]),
   inc1v2  = dict(oname='incidence',snames=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
   cuminf  = dict(oname='cuminfect'),
+  tdsc    = dict(oname='tdsc',snames=['msp','cas','swo','swr'],ymax=1),
   diag    = dict(oname='diagnosed',ymax=1),
   treat_c = dict(oname='treated_c',ymax=1),
   treat_u = dict(oname='treated_u',ymax=1),
@@ -26,7 +27,7 @@ specs = dict(
 specsets = dict(
   hiv     = ['prev','prev1v2','inc','inc1v2'],
   cascade = ['diag','treat_c','treat_u','vls_c','vls_u'],
-  extra   = ['NX','Psi','Ph','condom','circum','prevanc'],
+  extra   = ['NX','Psi','Ph','tdsc','condom','circum','prevanc'],
   rates   = ['dx_rate','tx_rate'],
 )
 
@@ -39,8 +40,9 @@ def plot_sets(t,Rs,T=None,tfname=None,debug=False,sets=None,snames=None):
     Rss = [target.top_ll(Rs,top) for top in (1.,.1,.01)]
   else: # 100% fits as ribbon + median; no merge
     Rss = [Rs]
-  tfnames = [plot_output(t,Rss,**dict(kwds,fname=tfname.format(name),**specs[name])) \
-    for set in flatten(sets) for name in specsets[set]]
+  tfnames = [plot_output(t,Rss,**dict(kwds,fname=tfname.format(name),**specs[name]))
+    for set in flatten(sets) for name in specsets[set]
+    if name != 'tdsc' or out.can_tdsc(Rs[0])]
   if debug: fio.pdfmerge('pyplots.pdf',tfnames)
 
 def plot_output(t,Rss,oname,snames,fname,T=None,ylab=None,ymax=None,**kwds):

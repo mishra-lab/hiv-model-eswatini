@@ -11,6 +11,7 @@ labels = {
   'prevalence': 'Prevalence',
   'incidence':  'Incidence (per person-year)',
   'cuminfect':  'Cumulative infections (\'000s)',
+  'tdsc':       'Transmission-driven seroconcordance',
   'diagnosed':  'Diagnosed among PLHIV',
   'treated_u':  'Treated among PLHIV',
   'treated_c':  'Treated among diagnosed',
@@ -117,6 +118,21 @@ def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
   if t0:
     inf_dt[tvec < t0] = 0
   return np.cumsum(inf_dt,axis=0)
+
+@deco.nanzero
+@deco.rmap(Rk=['Xk'],Pk=['K_psi'])
+@deco.tslice(tk=['Xk'])
+def tdsc(Xk,K_psi,p=None,s=None,i=None,aggr=True,sus=False):
+  # NOTE: only works for foi_mode='base' & system.run(...,Xk=True)
+  # Xk.shape: (t:*, s:2, i:4, k:5, h:6, c:5) -> (t:*, k:5, s:2, i:4)
+  Xk = np.moveaxis(Xk if sus else Xk[:,:,:,:,1:,:],3,1).sum(axis=(4,5)) # only inf or sus too
+  XKsc = xdi(Xk[:,1:,:,:],{1:p,2:s,3:i})
+  XK   = xdi(xdi(Xk,{1:_}) * np.squeeze(K_psi)[_,:,:,:],{1:p,2:s,3:i})
+  return aggratio(XKsc,XK,aggr,axis=(1,2,3))
+
+def can_tdsc(R):
+  # check if we can compute tdsc from this R
+  return ('Xk' in R) and (R['P']['foi_mode'] == 'base')
 
 @deco.nanzero
 @deco.rmap(Rk=['X'])

@@ -19,7 +19,7 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
   else:
     return log(-1,[run(P,t=t,T=T,**kwds) for P in Ps])
 
-def run(P,t=None,T=None,RPts=None):
+def run(P,t=None,T=None,RPts=None,Xk=False):
   if t is None: t = get_t()
   if RPts is None:
     RPts = ['PF_condom_t','PF_circum_t','dx_sit','tx_sit','Rtx_ht','unvx_t','revx_t']
@@ -27,6 +27,7 @@ def run(P,t=None,T=None,RPts=None):
   log(3,str(P['id']).rjust(9)+(' ' if R else '!'))
   if not R:
     return {'P':P,'t':t,'ll':-np.inf}
+  R['X'] = (R.get('Xk') if Xk else R.pop('Xk')).sum(axis=3) # sum_k
   R['lls'] = target.get_model_ll(T,R,t,aggr=False) if T else {}
   R['ll'] = sum(R['lls'].values()) if T else None
   if RPts:
@@ -53,7 +54,7 @@ def solve(P,t):
       return False
   return {
     'P': P,
-    'X': X.sum(axis=3), # sum_k
+    'Xk': X,
     't': t,
     'inc': inc,
   }
