@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import product as iprod
-from utils import _,deco,dtfun,itslice
+from utils import _,deco,xdi,dtfun,itslice
 from model import system,foi,slicers
 # TODO: integrate slicers fully?
 
@@ -77,20 +77,11 @@ def aggratio(X1,X2,aggr,axis=None):
   else:
     return X1 / X2
 
-def X_by_si(X,s=None,i=None):
-  X = X.sum(axis=1,keepdims=True) if s is None \
-      else X[:,_,s] if isinstance(s,int) \
-      else X[:,s]
-  X = X.sum(axis=2,keepdims=True) if i is None \
-      else X[:,:,_,i] if isinstance(i,int) \
-      else X[:,:,i]
-  return X
-
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def NX(X,s=None,i=None,aggr=True):
   X = X.sum(axis=(3,4))
-  X = X_by_si(X,s=s,i=i)
+  X = xdi(X,{1:s,2:i})
   return X.sum(axis=(1,2)) if aggr else X
 
 @deco.rmap(Rk=['X'])
@@ -98,13 +89,13 @@ def NX(X,s=None,i=None,aggr=True):
 def Psi(X,s=None,i=None,aggr=True):
   X  = X.sum(axis=(3,4))
   XS = X.sum(axis=(1,2),keepdims=True)
-  X  = X_by_si(X,s=s,i=i)
+  X  = xdi(X,{1:s,2:i})
   return aggratio(X,XS,aggr)
 
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def prevalence(X,s=None,i=None,aggr=True):
-  X  = X_by_si(X,s=s,i=i)
+  X  = xdi(X,{1:s,2:i})
   XS = X.sum(axis=(3,4)) # <- denominator; numerator -> (1 - susceptible)
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
   return aggratio(Xhiv,XS,aggr)
@@ -113,15 +104,15 @@ def prevalence(X,s=None,i=None,aggr=True):
 @deco.tslice(tk=['X','inc'])
 def incidence(X,inc,foi_mode,s=None,i=None,aggr=True):
   inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
-  inf_si = X_by_si(inf,s=s,i=i)
-  sus_si = X_by_si(X[:,:,:,0,0],s=s,i=i)
+  inf_si = xdi(inf,{1:s,2:i})
+  sus_si = xdi(X[:,:,:,0,0],{1:s,2:i})
   return aggratio(inf_si,sus_si,aggr)
 
 @deco.rmap(Rk=['X','inc'],Pk=['foi_mode'])
 def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
   dt = dtfun(tvec)
   inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
-  inf_si = X_by_si(inf,s=s,i=i)
+  inf_si = xdi(inf,{1:s,2:i})
   inf_dt = inf_si.sum(axis=(1,2)) * dt if aggr else inf_si * dt[:,_,_]
   if t0:
     inf_dt[tvec < t0] = 0
@@ -131,8 +122,8 @@ def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def Ph(X,h,s=None,i=None,aggr=True):
-  X    = X_by_si(X,s=s,i=i)
-  Xh   = (X[:,:,:,_,h] if isinstance(h,int) else X[:,:,:,h]).sum(axis=(3,4))
+  X    = xdi(X,{1:s,2:i})
+  Xh   = xdi(X,{3:h}).sum(axis=(3,4))
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
   return aggratio(Xh,Xhiv,aggr)
 
@@ -140,7 +131,7 @@ def Ph(X,h,s=None,i=None,aggr=True):
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def diagnosed(X,s=None,i=None,aggr=True):
-  X = X_by_si(X,s=s,i=i)
+  X = xdi(X,{1:s,2:i})
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4)) # PLHIV
   Xdia = X[:,:,:,1:,1:].sum(axis=(3,4)) # diagnosed
   return aggratio(Xdia,Xhiv,aggr)
@@ -149,7 +140,7 @@ def diagnosed(X,s=None,i=None,aggr=True):
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def treated(X,s=None,i=None,aggr=True,cond=False):
-  X = X_by_si(X,s=s,i=i)
+  X = xdi(X,{1:s,2:i})
   if cond:
     Xref = X[:,:,:,1:,1:].sum(axis=(3,4)) # diagnosed
   else:
@@ -161,7 +152,7 @@ def treated(X,s=None,i=None,aggr=True,cond=False):
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def vls(X,s=None,i=None,aggr=True,cond=False):
-  X = X_by_si(X,s=s,i=i)
+  X = xdi(X,{1:s,2:i})
   if cond:
     Xref = X[:,:,:,1:,3:].sum(axis=(3,4)) # treated
   else:
@@ -179,8 +170,8 @@ vls_c     = lambda *a,**k: vls(*a,**k,cond=True)
 @deco.tslice(tk=['X','dx_sit'])
 def dx_rate(X,dx_sit,s=None,i=None,aggr=True):
   X = X[:,:,:,1:,0].sum(axis=(3)) # undiagnosed only
-  Xdx = X_by_si(X*np.squeeze(dx_sit),s=s,i=i)
-  XS  = X_by_si(X,s=s,i=i)
+  Xdx = xdi(X*np.squeeze(dx_sit),{1:s,2:i})
+  XS  = xdi(X,{1:s,2:i})
   return aggratio(Xdx,XS,aggr)
 
 @deco.nanzero
@@ -188,8 +179,8 @@ def dx_rate(X,dx_sit,s=None,i=None,aggr=True):
 @deco.tslice(tk=['X','tx_sit','Rtx_ht'])
 def tx_rate(X,tx_sit,Rtx_ht,s=None,i=None,aggr=True):
   X = X[:,:,:,1:,1] # diagnosed only
-  Xtx = X_by_si(X*np.squeeze(tx_sit*Rtx_ht),s=s,i=i).sum(axis=3)
-  XS  = X_by_si(X,s=s,i=i).sum(axis=3)
+  Xtx = xdi(X*np.squeeze(tx_sit*Rtx_ht),{1:s,2:i}).sum(axis=3)
+  XS  = xdi(X,{1:s,2:i}).sum(axis=3)
   return aggratio(Xtx,XS,aggr)
 
 @deco.rmap(Rk=['PF_condom_t'])
