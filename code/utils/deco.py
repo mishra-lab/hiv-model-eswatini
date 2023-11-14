@@ -11,16 +11,17 @@ def nowarn(fun):
       return result
   return decorator
 
-def rmap(args=['X']):
-  # pass values from "R" as arguments to fun
+def rmap(Rk=[],Pk=[]):
+  # pass values from "R" and/or R['P'] as arguments to fun
   def wrapper(fun):
     def decorator(R,**kwds):
-      kwds.update({k:R[k] for k in args})
+      kwds.update({k:R[k] for k in Rk})
+      kwds.update({k:R['P'][k] for k in Pk})
       return fun(**kwds)
     return decorator
   return wrapper
 
-def tslice(targs=[]):
+def tslice(tk=[]):
   # slice args with t before computing fun, assuming first dimension is t dimension
   # targs: list of indices for args that need slicing (fixed for fun)
   # t:     t values that fun should compute for
@@ -30,7 +31,7 @@ def tslice(targs=[]):
       if t is not None:
         it = itslice(t,tvec) # boolean
         for k in kwds.keys():
-          if k in targs:
+          if k in tk:
             kwds[k] = kwds[k][it] # slicing (keeps singleton)
       return fun(**kwds)
     return decorator

@@ -86,38 +86,38 @@ def X_by_si(X,s=None,i=None):
       else X[:,:,i]
   return X
 
-@deco.rmap(args=['X'])
-@deco.tslice(targs=['X'])
+@deco.rmap(Rk=['X'])
+@deco.tslice(tk=['X'])
 def NX(X,s=None,i=None,aggr=True):
   X = X.sum(axis=(3,4))
   X = X_by_si(X,s=s,i=i)
   return X.sum(axis=(1,2)) if aggr else X
 
-@deco.rmap(args=['X'])
-@deco.tslice(targs=['X'])
+@deco.rmap(Rk=['X'])
+@deco.tslice(tk=['X'])
 def Psi(X,s=None,i=None,aggr=True):
   X  = X.sum(axis=(3,4))
   XS = X.sum(axis=(1,2),keepdims=True)
   X  = X_by_si(X,s=s,i=i)
   return aggratio(X,XS,aggr)
 
-@deco.rmap(args=['X'])
-@deco.tslice(targs=['X'])
+@deco.rmap(Rk=['X'])
+@deco.tslice(tk=['X'])
 def prevalence(X,s=None,i=None,aggr=True):
   X  = X_by_si(X,s=s,i=i)
   XS = X.sum(axis=(3,4)) # <- denominator; numerator -> (1 - susceptible)
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))
   return aggratio(Xhiv,XS,aggr)
 
-@deco.rmap(args=['X','inc','foi_mode'])
-@deco.tslice(targs=['X','inc'])
+@deco.rmap(Rk=['X','inc'],Pk=['foi_mode'])
+@deco.tslice(tk=['X','inc'])
 def incidence(X,inc,foi_mode,s=None,i=None,aggr=True):
   inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
   inf_si = X_by_si(inf,s=s,i=i)
   sus_si = X_by_si(X[:,:,:,0,0],s=s,i=i)
   return aggratio(inf_si,sus_si,aggr)
 
-@deco.rmap(args=['X','inc','foi_mode'])
+@deco.rmap(Rk=['X','inc'],Pk=['foi_mode'])
 def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
   dt = dtfun(tvec)
   inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
@@ -128,8 +128,8 @@ def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
   return np.cumsum(inf_dt,axis=0)
 
 @deco.nanzero
-@deco.rmap(args=['X'])
-@deco.tslice(targs=['X'])
+@deco.rmap(Rk=['X'])
+@deco.tslice(tk=['X'])
 def Ph(X,h,s=None,i=None,aggr=True):
   X    = X_by_si(X,s=s,i=i)
   Xh   = (X[:,:,:,_,h] if isinstance(h,int) else X[:,:,:,h]).sum(axis=(3,4))
@@ -137,8 +137,8 @@ def Ph(X,h,s=None,i=None,aggr=True):
   return aggratio(Xh,Xhiv,aggr)
 
 @deco.nanzero
-@deco.rmap(args=['X'])
-@deco.tslice(targs=['X'])
+@deco.rmap(Rk=['X'])
+@deco.tslice(tk=['X'])
 def diagnosed(X,s=None,i=None,aggr=True):
   X = X_by_si(X,s=s,i=i)
   Xhiv = X[:,:,:,1:,:].sum(axis=(3,4)) # PLHIV
@@ -146,8 +146,8 @@ def diagnosed(X,s=None,i=None,aggr=True):
   return aggratio(Xdia,Xhiv,aggr)
 
 @deco.nanzero
-@deco.rmap(args=['X'])
-@deco.tslice(targs=['X'])
+@deco.rmap(Rk=['X'])
+@deco.tslice(tk=['X'])
 def treated(X,s=None,i=None,aggr=True,cond=False):
   X = X_by_si(X,s=s,i=i)
   if cond:
@@ -158,8 +158,8 @@ def treated(X,s=None,i=None,aggr=True,cond=False):
   return aggratio(Xtre,Xref,aggr)
 
 @deco.nanzero
-@deco.rmap(args=['X'])
-@deco.tslice(targs=['X'])
+@deco.rmap(Rk=['X'])
+@deco.tslice(tk=['X'])
 def vls(X,s=None,i=None,aggr=True,cond=False):
   X = X_by_si(X,s=s,i=i)
   if cond:
@@ -175,8 +175,8 @@ vls_u     = lambda *a,**k: vls(*a,**k,cond=False)
 vls_c     = lambda *a,**k: vls(*a,**k,cond=True)
 
 @deco.nanzero
-@deco.rmap(args=['X','dx_sit'])
-@deco.tslice(targs=['X','dx_sit'])
+@deco.rmap(Rk=['X','dx_sit'])
+@deco.tslice(tk=['X','dx_sit'])
 def dx_rate(X,dx_sit,s=None,i=None,aggr=True):
   X = X[:,:,:,1:,0].sum(axis=(3)) # undiagnosed only
   Xdx = X_by_si(X*np.squeeze(dx_sit),s=s,i=i)
@@ -184,26 +184,26 @@ def dx_rate(X,dx_sit,s=None,i=None,aggr=True):
   return aggratio(Xdx,XS,aggr)
 
 @deco.nanzero
-@deco.rmap(args=['X','tx_sit','Rtx_ht'])
-@deco.tslice(targs=['X','tx_sit','Rtx_ht'])
+@deco.rmap(Rk=['X','tx_sit','Rtx_ht'])
+@deco.tslice(tk=['X','tx_sit','Rtx_ht'])
 def tx_rate(X,tx_sit,Rtx_ht,s=None,i=None,aggr=True):
   X = X[:,:,:,1:,1] # diagnosed only
   Xtx = X_by_si(X*np.squeeze(tx_sit*Rtx_ht),s=s,i=i).sum(axis=3)
   XS  = X_by_si(X,s=s,i=i).sum(axis=3)
   return aggratio(Xtx,XS,aggr)
 
-@deco.rmap(args=['PF_condom_t'])
-@deco.tslice(targs=['PF_condom_t'])
+@deco.rmap(Rk=['PF_condom_t'])
+@deco.tslice(tk=['PF_condom_t'])
 def condom(PF_condom_t,p,aggr=None):
   return np.squeeze(PF_condom_t)[:,p]
 
-@deco.rmap(args=['PF_circum_t'])
-@deco.tslice(targs=['PF_circum_t'])
+@deco.rmap(Rk=['PF_circum_t'])
+@deco.tslice(tk=['PF_circum_t'])
 def circum(PF_circum_t,aggr=None):
   return np.squeeze(PF_circum_t)[:]
 
-@deco.rmap(args=['X','inc','foi_mode'])
-@deco.tslice(targs=['X','inc'])
+@deco.rmap(Rk=['X','inc'],Pk=['foi_mode'])
+@deco.tslice(tk=['X','inc'])
 def infections(X,inc,foi_mode,p,fs,fi,ts,ti):
   # NOTE: p,fs,fi,ts,ti must be single values!
   return foi.aggr_inc(inc[:,p,ts,ti,fs,fi],foi_mode,axis=(),Xsus=X[:,ts,ti,0,0])
