@@ -95,7 +95,7 @@ def rerun(case):
   log(0,'imis.rerun: {}'.format(case))
   T = target.get_all_esw()
   Ps = fio.load(fname('npy','fit','Ps',case=case))
-  Rs = system.run_n(Ps,t=tvec['main'])
+  Rs = system.run_n(Ps,t=tvec['main'],Xk=True)
   fio.save_csv(fname('csv','fit','wiw',case=case),out.wiw(Rs,tvec['main'],tvec['plot']))
   fit.plot_sets(tvec['main'],Rs,T=T,tfname=fname('fig','fit','{}',case=case))
 
