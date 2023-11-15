@@ -1,4 +1,4 @@
-\section{Methods}\label{meth}
+\section{Methods}\label{art.meth}
 We constructed a deterministic compartmental model of heterosexual HIV transmission,
 stratified by sex, sexual activity, HIV natural history, and ART cascade of care.
 The model includes 8 risk groups,
@@ -9,7 +9,7 @@ We then explored \emph{counterfactual} scenarios in which
 ART cascade was reduced among various combinations of risk groups,
 and quantified ART prevention impacts by comparing \emph{base case} and \emph{counterfactual} scenarios.
 %===================================================================================================
-\subsection{Model Parameterization \& Calibration}\label{meth.param}
+\subsection{Model Parameterization \& Calibration}\label{art.meth.par}
 Complete details of the model structure, parameterization, and calibration are given in Appendix~\ref{mod}.
 \paragraph{HIV}
 Our model of HIV natural history included acute infection and stages defined by CD4-count.
@@ -21,7 +21,7 @@ We captured risk heterogeneity through risk-group-level factors, including
 group size, average duration in group, STI symptom prevalence, and numbers / types of partnerships per year;
 and partnership-level factors, including
 assortative mixing, partnership duration, frequency of sex, and levels of condom use.
-Table~\ref{tab:het} summarizes key parameter values and sampling distributions related to risk heterogeneity.
+Table~\ref{tab:art.het} summarizes key parameter values and sampling distributions related to risk heterogeneity.
 We assumed that only condom use varied (increased) over time (Figure~\ref{fig:fit.condom}).
 To parameterize higher versus lower risk FSW, we analyzed individual-level survey data
 from Swazi FSW in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014} (Appendix~\ref{mod.par.fsw}).
@@ -35,7 +35,7 @@ nor non-heterosexual HIV transmission.
   \centering
   \caption{Selected model parameters related to risk heterogeneity}
   \input{tab.het}
-  \label{tab:het}
+  \label{tab:art.het}
 \end{table}
 \paragraph{ART cascade}
 We modelled rates of HIV diagnosis among people living with HIV as monotonically increasing over time.
@@ -67,10 +67,10 @@ using an adapted version of Incremental Mixture Importance Sampling (IMIS) \cite
 Full methodology is given in Appendix~\ref{mod.cal},
 while calibration results are given in Appendix~\ref{sr.cal}.
 %===================================================================================================
-\subsection{Scenarios \& Analysis}\label{meth.obj}
+\subsection{Scenarios \& Analysis}\label{art.meth.obj}
 %---------------------------------------------------------------------------------------------------
-\subsubsection{Objective~1: Influence of cascade differences between risk groups}\label{meth.obj.1}
-For Objective~\ref{obj:1},
+\subsubsection{Objective~1: Influence of cascade differences between risk groups}\label{art.meth.obj.1}
+For Objective~\ref{obj:art.1},
 We defined the \emph{base case} scenario to reflect
 observed cascade scale-up in Eswatini, reaching \cashi by 2020 \cite{SHIMS3,AIDSinfo}.
 Next, we defined 4 \emph{counterfactual} scenarios in which overall viral suppression was lower,
@@ -90,8 +90,8 @@ By contrast, we calibrated $R$s for the lower risk population so that
 the Swati population \emph{overall} achieved \casmd in all 4 counterfactual scenarios,
 thus ensuring that a consistent proportion of the population overall
 experienced reduced viral suppression.
-Table~\ref{tab:obj.1.scen} summarizes these scenarios, while
-Figure~\ref{fig:obj.1.cascade} plots the modelled cascades over time.
+Table~\ref{tab:art.1.scen} summarizes these scenarios, while
+Figure~\ref{fig:art.1.cascade} plots the modelled cascades over time.
 When cascade rates among FSW and/or clients were unchanged from the base case,
 the cascade these groups achieved could be lower than \cashi
 due to risk group turnover and higher incidence.
@@ -99,8 +99,8 @@ All cascades continued to increase beyond 2020 due to assumed fixed rates of
 diagnosis, treatment initiation, and treatment failure / discontinuation thereafter.
 \begin{table}
   \centering
-  \caption{Modelling scenarios for Objective~\ref{obj:1} defined by 2020 calibration targets}
-  \label{tab:obj.1.scen}
+  \caption{Modelling scenarios for Objective~\ref{obj:art.1} defined by 2020 calibration targets}
+  \label{tab:art.1.scen}
   \input{tab.scenarios}
 \end{table}
 % TODO: (~) create figure of these cascades like CROI poster
@@ -122,23 +122,23 @@ $\lambda$ denotes incidence rate per susceptible per year.
 For each scenario, we computed these outcomes (CAI and AIR) for each model fit $j$,
 and reported median (95\% CI) values across model fits, reflecting uncertainty.
 %---------------------------------------------------------------------------------------------------
-\subsubsection{Objective~2: Conditions that maximize the influence of cascade differences}\label{meth.obj.2}
-For Objective~\ref{obj:2}, we estimated via regression:
+\subsubsection{Objective~2: Conditions that maximize the influence of cascade differences}\label{art.meth.obj.2}
+For Objective~\ref{obj:art.2}, we estimated via regression:
 the effects of lower cascade among certain risk groups on relative CAI and AIR,
 plus potential effect modification by epidemic conditions.
 The hypothesized causal effets are illustrated
-as a directed acyclic graph in Figure~\ref{fig:obj.2.dag},
+as a directed acyclic graph in Figure~\ref{fig:art.2.dag},
 and the synthetic data generation processes and variable definitions are as follows.
 \par
 For this regression analysis, we obtained 10,000 samples.
-We explored a wider range of counterfactual scenarios \vs Objective~\ref{obj:1}
+We explored a wider range of counterfactual scenarios \vs Objective~\ref{obj:art.1}
 by randomly sampling the relative rates for
 diagnosis and treatment initiation $R_d, R_t \sim \opname{Beta}(\alpha=3.45,\beta=1.85)$
 and treatment failure $R_u \sim \opname{Gamma}(\alpha=3.45,\beta=1.88)$
 for each of: FSW, clients, and the remaining lower risk population (9~total values).
 These sampling distributions had 95\%~CI: (0.25,~0.95) and (1.5,~15), respectively,
 and were chosen to obtain cascades in 2020 spanning
-approximately \mbox{60-60-90} through \mbox{90-90-95} (Figure~\ref{fig:obj.2.cascade}). % MAN
+approximately \mbox{60-60-90} through \mbox{90-90-95} (Figure~\ref{fig:art.2.cascade}). % MAN
 For each of $N_f = 1000$ model fits, we generated $N_k = 10$ counterfactual scenarios per fit
 via random relative rates ``$R$'' via Latin hypercube sampling,
 yielding $N_f N_k = {}$10,000 total counterfactual samples for the regression.
@@ -147,7 +147,7 @@ yielding $N_f N_k = {}$10,000 total counterfactual samples for the regression.
   \caption{Directed acyclic graph (DAG) for inferring
     the epidemic conditions under which
     differential viral suppression across risk groups matters most}
-  \label{fig:obj.2.dag}
+  \label{fig:art.2.dag}
   \floatfoot{
     $Y$: cumulative additional infections (CAI) or additional incidence rate (AIR) by 2030;
     $D$: difference in population-overall viral unsuppression
@@ -158,7 +158,7 @@ yielding $N_f N_k = {}$10,000 total counterfactual samples for the regression.
 \end{figure}
 \par
 For each of these 10,000 samples, we defined
-relative CAI and AIR by 2030 \vs the base case, as in Objective~\ref{obj:1}.
+relative CAI and AIR by 2030 \vs the base case, as in Objective~\ref{obj:art.1}.
 For each sample, we further defined
 $U_{fki}$ for risk groups $i \in \{\tdef{1}{FSW}, \tdef{2}{clients}, \tdef{*}{overall}\}$
 as the proportions virally unsuppressed among people living with HIV by 2020,
@@ -182,7 +182,7 @@ as compared to including all modelled risk factors for HIV acquisition,
 which could lead to overfitting and improper inference due to effect mediation.
 \par
 Finally, we defined a general linear model for each outcome (CAI, AIR) as:
-\begin{equation}\label{eq:obj.2.glm}
+\begin{equation}\label{eq:art.2.glm}
   \txn{CAI, AIR} = \beta_0\,D
                  + \sum_i \beta_i\,d_i
                  + \sum_{ij} \beta_{ij}\,d_i\,C_j
