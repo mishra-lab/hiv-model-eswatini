@@ -31,8 +31,9 @@
 \graphicspath{
   {\app/fig/}
   {\figroot/\uid/}
-  {\figroot/\uid/fit/}
+  {\figroot/\uid/base/}
   {\figroot/wp/}
+  {\figroot/toy/}
   {\figroot/tikz/}}
 \def\fitscale{.475}
 %---------------------------------------------------------------------------------------------------
@@ -77,7 +78,8 @@
 \newcommand{\sref}[1]{\S\,\ref{#1}}
 \newcommand{\sfref}[1]{(\subref{#1})}
 \renewcommand{\eqref}[1]{Eq.~(\ref{#1})}
-\newcommand{\eqrefs}[2]{Eqs.~(\ref{#1}--\ref{#2})}
+\newcommand{\eqrefs}[2]{Eqs. (\ref{#1})~and~(\ref{#2})}
+\newcommand{\eqrefr}[2]{Eqs.~(\ref{#1})--(\ref{#2})}
 \newcommand{\tn}[1]{\textsuperscript{\rlap{\,#1}}}
 \newcommand{\tnt}[2][*]{\textsuperscript{#1\,}{#2}}
 \newcommand{\cdf}[2]{\ifempty{#2}{CD4\,$>$\,#1}{\ifempty{#1}{}{#1\,$<$\,}CD4\,$<$\,#2}}
