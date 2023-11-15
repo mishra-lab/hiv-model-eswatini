@@ -13,5 +13,5 @@ clean:
 cls:
 	cp /home/jesse/dev/tex/pkg/ms/ms/ms.cls .
 
-words:
-	python3.8 wc/wc.py
+wc:
+	python3.8 ../wc/wc.py intro methods results discuss
