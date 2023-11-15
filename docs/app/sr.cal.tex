@@ -108,7 +108,7 @@ reflecting a balance of would-be exponential epidemic growth
 increasing condom use (Figure~\ref{fig:fit.condom}),
 male circumcision (Figure~\ref{fig:fit.circum}),
 ART coverage (Figure~\ref{fig:fit.cascade}, and
-accumulation of seroconcordant partnerships (see~\sref{foi}).
+accumulation of seroconcordant partnerships (Figure~\ref{fig:fit.tdsc}).
 These trends can be compared with HIV prevalence from Eswatini antenatal care clinics
 over the same period (Figure~\ref{fig:fit.prevanc}), which suggest similar trends.%
 \footnote{Antenatal care data were not used as calibration targets because
@@ -171,6 +171,10 @@ the modelled proportion of men aged 15--49 who are circumcised,
 including uncertainty about future trends (see \sref{mod.par.tm.circ}).
 Figure~\ref{fig:fit.condom} illustrates
 modelled trends in condom use within different partnership types (see \sref{mod.par.tm.condom}).
+Figure~\ref{fig:fit.tdsc} illustrates
+the modelled transmission-driven seroconcordance proportion
+for different partnership types (see \sref{foi.prop.tdsc}),
+as defined in \eqref{eq:tdsc} with denominator (b).
 \begin{figure}
   \centering\includegraphics[scale=\fitscale]{fit.Psi.base.all}
   \caption{Modelled relative sizes of selected risk groups over time}
@@ -195,6 +199,12 @@ modelled trends in condom use within different partnership types (see \sref{mod.
   \centering\includegraphics[scale=\fitscale]{fit.condom.base.all}
   \caption{Modelled condom use within different partnership types}
   \label{fig:fit.condom}
+  \floatfoot{\fffit; \ffribbon.}
+\end{figure}
+\begin{figure}
+  \centering\includegraphics[scale=\fitscale]{fit.tdsc.base.all}
+  \caption{Modelled transmission-driven seroconcordance within different partnership types}
+  \label{fig:fit.tdsc}
   \floatfoot{\fffit; \ffribbon.}
 \end{figure}
 %===================================================================================================

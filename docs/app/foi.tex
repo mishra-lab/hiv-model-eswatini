@@ -196,3 +196,34 @@ This constraint should also be easy to guarantee for a small enough timestep,
 because in \eqref{eq:M.I}, $M_{I,pih}$ approaches zero as $I_{ih\p}$ approaches $I_{ih} K_{pi}$
 --- i.e. all type-$p$ partnerships become HIV+ seroconcordant,
 and no more transmission can occur via these partnerships until partners change.
+%===================================================================================================
+\subsection{Transmission-Driven Seroconcordance}\label{foi.prop.tdsc}
+Another benefit of the proposed approach is that
+we can quantify the proportion of partnerships that are seroconcordant
+due to prior transmission within the partnership.
+We call these partnerships ``transmission-driven seroconcordant''
+to distinguish them from seroconcordant partnerships formed by chance
+--- or due to serosorting \cite{Purcell2017,Kim2020} ---
+among two previously infected individuals.
+For this proportion,
+the numerator is the population size of stratum $\p=p$, while
+the denominator is the total number of type-$p$ partnerships among
+(a) all individuals, or (b) infected individuals only:
+\begin{equation}\label{eq:tdsc}
+  \textsc{tdsc}_{p*} = \frac{I_{*,\p=p}}{K_{p*} \sum_{\p} X_{*\p}}
+  \qquad
+  \begin{cases}
+    X = I + S & \textnormal{(a)} \\
+    X = I     & \textnormal{(b)} \\
+  \end{cases}
+\end{equation}
+where $*$ could specify any subset of the population
+defined by modelled strata --- \eg sex, activity group, HIV state, etc.
+While denominator (a) may be interesting conceptually,
+denominator (b) can be directly interpreted as
+a relative reduction in onward transmission risk among infected individuals.
+The actual reduction would be weighted by
+the probability of transmission per sex act, sex frequency, etc.
+Note also that a single post-transmission partnership
+will be ``double-counted'' in the numerator of \eqref{eq:tdsc},
+because both infected individuals cannot transmit via this partnership.
