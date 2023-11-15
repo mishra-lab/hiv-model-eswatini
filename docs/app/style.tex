@@ -3,8 +3,10 @@
 \usepackage[italic]{mathastext}
 \usepackage[scale=.75]{FiraMono}
 \usepackage{xcolor}
-\fontdimen2\font=.2em
+\usepackage{microtype}
+\AtBeginDocument{\fontdimen2\font=.2em}
 \renewcommand{\labelitemi}{$\bullet$}
+\let\xbfseries\bfseries\renewcommand\bfseries{\boldmath\xbfseries}
 \let\xitemize\itemize\renewcommand{\itemize}{\xitemize\itemsep0pt}
 \renewcommand{\bibfont}{\footnotesize}
 \usepackage[colorlinks,citecolor=violet,linkcolor=purple,urlcolor=blue]{hyperref}
