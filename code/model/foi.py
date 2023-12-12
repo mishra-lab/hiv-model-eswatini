@@ -52,6 +52,7 @@ def get_apply_inc(dX,X,t,P):
   # partner numbers (K) or rates (Q)
   if P['foi_mode'] in ['base']: # K
     C_psik = P['K_psi'] - P['aK_pk']
+    fix_XK(X,P)
   elif P['foi_mode'] in ['lin']: # K
     C_psik = P['K_psi']
   elif P['foi_mode'] in ['rd']: # Q
@@ -62,7 +63,7 @@ def get_apply_inc(dX,X,t,P):
     A_ap = P['F_ap'] * P['dur_p_1']
   # compute mixing
   XC = (X[_,:,:,:,:,:] * C_psik[:,:,:,:,_,_]).sum(axis=3)
-  XC[XC<0] = 0 # TODO: double check this is safe
+  XC[XC<0] = 0
   SXC = XC.sum(axis=(3,4))  # shape = (p:4, s:2, i:4)
   PXC_hc = XC / (SXC[:,:,:,_,_] + tol/10) # shape = (p:4, s:2, i:4, h:6, c:5)
   # note: PXC_hc = PX_hc, i.e. X / X.sum(axis=(2,3)), unless foi_mode = 'base'
@@ -109,3 +110,12 @@ def aggr_inc(inc,foi_mode,axis,Xsus=None,Xinf=None,keepdims=False):
     return inc.sum(axis=axis,keepdims=keepdims)
   if foi_mode in ['py']:
     return (1 - (1 - inc).prod(axis=axis,keepdims=keepdims)) * Xsus
+
+#@profile
+def fix_XK(X,P):
+  # we cannot remove more partnerships than we have: X[:,:,1:] <= XKm
+  # if this happens (due to turnover) then move the extra X[:,:,1:] to X[:,:,0]
+  XKm = X.sum(axis=2,keepdims=True) * np.moveaxis(P['K_psi'],0,2)[...,_]
+  XKe = np.maximum(0, X[:,:,1:] - XKm)
+  X[:,:,1:] -= XKe
+  X[:,:,0 ] += XKe.sum(axis=2)
