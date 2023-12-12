@@ -10,7 +10,7 @@ specs = dict(
   prev    = dict(oname='prevalence',ymax=[.5,.5,.5,1]),
   prev1v2 = dict(oname='prevalence',snames=[('fsw.h','fsw.l'),('fsw','w'),('wh','wl'),('mh','ml')],vsop='1/2',ymax=5),
   prevanc = dict(oname='prevalence',snames=['w'],ymax=[.5],T=target.get_prevalence_esw_anc()),
-  inc     = dict(oname='incidence',ymax=[.1,.1,.1,3]),
+  inc     = dict(oname='incidence',ymax=[.1,.1,.1,2]),
   inc1v2  = dict(oname='incidence',snames=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
   cuminf  = dict(oname='cuminfect'),
   tdsc    = dict(oname='tdsc',snames=['msp','cas','swo','swr'],ymax=1),

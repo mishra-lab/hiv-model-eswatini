@@ -62,10 +62,9 @@ def solve(P,t):
 #@profile
 def get_dX(X,t,P):
   # initialize
-  dX = 0*X # (s:2, i:4, k:4, h:6, c:5)
+  dX = 0*X # (s:2, i:4, k:5, h:6, c:5)
   # force of infection
   inc = foi.get_apply_inc(dX,X,t,P) # (p:4, s:2, i:4, s':2, i':4)
-  # TODO: reorder these steps?
   # HIV transitions
   dXi = X[:,:,:,1:5,0:3] * P['prog_h'] # all hiv & untreated
   dX[:,:,:,1:5,0:3] -= dXi
