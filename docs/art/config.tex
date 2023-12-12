@@ -10,6 +10,16 @@
 \newcommand{\cashi}{\mbox{95-95-95}\xspace}
 \newcommand{\tdef}[2]{#1{\,:\,}\txn{#2}}
 %---------------------------------------------------------------------------------------------------
+% ric
+\usepackage{float,mdframed}
+\usepackage[mode=text,group-separator={,}]{siunitx}
+\newcommand{\st}[1]{{\ttfamily#1}}
+\newfloat{fbox}{tbp}{lob}
+\floatname{fbox}{Box}
+\newenvironment{ric}
+  {\begin{fbox}\mdframed[backgroundcolor=black!05,hidealllines=true]}
+  {\endmdframed\unskip\caption{Research in context}\label{ric}\end{fbox}}
+%---------------------------------------------------------------------------------------------------
 % bib
 \addbibresource{/home/jesse/refs/library.bib}
 \renewcommand{\bibfont}{\footnotesize}

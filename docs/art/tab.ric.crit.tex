@@ -1,0 +1,33 @@
+\newcommand{\tabitem}{$\bullet$\hspace{.5em}\ignorespaces}
+\begin{tabular}{ll}
+  \toprule
+  Include & Exclude \\
+  \midrule
+  \multicolumn{2}{l}{\textbf{Publication Type}} \\
+  \midrule
+  \tabitem English language               & \tabitem non-English \\
+  \tabitem peer-reviewed research article & \tabitem non-peer-reviewed \\
+                                          & \tabitem review article \\
+                                          & \tabitem textbook, grey literature \\
+                                          & \tabitem opinions, comments, correspondence \\
+                                          & \tabitem conference abstracts and proceedings \\
+  \midrule
+  \multicolumn{2}{l}{\textbf{Modelling of HIV Transmission}} \\
+  \midrule
+  \tabitem population-level dynamics               & \tabitem only within-host/cellular/protein modelling \\
+  \tabitem sexual HIV transmission model           & \tabitem no sexual HIV transmission modelled \\
+  \tabitem non-linear HIV transmission model\tn{*} & \tabitem HIV transmission model is linear \\
+                                                   & \tabitem HIV incidence is fixed or imported \\
+  \midrule
+  \multicolumn{2}{l}{\textbf{Context \& Objectives}} \\
+  \midrule
+  \tabitem any region in Sub-Saharan Africa (SSA)\tn{*} & \tabitem only regions outside SSA\tn{*}\\
+                                                        & \tabitem only theoretical context \\
+  \tabitem includes 90-90-90+ scenario\tn{*}            & \tabitem no 90-90-90+ scenario\tn{*}   \\
+  \tabitem includes base-case reflecting status quo     & \tabitem no base-case scenario \\
+  \tabitem report prevention impacts of 90-90-90+\tn{*} & \tabitem did not report ART prevention impacts\tn{*} \\
+                                                        & \tabitem intervention/budget optimization \\
+                                                        & \tabitem viral load monitoring or regimen switching \\
+  \bottomrule
+\end{tabular}
+\floatfoot{\tnt[*]{See definitions in \ref{sr.ric.def}.}}
