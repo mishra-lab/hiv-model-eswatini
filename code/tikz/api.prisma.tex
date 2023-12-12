@@ -1,0 +1,45 @@
+\footnotesize%
+\newcommand{\np}[4][\\]{\textbf{#4}#1(N~=~#2\,+\,#3)}%
+\newcommand{\nps}[3]{\parbox[b]{5mm}{\hfill#1}\,+\,\parbox[b]{3.5mm}{\hfill#2}: #3\\}%
+\begin{tikzpicture}[
+  x = 67mm,
+  y = -22mm,
+  arrow/.append style = {->},
+  prisma/.style = {
+    anchor = north,
+    fill = black!05,
+    align = center,
+    text width = 50mm,
+    minimum height = 15mm,
+    inner sep = 5mm,
+  }]
+  % nodes
+  \node[prisma](a0) at (0,0) {\np{2134}{598}{Database search hits}};
+  \node[prisma](a1) at (1,0) {\np {767}{225}{Duplicates removed automatically}};
+  \node[prisma](b0) at (0,1) {\np{1367}{373}{Abstracts screened}};
+  \node[prisma](b1) at (1,1) {\np {595}{205}{Irrelevant}};
+  \node[prisma](c0) at (0,2) {\np {772}{168}{Full texts assessed}};
+  \node[prisma](c1) at (1,2) {\np[~]{407}{73}{Excluded}\\[1ex]\raggedright
+    \nps{  4}{ 1}{Duplicate}
+    \nps{115}{31}{Publication type}
+    \nps{118}{ 7}{No transmission modelling}
+    \nps{136}{33}{Not dynamical model}
+    \nps{ 25}{ 5}{Not HIV}
+    \nps{  9}{ 1}{Not SSA}};
+  \node[prisma](d0) at (0,3.75) {\np{377}{90}{Dynamical HIV transmission models}};
+  \node[prisma](d1) at (1,3.75) {\np{334}{80}{No 90-90-90+ prevention impacts}};
+  \node[prisma](e0) at (0,4.75) {\np {43}{10}{Report 90-90-90+ prevention impacts}};
+  \node[prisma](e1) at (1,4.75) {\np {36} {5}{No named 90-90-90+ scenario(s)}};
+  \node[prisma](f0) at (0,5.75) {\np  {7} {5}{Named 90-90-90+ scenario(s)}};
+  % arrows
+  \draw[arrow] (a0) -- (a1);
+  \draw[arrow] (a0) -- (b0);
+  \draw[arrow] (b0) -- (b1);
+  \draw[arrow] (b0) -- (c0);
+  \draw[arrow] (c0) -- (c1.west|-c0.east);
+  \draw[arrow] (c0) -- node[right] {+\,12 cited studies} (d0);
+  \draw[arrow] (d0) -- (d1);
+  \draw[arrow] (d0) -- (e0);
+  \draw[arrow] (e0) -- (e1);
+  \draw[arrow] (e0) -- (f0);
+\end{tikzpicture}

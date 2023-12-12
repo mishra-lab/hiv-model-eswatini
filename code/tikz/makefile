@@ -22,6 +22,7 @@ figs =
 # figs += mf.comp
 # figs += mf.pair
 # figs += mf.ibm
+# figs += api.prisma
 all:
 	for fig in $(figs); do \
 	  ./maketikz.sh $$fig ;\
