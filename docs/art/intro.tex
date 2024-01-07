@@ -1,62 +1,116 @@
-\section{Introduction}\label{art.intro} %SM: great introduction section structure! main suggestions: introduce term inequality; introduce the idea of overall vs inequality in 95-95-95
+\section{Introduction}\label{art.intro}
+% SM: great introduction section structure! main suggestions:
+%     introduce term inequality; introduce the idea of overall vs inequality in 95-95-95
 % TODO (~): cite Akullian2020
-Early HIV treatment via antiretroviral therapy (ART) offers
-numerous individual-level health benefits \cite{Gabillard2013,Maartens2014,Danel2015,Lundgren2015init},
-and can prevent transmission in serodiscordant partnerships \cite{Anglemyer2013,Cohen2016,Rodger2019}.
-As such, immediate initiation of ART has been recommended by WHO since 2016 \cite{WHO2016art}.
+Early HIV treatment via antiretroviral therapy (ART)
+is a lifesaving intervention increasing both the quantity and quality of life
+\cite{Gabillard2013,Maartens2014,Danel2015,Lundgren2015init}.
+A secondary benefit to early ART given U=U is that
+% HM: Might need to spell out.
+onward transmission risks are mitigated in serodifferent partnerships
+\cite{Anglemyer2013,Cohen2016,Rodger2019}.
+As such, immediate initiation of ART after HIV diagnosis
+has been recommended by WHO since 2016 \cite{WHO2016art}.
 Alongside expanding ART eligibility,
 interest has grown in the potential population-level prevention impacts of ART, motivating
 numerous modelling studies \cite{Granich2009,Eaton2012,Eaton2014art,Knight2022sr} and
 several large community-based trials \cite{Makhema2019,Havlir2019,Hayes2019,Iwuji2018}
 of ART scale-up as ``treatment as prevention'', especially across Sub-Saharan Africa.
 In general, the prevention impacts estimated via these trials
+% RK: realized in/by ??
 have not met expectations from modelling, prompting questions about
 the potential influence of modelling assumptions on predictions \cite{Baral2019}.
+% SB: Important to really lay out the clear differences and disconnect between
+%     individual observed benefits and population-level ones.  Ie, U+U is a fact.
+%     So it is really that it didn’t lower HIV incidence in the trials that was something that necessitated interrogation.
+% LW: Would be more explicit about the different findings from those trials vs. previous modeling studies.
 \par
 Within these modelling studies, ART prevention impacts are usually quantified as
 incidence rate reduction or cumulative infections averted
 in scenarios with higher cascade attainment \vs scenarios with lower attainment \cite{Knight2022sr}.
 Modelled populations are often stratified by risk,
+% HM: Risk of disease acquisition?
 including key populations like FSW and their clients,
+% HM: This is the first time FSW appears
 to capture important epidemic dynamics related to risk heterogeneity
 \cite{Stigum1994,Garnett1996,Watts2010}.
-However, these studies almost always assume that cascade
+However, these studies generally assume that cascade
 attainment (\ie proportions of PLHIV who are diagnosed, treated, and virally suppressed) or
 progression (\ie rates of diagnosis, treatment initiation, and treatment failure/discontinuation)
 are equal across modelled risk groups.
-For example, among the modelling studies reviewed in \cite{Knight2022sr},
+For example, among the modelling studies in a recent review \cite{Knight2022sr},
 key populations were usually assumed to have ``average'' cascade progression,
 or ``above average'' progression in some scenarios, but never ``below average'',
 as compared to the population overall.
+% LW: Is this applicable to all 3 cascades? Rate of dx, tx initiation and tx discontinuation?
+%     But never ‘below average’ made it sound like a limitation;
+%     even though it may not be in the context of rate of discontinuation.
+%     I would rephrase this sentence as sth below to be more specific:
+%    "key populations were usually assumed to have "average”" cascade progression as compared to the population overall;
+%     a few studies had considered greater rates of diagnosis in xx,  greater treatment initiation in xx,
+%     and/or greater treatment discontinuation in xx."
+%     Cite literature in each case; so it is more explicit. For example. For treatment discontinuation,
+%     I would not blame if nobody had assumed below average discontinuation rate for key population.
 \par
-Yet, there is growing evidence of differential ART cascade across population strata,  %SM: maybe we introduce the term inequalities here? 
-including age, gender, mobility, and risk \cite{Hakim2018,Green2020}. %SM: risk of?
+Yet, there is growing evidence of differential ART cascade attainment across population strata,
+% SM: maybe we introduce the term inequalities here?
+% LW: Echo Stef’s point of consistency: ART cascade vs. HIV treatment cascade vs. ART scale-up
+including age, gender, mobility, and risk \cite{Hakim2018,Green2020}.
+% SM: risk of?
 These differences can be driven by
-systemic barriers to engagement in care faced by vulnerable populations, %SM: i've been learning from work in the social epidemiology field not to call the barriers unique, but rather systemic (to reflect the world in whicih we live in re: systems and structures shaping barriers)...i.e. t hey are unique b/c discrimiination and "othering" is created by systems...
-which intersect with drivers of HIV risk \cite{Wanyenze2016,Schwartz2017,Schmidt-Sane2022}. %SM: what do we mean by drivers here? HIV risk of acquistion or onward transmission or both?
+systemic barriers to engagement in care faced by marginalized populations,
+% SM: i've been learning from work in the social epidemiology field not to call the barriers unique,
+%     but rather systemic (to reflect the world in whicih we live in re: systems and structures shaping barriers)...
+%     i.e. t hey are unique b/c discrimiination and "othering" is created by systems...
+which intersect with drivers of HIV risk \cite{Wanyenze2016,Schwartz2017,Schmidt-Sane2022}.
+% SM: what do we mean by drivers here? HIV risk of acquistion or onward transmission or both?
+% RK: Perhaps a slight expansion would be useful, outlining some well-described barriers that FSW face in accessing care?
+%     Words may be too short though I guess....
+% SB: I would be clear about individual, network ,and structural determinants really driving this.
 Moreover, the lowest cascades likely remain unmeasured \cite{Hakim2018,Boothe2021}. 
-%SM: not 100% sure what we want to say here? agree, woudl clarify ...e.g. do we mean something like:  "However, current data systems for monitoring the HIV cascade rarely do so by populations at differential risks of HIV transmission. Thus, inequalities in the HIV cascade, especially among populations most likely to be left behind by current HIV programs, may go undetected despite a country acheiving 95-95-95 overall. 
-%SM: would set up the idea here about how can have an overall cascade,  but with inequalities across populations - but perhaps that is what you were trying to do?
+% SM: not 100% sure what we want to say here? agree, woudl clarify ...
+%     e.g. do we mean something like: "However, current data systems for monitoring the HIV cascade
+%     rarely do so by populations at differential risks of HIV transmission.
+%     Thus, inequalities in the HIV cascade, especially among populations most likely to be left behind
+%     by current HIV programs, may go undetected despite a country acheiving 95-95-95 overall.
+% SM: would set up the idea here about how can have an overall cascade,
+%     but with inequalities across populations - but perhaps that is what you were trying to do?
+% HM: What does this mean? The lowest cascades among whom?
+% LW: Unclear what you mean by lowest cascade?
 % TODO: (*) clarify above
-These intersections of risk and cascade heterogeneity  %SM: i really like this
-could potentially undercut the prevention impacts of ART scale-up
+These intersections of risk and cascade heterogeneity
+% SM: i really like this
+could potentially undercut the population-level prevention impacts of ART scale-up
 anticipated from model-based evidence \cite{Baral2019}.
+% SB: And individual-level studies.
 Therefore, we sought to examine the following questions
 in an illustrative modelling analysis:
 \begin{enumerate}
-  \item\label{obj:art.1} How are projections of ART prevention impacts
-    influenced by differences in cascade across risk groups?
+  \item\label{obj:art.1} How are projections of ART population-level prevention impacts
+    % RK: impact or impacts? Style thing, no right answer
+    influenced by differences in HIV treatment cascade across risk groups?
+    % SB: Is there a different way of calling folks other than risk groups.
+    %     The answer may be no, but I know there may be some tension with this language
+    %     given the common stigma associated with the term "risk" and being "high risk",
+    % LW: Maybe population subgroups? And somewhere we define population subgroups as subgroups at different risk of HIV...
   \item\label{obj:art.2} Under which epidemic conditions
     do such differences have the largest influence?
 \end{enumerate}
 We examined these questions using
 a deterministic compartmental model of heterosexual HIV transmission in Eswatini \cite{Knight2019},
 focusing on differential risk related to sex work.
-Eswatini has the highest national HIV prevalence in the world \cite{UNAIDS2021}, %SM: given our positionality here, I think ok to remove "but" and "outstanding" 
+Eswatini has the highest national HIV prevalence in the world \cite{UNAIDS2021},
+% SM: given our positionality here, I think ok to remove "but" and "outstanding"
 and recently achieved large cascade gains --- surpassing 95-95-95 ---
 through multiple interventions led by the MaxART Consortium \cite{Walsh2020,SHIMS3,AIDSinfo}.
 As such, we used observed ART scale-up in Eswatini as a \emph{base case}
 reflecting evidently attainable scale-up,
 and explored \emph{counterfactual} scenarios in which scale-up was slower,
-and where specific populations could have been left behind. %SM: re-read a few times, and I wonder if we should remove quotation marks around left behind; quoations may imply not-real/fake/a-term-we-made-up?
-%SM: something to consider for througout our paper, to use term populations instead of risk groups (except in methods). the term risk group is starting to be removed from HIV discussions, and Stef made a nice suggestion about this in one of our grants and it read nicely to talk about populations (esp b/c at times, FSW are not at highest per-capita risk of HIV acquistion due to programs! )
+and where specific populations could have been left behind.
+% SM: re-read a few times, and I wonder if we should remove quotation marks around left behind;
+%     quoations may imply not-real/fake/a-term-we-made-up?
+% SM: something to consider for througout our paper,
+%     to use term populations instead of risk groups (except in methods).
+%     the term risk group is starting to be removed from HIV discussions, and Stef made a nice suggestion about this
+%     in one of our grants and it read nicely to talk about populations
+%     (esp b/c at times, FSW are not at highest per-capita risk of HIV acquistion due to programs! )

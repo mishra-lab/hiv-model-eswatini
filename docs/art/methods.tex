@@ -1,9 +1,14 @@
-\section{Methods}\label{art.meth} %SM: I really liked how you succintly synthesized 3 years of work into 2 pages :) with a focused and clear desciption of the methods and key elements (with full details in the appendix). This will be a good example for future phD students given the reality of the way general medical/public health papers/journals are set up for now. a few minor edits/comments for consideration but overall I think really nicely written for a broad yet HIV-knowlegeble audience
+\section{Methods}\label{art.meth}
+% SM: I really liked how you succintly synthesized 3 years of work into 2 pages :)
+%     with a focused and clear desciption of the methods and key elements (with full details in the appendix).
+%     This will be a good example for future PhD students given the reality of the way
+%     general medical/public health papers/journals are set up for now.
+%     a few minor edits/comments for consideration but overall I think really nicely written for a broad yet HIV-knowlegeble audience
 We constructed a deterministic compartmental model of heterosexual HIV transmission,
 stratified by sex, sexual activity, and health states to reflect HIV natural history and ART cascade of care.
-The model includes 8 risk groups,
+The model includes eight risk groups,
 including higher and lower risk female sex workers (FSW), and higher and lower risk clients of FSW,
-plus 4 partnership types, including regular and occasional sex work (Figure~\ref{fig:model}).
+and four partnership types, including regular and occasional sex work (Figure~\ref{fig:model}).
 We calibrated the model to reflect the HIV epidemic and ART scale-up in Eswatini (\emph{base case}).
 We then explored \emph{counterfactual} scenarios in which
 ART cascade was reduced among various combinations of risk groups,
@@ -15,20 +20,33 @@ Complete details of the model structure, parameterization, and calibration are g
 HIV natural history included acute infection and stages defined by CD4-count.
 We modelled relative rates of infectiousness by stage
 as an approximation of viral load \cite{Wawer2005,Boily2009,Donnell2010},
+% RK: None of these were structured to capture impact of acute infection on transmission I think
+%     but I assume you did something clever to include that?
 as well as rates of HIV-attributable mortality by stage \cite{Badri2006,Anglaret2012,Mangal2017}.
 \paragraph{Risk heterogeneity}
-We captured risk heterogeneity through risk-group-level factors, including  %SM: see earlier comments/thoughts re: populations instead of groups...
+We captured risk heterogeneity through risk-group-level factors, including
+% SM: see earlier comments/thoughts re: populations instead of groups...
 group size, average duration in group, STI symptom prevalence, and numbers / types of partnerships per year;
+% LW: Spell out first occurence of "STI"
 and partnership-level factors, including
 assortative mixing, partnership duration, frequency of sex, and levels of condom use.
 Table~\ref{tab:art.het} summarizes key parameter values and sampling distributions related to risk heterogeneity.
-We assumed that only condom use varied (increased) over time (Figure~\ref{fig:fit.condom}).  %SM: clarify what "only" might mean here? could it be interpreted as testing/ART uptake did not vary over time? 
-To parameterize higher versus lower risk FSW, we analyzed individual-level survey data
+% HM: FSW of women overall and clients of men overall read odd.
+%     Would just put FSW overall and clients overall as u explained in footnote.
+%     Sex work clients per year -> # of clients in sex work? Similar: # of visits? GUD prevalence?
+We assumed that only condom use varied (increased) over time (Figure~\ref{fig:fit.condom}).
+% SM: clarify what "only" might mean here? could it be interpreted as testing/ART uptake did not vary over time?
+% SB: We didn’t do anything with PrEP here, right?  May need to include in limitations that PrEP was not modeled.
+% LW: Looks like. Agree to note in limitation section.
+% SS: agree
+To parameterize higher \vs lower risk FSW, we analyzed individual-level survey data
 from Swazi FSW in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014} (Appendix~\ref{mod.par.fsw}).
+% SB: Still ok to say Swazi even if that is what country was called at the time?
 We parameterized the remaining risk groups using reported data from national studies in
 2006 \cite{SDHS2006}, 2011 \cite{SHIMS1}, and 2016 \cite{SHIMS2}.
 We modelled expansion of voluntary medical male circumcision \cite{SHIMS2},
 and declining GUD/STI prevalence,
+% LW: Spell out first occurence of "GUD"
 but did not model other interventions (e.g. current pre-exposure prophylaxis scale-up \cite{EswCOP21})
 nor non-heterosexual HIV transmission.
 \begin{table}
@@ -38,30 +56,41 @@ nor non-heterosexual HIV transmission.
   \label{tab:art.het}
 \end{table}
 \paragraph{ART cascade}
-We modelled rates of HIV diagnosis among people living with HIV as monotonically increasing over time. %SM: rates of testing, rates of testing if infected/PLHIV, or rates of actual diagnoses made (i.e. rates of cases detected if there was diagnosis-based surveillance data available)?
+% SS: propose replacing low/medium-risk wo/men -> "cisgender women with low/medium sexual activity" (throughout)
+We modelled rates of HIV diagnosis among people living with HIV as monotonically increasing over time.
+% SM: rates of testing, rates of testing if infected/PLHIV, or rates of actual diagnoses made
+%     (i.e. rates of cases detected if there was diagnosis-based surveillance data available)?
 We defined a base rate for low/medium activity women,
 and constant relative rates for low/medium activity men ($<1$), clients ($<1$), and FSW ($>1$),
-reflecting increased access to HIV testing via antenatal care among women versus men,
+% SS: what is this referring to? Is low clients <1 - - perhaps put the numbers for women and men separately
+%     also is this <1 client per month? Per day?
+reflecting increased HIV testing access via antenatal care among women versus men,
 and enhanced screening among FSW \cite{Baral2014}.
 We modelled ART initiation similarly except:
 the relative rate for ART initiation among FSW was $<1$,
 reflecting unique barriers to uptake and engagement in care \cite{Mountain2014sr}; and
+% LW: So FSW were more likely to be tested but less likely to initiate treatment?
+%     Just to make sure it is in line with literature. Especially if we have data specific to Eswatini.
 we defined an additional relative rate by CD4 count ($\le1$)
 to reflect historical ART eligibility criteria \cite{NERCHA2018rep}.
 We modelled viral suppression using a fixed rate for all groups,
-corresponding to an average of 4 months on ART \cite{Mujugira2016}.
+corresponding to an average of 4 months from ART initiation \cite{Mujugira2016}.
 We modelled treatment failure / discontinuation with a single monotonically decreasing rate
 applied to all risk groups in the base case,
 reflecting improving treatment success / retention over time \cite{NERCHA2014nsf}.
+% SS: Curious why the decision to assume similar VS / retention given known barriers to VS
+%     as well as potential underlying resistance issues. Perhaps just notable as a limitaiton?
 Individuals with treatment failure / discontinuation could re-initiate ART at a fixed rate,
 reflecting re-engagement in care or detection of treatment failure and initiation of alternative regimens.
 We modelled rapid CD4 recovery during the first 4 months of ART,
+% RK: Assume that this was just for mortality benefits and not transmission? Latter not relevant on ART of course.
 followed by slower recovery while virally suppressed \cite{Battegay2006,Lawn2006,Gabillard2013}.
 We modelled reduced HIV-attributable mortality among individuals on ART,
 in addition to mortality benefits of CD4 recovery.
 \paragraph{Calibration}
 We calibrated the model to reflect
-available data from Eswatini on HIV prevalence among XXX, HIV incidence among XXX, and ART cascade of care among XXX, %SM: suggest specifying if word count allows, which populations these calibration data refer to
+available data from Eswatini on HIV prevalence among XXX, HIV incidence among XXX, and ART cascade of care among XXX,
+% SM: suggest specifying if word count allows, which populations these calibration data refer to
 stratified by risk group \cite{SDHS2006,SHIMS1,SHIMS2,SHIMS3,Baral2014,EswKP2014,EswIBBS2022}.
 using an adapted version of Incremental Mixture Importance Sampling (IMIS) \cite{Raftery2010}.
 Full methodology is given in Appendix~\ref{mod.cal},
@@ -73,27 +102,36 @@ while calibration results are given in Appendix~\ref{sr.cal}.
 For Objective~\ref{obj:art.1},
 We defined the \emph{base case} scenario to reflect
 observed cascade scale-up in Eswatini, reaching \cashi by 2020 \cite{SHIMS3,AIDSinfo}.
-Next, we defined 4 \emph{counterfactual} scenarios in which overall viral suppression was lower,
+% LW: Use actual exact numbers?
+Next, we defined four \emph{counterfactual} scenarios in which overall viral suppression was lower,
+% HM: Overall cascade?
+% LW: Looks like not only vs lower, each cascade was lower?
 such that the population overall reached \casmd by 2020,
 reflecting approximate trends in SSA cascades prior to universal ART \cite{AIDSinfo}.
 In these counterfactual scenarios, we reduced cascade progression
+% LW: I wonder if you can describe the four counterfactual scenarios as u did in Abstract first
+%     (focused on cascade attainment as you call it: so it is more intuitive for readers).
+%     And then u get into here RE how you operationalized it.
 among specific risk groups in different combinations:
-FSW, clients, and/or the remaining population (``lower risk'').
+FSW, clients, and/or the remaining population (those at ``lower risk'').
 We reduced cascade progression by calibrating and applying
 a constant relative scaling factor ``$R$'' to group-specific rates of:
 diagnosis ($R_d \in [0,1]$),
 treatment initiation ($R_t \in [0,1]$), and
 treatment failure / discontinuation ($R_u \in [1,20]$).
-When FSW and/or clients had reduced cascade, we calibrated their $R$s so that
-these populations achieved approximately \caslo by 2020.
-By contrast, we calibrated $R$s for the lower risk population so that
-the Swati population \emph{overall} achieved \casmd in all 4 counterfactual scenarios,
+When FSW and/or clients had reduced cascade attainment, we calibrated their $R$s such that
+% SB: This sentence isnt immediately clear to me.
+these populations attained approximately \caslo by 2020.
+By contrast, we calibrated $R$s for the lower risk population such that
+the Swati population \emph{overall} attained \casmd in all 4 counterfactual scenarios,
+% SS: At least in SA, we’ve observed the third 90 to be problematic for FSW
+%     so perhaps just worth noting this limitation of assumption in the discussion
 thus ensuring that a consistent proportion of the population overall
 experienced reduced viral suppression.
 Table~\ref{tab:art.1.scen} summarizes these scenarios, while
 Figure~\ref{fig:art.1.cascade} plots the modelled cascades over time.
 When cascade rates among FSW and/or clients were unchanged from the base case,
-the cascade these groups achieved could be lower than \cashi
+the cascade these groups attained could be lower than \cashi
 due to risk group turnover and higher incidence.
 All cascades continued to increase beyond 2020 due to assumed fixed rates of
 diagnosis, treatment initiation, and treatment failure / discontinuation thereafter.
@@ -105,8 +143,11 @@ diagnosis, treatment initiation, and treatment failure / discontinuation thereaf
 \end{table}
 % TODO: (~) create figure of these cascades like CROI poster
 \par
-We quantified ART prevention impacts via relative %SM: nicely explained
+We quantified ART prevention impacts via relative
+% SM: nicely explained
 cumulative additional infections (CAI) and additional incidence rate (AIR)
+% LW: Additional infections mentioned in Abstract refers to which?
+%     Use consistent terminology in Abstract
 in the counterfactual scenarios ($k$) \vs the base case ($0$),
 over multiple time horizons up to 2030, starting from $t_0 = 2000$:
 \begin{equation}
@@ -121,26 +162,35 @@ $\Lambda$ denotes absolute numbers of infections per year, and
 $\lambda$ denotes incidence rate per susceptible per year.
 For each scenario, we computed these outcomes (CAI and AIR) for each model fit $j$,
 and reported median (95\% CI) values across model fits, reflecting uncertainty.
+% LW: Define CI in main text at its first occurence
 %---------------------------------------------------------------------------------------------------
 \subsubsection{Objective~2: Conditions that maximize the influence of cascade differences}\label{art.meth.obj.2}
 For Objective~\ref{obj:art.2}, we estimated via regression:
+% Details on the regression model? e.g., what type of regression model?
 the effects of lower cascade among certain risk groups on relative CAI and AIR,
+% LW: "effect of" vs "association between". Also, specify risk groups {1: FSW, etc.} here
 plus potential effect modification by epidemic conditions.
+% SB: I think first time you used epidemic conditions. Could introduce the term earlier
+%     and just indicate in abstract that studying which epidemic conditions are most impactful, etc.
 The hypothesized causal effects are illustrated
-as a directed acyclic graph in Figure~\ref{fig:art.2.dag},
-and the synthetic data generation processes and variable definitions are as follows.
+as a directed acyclic graph in Figure~\ref{fig:art.2.dag}.
+% SB: Nothing immediately follows this.
 \par
-For this regression analysis, we obtained 10,000 samples.
+For this regression, we generated 10,000 synthetic samples as follows.
+% SS: From where? From what distribution?
+% LW: Is this para describing the IMIS? If so – I will call it out
 We explored a wider range of counterfactual scenarios \vs Objective~\ref{obj:art.1}
 by randomly sampling the relative rates for
 diagnosis and treatment initiation $R_d, R_t \sim \opname{Beta}(\alpha=3.45,\beta=1.85)$
 and treatment failure $R_u \sim \opname{Gamma}(\alpha=3.45,\beta=1.88)$
-for each of: FSW, clients, and the remaining lower risk population (9~total values).
+for each of: FSW, clients, and the remaining population at lower risk (9~total values).
 These sampling distributions had 95\%~CI: (0.25,~0.95) and (1.5,~15), respectively,
 and were chosen to obtain cascades in 2020 spanning
 approximately \mbox{60-60-90} through \mbox{90-90-95} (Figure~\ref{fig:art.2.cascade}). % MAN
+% LW: Can u clarify how these ranged are chosen?
 For each of $N_f = 1000$ model fits, we generated $N_k = 10$ counterfactual scenarios per fit
 via random relative rates ``$R$'' via Latin hypercube sampling,
+% LW: Can add a citation for LHS
 yielding $N_f N_k = {}$10,000 total counterfactual samples for the regression.
 \begin{figure}
   \centering\includegraphics[scale=1]{art.2.dag}
@@ -158,14 +208,23 @@ yielding $N_f N_k = {}$10,000 total counterfactual samples for the regression.
 \end{figure}
 \par
 For each of these 10,000 samples, we defined
-relative CAI and AIR by 2030 \vs the base case, as in Objective~\ref{obj:art.1}.  %SM: one thing we may run into as an acroynm issue is that CAI is often used in HIV literature to mean condomless anal intercourse. I think that is not an issue in this paper, but just a heads-up editors may ask us to remove acronym here (in previous experience with journals which have to reduce number of acronyms)
+relative CAI and AIR by 2030 \vs the base case, as in Objective~\ref{obj:art.1}.
+% SM: one thing we may run into as an acroynm issue is that
+%     CAI is often used in HIV literature to mean condomless anal intercourse.
+%     I think that is not an issue in this paper, but just a heads-up editors may ask us to remove acronym here
+%     (in previous experience with journals which have to reduce number of acronyms)
 For each sample, we further defined
 $U_{fki}$ for risk groups $i \in \{\tdef{1}{FSW}, \tdef{2}{clients}, \tdef{*}{overall}\}$
-as the proportions virally unsuppressed among people living with HIV by 2020, %SM: unsupressed always sounded a bit funny to me and am not super used to it yet lol, but no need to change this if we are seeing it more and more in HIV papers
+as the proportions virally unsuppressed among people living with HIV by 2020,
+% SM: unsupressed always sounded a bit funny to me and am not super used to it yet lol,
+%     but no need to change this if we are seeing it more and more in HIV papers
+% SB: This isnt a word so will need to define how being used here (assume just not suppressed).
+%     But why can't framing be viral suppression?
 reflecting a summary measure of ART cascade gaps.
 Using $U_{fki}$, we defined the main regression predictors as:
 $D_{fk} = U_{fk*} - U_{f0*} > 0$, reflecting differences in
 \emph{population-overall} viral unsuppression in sample $k \in [1,10]$
+% SS: maybe "detectable viral load" (> XX copies/ml)
 \vs the base case (denoted $k = 0$); and
 $d_{fki} = U_{fki} - U_{fk*} \lessgtr 0$, reflecting differences in
 \emph{group-$i$-specific} viral unsuppression in sample $k$
@@ -176,19 +235,33 @@ as hypothesized modifiers of the effect of disproportionate unsuppression on rel
 FSW and client population sizes (\% of population overall);
 average rate of turnover among FSW and clients (per year, reciprocal of duration selling / buying sex); and
 HIV prevalence ratios in the year 2005 among FSW \vs other women, and among clients \vs other men.
-For these measures, we combined higher and lower risk FSW, and likewise higher and lower risk clients.
-We used HIV prevalence ratios in 2005 to reflect summary measures of risk heterogeneity prior to ART, %SM: specifiy we mean prevalence ratios between populations/groups?
-rather than including all risk factors of HIV acquisition captured in the transmission model, %SM: by modelled we mean in the transmission model yes? may help to distinguish from the statistical model when we talk about both together
+For these measures, we combined FSW at higher and lower risk,
+and likewise for clients at higher and lower risk.
+We used HIV prevalence ratios in 2005 to reflect summary measures of risk heterogeneity prior to ART,
+% SM: specifiy we mean prevalence ratios between populations/groups?
+rather than including all risk factors of HIV acquisition captured in the transmission model,
+% SM: by modelled we mean in the transmission model yes?
+%     may help to distinguish from the statistical model when we talk about both together
 which could lead to overfitting and improper inference due to effect mediation.
 \par
 Finally, we defined a general linear model for each outcome (CAI, AIR) as:
+% SM: I know you write the model in the order your conduct the analysis.
+%     But you may have to write the Methods in a way that help readers get through the bigger picture first; then the details.
+%     e.g., you can note generalized linear model early in para 1 when you mention regression analysis;
+%     Then you talk about what is your outcome, exposure, other covariate of interest (here is the potential effect modifier of interest);
+%     Then you go into definitions of each.
+%     Then you go into how you generated/simulated the dataset via sampling.
+%     To the same note, once you sort through the bigger picture parts and their order:
+%     u can then keep some specifcs/details in appendix.
 \begin{equation}\label{eq:art.2.glm}
   \txn{CAI, AIR} = \beta_0\,D
                  + \sum_i \beta_i\,d_i
                  + \sum_{ij} \beta_{ij}\,d_i\,C_j
 \end{equation}
 such that each outcome was modelled as a sum of the effects of:
-differential population-level unsuppression in the counterfactual \vs the base scenario ($D$); %SM: any other terms we can use instead of "unsuppression"? and thinking re: consitency with terminology with abstract/intro, discussion later, etc. 
+differential population-level unsuppression in the counterfactual \vs the base scenario ($D$);
+% SM: any other terms we can use instead of "unsuppression"?
+%     and thinking re: consitency with terminology with abstract/intro, discussion later, etc.
 differential unsuppression among FSW and clients
 \vs the population overall within the counterfactual scenario ($d_i$); and
 effect modification of $d_i$ by epidemic conditions ($C_j$).
@@ -198,7 +271,8 @@ We fitted this model for each outcome using generalized estimating equations \ci
 to control for repeated use of each model fit $f$.
 We standardized all model variables ($D$, $d_i$, $C_j$) via
 $\hat{x} = (x - \txn{mean}(x)) / \txn{SD}(x)$
-to avoid issues of different variable scales and collinearity in interaction terms. %SM:  nice
+to avoid issues of different variable scales and collinearity in interaction terms.
+% SM: nice
 This standardization does not imply that
 regression coefficient magnitudes can be compared to indicate variable ``importance'',
 because the standardization applied to each variable is driven
