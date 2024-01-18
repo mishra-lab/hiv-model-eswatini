@@ -94,7 +94,10 @@ reflecting specific barriers to uptake and engagement in care \cite{Mountain2014
 % JK: Good point - it might be worth allowing <1 or >1 in the next calibration,
 %     since these relative rates are calibrated to ART coverage data.
 %     I'd have to review again, but the types of data available for FSW vs other women
-%     (e.g. % initiated after 12 months) may/not support deriving a relative rate  %SM: yes, same here - my recollection is that once on ART, less differnetial re: adherence and conditinal VLS, but there are some studies (like in South Africa with Siyambaphili) where I think conditional VLS was lower among FSW. For this study/paper, I think we are ok as is and revise if/as reviewer may ask/suggest later.
+%     (e.g. % initiated after 12 months) may/not support deriving a relative rate
+% SM: yes, same here - my recollection is that once on ART, less differnetial re: adherence and conditinal VLS,
+%     but there are some studies (like in South Africa with Siyambaphili) where I think conditional VLS was lower among FSW.
+%     For this study/paper, I think we are ok as is and revise if/as reviewer may ask/suggest later.
 we defined additional relative rates by CD4 count ($\le1$)
 to reflect historical ART eligibility criteria \cite{NERCHA2018rep}.
 We modelled viral suppression using a fixed rate for all subpopulations,
@@ -104,7 +107,8 @@ applied to all subpopulations in the base case,
 reflecting improving treatment success / retention over time \cite{NERCHA2014nsf}.
 % SS: Curious why the decision to assume similar VS / retention given known barriers to VS
 %     as well as potential underlying resistance issues. Perhaps just notable as a limitaiton?
-% JK: Good point -- in next calibration we can explore <1 for FSW and/or clients too  %SM: agree 
+% JK: Good point -- in next calibration we can explore <1 for FSW and/or clients too
+% SM: agree
 Individuals with treatment failure / discontinuation could re-initiate ART at a fixed rate,
 reflecting re-engagement in care or detection of treatment failure and initiation of alternative regimens.
 We modelled rapid CD4 recovery during the first 4 months of ART,
@@ -125,7 +129,8 @@ We calibrated the model to reflect
 available data from Eswatini on HIV prevalence, HIV incidence, and ART cascade of care
 % SM: suggest specifying if word count allows, which populations these calibration data refer to
 % JK: there are a lot of different subpopulations (plus prevalence/incidence ratios)
-%     maybe just highlight the tables which summarize these targets? %SM:agree
+%     maybe just highlight the tables which summarize these targets?
+% SM: agree
 overall and stratified by subpopulation where possible
 (Tables \ref{tab:targ.prev}--\ref{tab:targ.cascade})
 \cite{SDHS2006,SHIMS1,SHIMS2,SHIMS3,Baral2014,EswKP2014,EswIBBS2022}
@@ -151,7 +156,8 @@ and where FSW, clients, both, or neither were disproportionately left behind.
 %     (focused on cascade attainment as you call it: so it is more intuitive for readers).
 %     And then u get into here RE how you operationalized it.
 % JK: Great points -- have changed to 'cascade'
-%     & introduced the 4 cases first before diving into the details as you suggest LW  %SM: this was a nice suggestion - reads well
+%     & introduced the 4 cases first before diving into the details as you suggest LW
+% SM: this was a nice suggestion - reads well
 In these counterfactual scenarios, we altered cascade attainment among
 FSW, clients, and/or the remaining population by calibrating (``lower risk'')
 constant relative scaling factors ``$R$'' to subpopulation-specific rates of:
@@ -161,7 +167,8 @@ treatment failure / discontinuation ($R_u \in [1,20]$).
 When FSW and/or clients were left behind, we calibrated their $R$s such that
 these populations attained approximately \caslo by 2020.
 % SB: This sentence isnt immediately clear to me.
-% JK: hopefully clarified? %SM: yes to me
+% JK: hopefully clarified?
+% SM: yes to me
 By contrast, we calibrated $R$s for the remaining population such that
 the Swati population \emph{overall} attained \casmd in all 4 counterfactual scenarios,
 % SS: At least in SA, we've observed the third 90 to be problematic for FSW
@@ -169,7 +176,8 @@ the Swati population \emph{overall} attained \casmd in all 4 counterfactual scen
 % JK: Although I agree this is a limitation of our modelling assumptions,
 %     and something we should explore in next calibration iteration,
 %     I think this limitation would not directly undermine our findings,
-%     so I might leave it out of the discussion? SM: agree with leave out
+%     so I might leave it out of the discussion?
+% SM: agree with leave out
 thus ensuring that a consistent proportion of the population overall
 attained viral suppression.
 Table~\ref{tab:art.1.scen} summarizes these scenarios, while
@@ -222,7 +230,9 @@ plus potential effect modification by epidemic conditions.
 % SB: I think first time you used epidemic conditions. Could introduce the term earlier
 %     and just indicate in abstract that studying which epidemic conditions are most impactful, etc.
 % JK: Hmm, not sure where else to add? It was noted in the objectives (intro),
-%     though I agree, it has not been defined until here... %SM: was introduction, so feel like its ok. (can see if reviewer also  needs it to be repeated, but ok as is I think)
+%     though I agree, it has not been defined until here...
+% SM: was introduction, so feel like its ok.
+%     (can see if reviewer also  needs it to be repeated, but ok as is I think)
 The hypothesized causal effects are illustrated
 as a directed acyclic graph in Figure~\ref{fig:art.2.dag}.
 % SB: Nothing immediately follows this.
@@ -231,7 +241,8 @@ as a directed acyclic graph in Figure~\ref{fig:art.2.dag}.
 For this regression, we generated 10,000 synthetic samples as follows.
 % SS: From where? From what distribution?
 % JK: The whole paragraph describes the process to generate the synthetic data;
-%     hopefully moving the 'as follows' here helps? %SM: yes
+%     hopefully moving the 'as follows' here helps?
+% SM: yes
 % LW: Is this para describing the IMIS? If so – I will call it out
 % JK: This part is not IMIS (that was only for calibration)
 %     though we do use LHS again for nice coverage of parameter space
@@ -282,9 +293,10 @@ as the proportions \emph{not} virally suppressed among those living with HIV by 
 % SB: This isnt a word so will need to define how being used here (assume just not suppressed).
 %     But why can't framing be viral suppression?
 % SS: maybe "detectable viral load" (> XX copies/ml)
-% JK: I've changed 'unsuppression' -> 'non-suppression', which is maybe slightly better? %SM: yes, I like that on re-reading it...(and have seen similar re: not suppressed in other papers)
-%     My reservation about 'suppression' vs 'non-suppression' framing is that it flips the effect directions
-%     such that the effects become less intuitive (to me anyway). %SM: agree
+% JK: I've changed 'unsuppression' -> 'non-suppression', which is maybe slightly better?
+% SM: yes, I like that on re-reading it...(and have seen similar re: not suppressed in other papers)
+% JK: My reservation about 'suppression' vs 'non-suppression' framing is that it flips the effect directions
+%     such that the effects become less intuitive (to me anyway). % SM: agree
 %     Since all counterfactual scenarios are expected to have more infections vs base case (95-95-95),
 %     we now talk about higher non-suppression -> more additional infections; whereas
 %     we would instead have higher suppression -> fewer additional infections (but still more vs base case)
@@ -292,7 +304,8 @@ as the proportions \emph{not} virally suppressed among those living with HIV by 
 %     \beta_{ij} would represent the relative decrease in additional infections
 %     due to viral suppression among subpopulation i in the context of condition C_j ---
 %     I feel the current meaning of \beta_{ij} as 'relative increase in additional infections
-%     due to non-suppression among subpop i in the context of C_j', is more intuitive? %SM: yes, agree ... it is more intuitive and flows more logically re: central thesis of paper/study
+%     due to non-suppression among subpop i in the context of C_j', is more intuitive?
+% SM: yes, agree ... it is more intuitive and flows more logically re: central thesis of paper/study
 reflecting a summary measure of ART cascade gaps.
 Using $U_{fki}$, we defined the main regression predictors as:
 $D_{fk} = U_{fk*} - U_{f0*} > 0$, reflecting differences in
@@ -312,7 +325,8 @@ and likewise for clients at higher and lower risk.
 We used HIV prevalence ratios in 2005 to reflect summary measures of risk heterogeneity prior to ART,
 % SM: specifiy we mean prevalence ratios between populations/groups?
 % JK: HIV prevalence ratios are defined just above (1st sentence in this para)
-%     not sure what other prevalence ratios we would mean? %SM: sorry, I see it now!
+%     not sure what other prevalence ratios we would mean?
+% SM: sorry, I see it now!
 rather than including all risk factors from the transmission model,
 % SM: by modelled we mean in the transmission model yes?
 %     may help to distinguish from the statistical model when we talk about both together
@@ -331,7 +345,8 @@ Finally, we defined a general linear model for each outcome (CAI, AIR) as:
 % JK: I've added a bit more big picture framing earlier per the suggestions above
 %     I think the para 1 now gives the big picture, in simple terms (i.e. not specifying conditions)
 %     I'm a bit hesitant to add another layer of detail in between para 1 and full details
-%     as it might just add repetition / confusion? %SM: I think the layered approaach now is good
+%     as it might just add repetition / confusion?
+% SM: I think the layered approaach now is good
 \begin{equation}\label{eq:art.2.glm}
   \txn{CAI, AIR} = \beta_0\,D
                  + \sum_i \beta_i\,d_i
