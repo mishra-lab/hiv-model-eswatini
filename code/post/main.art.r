@@ -16,7 +16,7 @@ pop.labs = list(
   all = 'Overall',
   w   = 'Women Overall',
   m   = 'Men Overall',
-  aq  = 'Lower Risk',
+  aq  = 'All Others',
   fsw = 'FSW',
   cli = 'Clients')
 
@@ -30,10 +30,10 @@ pred.vars = c(
   'd Clients' = 'du.cli')
 mod.vars = c(
   'FSW % Population'     = 'px.fsw',
-  'FSW / Women HIV IR'   = 'ir.fsw',
+  'FSW / Women HIV PR'   = 'pr.fsw',
   'FSW Turnover'         = 'tur.fsw',
   'Clients % Population' = 'px.cli',
-  'Clients / Men HIV IR' = 'ir.cli',
+  'Clients / Men HIV PR' = 'pr.cli',
   'Clients Turnover'     = 'tur.cli')
 
 var.lab.fun = function(vars){
@@ -84,6 +84,9 @@ num.1.rai = function(X,t.hor=2030){
   X.ref = x.case('fsw-cli-')
   X.ref$value = (X.ref$value - x.case('fsw+cli+')$value) / X.ref$value
   print(expo.qs(X.ref,q=q3,trans=function(x){ round(100*x,1) }))
+  X.ref = x.case('fsw+cli+')
+  X.ref$value = (x.case('fsw-cli-')$value - X.ref$value) / X.ref$value
+  print(expo.qs(X.ref,q=q3,trans=function(x){ round(100*x,1) }))
 }
 
 main.1.rai = function(){
@@ -104,7 +107,7 @@ main.1.wiw = function(){
       facet_grid('~case.lab',scales='free_y') +
       labs(y='Additional Infections (\'000s)') +
       guides(colour=guide_legend(nrow=1),fill=guide_legend(nrow=1))
-    fig.save(uid,nid,'art.wiw',margin, w=8,h=3)
+    fig.save(uid,nid,'art.1.wiw',margin,w=8,h=3)
   }
 }
 
@@ -147,7 +150,7 @@ load.2.data = function(rdata=''){
   'par' = read.csvs('art-ss','P0s','sens'))
 }
 
-clean.2.data = function(X.list,t.hor=2030){
+clean.2.data = function(X.list,t.hor=2030,t.ref=2005){
   i.list = lapply(X.list,grep.i.col)
   x.out = function(...){ c(t(filter.cols(X.list$out,...)[,i.list$out])) }
   x.par = function(par){ c(t(filter.cols(X.list$par,par=par)[,i.list$par])) }
@@ -160,8 +163,8 @@ clean.2.data = function(X.list,t.hor=2030){
     Du.all  =  x.out(case='base',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='all',t=2020,out='vls_u'),
     du.fsw  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='fsw',t=2020,out='vls_u'),
     du.cli  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='cli',t=2020,out='vls_u'),
-    ir.fsw  =  x.out(case='sens',pop='fsw',t=2000,out='incidence') / x.out(case='sens',pop='w',t=2000,out='incidence'),
-    ir.cli  =  x.out(case='sens',pop='cli',t=2000,out='incidence') / x.out(case='sens',pop='m',t=2000,out='incidence'),
+    pr.fsw  =  x.out(case='sens',pop='fsw',t=t.ref,out='prevalence') / x.out(case='sens',pop='w',t=t.ref,out='prevalence'),
+    pr.cli  =  x.out(case='sens',pop='cli',t=t.ref,out='prevalence') / x.out(case='sens',pop='m',t=t.ref,out='prevalence'),
     tur.fsw = 1/x.par('dur_fsw'),
     tur.cli = 1/x.par('dur_cli'),
     px.fsw  = x.par('PX_fsw'),
