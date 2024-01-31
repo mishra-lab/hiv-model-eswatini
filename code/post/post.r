@@ -27,7 +27,7 @@ plot.post.uni = function(X,color='distr',ncol=NULL,bins=32,stats=FALSE,p.thr=1){
   X.long = melt(X,id.vars=i.vars(X)) 
   X.long$variable = factor(X.long$variable,levels=sort(levels(X.long$variable)))
   if (stats){
-    p = ad.tests(X,color)
+    p = distr.tests(X,color)
     X.long = merge(X.long,cbind(p=p,p.star=sapply(p,p.stars),variable=p.vars(X)))
     X.long$variable = paste(X.long$variable,X.long$p.star)
     X.long = X.long[X.long$p <= p.thr,]
@@ -52,9 +52,10 @@ plot.post.cor = function(X.cor,thr=0){
     tl.cex=3.33/sqrt(nrow(X.cor)),tl.col='black')
 }
 
-ad.tests = function(X,g='distr'){
+distr.tests = function(X,group='distr'){
   p.vals = par.lapply(p.vars(X),function(var){ print(var)
-    p.val = kSamples::ad.test(split(X[[var]],X[[g]]))$ad[1,3]
+    # p.val = kSamples::qn.test(split(X[[var]],X[[group]]))$qn[2] # DEBUG
+    p.val = kSamples::ad.test(split(X[[var]],X[[group]]))$ad[1,3]
   })
 }
 
