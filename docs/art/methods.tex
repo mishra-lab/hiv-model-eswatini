@@ -143,12 +143,16 @@ while calibration results are given in Appendix~\ref{sr.cal}.
 \subsubsection{Objective~1: Influence of ART cascade differences between subpopulations}\label{art.meth.obj.1}
 For Objective~\ref{obj:art.1},
 We defined the \emph{base case} scenario to reflect
-observed ART cascade scale-up in Eswatini, reaching \cashi by 2020 \cite{SHIMS3}.
+observed ART cascade scale-up in Eswatini, reaching
+\cashi for the population overall by 2020 \cite{SHIMS3}, and
+\casfsw among FSW specifically \cite{EswIBBS2022}.%
+\footnote{Data on viral suppression for FSW were not available, which we denote as ``xx'';
+  no cascade data were available for clients specifically.}
 % LW: Use actual exact numbers?
 % JK: We calibrated to 95-95-95 even though the exact values might be slightly different,
 %     those exact values were only estimated recently in SHIMS3
 Next, we defined four \emph{counterfactual} scenarios in which
-the overall population cascade was lower, reaching \casmd by 2020,
+the overall population cascade reached \casmd by 2020,
 and where FSW, clients, both, or neither were disproportionately left behind.
 % HM: Overall cascade?
 % LW: Looks like not only vs lower, each cascade was lower?
@@ -159,13 +163,13 @@ and where FSW, clients, both, or neither were disproportionately left behind.
 %     & introduced the 4 cases first before diving into the details as you suggest LW
 % SM: this was a nice suggestion - reads well
 In these counterfactual scenarios, we altered cascade attainment among
-FSW, clients, and/or the remaining population (``lower risk'') by calibrating
+FSW, clients, and/or the remaining population (``all others'') by calibrating
 constant relative scaling factors ``$R$'' to subpopulation-specific rates of:
-diagnosis ($R_d \in [0,1]$),
-treatment initiation ($R_t \in [0,1]$), and
-treatment failure / discontinuation ($R_u \in [1,20]$).
+diagnosis ($0 \le R_d \le 1$),
+treatment initiation ($0 \le R_t \le 1$), and
+treatment failure / discontinuation ($1 \le R_u \le 20$).
 When FSW and/or clients were left behind, we calibrated their $R$s such that
-these populations attained approximately \caslo by 2020.
+these subpopulations attained approximately \caslo by 2020.
 % SB: This sentence isnt immediately clear to me.
 % JK: hopefully clarified?
 % SM: yes to me
@@ -183,7 +187,7 @@ attained viral suppression.
 Table~\ref{tab:art.1.scen} summarizes these scenarios, while
 Figure~\ref{fig:art.1.cascade} plots the modelled cascades over time.
 When cascade rates among FSW and/or clients were unchanged from the base case,
-the cascade these subpopulations attained could be lower than \cashi
+the cascade these subpopulations attained could be lower than in the base case
 due to subpopulation turnover and higher incidence.
 All cascades continued to increase beyond 2020 due to assumed fixed rates of
 diagnosis, treatment initiation, and treatment failure / discontinuation thereafter.
