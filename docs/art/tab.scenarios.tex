@@ -5,7 +5,7 @@
   \cmidrule(rl){2-4}\cmidrule(rl){5-7}
   Scenario & FSW & Clients & Overall & FSW & Clients & All Others \\
   \midrule
-  \emph{Base Case}                    & \cashi &   ---  & \cashi &  --- &  --- &  --- \\
+  \emph{Base Case}                    & \casfsw& \cascli& \cashi &  --- &  --- &  --- \\
   \emph{Leave Behind: FSW}            & \caslo &   ---  & \casmd & \yes & \no  & \yes \\
   \emph{Leave Behind: Clients}        &   ---  & \caslo & \casmd & \no  & \yes & \yes \\
   \emph{Leave Behind: FSW \& Clients} & \caslo & \caslo & \casmd & \yes & \yes & \yes \\
@@ -13,7 +13,8 @@
   \bottomrule
 \end{tabular}
 \floatfoot{
-  \tnt[a]{Cascade: \% diagnosed among PLHIV; \% on ART among diagnosed; \% virally suppressed among on ART};
+  \tnt[a]{Cascade: \% diagnosed among PLHIV; \% on ART among diagnosed; \% virally suppressed among on ART;
+    xx: no data available};
   \tnt[b]{Rates of: diagnosis; ART initiation; treatment failure};
   \ffpopz.
   Figure~\ref{fig:art.1.cascade} plots the modelled cascades over time.}
