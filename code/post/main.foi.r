@@ -38,6 +38,7 @@ main.ep = function(){
   # load & clean data
   X = read.csvs('foi-ep','expo','foi')
   Xe = filter.cols(X,pop=c('aq','fsw','cli'),t=seq(1980,2035))
+  # Xe = filter.cols(X,pop=c('aq','fsw'),t=seq(1980,2035)) # slides
   Xe$pop = factor(Xe$pop,levels=names(slice.labs),labels=slice.labs)
   Xe$case.lab.x = Xe$case.lab
   # duplicate base data for each other case
@@ -49,6 +50,7 @@ main.ep = function(){
   # plot raw & relative incidence
   plot.ep(Xepp,'raw','HIV Incidence (per person-year)')
     fig.save(uid,nid,'foi.ep.incidence.raw',w=9,h=6.5)
+    # fig.save(uid,nid,'foi.ep.incidence.slides',w=7,h=4) # slides
   plot.ep(Xepp,'1-2/2','Relative Difference in HIV Incidence (X - EPA / EPA)',leg='none')
     fig.save(uid,nid,'foi.ep.incidence.rel',w=9,h=6)
 }
@@ -68,11 +70,13 @@ main.tpaf = function(){
   X$t.hor = X$t - X$tpaf.t0
   # plot groups of transmission pathways
   pops = list(part=c('msp','cas','swx'),popf=c('aqf','fswf','clif'),popt=c('aqt','fswt','clit'))
+  # pops = list(part=c('msp','cas','swx')) # slides + (tpaf.t0 = 2010)
   for (pop in names(pops)){
     g = plot.tpaf.box(X,tpaf.pop=pops[[pop]],tpaf.t0=c(1990,2000,2010)) +
       facet_grid('tpaf.t0 ~ tpaf.pop',scales='free_y')
     g = plot.clean.foi(g)
     fig.save(uid,nid,'foi.tpaf',pop,w=8,h=7)
+    # fig.save(uid,nid,'foi.tpaf.slides',w=7,h=3) # slides
   }
 }
 
