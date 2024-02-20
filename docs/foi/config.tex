@@ -1,35 +1,27 @@
-% fonts
-\usepackage[charter]{mathdesign}
-\usepackage{CrimsonPro}
-\usepackage[italic]{mathastext}
-\usepackage[scale=.7]{FiraMono}
-\usepackage[bottom,marginal]{footmisc}
-\usepackage{microtype,ragged2e}
-\usepackage{bm,mathtools}
-% hyperref & bib
-\usepackage{xcolor}
-\usepackage[
-  colorlinks,
-  linkcolor=blue,
-  urlcolor=blue,
-  citecolor=purple,
-]{hyperref}
-\newcommand{\hreftt}[2][https://]{\href{#1#2}{\texttt{#2}}}
+%---------------------------------------------------------------------------------------------------
+% appendix config
+\def\app{../app}
+\input{../app/config}
+\input{../app/style}
+%---------------------------------------------------------------------------------------------------
+% foi
+\definecolor{ird}{HTML}{00CC99} % green
+\definecolor{iry}{HTML}{0099CC} % blue
+\definecolor{ipy}{HTML}{CC00CC} % purple
+\definecolor{epa}{HTML}{FF9900} % orange
+\newcommand{\wph}{\textsc{wph}\xspace}
+\newcommand{\bph}{\textsc{bph}\xspace}
+\newcommand{\xph}{\textsc{xph}\xspace}
+\newcommand{\ip}{\textsc{ip}\xspace}
+\newcommand{\ir}{\textsc{ir}\xspace}
+\newcommand{\ird}{\textcolor{ird}{\textsc{ird}}\xspace}
+\newcommand{\iry}{\textcolor{iry}{\textsc{iry}}\xspace}
+\newcommand{\ipy}{\textcolor{ipy}{\textsc{ipy}}\xspace}
+\newcommand{\epa}{\textcolor{epa}{\textsc{epa}}\xspace}
+\newcommand{\fffoi}{Table~\ref{tab:foi.models} gives approach definitions}
+\newcommand{\fftpaf}{TPAF: transmission population attributable fraction, \sref{foi.exp.mod.tpaf}}
+%---------------------------------------------------------------------------------------------------
+% bib
 \addbibresource{/home/jesse/refs/library.bib}
-% float stuff
-\usepackage{graphicx,subcaption,booktabs}
-\captionsetup{labelfont=bf}
-\newlength{\widefig}\setlength{\widefig}{1.333\linewidth}
-\newcommand{\tn}[1]{\rlap{\textsuperscript{~#1}}}
-\newcommand{\tnt}[2][]{\textsuperscript{#1~}#2}
-\newcommand{\floatfoot}{\par\addvspace{1ex}\justifying\footnotesize}
-\graphicspath{{fig/}}
-% misc formatting
-\newcommand{\sref}[1]{\raisebox{-.3ex}{\S}\,\ref{#1}}
-\newcommand{\case}[1]{\ensuremath{\langle\liningnums{#1}\rangle}}
-\newcommand{\tsub}[1]{\textsubscript{#1}}
-\newcommand{\tsup}[1]{\textsuperscript{#1}}
-\renewcommand{\k}{{\smash{\bar{k}}\vphantom{k}}}
-\addtolength{\skip\footins}{2ex}
-% TEMP
-\DeclareSourcemap{\maps{\map{\step[fieldset=abstract,null]}}}
+\renewcommand{\bibfont}{\footnotesize}
+\usepackage[colorlinks,citecolor=violet,linkcolor=purple,urlcolor=blue]{hyperref}

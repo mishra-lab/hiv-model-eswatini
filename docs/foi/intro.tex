@@ -1,50 +1,75 @@
 \section{Introduction}\label{intro}
-% JK: introduce the subject
-The dynamics of sexually transmitted infections (STIs) are rooted in
-complex patterns of sexual partnerships formation and dissolution.
-Such patterns should therefore be reflected in mathematical models of STI transmission
---- in particular, within the force of infection (incidence) equation.
+In compartmental models of infectious disease transmission,
+the ``force of infection'' equation defines
+the rate at which susceptible individuals acquire infection.
+This equation therefore mechanistically integrates various relevant factors, such as
+numbers and types of contacts per person,
+the probability of transmission per contact,
+health states, and interventions,
+each of which may vary across a population and/or time.
+In the context of HIV and other sexually transmitted infections,
+these contacts specifically represent ``sex acts'',
+which often occur within persistent sexual partnerships.
+Thus, sexual partnership dynamics are key factors in
+the force of infection equation for sexual transmission of HIV \cite{Rao2021}.
 \par
-% JK: describing the problem
-In classic compartmental models (CCMs), sexual partnerships are difficult to model
-because model variables represent homogeneous groups of people,
-whose individual partnerships cannot be tracked.
-In such models, partnerships are modelled as ``instantaneous'',
-such that the cumulative risk of transmission per-partnership is applied
-to the average proportion of people forming new partnerships per unit time.
-In CCMs, newly infected people are therefore modelled to be
-immediately at risk of onward transmission,
-and thus, infection incidence is proportional to prevalence.
-As such, CCMs have several limitations, including:
-attributing too much transmission to longer duration partnerships and acute HIV infection,
-and failure to accurately reflect partnership concurrency \cite{Johnson2016a,Rao2021}.
+During our previous review of compartmental models of HIV transmission \cite{Knight2022sr},
+we noted several different approaches to integrating sexual partnerships
+within HIV force of infection equations.
+These equations differed not only in which
+risk groups, partnership types, health states, and/or interventions were modelled,
+but also in which mathematical approximations of sexual partnership dynamics were used
+(see also \cite{Rao2021}).
+Previous work comparing different modelling frameworks
+--- \ie compartmental \vs pair-formation \vs individual-based models ---
+has shown that similar differences can strongly influence key model outputs,
+such as inferred parameter values and projected intervention impacts
+\cite{Kretzschmar1998,Eames2002,Lloyd-Smith2004,Johnson2016mf}.
+However, no study has examined the specific differences that we identified
+among force of infection equations in compartmental models of HIV transmission.
+% TODO: (?) comment on unique timescale of HIV
 \par
-% JK: other solutions
-The limitations of CCMs in capturing partnership dynamics
-have motivated the use of other modelling frameworks for STIs,
-including pair-based models and individual-based models \cite{Rao2021}.
-Pair-based models are an extension of CCMs in which
-model variables represent homogeneous groups of people in various partnership states
-\cite{Dietz1988,Ferguson2000,Kretzschmar2017}, while
-individual-based models represent unique people and their partnerships explicitly
-\cite{vanImhoff1998,Bershteyn2013}.
-In pair-based models, the number of variables (compartments) required can grow exponentially with
-the modelled numbers of risk groups and concurrent partners per-person,
-often rendering such models impractical \cite{Rao2021}.
-Similarly, individual-based models typically require more data and analysis to parameterize
-than compartmental models, and can be computationally expensive to run \cite{Rao2021}.
-so, CCMs are still used despite their limitations,
-especially for slower STIs like HIV \cite{Rao2021}.
-% JK: \citet{Garnett1996} briefly explored an extension related to the proposed work...
-%     not sure where to mention, maybe discussion?
+Therefore, regarding different approaches to modelling HIV transmission via sexual partnerships,
+we sought to:
+critically review assumptions and limitations of prior approaches (\sref{foi.prior}),
+propose a new approach which overcomes several limitations of prior approaches (\sref{foi.prop}),
+and compare key model outputs under prior \vs proposed approaches (\sref{foi.exp}).
+%---------------------------------------------------------------------------------------------------
+\paragraph{First Principles \& Post-Transmission Contacts}
+In the simplest compartmental transmission models,
+the force of infection $\lambda$ can be defined as:
+\begin{equation}\label{eq:foi.simple}
+  \lambda = C \beta \frac{I}{N}
+\end{equation} where:
+$C$ is the average contact rate per-person;
+$\beta$ is the average probability of transmission per contact; and
+$I/N$ is the current prevalence of infection.%
+\footnote{\eqref{eq:foi.simple} also assumes
+  frequency-dependent transmission \vs density-dependent transmission,
+  which is almost always more appropriate for sexually-transmitted diseases \cite{Begon2002}.}
 \par
-% JK: sign-post the paper
-In this work, we propose a new force of infection model within the CCM framework,
-that captures population-level dynamics of partnership duration and concurrency.
-First (\sref{prior}), we review existing models of the force of infection in CCMs
-and their inherent assumptions.
-Next (\sref{prop}), we develop the proposed model.
-Then (\sref{exp}), we integrate the proposed model
-into an existing model of heterosexual HIV transmission in Eswatini,
-and compare key model outputs under the proposed vs existing models.
-We conclude (\sref{disc}) with some discussion of the results and future work.
+If the population is stratified into multiple groups $i$,
+the infection is stratified into multiple infectious stages $h$,
+and contacts are stratified into multiple types $p$,
+then \eqref{eq:foi.simple} can be generalized to:
+\begin{equation}\label{eq:foi.strat}
+  \lambda_i = \sum_{pi'h'} C_{pii'} \beta_{ph'} \frac{I_{i'h'}}{N_{i'}}
+\end{equation}
+where:
+$C_{pii'}$ is the average rate of type-$p$ contacts per-person among group $i$ with group $i'$,
+$\beta_{ph'}$ is the average probability of transmission per type-$p$ contact given infection stage $h'$,
+and $I_{i'h'}/N_{i'}$ is the prevalence of infection stage $h'$ among group $i'$.
+Note that \eqref{eq:foi.strat} implicitly assumes that
+contact rate and mixing by infection status/stage is random.
+\par
+The force of infection equation is further complicated by
+repeated contacts with the same individuals, such as in sexual partnerships
+(also household contacts, and other social relationships),
+where each contact reflects a single sex act.
+With repeated \vs random contacts, individuals who recently acquired or transmitted infection
+will continue to contact the same person, resulting in ``post-transmission contacts'' (PTC)
+--- sometimes called ``wasted contacts'' (in terms of transmission) ---
+and slower infection spread through the contact/partnership network \vs without PTC.%
+\footnote{Another conception of ``post-transmission contacts'' is HIV seroconcordance.}
+A major focus when modelling HIV transmission via sexual partnerships
+is therefore to account for these PTC.
