@@ -1,5 +1,5 @@
 full:
-	make clean && make tex && make bib && make tex && make bib && make tex && make tex
+	make tex && make bib && make tex && make tex
 
 tex:
 	pdflatex main
@@ -10,5 +10,8 @@ bib:
 clean:
 	texclean .
 
-words:
-	python3.8 wc/wc.py
+cls:
+	cp /home/jesse/dev/tex/pkg/ms/ms/ms.cls .
+
+wc:
+	python3.8 ../wc/wc.py intro model.prior model.prop experiment discussion
