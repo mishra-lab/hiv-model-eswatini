@@ -2,19 +2,51 @@
 In compartmental models of infectious disease transmission,
 the ``force of infection'' equation defines
 the rate at which susceptible individuals acquire infection.
-This equation therefore mechanistically integrates various relevant factors, such as
-numbers and types of contacts per person,
-the probability of transmission per contact,
-health states, and interventions,
-each of which may vary across a population and/or time.
-In the context of HIV and other sexually transmitted infections,
-these contacts specifically represent ``sex acts'',
-which often occur within persistent sexual partnerships.
-Thus, sexual partnership dynamics are key factors in
-the force of infection equation for sexual transmission of HIV \cite{Rao2021}.
+This equation therefore mechanistically integrates
+various factors relevant to transmission.
+In the simplest compartmental transmission models,
+the force of infection $\lambda$ can be defined as:
+\begin{equation}\label{eq:foi.simple}
+  \lambda = C \beta \frac{I}{N}
+\end{equation} where:
+$C$ is the average contact rate per-person,
+$\beta$ is the average probability of transmission per contact, and
+$I/N$ is the current prevalence of infection.%
+\footnote{\eqref{eq:foi.simple} assumes
+  frequency-dependent rather than density-dependent transmission,
+  which is almost always more appropriate for sexually-transmitted infections \cite{Begon2002}.}
+If the population is stratified into multiple groups $i$,
+infection is stratified into multiple states $h$, and
+contacts are stratified into multiple types $p$,
+then \eqref{eq:foi.simple} can be generalized~to:
+\begin{equation}\label{eq:foi.strat}
+  \lambda_i = \sum_{pi'h'} C_{pii'} \beta_{ph'} \frac{I_{i'h'}}{N_{i'}}
+\end{equation}
+where:
+$C_{pii'}$ is the average rate of type-$p$ contacts per-person among group $i$ with group $i'$,
+$\beta_{ph'}$ is the average probability of transmission per type-$p$ contact given infection stage $h'$, and
+$I_{i'h'}/N_{i'}$ is the prevalence of infection state $h'$ among group $i'$.%
+\footnote{\eqref{eq:foi.strat} further assumes that
+  contact rate and mixing by infection state is random.}
+The contact matrix $C_{pii'}$ is often specified to reflect
+complex mixing patterns among risk groups,
+which are key determinants of transmission dynamics \cite{??}
+\par
+The force of infection equation is further complicated by
+repeated contacts with the same individuals, such as
+in sexual partnerships, shared households, and other social relationships.
+With repeated \vs random contacts, individuals who recently acquired or transmitted infection
+will often continue to contact the same person, resulting in ``inert'' contacts
+--- also called ``wasted'' or ``post-transmission'' contacts ---
+and slower infection spread through the contact network \vs without inert contacts \cite{??}.
+Models of sexually transmitted infections like HIV
+--- in which contacts reflect individual sex acts ---
+must therefore accurately capture dynamics of sexual partnerships \cite{Rao2021}.
+Specifically, such models must include patterns of who partners with whom, and
+some adjustment for inert sex acts within partnerships where transmission has already occurred.
 \par
 During our previous review of compartmental models of HIV transmission \cite{Knight2022sr},
-we noted several different approaches to integrating sexual partnerships
+we noted several different approaches to capturing sexual partnership dynamics
 within HIV force of infection equations.
 These equations differed not only in which
 risk groups, partnership types, health states, and/or interventions were modelled,
@@ -26,50 +58,13 @@ has shown that similar differences can strongly influence key model outputs,
 such as inferred parameter values and projected intervention impacts
 \cite{Kretzschmar1998,Eames2002,Lloyd-Smith2004,Johnson2016mf}.
 However, no study has examined the specific differences that we identified
+% TODO: (*) this "the specific differences that we identified" is vague
+%       and not a strong motivation for the work.
 among force of infection equations in compartmental models of HIV transmission.
 % TODO: (?) comment on unique timescale of HIV
-\par
+\clearpage % TEMP
 Therefore, regarding different approaches to modelling HIV transmission via sexual partnerships,
 we sought to:
 critically review assumptions and limitations of prior approaches (\sref{foi.prior}),
 propose a new approach which overcomes several limitations of prior approaches (\sref{foi.prop}),
 and compare key model outputs under prior \vs proposed approaches (\sref{foi.exp}).
-%---------------------------------------------------------------------------------------------------
-\paragraph{First Principles \& Post-Transmission Contacts}
-In the simplest compartmental transmission models,
-the force of infection $\lambda$ can be defined as:
-\begin{equation}\label{eq:foi.simple}
-  \lambda = C \beta \frac{I}{N}
-\end{equation} where:
-$C$ is the average contact rate per-person;
-$\beta$ is the average probability of transmission per contact; and
-$I/N$ is the current prevalence of infection.%
-\footnote{\eqref{eq:foi.simple} also assumes
-  frequency-dependent transmission \vs density-dependent transmission,
-  which is almost always more appropriate for sexually-transmitted diseases \cite{Begon2002}.}
-\par
-If the population is stratified into multiple groups $i$,
-the infection is stratified into multiple infectious stages $h$,
-and contacts are stratified into multiple types $p$,
-then \eqref{eq:foi.simple} can be generalized to:
-\begin{equation}\label{eq:foi.strat}
-  \lambda_i = \sum_{pi'h'} C_{pii'} \beta_{ph'} \frac{I_{i'h'}}{N_{i'}}
-\end{equation}
-where:
-$C_{pii'}$ is the average rate of type-$p$ contacts per-person among group $i$ with group $i'$,
-$\beta_{ph'}$ is the average probability of transmission per type-$p$ contact given infection stage $h'$,
-and $I_{i'h'}/N_{i'}$ is the prevalence of infection stage $h'$ among group $i'$.
-Note that \eqref{eq:foi.strat} implicitly assumes that
-contact rate and mixing by infection status/stage is random.
-\par
-The force of infection equation is further complicated by
-repeated contacts with the same individuals, such as in sexual partnerships
-(also household contacts, and other social relationships),
-where each contact reflects a single sex act.
-With repeated \vs random contacts, individuals who recently acquired or transmitted infection
-will continue to contact the same person, resulting in ``post-transmission contacts'' (PTC)
---- sometimes called ``wasted contacts'' (in terms of transmission) ---
-and slower infection spread through the contact/partnership network \vs without PTC.%
-\footnote{Another conception of ``post-transmission contacts'' is HIV seroconcordance.}
-A major focus when modelling HIV transmission via sexual partnerships
-is therefore to account for these PTC.
