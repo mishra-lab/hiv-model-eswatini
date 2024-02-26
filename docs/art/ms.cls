@@ -1,6 +1,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{ms}
-[2023/07/20 v0.0.1 Manuscript Class]
+[2024/02/25 v0.1.2 Manuscript Class]
 % options
 \RequirePackage{kvoptions}
 \SetupKeyvalOptions{family=ms,prefix=ms@}
@@ -21,19 +21,21 @@
 \RequirePackage[onehalfspacing]{setspace} % TODO: make class options
 % meta-data
 \RequirePackage{authblk}
-\ifms@blind\AtBeginDocument{\gdef\@author{\textsc{redacted}}}\fi
+\newcommand{\blind}[1]{\ifms@blind\textsc{redacted}\else#1\fi}
 \def\meta@block{}
 \newcommand{\meta@part}[2]{%
   \hspace{\metalabel}\llap{\textbf{#1}}\hspace{1em}%
   \parbox[t]{\dimexpr\linewidth-\metalabel-1em}{#2}\par\medskip}
-\newcommand{\metafield}[3][]{%
+\newcommand{\metafield}{\@ifstar\blind@metafield\open@metafield}
+\newcommand{\open@metafield}[3][]{%
   \g@addto@macro{\meta@block}{%
     \meta@part{\ifempty{#1}{\MakeUppercase#2}{#1}}{#3}}
   \expandafter\gdef\csname @#2\endcsname{#3}}
+\newcommand{\blind@metafield}[3][]{\open@metafield[#1]{#2}{\blind{#3}}}
 \renewcommand{\title}[2][]{%
   \metafield{title}{#2}%
   \ifempty{#1}{}{\metafield[Short Title]{shorttitle}{#1}}
-  \g@addto@macro{\meta@block}{\meta@part{Authors}{\@author}\medskip}}
+  \g@addto@macro{\meta@block}{\meta@part{Authors}{\blind{\@author}}\medskip}}
 \renewcommand{\date}[1]{\metafield{date}{#1}}
 \renewcommand{\abstract}[1]{\metafield{abstract}{#1}}
 \newcommand{\metabreak}{\g@addto@macro{\meta@block}{\clearpage}}
@@ -48,7 +50,7 @@
   \clearpage\setcounter{page}{1}%
   \meta@part{}{\textbf{\appendixname}}
   \meta@part{Title}{\@title}
-  \meta@part{Authors}{\@author}\medskip
+  \meta@part{Authors}{\blind{\@author}}\medskip
   \meta@part{Date}{\@date}
   \xappendix
   \renewcommand{\partname}{Appendix}
@@ -75,7 +77,7 @@
   url=true,
   doi=false,
   isbn=false,
-	date=year,
+  date=year,
 ]{biblatex}
 % helpers
 \renewcommand{\paragraph}[1]{\par\textbf{#1}\hskip.5em}
