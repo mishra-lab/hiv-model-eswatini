@@ -1,10 +1,12 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{ms}
-[2024/02/25 v0.1.2 Manuscript Class]
+[2024/02/26 v0.1.4 Manuscript Class]
 % options
 \RequirePackage{kvoptions}
 \SetupKeyvalOptions{family=ms,prefix=ms@}
 \DeclareStringOption[numeric-comp]{bibstyle}
+\DeclareStringOption[35mm]{margin}
+\DeclareStringOption[onehalf]{spacing}
 \DeclareBoolOption[false]{blind}
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ExecuteOptions{}
@@ -12,13 +14,13 @@
 \ProcessOptions\relax
 \LoadClass{article}
 % spacing
-\RequirePackage[margin=35mm]{geometry} % TODO make class options
+\RequirePackage[margin=\ms@margin]{geometry}
 \setlength{\parskip}{1ex}
 \setlength{\parindent}{0ex}
 \setlength{\abovecaptionskip}{\medskipamount}
 \setlength{\belowcaptionskip}{\medskipamount}
 \newlength{\metalabel}\setlength{\metalabel}{.15\linewidth}
-\RequirePackage[onehalfspacing]{setspace} % TODO: make class options
+\RequirePackage[\ms@spacing spacing]{setspace}
 % meta-data
 \RequirePackage{authblk}
 \newcommand{\blind}[1]{\ifms@blind\textsc{redacted}\else#1\fi}
