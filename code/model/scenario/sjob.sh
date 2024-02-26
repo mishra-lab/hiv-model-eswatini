@@ -14,4 +14,4 @@ export PYTHONPATH=.:$PYTHONPATH
 # python3.8 model/scenario/foi.py scinet case=TODO b=$SLURM_ARRAY_TASK_ID
 
 # using this script on scinet:
-# sbatch scinet.sh
+# sbatch sjob.sh

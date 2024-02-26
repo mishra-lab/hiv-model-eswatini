@@ -4,7 +4,7 @@ from model.scenario import tvec,fname
 
 tkp = dict(tvec=tvec['main'],t=tvec['plot'])
 ekwds = dict(
-  snames = ['all','w','m','aq','asw','fsw','cli'],
+  skeys = ['all','w','m','aq','asw','fsw','cli'],
   onames = ['cuminfect'],
   vsop = '1-2/1',
   mode = 'q')

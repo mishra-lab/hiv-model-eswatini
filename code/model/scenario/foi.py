@@ -7,7 +7,7 @@ cases = ['base','foi-rd','foi-ry','foi-py']
 
 tkp = dict(tvec=tvec['main'],t=tvec['plot'])
 ekwds = dict(
-  snames = ['all','w','m','aq','fsw','cli'],
+  skeys = ['all','w','m','aq','fsw','cli'],
   onames = ['incidence','prevalence'],
   mode = 'q')
 

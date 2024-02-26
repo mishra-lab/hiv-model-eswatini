@@ -4,12 +4,11 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from model.target import filter_targets
 from utils import _,log,genpath,flatten,dict_split,interval_qs,clr_interp,squarish,itslice,tdt
-from model import out,dimkeys,dimensions,slicers
+from model import out,strats
 
-# TODO: labeling & colors for vsop
-
-# HELPERS ----------------------------------------------------------------------
-# TODO: some of these should go in utils
+# ------------------------------------------------------------------------------
+# helper functions
+# TODO: some of these should go in utils (?)
 
 def cmap(N,trim=False,option='inferno'):
   if trim: N += 2
@@ -37,31 +36,8 @@ def lims(x=None,y=None):
   if x is not None: plt.xlim(x)
   if y is not None: plt.ylim(y)
 
-def sliceiter(shape,dstr,ah=None,join='\n'):
-  # iterate over all stratifications for a shape;
-  # and given dimension "letters" in dstr, build up the associated names (from model/__init__.py)
-  # e.g. sliceiter([2,4],'si') -> 3rd yield = (2,(0,2),'Women\nLower Risk Sex Work')
-  # also: initialize (or reuse) an array of subplots, and plt.sca() before each yield;
-  # and if we have too many subplots in the grid, turn unused axes off
-  size   = int(np.prod(shape))
-  grid   = np.moveaxis(np.indices(shape),0,-1)
-  slices = [tuple(i) for i in grid.reshape(size,-1)]
-  if dstr is None:
-    dlabfun = lambda i: str(slices[i])
-  else:
-    dkeys = list(dimensions.keys())
-    dlabs = [dimensions[dkeys[dimkeys.index(d)]] for d in dstr]
-    dlabfun = lambda i: join.join([dlabs[d][slices[i][d]] for d in range(len(dstr))])
-  if ah is None:
-    ah = subplots(*squarish(size))[1]
-  for i,ahi in enumerate(flatten(ah)):
-    if i < size:
-      plt.sca(ahi)
-      yield i,slices[i],dlabfun(i)
-    else:
-      ahi.set_axis_off()
-
-# MAIN PLOT FUNCTIONS ----------------------------------------------------------
+# ------------------------------------------------------------------------------
+# main plot functions
 
 def line(t,x,taxis=0,**kwds):
   # x is an ndarray, with time along taxis
@@ -122,67 +98,66 @@ def target(Ti,interval=.95,**kwds):
   label  = kwds.pop('label',None)
   ls     = kwds.pop('ls','-' if Ti.weight==1 else '--' if Ti.weight else ':')
   marker = kwds.pop('marker','D' if Ti.weight else 's')
-  t = Ti.pop['t'] if Ti.vsop is None else Ti.pop1['t']
+  t = Ti.ind['t'] if Ti.vsop is None else Ti.ind1['t']
   Tm = Ti.mean()
   Terr = np.abs(np.reshape(Ti.ci(interval),(2,1)) - Tm)
   eh = plt.errorbar(t,Tm,yerr=Terr,marker=marker,ms=2,lw=1,mew=1,capsize=2,label=label,**kwds)
   eh[-1][0].set_linestyle(ls)
 
-# PLOT FUNCTION ITERATORS ------------------------------------------------------
+# ------------------------------------------------------------------------------
+# plot function iterators
 
-def targets_S(T,oname,sname,label=True,**kwds):
+def targets_S(T,oname,skey,label=True,**kwds):
   if T is None: return
-  S = slicers[sname]
-  for Ti in filter_targets(T,name=oname,pop=S.pop):
+  S = strats[skey]
+  for Ti in filter_targets(T,name=oname,ind=S.ind):
     target(Ti,color=S.color,label=(S.label if label else None),**kwds)
     label = False # only label once
 
-def targets_vS(T,oname,sname1,sname2,vsop,label=True,**kwds):
+def targets_vS(T,oname,skey1,skey2,vsop,label=True,**kwds):
   if T is None: return
-  S1 = slicers[sname1]
-  S2 = slicers[sname2]
+  S1 = strats[skey1]
+  S2 = strats[skey2]
   labelstr = out.vs_label(S1.label,S2.label,vsop)
-  for Ti in filter_targets(T,name=oname,pop1=S1.pop,pop2=S2.pop,vsop=vsop):
+  for Ti in filter_targets(T,name=oname,ind1=S1.ind,ind2=S2.ind,vsop=vsop):
     target(Ti,color=clr_interp(S1.color,S2.color),label=(labelstr if label else None),**kwds)
     label = False # only label once
 
-def plot_S(fun,t,R,sname,box=False,**kwds):
-  S = slicers[sname]
+def plot_S(fun,t,R,skey,box=False,**kwds):
+  S = strats[skey]
   kwds.update(color=kwds.pop('color',S.color)) # TODO: make decorator?
   kwds.update(label=kwds.pop('label',S.label))
   fkwds = dict_split(kwds,['tvec','rate','t0']) # TODO: make decorator?
   if isinstance(fun,str):
     fun = out.by_name(fun)
   if isinstance(R,list):
-    x = [fun(Ri,**S.pop,**fkwds) for Ri in R]
+    x = [fun(Ri,**S.ind,**fkwds) for Ri in R]
     ribbon_or_box(t,x,box=box,**kwds)
   else:
-    x = fun(R,**S.pop,**fkwds)
+    x = fun(R,**S.ind,**fkwds)
     line(t,x,**kwds)
 
-def plot_vS(fun,t,R,sname1,sname2,vsop,box=False,**kwds):
-  S1 = slicers[sname1]
-  S2 = slicers[sname2]
+def plot_vS(fun,t,R,skey1,skey2,vsop,box=False,**kwds):
+  S1 = strats[skey1]
+  S2 = strats[skey2]
   kwds.update(color=kwds.pop('color',clr_interp(S1.color,S2.color)))
   kwds.update(label=kwds.pop('label',out.vs_label(S1.label,S2.label,vsop)))
   fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R,list):
-    x = [out.vs_pop(fun,Ri,S1.pop,S2.pop,vsop,**fkwds) for Ri in R]
+    x = [out.vs_ind(fun,Ri,S1.ind,S2.ind,vsop,**fkwds) for Ri in R]
     ribbon_or_box(t,x,box=box,**kwds)
   else:
-    x = out.vs_pop(fun,R,S1.pop,S2.pop,vsop,**fkwds)
+    x = out.vs_ind(fun,R,S1.ind,S2.ind,vsop,**fkwds)
     line(t,x,**kwds)
 
-def plot_SvR(fun,t,R1,R2,sname,vsop,box=False,**kwds):
-  S = slicers[sname]
+def plot_SvR(fun,t,R1,R2,skey,vsop,box=False,**kwds):
+  S = strats[skey]
   kwds.update(color=kwds.pop('color',S.color))
   kwds.update(label=kwds.pop('label',S.label))
   fkwds = dict_split(kwds,['tvec','rate','t0'])
   if isinstance(R1,list):
-    x = [out.vs_R(fun,R1i,R2i,vsop,**S.pop,**fkwds) for R1i,R2i in zip(R1,R2)]
+    x = [out.vs_R(fun,R1i,R2i,vsop,**S.ind,**fkwds) for R1i,R2i in zip(R1,R2)]
     ribbon_or_box(t,x,box=box,**kwds)
   else:
-    x = out.vs_R(fun,R1,R2,vsop,**S.pop,**fkwds)
+    x = out.vs_R(fun,R1,R2,vsop,**S.ind,**fkwds)
     line(t,x,color=color,**kwds)
-
-# TODO: labels for vsop

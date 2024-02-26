@@ -1,7 +1,5 @@
 import numpy as np
-from model import system,params,target,out,plot,fit,slicers
-from utils import dict_list_update
-from utils import tarray as ta
+from model import system,params,target,fit
 
 t  = system.get_t(tf=2025)
 T  = target.get_all_esw()

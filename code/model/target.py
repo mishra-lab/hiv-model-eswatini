@@ -1,24 +1,27 @@
+# functions to specify & check model outputs vs calibration targets
+
 import numpy as np
 from inspect import signature
 from utils import deco,stats,flatten,dict_str
 from model import out
 
-llmin = -1e6
+llmin = -1e6 # arbitrary large negative number
 
 class Target():
-  def __init__(self,dist,name,pop,pop2=None,vsop=None,weight=1):
-    self.dist = dist
-    self.name = name
-    self.pop  = pop if not vsop else None
-    self.pop1 = pop if vsop else None
-    self.pop2 = pop2
-    self.vsop = vsop # one of {1/2, 1-2, 1-2/1, 1-2/2}
+  # object representing a single calibration target
+  def __init__(self,dist,name,ind,ind2=None,vsop=None,weight=1):
+    self.dist = dist # distribution for likelihood
+    self.name = name # name of output like out.{name}
+    self.ind  = ind if not vsop else None # like Strat.ind
+    self.ind1 = ind if vsop else None # same
+    self.ind2 = ind2 # same
+    self.vsop = vsop # option from out.vs_fun
     self.weight = weight
 
   def __str__(self):
     return 'Target: {} {{{}}} ~ {} @ {}, w = {}'.format(
       self.name,
-      self.popstr(),
+      self.indstr(),
       self.dist.dist.name,
       dict_str(dict(mu=self.mean(),ci=self.ci())),
       self.weight,
@@ -27,18 +30,22 @@ class Target():
   def __repr__(self):
     return 'T: {} {{{}}}'.format(
       self.name,
-      self.popstr(),
+      self.indstr(),
     )
 
-  def popstr(self):
+  def indstr(self):
+    # helper for printing indices
     if not self.vsop:
-      return dict_str(self.pop)
+      return dict_str(self.ind)
     else:
-      return out.vs_label(dict_str(self.pop1),dict_str(self.pop2),self.vsop)
+      return out.vs_label(dict_str(self.ind1),dict_str(self.ind2),self.vsop)
 
   @deco.nowarn
   def ll(self,x,interval=None):
-    # TODO: describe weights in thesis
+    # get the log-likelihood of observing x for this target
+    # if interval is e.g. 0.95, return {0,1} whether x is in 95% CI
+    # all multiplied by self.weight
+    # TODO: describe weights in appendix
     if self.weight:
       if interval:
         xlo,xhi = self.dist.interval(interval)
@@ -54,32 +61,39 @@ class Target():
   def ci(self,interval=.95):
     return self.dist.interval(interval)
 
-def filter_targets(T,name=None,pop=None,pop1=None,pop2=None,vsop=None):
-  eqpop = lambda Tp,p: Tp and all(Tp[k]==v for k,v in p.items() if k in Tp)
+def filter_targets(T,name=None,ind=None,ind1=None,ind2=None,vsop=None):
+  # subset T matching all given arguments
+  # e.g. for incidence targets among FSW: name='incidence',ind=dict(i=0,s=(2,3))
+  eqind = lambda iT,i: iT and all(iT[k]==v for k,v in i.items() if k in iT)
   if name is not None:
     T = [Ti for Ti in T if Ti.name in flatten(name)]
-  if pop  is not None: T = [Ti for Ti in T if eqpop(Ti.pop, pop )]
-  if pop1 is not None: T = [Ti for Ti in T if eqpop(Ti.pop1,pop1)]
-  if pop2 is not None: T = [Ti for Ti in T if eqpop(Ti.pop2,pop2)]
+  if ind  is not None: T = [Ti for Ti in T if eqind(Ti.ind, ind )]
+  if ind1 is not None: T = [Ti for Ti in T if eqind(Ti.ind1,ind1)]
+  if ind2 is not None: T = [Ti for Ti in T if eqind(Ti.ind2,ind2)]
   if vsop is not None: T = [Ti for Ti in T if Ti.vsop == vsop]
   return T
 
 def get_model_ll(T,R,t,interval=None,aggr=True):
+  # get overall ll for a model run from a list of targets
+  # if aggr=False, return a dict with the ll for each target
   ll = {}
   for Ti in T:
-    if Ti.pop2 is None:
-      x = out.by_name(Ti.name)(R,**Ti.pop,tvec=t)
+    if Ti.ind2 is None:
+      x = out.by_name(Ti.name)(R,**Ti.ind,tvec=t)
     else:
-      x = out.vs_pop(Ti.name,R,pop1=Ti.pop1,pop2=Ti.pop2,vsop=Ti.vsop,tvec=t)
+      x = out.vs_ind(Ti.name,R,ind1=Ti.ind1,ind2=Ti.ind2,vsop=Ti.vsop,tvec=t)
     ll.update({repr(Ti):float(Ti.ll(x,interval=interval))})
   return sum(ll.values()) if aggr else ll
 
 def top_ll(Rs,top=.1,ll='ll'):
+  # subset Rs by R['ll'], chosing the top % or #
   if isinstance(top,int): top = top / len(Rs)
   llcut = np.nanquantile([R[ll] for R in Rs],1-top)
   return [R for R in Rs if R[ll] >= llcut]
 
 def get_all_esw(T=None,**kwds):
+  # collect all Eswatini targets
+  # optionally append to an existing list & filter using kwds
   T = T if T is not None else []
   T.extend(get_prevalence_esw())
   T.extend(get_incidence_esw())
@@ -87,12 +101,13 @@ def get_all_esw(T=None,**kwds):
   T.extend(get_cascade_esw())
   T.extend(get_cascade_2020('95-95-95'))
   T.extend(get_pop_total_esw())
-  # T.extend(get_prevalence_esw_anc())
+  # T.extend(get_prevalence_esw_anc()) # don't use ANC data
   return filter_targets(T,**kwds)
 
+# most targets give the ref bib id
 # (JK): my analysis
 # SR: self-report
-# TODO: finalize weights
+# see also: code/params/distr.py
 
 def get_prevalence_esw():
   return [
@@ -162,7 +177,7 @@ def get_cd4_esw(w=0):
 def get_cascade_esw():
   return [
     # FSW
-    Target(stats.betabin(p=.744,n= 127),'diagnosed',dict(t=2011.0,s=0,i=(2,3))), # R2P2013 JK
+    Target(stats.betabin(p=.744,n= 127),'diagnosed',dict(t=2011.0,s=0,i=(2,3))), # R2P2013 (JK)
     Target(stats.betabin(p=.369,n= 179),'treated_u',dict(t=2011.0,s=0,i=(2,3))), # R2P2013
     # Target(stats.betabin(p=.596,n= 235),'treated-?',dict(t=2014.0,s=0,i=(2,3))), # EswKP2014(Adj) TODO
     Target(stats.betabin(p=.883,n= 411),'diagnosed',dict(t=2021.0,s=0,i=(2,3))), # EswIBBS2022
@@ -201,19 +216,22 @@ def get_cascade_esw():
   ]
 
 def make_targets_2020(p,n=None,t=2020.0,s=None,i=None,w=1):
+  # make 95-95-95 style targets for 2020s for a given p e.g. 0.95
+  # precision via effective n; maybe specify t and/or indices for s,i
+  # default is 2020 and population overall
   if n is None: n = [100]*len(p)
   if s is None: s = (0,1)
   if i is None: i = (0,1,2,3)
   names = ['diagnosed','treated_c','vls_c']
-  pop = dict(t=t,s=s,i=i)
-  return [Target(stats.betabin(p=p[i],n=n[i]),names[i],pop,weight=w) for i in range(len(p))]
+  ind = dict(t=t,s=s,i=i)
+  return [Target(stats.betabin(p=p[i],n=n[i]),names[i],ind,weight=w) for i in range(len(p))]
 
 def get_cascade_2020(which,w=1):
   if which=='90-90-90': return make_targets_2020([.90,.90,.90],w=w)
   if which=='95-95-95': return make_targets_2020([.95,.95,.95],w=w)
 
 def get_pop_total_esw():
-  return [ # ages 15-49
+  return [ # ages 15-49 TODO: ref?
     Target(stats.gamma(m=Xt/1000,sd=np.sqrt(Xt/1000)),'NX',dict(t=t,s=(0,1),i=(0,1,2,3)))
       for t,Xt in zip(range(1980,2021+1),[
     243151,251090,259122,267588,276979,287513,299011,312027,326013,340165, # 1980-1989
@@ -224,6 +242,7 @@ def get_pop_total_esw():
   ]
 
 def get_prevalence_esw_anc(w=0):
+  # unused
   return [
     Target(stats.betabin(p=Pt,n=1000),'prevalence',dict(t=t,s=0,i=(0,1,2,3)),weight=w)
       for t,Pt in zip(# 1992-2010: EswUNGASS2010, 2012-2015: EswHIVPR2015 # TODO: NERCHA2012
