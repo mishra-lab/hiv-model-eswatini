@@ -14,4 +14,4 @@ cls:
 	cp /home/jesse/dev/tex/pkg/ms/ms/ms.cls .
 
 wc:
-	python3.8 ../wc/wc.py intro methods results discuss
+	python3.8 ../wc/wc.py abstract.200u intro methods results discuss

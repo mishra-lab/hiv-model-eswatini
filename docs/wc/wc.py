@@ -43,5 +43,5 @@ def wc(label,files,clean=True):
   if clean:
     os.system('rm text.tmp')
 
-wc(' abs',['abstract'])
-wc('body',sys.argv[1:])
+wc(' abs',[sys.argv[1]])
+wc('body',sys.argv[2:])
