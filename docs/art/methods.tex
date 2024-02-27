@@ -147,7 +147,7 @@ and were chosen to obtain cascades in 2020 spanning
 approximately \mbox{60-60-90} through \mbox{90-90-95} (Figure~\ref{fig:art.2.cascade}). % MAN
 For each of $N_f = 1000$ model fits,
 we generated $N_k = 10$ counterfactual scenarios per fit
-using Latin hypercube sampling of $R$s,
+using Latin hypercube sampling of $R$s \cite{Stein1987},
 yielding $N_f N_k = {}$10,000 total counterfactual samples for the regression.
 \begin{figure}
   \centering\includegraphics[scale=1]{art.2.dag}
@@ -202,7 +202,7 @@ differential non-suppression among FSW and clients
 effect modification of $d_i$ by epidemic conditions ($C_j$).
 The model does not include an intercept because if $D = d_i = 0$,
 then we expect $\txn{CAI} = \txn{AIR} = 0$.
-We fitted this model for each outcome using generalized estimating equations
+We fitted this model for each outcome using generalized estimating equations \cite{Hojsgaard2006}
 to control for repeated use of each model fit $f$.
 We standardized all model variables ($D$, $d_i$, $C_j$) via
 $\hat{x} = (x - \txn{mean}(x)) / \txn{SD}(x)$
