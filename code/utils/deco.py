@@ -12,7 +12,10 @@ def nowarn(fun):
   return decorator
 
 def rmap(Rk=[],Pk=[]):
-  # pass values from "R" and/or R['P'] as arguments to fun
+  # pass values from 'R' and/or R['P'] as kwds to fun
+  # e.g. if we define @rmap(Rk=['X']) def fun(X,a):
+  # we can use it like fun(R,a) but it acts like fun(a,X=R['X'])
+  # this allows us to call all out functions like out(R,...)
   def wrapper(fun):
     def decorator(R,**kwds):
       kwds.update({k:R[k] for k in Rk})
@@ -23,16 +26,17 @@ def rmap(Rk=[],Pk=[]):
 
 def tslice(tk=[]):
   # slice args with t before computing fun, assuming first dimension is t dimension
-  # targs: list of indices for args that need slicing (fixed for fun)
-  # t:     t values that fun should compute for
-  # tvec:  complete list of t values (for look-up)
+  # tk:   names of kwds that need slicing (always same kwds for a given fun)
+  # t:    t values that fun should compute for
+  # tvec: complete list of t values (for look-up)
   def wrapper(fun):
     def decorator(t=None,tvec=None,**kwds):
       if t is not None:
         it = itslice(t,tvec) # boolean
         for k in kwds.keys():
           if k in tk:
-            kwds[k] = kwds[k][it] # slicing (keeps singleton)
+            kwds[k] = kwds[k][it] # slice (keeps singleton)
+      # else: don't slice -> kwds unchanged
       return fun(**kwds)
     return decorator
   return wrapper
@@ -46,6 +50,7 @@ def nanzero(fun):
   return decorator
 
 def runtime(how='print'):
+  # estimate the runtime of fun
   def wrapper(fun):
     def decorator(*args,**kwds):
       import time

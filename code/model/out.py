@@ -28,6 +28,7 @@ labels = {
   'gud':        'Relative GUD prevalence',
 }
 
+# standard quantiles to compute
 qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
 
 def by_name(name):
@@ -60,7 +61,7 @@ def vs_label(lab1,lab2,vsop):
 
 @deco.nanzero
 def vs_ind(ofun,R,ind1,ind2,vsop='1/2',aggr=True,**kwds):
-  # compute ofun from R for ind1 & ind2, then combine via vs_fun
+  # compute ofun from R for ind1 & ind2 with same kwds, then combine via vs_fun
   if isinstance(ofun,str): ofun = by_name(ofun)
   O1 = ofun(R,**ind1,**kwds,aggr=aggr)
   O2 = ofun(R,**ind2,**kwds,aggr=aggr)
@@ -74,15 +75,15 @@ def vs_R(ofun,R1,R2,vsop='1-2',aggr=True,**kwds):
   O2 = ofun(R2,**kwds,aggr=aggr)
   return vs_fun(O1,O2,vsop)
 
-def aggratio(X1,X2,aggr,axis=None):
-  # helper function: many outputs are defined as X1 / X2
-  # sometimes we need the elementwise result
-  # sometimes we need X1.sum() / X2.sum()
+def aggratio(Xn,Xd,aggr,axis=None):
+  # helper function: many outputs are defined as Xn / Xd <- num / denom
+  # sometimes we need the elementwise result <- aggr=False
+  # sometimes we need Xn.sum() / Xd.sum() <- aggr=True
   if axis is None: axis = (1,2)
   if aggr:
-    return X1.sum(axis=axis) / X2.sum(axis=axis)
+    return Xn.sum(axis=axis) / Xd.sum(axis=axis)
   else:
-    return X1 / X2
+    return Xn / Xd
 
 # X.shape: (t:*, s:2, i:4, h:6, c:5)
 # Xk.shape: (t:*, s:2, i:4, k:5, h:6, c:5) - tdsc only
