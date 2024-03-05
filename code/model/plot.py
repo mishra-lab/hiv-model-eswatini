@@ -1,3 +1,5 @@
+# functions for plotting model outputs & calibration targets
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,7 +14,7 @@ from model import out,strats
 
 def subplots(row,col):
   # initialize a grid of subplots & return handles
-  fh,ah = plt.subplots(row,col)
+  fh,ah = plt.subplots(row,col) # figure & axes handles
   ah = np.reshape(ah,(row,col))
   return fh,ah
 
