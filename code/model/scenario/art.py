@@ -27,8 +27,8 @@ def run_rf(b):
   log(0,'art.run_rf: {}'.format(case))
   P0s = fio.load(fname('npy','fit','Ps',case='base'))
   T = get_refit_T(case+'all-')
-  PD = get_refit_PD(case+'aq-')
-  fun = lambda P: run_rf_1(P,PD,T,tvec['cal'],ftol=.1)
+  D = get_refit_D(case+'aq-')
+  fun = lambda P: run_rf_1(P,D,T,tvec['cal'],ftol=.1)
   Ps = parallel.ppool(len(P0s)).map(fun,P0s); log(1)
   fio.save(fname('npy','art-rf','Ps',case=case),Ps)
 
@@ -61,25 +61,25 @@ def get_refit_T(case):
   }
   return flatten( Ts[skey+c] for skey,c in parse_case(case) )
 
-def get_refit_PD(case):
+def get_refit_D(case):
   eps = 1e-9
-  PDs = {
+  Ds = {
     'd+': stats.uniform(l=1-eps,h=1+eps), 'd-': stats.uniform(l=0,h=1),
     't+': stats.uniform(l=1-eps,h=1+eps), 't-': stats.uniform(l=0,h=1),
     'u+': stats.uniform(l=1-eps,h=1+eps), 'u-': stats.uniform(l=1,h=20),
   }
-  return {'R'+step+'x:'+skey: PDs[step+c] for skey,c in parse_case(case) for step in 'dtu'}
+  return {'R'+step+'x:'+skey: Ds[step+c] for skey,c in parse_case(case) for step in 'dtu'}
 
-def run_rf_1(P,PD,T,t,ftol=.1):
+def run_rf_1(P,D,T,t,ftol=.1):
   kwds = dict(method='SLSQP',options=dict(ftol=ftol))
-  PDz,x0z,Tz = {},[],[]
+  Dz,x0z,Tz = {},[],[]
   for pz,oz in zip(['Rdx','Rtx','Rux'],['diagnosed','treated','vls']):
-    PDzi = {k:v for k,v in PD.items() if (pz in k)} # new fitted params
-    PDz.update(PDzi)                                # add to fitted params
-    x0z += [.5]*len(PDzi)                           # add to initial values
-    Tz  += [Ti for Ti in T if (oz in Ti.name)]      # add to targets
-    jfun = lambda x: - system.run(Rxs_update(P,PDz,x),t,T,RPts=[])['ll']
-    M = minimize(jfun,x0z,bounds=[(0,1) for k in PDz],**kwds)
+    Dzi = {k:v for k,v in D.items() if (pz in k)} # new fitted params
+    Dz.update(Dzi)                                # add to fitted params
+    x0z += [.5]*len(Dzi)                          # add to initial values
+    Tz  += [Ti for Ti in T if (oz in Ti.name)]    # add to targets
+    jfun = lambda x: - system.run(Rxs_update(P,Dz,x),t,T,RPts=[])['ll']
+    M = minimize(jfun,x0z,bounds=[(0,1) for k in Dz],**kwds)
     x0z[:] = M.x
     if not M.success: return False
   return P
@@ -120,14 +120,14 @@ def merge_expo(Es):
   return {k:[x for E in Es for x in E[k]] for k in Es[0]}
 
 def get_sens_sample(Ps,Ns,seed):
-  PDs = {
+  Ds = {
     'd': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
     't': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
     'u': stats.gamma(m=6.5,sd=3.5),  # CI: (1.5, 15)
   }
-  PD = {'R'+step+'x:'+skey: PDs[step] for skey in ('fsw','cli','aq') for step in 'dtu'}
+  D = {'R'+step+'x:'+skey: Ds[step] for skey in ('fsw','cli','aq') for step in 'dtu'}
   return [Rxs_update(deepcopy(P),Pu,ss=ss) for P in Ps
-    for ss,Pu in enumerate(params.get_n_sample_lhs(Ns,PD,seed=seed))]
+    for ss,Pu in enumerate(params.get_n_sample_lhs(D,Ns,seed=seed))]
 
 if __name__ == '__main__':
   # run_rf(**akwds)
