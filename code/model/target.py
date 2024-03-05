@@ -232,7 +232,7 @@ def get_cascade_2020(which,w=1):
 
 def get_pop_total_esw():
   return [ # ages 15-49 TODO: ref?
-    Target(stats.gamma(m=Xt/1000,sd=np.sqrt(Xt/1000)),'NX',dict(t=t,s=(0,1),i=(0,1,2,3)))
+    Target(stats.gamma(m=Xt/1000,sd=np.sqrt(Xt/1000)),'Nsi',dict(t=t,s=(0,1),i=(0,1,2,3)))
       for t,Xt in zip(range(1980,2021+1),[
     243151,251090,259122,267588,276979,287513,299011,312027,326013,340165, # 1980-1989
     354047,367323,379398,390945,402993,416073,427619,440611,454193,466912, # 1990-1999

@@ -6,7 +6,7 @@ from model import system,target,out,plot,strats
 
 plotsize = 3 # inches
 specs = dict(
-  NX      = dict(oname='NX',skeys=['all']),
+  Nsi     = dict(oname='Nsi',skeys=['all']),
   Psi     = dict(oname='Psi',skeys=['fsw.h','fsw.l','cli.h','cli.l']),
   Ph      = dict(oname='Ph',skeys=['ahi','>500','<500','<350','<200'],ymax=1),
   prev    = dict(oname='prevalence',ymax=[.5,.5,.5,1]),
@@ -29,7 +29,7 @@ specs = dict(
 specsets = dict(
   hiv     = ['prev','prev1v2','inc','inc1v2'],
   cascade = ['diag','treat_c','treat_u','vls_c','vls_u'],
-  extra   = ['NX','Psi','Ph','tdsc','condom','circum','prevanc'],
+  extra   = ['Nsi','Psi','Ph','tdsc','condom','circum','prevanc'],
   rates   = ['dx_rate','tx_rate'],
 )
 

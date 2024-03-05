@@ -9,7 +9,7 @@ from model import system,foi,strats
 # helper data & functions
 
 labels = {
-  'NX':         'Population size, absolute (\'000s)',
+  'Nsi':        'Population size, absolute (\'000s)',
   'Psi':        'Population size, relative',
   'Ph':         'Proportion of PLHIV',
   'prevalence': 'Prevalence',
@@ -34,6 +34,8 @@ qs = [0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1]
 def by_name(name):
   # get a function in this module by its name
   return globals()[name]
+
+# vsop = 'versus operation' - i.e. comparing 2 outputs
 
 @deco.nanzero
 def vs_fun(O1,O2,vsop):
@@ -79,7 +81,7 @@ def aggratio(Xn,Xd,aggr,axis=None):
   # helper function: many outputs are defined as Xn / Xd <- num / denom
   # sometimes we need the elementwise result <- aggr=False
   # sometimes we need Xn.sum() / Xd.sum() <- aggr=True
-  if axis is None: axis = (1,2)
+  if axis is None: axis = (1,2) # default (1,2) = (s: sex, i: activity)
   if aggr:
     return Xn.sum(axis=axis) / Xd.sum(axis=axis)
   else:
@@ -93,62 +95,62 @@ def aggratio(Xn,Xd,aggr,axis=None):
 
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
-def NX(X,s=None,i=None,aggr=True):
-  X = X.sum(axis=(3,4)) # sum health & care (all)
-  X = xdi(X,{1:s,2:i})  # select sex & activity
-  return X.sum(axis=(1,2)) if aggr else X
+def Nsi(X,s=None,i=None,aggr=True):
+  X    = X.sum(axis=(3,4)) # sum health & care (all)
+  X_si = xdi(X,{1:s,2:i})  # select sex & activity
+  return X_si.sum(axis=(1,2)) if aggr else X_si
 
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def Psi(X,s=None,i=None,aggr=True):
-  X  = X.sum(axis=(3,4)) # sum health & care (all)
-  XS = xdi(X,{1:_,2:_})  # sum sex & activity (denom)
-  X  = xdi(X,{1:s,2:i})  # select sex & activity (num)
-  return aggratio(X,XS,aggr)
+  X     = X.sum(axis=(3,4)) # sum health & care (all)
+  X_all = xdi(X,{1:_,2:_})  # sum sex & activity (denom)
+  X_si  = xdi(X,{1:s,2:i})  # select sex & activity (num)
+  return aggratio(X_si,X_all,aggr)
 
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def prevalence(X,s=None,i=None,aggr=True):
-  X  = xdi(X,{1:s,2:i})  # select sex & activity
-  XS = X.sum(axis=(3,4)) # sum health & care (denom)
-  Xhiv = X[:,:,:,1:,:].sum(axis=(3,4)) # select plhiv, sum health & care (num)
-  return aggratio(Xhiv,XS,aggr)
+  X_si     = xdi(X,{1:s,2:i})     # select sex & activity (all)
+  X_all_si = X_si.sum(axis=(3,4)) # sum health & care (denom)
+  X_hiv_si = X_si[:,:,:,1:,:].sum(axis=(3,4)) # select PLHIV, sum health & care (num)
+  return aggratio(X_hiv_si,X_all_si,aggr)
 
 @deco.rmap(Rk=['X','inc'],Pk=['foi_mode'])
 @deco.tslice(tk=['X','inc'])
 def incidence(X,inc,foi_mode,s=None,i=None,aggr=True):
-  # total infections (per year); uses foi.aggr_inc due to FOI cases
-  inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
-  sus_si = xdi(X[:,:,:,0,0],{1:s,2:i}) # select sex & activity among sus (denom)
-  inf_si = xdi(inf,{1:s,2:i})          # select sex & activity new infs (num)
-  return aggratio(inf_si,sus_si,aggr)
+  # total infections (per person-year); uses foi.aggr_inc due to FOI cases
+  # inc.shape = (t:*, p:4, s:2, i:4, s':2, i':4)
+  I = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
+  X_sus_si = xdi(X[:,:,:,0,0],{1:s,2:i}) # select sex & activity among sus (denom)
+  I_si     = xdi(I,{1:s,2:i})            # select sex & activity new infs (num)
+  return aggratio(I_si,X_sus_si,aggr)
 
 @deco.rmap(Rk=['X','inc'],Pk=['foi_mode'])
 def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
   dt = dtfun(tvec) # timestep sizes
   # total infections (per year); uses foi.aggr_inc due to FOI cases
-  inf = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
-  inf_si = xdi(inf,{1:s,2:i}) # select sex & activity new infs
+  I = foi.aggr_inc(inc,foi_mode,axis=(1,4,5),Xsus=X[:,:,:,0,0])
+  I_si = xdi(I,{1:s,2:i}) # select sex & activity new infs
   # sum new infs across sex & activity if aggr, mult by dt
-  inf_dt = inf_si.sum(axis=(1,2)) * dt if aggr else inf_si * dt[:,_,_]
+  I_dt = I_si.sum(axis=(1,2)) * dt if aggr else I_si * dt[:,_,_]
   if t0: # zero new infs before t0
-    inf_dt[tvec < t0] = 0
-  return np.cumsum(inf_dt,axis=0)
+    I_dt[tvec < t0] = 0
+  return np.cumsum(I_dt,axis=0)
 
 @deco.nanzero
 @deco.rmap(Rk=['Xk'],Pk=['K_psi'])
 @deco.tslice(tk=['Xk'])
 def tdsc(Xk,K_psi,p=None,s=None,i=None,aggr=True,sus=False):
-  # tdsc = transmission-driven seroconcordance
-  # only works for foi_mode='base' & system.run(...,Xk=True)
+  # tdsc: transmission-driven seroconcordance; only works if can_tdsc (below)
   # Xk.shape: (t:*, s:2, i:4, k:5, h:6, c:5)
   # select inf+sus or inf only, reshape, sum health & care
   Xk = np.moveaxis(Xk if sus else Xk[:,:,:,:,1:,:],3,1).sum(axis=(4,5))
-  # sum seroconc dim, mult by # ptrs, select ptr-type, sex, & activity (denom)
-  XK   = xdi(xdi(Xk,{1:_}) * np.squeeze(K_psi)[_,:,:,:],{1:p,2:s,3:i})
+  # sum EPA dim, mult by # ptrs, select ptr-type, sex, & activity (denom)
+  XK_psi = xdi(xdi(Xk,{1:_}) * np.squeeze(K_psi)[_,:,:,:],{1:p,2:s,3:i})
   # select seroconc only, ptr-type, sex, & activity (num)
-  XKsc = xdi(Xk[:,1:,:,:],{1:p,2:s,3:i})
-  return aggratio(XKsc,XK,aggr,axis=(1,2,3))
+  XK_sc_psi = xdi(Xk[:,1:,:,:],{1:p,2:s,3:i})
+  return aggratio(XK_sc_psi,XK_psi,aggr,axis=(1,2,3))
 
 def can_tdsc(R):
   # check if we can compute tdsc from this R
@@ -158,67 +160,67 @@ def can_tdsc(R):
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def Ph(X,h,s=None,i=None,aggr=True):
-  X    = xdi(X,{1:s,2:i})              # select sex & activity (all)
-  Xhiv = X[:,:,:,1:,:].sum(axis=(3,4)) # select plhiv, sum health & care (denom)
-  Xh   = xdi(X,{3:h}).sum(axis=(3,4))  # select health, sum health & care (num)
-  return aggratio(Xh,Xhiv,aggr)
+  X_si     = xdi(X,{1:s,2:i})                 # select sex & activity (all)
+  X_hiv_si = X_si[:,:,:,1:,:].sum(axis=(3,4)) # select PLHIV, sum health & care (denom)
+  X_sih    = xdi(X_si,{3:h}).sum(axis=(3,4))  # select health, sum health & care (num)
+  return aggratio(X_sih,X_hiv_si,aggr)
 
 @deco.nanzero
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def diagnosed(X,s=None,i=None,aggr=True):
-  X = xdi(X,{1:s,2:i})                  # select sex & activity (all)
-  Xhiv = X[:,:,:,1:,:].sum(axis=(3,4))  # select plhiv, sum health & care (denom)
-  Xdia = X[:,:,:,1:,1:].sum(axis=(3,4)) # select diagnosed, sum health & care (num)
-  return aggratio(Xdia,Xhiv,aggr)
+  X_si     = xdi(X,{1:s,2:i})                  # select sex & activity (all)
+  X_hiv_si = X_si[:,:,:,1:,:].sum(axis=(3,4))  # select PLHIV, sum health & care (denom)
+  X_dia_si = X_si[:,:,:,1:,1:].sum(axis=(3,4)) # select diagnosed, sum health & care (num)
+  return aggratio(X_dia_si,X_hiv_si,aggr)
 
 @deco.nanzero
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def treated(X,s=None,i=None,aggr=True,cond=False):
-  X = xdi(X,{1:s,2:i})                    # select sex & activity (all)
+  X_si = xdi(X,{1:s,2:i})                        # select sex & activity (all)
   if cond:
-    Xref = X[:,:,:,1:,1:].sum(axis=(3,4)) # select diagnosed, sum health & care (denom)
+    X_ref_si = X_si[:,:,:,1:,1:].sum(axis=(3,4)) # select diagnosed, sum health & care (denom)
   else:
-    Xref = X[:,:,:,1:,:].sum(axis=(3,4))  # select plhiv, sum health & care (denom)
-  Xtre = X[:,:,:,1:,3:].sum(axis=(3,4))   # select treated, sum health & care (num)
-  return aggratio(Xtre,Xref,aggr)
+    X_ref_si = X_si[:,:,:,1:,:].sum(axis=(3,4))  # select PLHIV, sum health & care (denom)
+  X_tre_si = X_si[:,:,:,1:,3:].sum(axis=(3,4))   # select treated, sum health & care (num)
+  return aggratio(X_tre_si,X_ref_si,aggr)
 
 @deco.nanzero
 @deco.rmap(Rk=['X'])
 @deco.tslice(tk=['X'])
 def vls(X,s=None,i=None,aggr=True,cond=False):
-  X = xdi(X,{1:s,2:i})                    # select sex & activity (all)
+  X_si = xdi(X,{1:s,2:i})                        # select sex & activity (all)
   if cond:
-    Xref = X[:,:,:,1:,3:].sum(axis=(3,4)) # select treated, sum health & care (denom)
+    X_ref_si = X_si[:,:,:,1:,3:].sum(axis=(3,4)) # select treated, sum health & care (denom)
   else:
-    Xref = X[:,:,:,1:,:].sum(axis=(3,4))  # select plhiv, sum health & care (denom)
-  Xvls = X[:,:,:,1:,4:].sum(axis=(3,4))   # select vls, sum health & care (num)
-  return aggratio(Xvls,Xref,aggr)
+    X_ref_si = X_si[:,:,:,1:,:].sum(axis=(3,4))  # select PLHIV, sum health & care (denom)
+  X_vls_si = X_si[:,:,:,1:,4:].sum(axis=(3,4))   # select vls, sum health & care (num)
+  return aggratio(X_vls_si,X_ref_si,aggr)
 
-treated_u = lambda *a,**k: treated(*a,**k,cond=False)
-treated_c = lambda *a,**k: treated(*a,**k,cond=True)
-vls_u     = lambda *a,**k: vls(*a,**k,cond=False)
-vls_c     = lambda *a,**k: vls(*a,**k,cond=True)
+treated_u = lambda *a,**k: treated(*a,**k,cond=False) # among PLHIV
+treated_c = lambda *a,**k: treated(*a,**k,cond=True)  # among diagnosed
+vls_u     = lambda *a,**k: vls(*a,**k,cond=False)     # among PLHIV
+vls_c     = lambda *a,**k: vls(*a,**k,cond=True)      # among treated
 
 @deco.nanzero
 @deco.rmap(Rk=['X','dx_sit'])
 @deco.tslice(tk=['X','dx_sit'])
 def dx_rate(X,dx_sit,s=None,i=None,aggr=True):
-  X = X[:,:,:,1:,0].sum(axis=(3))           # select undiagnosed, sum health
-  XS  = xdi(X,{1:s,2:i})                    # select sex & activity (denom)
-  Xdx = xdi(X*np.squeeze(dx_sit),{1:s,2:i}) # mult by rate, select sex & activity (num)
-  return aggratio(Xdx,XS,aggr)
+  X_udx    = X[:,:,:,1:,0].sum(axis=(3))             # select undiagnosed, sum health
+  X_udx_si = xdi(X_udx,{1:s,2:i})                    # select sex & activity (denom)
+  Xdx_si   = xdi(X_udx*np.squeeze(dx_sit),{1:s,2:i}) # mult by rate, select sex & activity (num)
+  return aggratio(Xdx_si,X_udx_si,aggr)
 
 @deco.nanzero
 @deco.rmap(Rk=['X','tx_sit','Rtx_ht'])
 @deco.tslice(tk=['X','tx_sit','Rtx_ht'])
 def tx_rate(X,tx_sit,Rtx_ht,s=None,i=None,aggr=True):
-  X = X[:,:,:,1:,1]                   # select diagnosed
-  XS  = xdi(X,{1:s,2:i}).sum(axis=3)  # select sex & activity, sum health (denom)
+  X_dia    = X[:,:,:,1:,1]                    # select diagnosed
+  X_dia_si = xdi(X_dia,{1:s,2:i}).sum(axis=3) # select sex & activity, sum health (denom)
   # mult by rate, select sex & activity, sum health (num)
-  Xtx = xdi(X*np.squeeze(tx_sit*Rtx_ht),{1:s,2:i}).sum(axis=3)
-  return aggratio(Xtx,XS,aggr)
+  Xtx_si   = xdi(X_dia*np.squeeze(tx_sit*Rtx_ht),{1:s,2:i}).sum(axis=3)
+  return aggratio(Xtx_si,X_dia_si,aggr)
 
 @deco.rmap(Rk=['PF_condom_t'])
 @deco.tslice(tk=['PF_condom_t'])
@@ -234,14 +236,14 @@ def circum(PF_circum_t,aggr=None):
 @deco.tslice(tk=['X','inc'])
 def infections(X,inc,foi_mode,p,fs,fi,ts,ti):
   # total infections (per year); uses foi.aggr_inc due to FOI cases
-  # NOTE: p,fs,fi,ts,ti must be single values!
+  # note: p,fs,fi,ts,ti must be single values!
   return foi.aggr_inc(inc[:,p,ts,ti,fs,fi],foi_mode,axis=(),Xsus=X[:,ts,ti,0,0])
 
 # ------------------------------------------------------------------------------
 # output collection functions
 
 def wiw(R1s,tvec,t,R2s=None,vsop='1-2'):
-  # who infected whom: tabular data (list of lists): infections per year
+  # wiw: who infected whom, tabular data (list of lists) of infections per year
   # stratified by time/ptr-type/to-group/from-group
   # optionally get (paired) difference between R1s & R2s
   # use quantiles (vs for every R/id) to reduce data size
