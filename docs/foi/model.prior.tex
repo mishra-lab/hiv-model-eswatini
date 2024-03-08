@@ -1,12 +1,11 @@
 \section{Prior Approaches: Instantaneous Partnerships}\label{foi.prior}
-% TODO: (?) \includegraphics[scale=1]{diag.inst}
 The earliest HIV transmission models \cite{Anderson1986}
 were adapted from models of other sexually transmitted diseases,
 especially gonorrhea \cite{Yorke1978,Nold1980,Hethcote1982}.
 These early HIV transmission models did not explicitly model individual sex acts,
 but instead assumed an overall probability of transmission per partnership \cite{Isham1988}.
 This assumption was initially justified via data suggesting that
-the probability of HIV transmission per partnership
+the probability of HIV transmission within partnerships
 increased quickly and then saturated \cite{Kaplan1990}.
 Such data were later explained by heterogeneity in
 infectiousness (\eg due to infection stage, etc.) and/or
@@ -20,7 +19,7 @@ The shift to per-act \vs per-partnership parameterization highlighted
 a fundamental limitation of compartmental models:
 compartmental models cannot model individual partnerships,
 because each ``compartment'' reflects a group of individuals
-whose characteristics are assumed to be homogeneous and memoryless \cite{Rao2021}.
+which is assumed to be homogeneous and memoryless \cite{Rao2021}.
 Therefore, the dynamics of sexual partnerships must be modelled using
 average rates of partnership change and average characteristics of those partnerships.
 As a result, partnerships are effectively modelled as instantaneous, such that
@@ -37,11 +36,11 @@ are discussed below in \sref{foi.prior.lims}, \ref{foi.prior.alt}, and \ref{foi.
 Thus, over the years, different force of infection equations
 have been designed for compartmental models which
 explicitly aggregate the risk of transmission across different numbers and types of sex acts,
-and likewise across different numbers and types of sexual partners/partnerships.
+and likewise across different numbers and types of sexual partnerships.
 The remainder of this section reviews these equations and their assumptions in detail.
 %===================================================================================================
 \subsection{Aggregating Sex Acts within a Partnership}\label{foi.prior.bhom}
-To account for PTC due to repeated sex acts with the same partner,
+To account for inert sex acts within ongoing partnerships,
 the per-partnership probability of transmission $B$ was conceptualized as follows \cite{Allard1990}.
 Let $A$ denote the total number of sex acts in the partnership,
 and $\beta$ denote the probability of transmission per act.
@@ -64,14 +63,15 @@ the probability of ``escaping'' infection after all $A$ acts:%
 Although $B(A)$ is monotonic increasing,
 the effective probability of transmission per act $B/A$
 decreases as the number of acts $A$ increases because,
-on average, more and more acts occur after transmission --- \ie are PTC.
+on average, more and more acts are inert --- \ie occur after transmission.
 Figure~\ref{fig:binom.dur} illustrates the shape of $B(A)$ (red)
 and the corresponding effective probabilities of transmission per act $B/A$ (tangent slopes)
 for a shorter (blue, fewer sex acts) \vs longer (green, more sex acts) partnership.
-The average proportion of sex acts that occur after transmission
-also increases with the per-act probability of transmission $\beta$, according to:
-\begin{equation}\label{eq:ptc}
-  P_{PTC} = 1 - \frac{B(A)}{\beta A}
+The expected proportion of inert sex acts in a partnership
+also increases with the per-act probability of transmission $\beta$,
+as follows (illustrated in Figure~\ref{fig:binom.inert}):
+\begin{equation}\label{eq:inert}
+  P_{\txn{inert}} = 1 - \frac{B}{\beta A}
 \end{equation}
 \begin{figure}
   \centerline{
@@ -98,7 +98,7 @@ also increases with the per-act probability of transmission $\beta$, according t
 \end{figure}
 %===================================================================================================
 \subsection{Heterogeneity in the Per-Act Probability of Transmission}\label{foi.prior.xph}
-As noted above, the per-act probability of transmission $\beta$ is heterogeneous,
+As noted above, the per-act probability of transmission $\beta$ is actually heterogeneous,
 varying with factors like: HIV infection stage, genital ulcer disease, condom use, etc.
 \cite{Boily2009,Giannou2016}.
 The next step in developing a force of infection equation is to extend \eqref{eq:B}
@@ -246,12 +246,12 @@ While $\Delta_t = 1$ year may be chosen to match common reporting periods for se
 this choice remains mathematically arbitrary,
 and often coincides with ignoring partnership dynamics beyond 1 year,
 as discussed below in \sref{foi.prior.dur}.
-In sum, unless the period $\Delta_t$ can be matched to the numerical solver timestep,
+In conclusion, unless the period $\Delta_t$ can be matched to the numerical solver timestep,
 incidence rate \eqref{eq:foi.ir} should be preferred over incidence proportion \eqref{eq:foi.ip}.
 % cite Diekmann2021 ?
 %===================================================================================================
 \subsection{Revisiting Partnership Duration}\label{foi.prior.dur}
-A final issue in constructing the force of infection equation relates to parameterization.
+A final decision in constructing the force of infection equation relates to parameterization.
 In \eqrefr{eq:B.n}{eq:foi.ip}, partnership durations $\delta$ are not explicitly modelled,
 but implied by the total numbers of sex acts per partnership $A$,
 and a presumed frequency of sex per partnership $F$, such that $A = F\delta$.
@@ -262,30 +262,32 @@ could naively be taken as $Q = 1$ (per year).
 Then, if $Q \ge 1$ is used in the model,
 the total sex acts per partnership can (and should) be reduced to reflect up to one year
 --- \ie $A \le F$, or effectively $\delta \le 1$ year.
-This change \vs $Q < 1, A > F$
-can substantially reduce the proportions of sex acts which are modelled as PTC,
-and thus increases transmission via what would be longer ($\delta > 1$ year) partnerships.
-On the other hand, using the true $Q < 1, A > F$
-can effectively delay early transmission in longer partnerships,
-such that modelled HIV prevalence could lag behind true HIV prevalence.
+\par
+Using $Q \ge 1$ and $A \le F$
+can overestimate transmission via longer ($\delta > 1$ year) partnerships,
+because the proportion of inert sex acts is effectively underestimated.
+On the other hand, using the true $Q < 1$ and $A > F$
+can delay transmission in longer partnerships
+because inert sex acts which truly accumulate later in partnerships
+are modelled as an average proportion throughout the partnership
+(\ie tangents \vs curve in Figure~\ref{fig:binom}).
 These dynamics are further explored in simulation experiments (\sref{foi.exp.model}).
 \par
-Lastly, it is worth noting that partnership duration $\delta$ is further related to
+Lastly, we note that partnership duration $\delta$ is further related to
 the average partnership formation rate $Q$ and
 the average number of concurrent partners $K$ by $Q = K/\delta$.
 % \footnote{Gaps between partnerships do not result in $Q < K/\delta$,
 %   because the average $K$ would be reduced if some individuals are ``between partnerships''.}
-Thus, an alternate parameterization could specify
+Thus, an alternate force of infection parameterization could specify
 the number of concurrent partners $K$ and the frequency of sex with each partner $F$.
 The overall rate of sex would be the same: $QA = KF$, since $A = F\delta$.
 In some ways, this $KF$ parameterization is more intuitive,
-and it will be useful in the new force of infection approach (\sref{foi.prop}).
+and it will be useful in our new force of infection approach (\sref{foi.prop}).
 %===================================================================================================
 \subsection{Limitations of Prior Approaches}\label{foi.prior.lims}
-The above approaches to modelling HIV transmission via sexual partnerships
-have several limitations (see~also \cite{Rao2021}).
-These limitations, and their implications for existing model-based evidence,
-can be summarized as follows.
+The limitations of the above approaches to modelling HIV transmission via sexual partnerships,
+along with their implications for existing model-based evidence,
+can be summarized as follows (see also \cite{Rao2021}).
 %---------------------------------------------------------------------------------------------------
 \paragraph{Instantaneous Partnerships}
 \eqrefs{eq:foi.ir}{eq:foi.ip} both include
@@ -296,13 +298,13 @@ including via the exact same partnership by which they were infected.
 Similarly, individuals who recently transmitted to a given partner are also modelled to be
 at risk of transmitting (again) to the same partner,
 albeit with a small absolute rate reduction due to the smaller susceptible population.
-This modelling assumption acts to increase the modelled rate of transmission \vs ``reality'',
+This modelling assumption acts to increase the modelled rate of transmission \vs reality,
 especially for longer partnerships.
 As a result, the contribution of longer partnerships to overall transmission could be overestimated,
 while the contribution of shorter partnerships could be underestimated.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Aggregating Past/Future Sex Acts}
-The instantaneous partnerships assumption is in fact directly related to the PTC issue,
+The instantaneous partnerships assumption is in fact directly related to inert sex acts,
 because the delay in onward transmission risk that is missing under instantaneous partnerships
 reflects the same post-transmission period within partnerships
 wherein additional sex acts cannot result in more infections.
@@ -310,20 +312,20 @@ The prevailing solution to this issue is to
 define the per-partnership probability of transmission $B$ by
 aggregating competing risks from each sex act within a given partnership via \eqref{eq:B} et al.
 However, as described in \sref{foi.prior.dur}, this approach introduces a trade off between
-capturing the true proportion of PTC in longer partnerships
+capturing the true proportion of inert sex acts in longer partnerships
 (using the true partnership duration~$\delta$)
 \vs capturing the true magnitude of early transmission within partnerships (using $\delta \le 1$).
 These two options would then underestimate or overestimate
 the contribution of longer partnerships to overall transmission, respectively.
 Moreover, the sex acts aggregated within each partnership via \eqref{eq:B} et al.
-are parameterized to reflect current conditions
+are almost always parameterized to reflect current conditions
 --- \ie HIV stage, treatment status, condom use, etc. ---
-even though such conditions almost certainly evolve over the course of partnerships,
-especially longer partnerships.
-Again, we can see the direct connection to the instantaneous partnerships assumption.
-This issue also parallels limitations of cross-sectional risk factor analyses,
-where risk factors are modelled as static,
-but true risk accumulates via cumulative exposure to dynamic risk factors.
+even though such conditions evolve over the course of partnerships,
+especially longer partnerships.%
+\footnote{Again, we can see the connection to the instantaneous partnerships assumption.
+  This issue also parallels limitations of cross-sectional HIV risk factor analyses,
+  where risk factors are modelled as static,
+  but true risk accumulates via cumulative exposure to dynamic risk factors.}
 The implications of aggregating these past/future sex acts are not immediately obvious,
 and likely depend on numerous factors and conditions.
 %---------------------------------------------------------------------------------------------------
@@ -331,7 +333,7 @@ and likely depend on numerous factors and conditions.
 Risk from multiple partnerships is sometimes aggregated as
 incidence proportion $\lambda^\ip$ via \eqref{eq:foi.ip}.
 As noted in \sref{foi.prior.part}, this approach is not inherently wrong,
-but the specification of time period $\Delta_t = 1$ often is.
+but the specified time period $\Delta_t = 1$ often is.
 This $\Delta_t$ \emph{should} be matched to the timestep of the numerical solver,
 but $\Delta_t = 1$ year is often used,
 and the resulting incidence applied as a rate over smaller timesteps, reducing transmission.
@@ -339,7 +341,7 @@ Since $\lambda^\ip$ saturates at 1 --- similar to $B(A)$ in Figure~\ref{fig:bino
 transmission to higher risk groups is disproportionately reduced.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Within \vs Between Partnership Heterogeneity}
-The final limitation of prior approaches is the apparent lack of distinction between
+A final limitation of prior approaches is the apparent lack of distinction between
 within- \vs between-partnership heterogeneity when computing
 the average per-partnership probability of transmission $B$.
 Both WPH and BPH --- \ie \eqrefs{eq:B.wph}{eq:B.bph} --- and combinations thereof, have been used
