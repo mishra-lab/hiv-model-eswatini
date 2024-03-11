@@ -19,7 +19,7 @@ tex = dict(
 
 PX = fio.load_csv(tfname('par.defs.csv'),fmt='dict') # definitions
 PD = params.def_sample_distrs()                      # prior
-Ps = fio.load(fname('npy','fit','Ps'))               # posterior
+Ps = fio.load_npy(fname('npy','fit','Ps'))           # posterior
 
 for X in PX:
   k = X['parameter']
