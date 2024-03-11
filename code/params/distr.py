@@ -127,7 +127,7 @@ def circumcision():
 
 def condoms():
   section('condoms')
-  fit_distr(ss.betabin,m=1-.26,q=(1-.43,1-.13),name='Rbeta_condom') # Giannou2016
+  fit_distr(ss.betabin,m=.26,q=(.13,.43),name='Rbeta_condom') # Giannou2016
   # ai vs vi
   fit_distr(ss.betabin,m=.540,q=(.387,.692),name='PF_condom_ai)') # Owen2020a
   fit_distr(ss.betabin,m=.684,q=(.555,.813),name='PF_condom_vi)') # Owen2020a
