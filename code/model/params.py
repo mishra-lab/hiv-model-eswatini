@@ -144,7 +144,7 @@ def def_constrs():
 
 def get_depend(P,**kwds):
   # add dependent params to dict P, which already contains sampled params
-  P['foi_mode'] = 'base'
+  P.setdefault('foi_mode','base')
   P.update(kwds)
   # order below matters for some dependencies
   P.update(get_F(P))
