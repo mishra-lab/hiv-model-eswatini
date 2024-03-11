@@ -48,7 +48,7 @@ def def_sample_distrs():
   'lpref_msp_xl':         stats.uniform(l=-2,h=+2),
   'lpref_mcx_swx':        stats.uniform(l=-2,h=+2),
   # condom use
-  'Rbeta_condom':         stats.betabin(p=.734,n= 32),
+  'Rbeta_condom':         stats.betabin(p=.266,n= 32),
   'RPF_condom_a:v':       stats.betabin(p=.768,n= 12),
   'RPF_condom_1996':      stats.uniform(l=0,h=1),
   'PF_condom_msp_2006':   stats.betabin(p=.230,n=100),
