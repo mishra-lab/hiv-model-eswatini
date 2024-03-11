@@ -1,7 +1,7 @@
 from copy import copy
 from utils import log,fio,dict_list_update
 from model import system,out
-from model.scenario import imis,tpaf,akwds,tvec,fname
+from model.scenario import tvec,fname
 
 cases = ['base','foi-rd','foi-ry','foi-py']
 

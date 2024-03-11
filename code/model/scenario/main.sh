@@ -38,4 +38,5 @@ export MPLCONFIGDIR=.tmp # {scinet}
 # PYCODE+="tpaf.run(case=case)"                       # 4:00:00
 
 # run every time ---------------------------------------------------------------
+echo "$PYCODE"
 python3 -c "$PYCODE"

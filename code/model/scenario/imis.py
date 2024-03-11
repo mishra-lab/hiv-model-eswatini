@@ -1,7 +1,7 @@
 import numpy as np
 from utils import log,fio,stats,parallel
 from model import system,params,target,fit,out
-from model.scenario import akwds,N,tvec,fname,get_seeds
+from model.scenario import N,tvec,fname,get_seeds
 
 # TODO: stopping criterion
 

@@ -3,7 +3,7 @@ import numpy as np
 from copy import deepcopy
 from utils import stats,log,fio,parallel,flatten,minimize
 from model import strats,params,system,target,fit,out
-from model.scenario import akwds,tvec,fname
+from model.scenario import tvec,fname
 
 cascade = dict( # 2020 cascade targets
   low  = (.60,.40,.80),
