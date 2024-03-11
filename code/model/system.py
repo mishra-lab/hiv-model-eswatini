@@ -74,8 +74,8 @@ def get_dX(X,t,P):
   dX[:,:,:,3:6,3:5] -= dXi
   dX[:,:,:,2:5,3:5] += dXi
   # births & deaths
-  birth, PXe, turn = params.solve_turnover(P,t)
-  dX[:,:,0,0,0] += X.sum() * P['birth_t'](t) * PXe
+  birth, PXe_si, turn = params.solve_turnover(P,t)
+  dX[:,:,0,0,0] += X.sum() * birth * PXe_si
   dX -= X * P['death']
   dX -= X * P['death_hc']
   # turnover
