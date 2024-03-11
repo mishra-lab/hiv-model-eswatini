@@ -5,10 +5,10 @@ from model import system
 uid = fio.datestamp()
 
 N = dict(
-  batch  = 100,     # [ 100] number of batches
+  batch  =  100,    # [ 100] number of batches
   hsam   = 1000,    # [1000] initial hypercube samples per batch
-  isam   = 100,     # [ 100] number to resample per imis iter
-  imis   = 100,     # [ 100] number of imis iterations
+  isam   =  100,    # [ 100] number to resample per imis iter
+  imis   =  100,    # [ 100] number of imis iterations
   post   = 1000,    # [1000] number of posterior samples
 ) # h1000i100b100
 # N = dict(batch=5,hsam=100,isam=10,imis=15,post=100) # DEBUG: h100i15b5
@@ -23,7 +23,7 @@ def fname(ftype,phase,key,case='base',b='all'):
   nid = 'h{hsam}i{imis}b{batch}'.format(**N)
   subdirs = [uid,nid]
   if ftype=='npy':
-    path,ext = ['data','npy',*subdirs],''
+    path,ext = ['data','npy',*subdirs],'.npy'
   if ftype=='csv':
     path,ext = ['data','csv',*subdirs],'.csv'
   if ftype=='fig':
@@ -34,12 +34,6 @@ def fname(ftype,phase,key,case='base',b='all'):
 def get_seeds(b):
   return list(range(N['hsam']*b,N['hsam']*(b+1)))
 
-akwds = fio.argvkwds(scinet=False)
-
-if akwds.pop('scinet'):
-  os.environ['MPLCONFIGDIR'] = fio.tmpfile() # TODO: this may not work?
-  parallel.cpus = 80
-
-uid = '2023-10-25'
+uid = '2024-03-12'
 nid = 'h{hsam}i{imis}b{batch}'.format(**N)
 log(0,'{}/{}'.format(uid,nid))

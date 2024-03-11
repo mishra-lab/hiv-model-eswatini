@@ -25,12 +25,12 @@ def parse_case(case):
 def run_rf(b):
   case = cases[b]
   log(0,'art.run_rf: {}'.format(case))
-  P0s = fio.load(fname('npy','fit','Ps',case='base'))
+  P0s = fio.load_npy(fname('npy','fit','Ps',case='base'))
   T = get_refit_T(case+'all-')
   D = get_refit_D(case+'aq-')
   fun = lambda P: run_rf_1(P,D,T,tvec['cal'],ftol=.1)
   Ps = parallel.ppool(len(P0s)).map(fun,P0s); log(1)
-  fio.save(fname('npy','art-rf','Ps',case=case),Ps)
+  fio.save_npy(fname('npy','art-rf','Ps',case=case),Ps)
 
 def rerun_rf():
   log(0,'art.rerun_rf')
@@ -38,7 +38,7 @@ def rerun_rf():
     log(1,case)
     base = (case == 'base')
     T = get_refit_T('fsw+cli+all+' if base else case+'all-')
-    Ps = fio.load(fname('npy','fit' if base else 'art-rf','Ps',case=case))
+    Ps = fio.load_npy(fname('npy','fit' if base else 'art-rf','Ps',case=case))
     R1s = system.run_n(Ps,t=tvec['main'],T=T)
     fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkp))
     fio.save_csv(fname('csv','art-rf','expo',case=case),out.expo(R1s,**tkp,**ekwds))
@@ -100,7 +100,7 @@ def Rxs_update(P,Pu,q=None,**kwds):
 
 def run_ss(Ns=10,seed=0):
   log(0,'art.run_ss')
-  P0s = fio.load(fname('npy','fit','Ps'))
+  P0s = fio.load_npy(fname('npy','fit','Ps'))
   Ps = get_sens_sample(P0s,Ns,seed=seed)
   Rs = system.run_n(Ps,t=tvec['main'])
   fio.save_csv(fname('csv','art-ss','wiw',case='sens'),out.wiw(Rs,**tkp))
@@ -128,10 +128,3 @@ def get_sens_sample(Ps,Ns,seed):
   D = {'R'+step+'x:'+skey: Ds[step] for skey in ('fsw','cli','aq') for step in 'dtu'}
   return [Rxs_update(deepcopy(P),Pu,ss=ss) for P in Ps
     for ss,Pu in enumerate(params.get_n_sample_lhs(D,Ns,seed=seed))]
-
-if __name__ == '__main__':
-  # run_rf(**akwds)
-  # rerun_rf()
-  # run_ss(**akwds)
-  pass
-

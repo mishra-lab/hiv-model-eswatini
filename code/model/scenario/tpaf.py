@@ -27,7 +27,7 @@ t0s = [1990,2000,2010,2020]
 
 def run(case='base'):
   log(0,'scenario.tpaf.run: '+case)
-  P1s = fio.load(fname('npy','fit','Ps',case=case))
+  P1s = fio.load_npy(fname('npy','fit','Ps',case=case))
   R1s = system.run_n(P1s,t=tvec['main'])
   E = out.expo(R1s,[],[],[],[],ecols={'tpaf.pop':None,'tpaf.t0':None},mode=ekwds['mode'])
   for name,spec in tpafs.items():

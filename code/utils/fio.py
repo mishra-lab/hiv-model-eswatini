@@ -16,16 +16,16 @@ def genpath(fname):
   if path: os.makedirs(path,exist_ok=True)
   return fname
 
-def save(fname,obj):
+def save_npy(fname,obj):
   # save obj to file via numpy, ensuring the path exists
-  log(2,'fio.save: '+fname+'.npy')
+  log(2,'fio.save_npy: '+fname)
   np.save(genpath(fname),obj)
   return obj
 
-def load(fname):
+def load_npy(fname):
   # load obj from file via numpy & avoid 0-dimensional array obj for dict and other obj types
-  log(2,'fio.load: '+fname+'.npy')
-  obj = np.load(fname+'.npy',allow_pickle=True)
+  log(2,'fio.load_npy: '+fname)
+  obj = np.load(fname,allow_pickle=True)
   if not obj.shape: # dict etc.
     return obj[()]
   return obj # array-like
