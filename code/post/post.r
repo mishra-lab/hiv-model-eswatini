@@ -1,6 +1,6 @@
 source('post/config.r')
 
-id.vars = c('id','batch','imis','ll','lp','wt','case','case.lab','distr')
+id.vars = c('id','batch','imis','foi_mode','ll','lp','wt','case','case.lab','distr')
 i.vars = function(X){ intersect(colnames(X),id.vars) }
 p.vars = function(X){ setdiff(colnames(X),id.vars) }
 

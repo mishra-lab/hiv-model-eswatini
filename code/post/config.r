@@ -4,9 +4,9 @@ source('utils/plot.r')
 N = list(batch=100,hsam=1000,isam=100,imis=100) # h1000i100b100
 # N = list(batch=50,hsam=1000,isam=100,imis=25) # h1000i25b50
 # N = list(batch=5,hsam=100,isam=15,imis=15) # h100i15b5
-uid = '2023-10-25'
+uid = '2024-03-12'
 nid = sprintf('h%di%db%d',N$hsam,N$imis,N$batch)
-slicers = list(
+strats = list(
   'all'   = list(rgb(.40,.00,.40),'Overall'),
   'aq'    = list(rgb(.60,.20,.60),'Lower Risk'),
   'w'     = list(rgb(.80,.20,.20),'Women'),
@@ -35,9 +35,9 @@ slicers = list(
   'fsw+cli+' = list('#FF9900','Neither','6212'),
   'sens'  = list('#999999','Sensitivity'),
   'base'  = list('#999999','Base','solid'))
-slicers$aqf  = slicers$aqt  = slicers$aq
-slicers$fswf = slicers$fswt = slicers$fsw
-slicers$clif = slicers$clit = slicers$cli
+strats$aqf  = strats$aqt  = strats$aq
+strats$fswf = strats$fswt = strats$fsw
+strats$clif = strats$clit = strats$cli
 sets = list(
   base    = c('base'),
   sens    = c('sens'),
@@ -48,9 +48,9 @@ sets = list(
   pop.art = c('all','aq','fsw','cli'),
   part    = c('msp','cas','swo','swr'))
 f = function(x,i){ ifelse(len(x) < i,NA,x[[i]]) }
-slice.cols = sapply(names(slicers),function(id){ f(slicers[[id]],1) })
-slice.labs = sapply(names(slicers),function(id){ f(slicers[[id]],2) })
-slice.lts  = sapply(names(slicers),function(id){ f(slicers[[id]],3) })
+slice.cols = sapply(names(strats),function(id){ f(strats[[id]],1) })
+slice.labs = sapply(names(strats),function(id){ f(strats[[id]],2) })
+slice.lts  = sapply(names(strats),function(id){ f(strats[[id]],3) })
 set.cols = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.cols[[id]] })) })
 set.labs = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.labs[[id]] })) })
 set.lts  = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.lts[[id]] })) })

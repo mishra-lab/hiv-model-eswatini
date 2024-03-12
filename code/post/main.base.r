@@ -3,7 +3,7 @@ source('post/post.r')
 source('post/wiw.r')
 
 main.post = function(){
-  X = load.post.data()
+  X = load.post.data(rdata='load')
   plot.post.cor(X$cor,thr=0)
   file.rename('Rplots.pdf','post.cor.pdf') # MAN
   g = plot.post.uni(X$pp,ncol=7) + scale_color_manual(values=c('#000000',clr))
@@ -39,7 +39,7 @@ main.num = function(){
 }
 
 main.wiw = function(){
-  X = clean.wiw.data(read.csvs('fit','wiw','base'))
+  X = clean.wiw.data(read.csvs('fit','wiw','base',rdata='load'))
   X$infs.prop = X$infs / aggregate(infs~t,X,sum)$infs
   print(aggregate(infs.prop~part+t,X,sum)) # NUM
   do.ratio(X);         fig.save(uid,nid,'wiw.base.ratio',w=5,h=5)
