@@ -1,34 +1,27 @@
 export PYTHONPATH := .:$$PYTHONPATH
 do.debug:
-	python3.8 model/debug.py && echo [OK]
-do.model.imis:
-	python3.8 model/scenario/imis.py case=base b=0 && echo [OK]
-do.model.foi:
-	python3.8 model/scenario/foi.py && echo [OK]
-do.model.art:
-	python3.8 model/scenario/art.py && \
-	# python3.8 model/scenario/art.py b=0 && \
-	# python3.8 model/scenario/art.py b=1 && \
-	# python3.8 model/scenario/art.py b=2 && \
-	# python3.8 model/scenario/art.py b=3 && \
-	echo [OK]
+	python3 model/debug.py
+do.model:
+	./model/scenario/main.sh
+do.scinet:
+	sbatch model/scenario/main.sh
 do.post.base:
-	Rscript post/main.base.r && echo [OK]
+	Rscript post/main.base.r
 do.post.foi:
-	Rscript post/main.foi.r && echo [OK]
+	Rscript post/main.foi.r
 do.post.art:
-	Rscript post/main.art.r && echo [OK]
+	Rscript post/main.art.r
 do.params.distr:
-	python3.8 params/distr.py && echo [OK]
+	python3 params/distr.py
 do.params.tab:
-	python3.8 params/tab/main.py && echo [OK]
+	python3 params/tab/main.py
 do.params.fsw:
-	Rscript params/fsw/main.r && echo [OK]
+	Rscript params/fsw/main.r
 do.params.wp:
-	Rscript params/wp/main.r && echo [OK]
+	Rscript params/wp/main.r
 do.profile:
-	./profile/run.sh && echo [OK]
+	./profile/run.sh
 do.toy:
-	python3.8 toy/Bxph.py && echo [OK]
+	python3 toy/Bxph.py
 do.tikz:
 	cd tikz && make all
