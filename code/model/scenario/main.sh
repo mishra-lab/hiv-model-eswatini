@@ -25,7 +25,7 @@ export MPLCONFIGDIR=.tmp # {scinet}
 # PYCODE+="imis.rerun(case='base')"                   # 0:15:00
 
 # art calibration & scenarios --------------------------------------------------
-# PYCODE+="art.run_rf(b=b)"                           # 1:30:00; array=0-99
+# PYCODE+="art.run_rf(b=b)"                           # 1:30:00; array=0-3
 # PYCODE+="art.rerun_rf()"                            # 0:45:00
 # PYCODE+="art.run_ss()"                              # 0:45:00
 
