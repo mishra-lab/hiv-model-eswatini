@@ -1,3 +1,5 @@
+# config stuff for ad-hoc analyses of model outputs
+
 source('utils/ops.r')
 source('utils/plot.r')
 
@@ -7,6 +9,7 @@ N = list(batch=100,hsam=1000,isam=100,imis=100) # h1000i100b100
 uid = '2024-03-12'
 nid = sprintf('h%di%db%d',N$hsam,N$imis,N$batch)
 strats = list(
+  # populations
   'all'   = list(rgb(.40,.00,.40),'Overall'),
   'aq'    = list(rgb(.60,.20,.60),'Lower Risk'),
   'w'     = list(rgb(.80,.20,.20),'Women'),
@@ -21,11 +24,13 @@ strats = list(
   'cli.l' = list(rgb(.20,.20,.60),'LR Clients'),
   'cli.h' = list(rgb(.00,.00,.40),'HR Clients'),
   'cli'   = list(rgb(.00,.00,.60),'Clients'),
+  # partnerships
   'msp'   = list(rgb(.26,.04,.41),'Main / Spousal'),
   'cas'   = list(rgb(.58,.15,.40),'Casual'),
   'swo'   = list(rgb(.87,.32,.23),'Sex Work Occas.'),
   'swr'   = list(rgb(.99,.65,.04),'Sex Work Reg.'),
   'swx'   = list(rgb(.93,.48,.13),'Sex Work Overall'),
+  # scenarios
   'foi-rd'   = list('#00CC99','Partnership Duration','62'),
   'foi-ry'   = list('#0099CC','Partnership Year','22'),
   'foi-py'   = list('#CC00CC','All Partnerships Year','4212'),
@@ -38,6 +43,7 @@ strats = list(
 strats$aqf  = strats$aqt  = strats$aq
 strats$fswf = strats$fswt = strats$fsw
 strats$clif = strats$clit = strats$cli
+# combinations of the above
 sets = list(
   base    = c('base'),
   sens    = c('sens'),
@@ -47,38 +53,45 @@ sets = list(
   pop.cal = c('all','w','m','fsw'),
   pop.art = c('all','aq','fsw','cli'),
   part    = c('msp','cas','swo','swr'))
+# collect colours, labels, linetypes for plotting
 f = function(x,i){ ifelse(len(x) < i,NA,x[[i]]) }
-slice.cols = sapply(names(strats),function(id){ f(strats[[id]],1) })
-slice.labs = sapply(names(strats),function(id){ f(strats[[id]],2) })
-slice.lts  = sapply(names(strats),function(id){ f(strats[[id]],3) })
-set.cols = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.cols[[id]] })) })
-set.labs = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.labs[[id]] })) })
-set.lts  = sapply(sets,function(ids){ unname(sapply(ids,function(id){ slice.lts[[id]] })) })
+strat.cols = sapply(names(strats),function(id){ f(strats[[id]],1) })
+strat.labs = sapply(names(strats),function(id){ f(strats[[id]],2) })
+strat.lts  = sapply(names(strats),function(id){ f(strats[[id]],3) })
+set.cols = sapply(sets,function(ids){ unname(sapply(ids,function(id){ strat.cols[[id]] })) })
+set.labs = sapply(sets,function(ids){ unname(sapply(ids,function(id){ strat.labs[[id]] })) })
+set.lts  = sapply(sets,function(ids){ unname(sapply(ids,function(id){ strat.lts[[id]] })) })
 set.labs$foi[4] = 'Effective Partners Adjustment'; set.cols$foi[4] = '#FF9900'
 
-gen.name = function(phase,key,case,b='all',ext='.csv',log=''){
+csv.name = function(phase,key,case,b='all',ext='.csv',log=''){
+  # generate standardized .csv or .rdata filename
   fname = root.path('data','csv',uid,nid,paste0( phase,'_',key,'_',case,'_',b,ext))
   if (nchar(log)){ pout(log,': ',fname) }
   return(fname)
 }
 read.csvs = function(phase,key,set,b='all',skip=NULL,rdata=''){
-  if (rdata=='load'){ load(file=gen.name(phase,key,set,ext='.rdata',log='load')); return(X) }
+  # read & rbind csv files, possibly save / load from rdata (much faster)
+  if (rdata=='load'){ load(file=csv.name(phase,key,set,ext='.rdata',log='load')); return(X) }
   X = rbind.lapply(sets[[set]],function(case){
     if (case %in% skip){ return(NULL) }
     X.i = rbind.lapply(b,function(bi){
-      read.csv(gen.name(phase,key,case,b=bi,log='load'),as.is=TRUE)
+      read.csv(csv.name(phase,key,case,b=bi,log='load'),as.is=TRUE)
     })
     X.i$case = case
     return(X.i)
   })
   X$case.lab = factor(X$case,levels=sets[[set]],labels=set.labs[[set]])
-  if (rdata=='save'){ save(X,file=gen.name(phase,key,set,ext='.rdata',log='save')) }
+  if (rdata=='save'){ save(X,file=csv.name(phase,key,set,ext='.rdata',log='save')) }
   return(X)
 }
 
-grep.i.col = function(X,...){ grep('^i\\d+\\.\\d+\\.\\d+$',colnames(X),...) }
+grep.i.col = function(X.wide){
+  # select main data columns from out.expo with mode='id'
+  grep('^i\\d+\\.\\d+\\.\\d+$',colnames(X.wide))
+}
 
 melt.expo.i = function(X.wide,...){
+  # melt main data columns from out.expo with model='id'
   X = melt(filter.cols(X.wide,...),measure=grep.i.col(X.wide),var='id')
   return(X[order(X$case),])
 }
@@ -87,6 +100,7 @@ qs = c(0,.025,.05,.1,.25,.4,.45,.475,.5,.525,.55,.6,.75,.9,.95,.975,1)
 q3 = c(.025,.5,.975)
 
 expo.qs = function(X,q=qs,trans=identity){
+  # compute quantiles from melted out.expo data
   vars = colnames(X)[!grepl('^id$|^value$|^ss$',colnames(X))]
   f = formula(paste('value ~',paste(vars,collapse='+')))
   fun = function(x){ trans(quantile(x,p=q)) }
