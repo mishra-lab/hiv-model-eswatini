@@ -6,12 +6,16 @@ from datetime import datetime
 from PyPDF2 import PdfMerger as pdfm
 from utils.log import log
 
+# therootpath: full path to parent of /code/utils/fio.py
+# so we can reliably create full paths regardless of the project root folder location
 therootpath = os.path.abspath(__file__).replace(os.path.join('code','utils','fio.py'),'')
 
 def rootpath(*args):
+  # e.g. rootpath('a','b') returns therootpath/a/b
   return os.path.join(therootpath,*args)
 
 def genpath(fname):
+  # create path to fname if needed
   path = os.path.dirname(fname)
   if path: os.makedirs(path,exist_ok=True)
   return fname
@@ -32,9 +36,9 @@ def load_npy(fname):
 
 def save_csv(fname,obj):
   # equivalent formats (ordered as implemented below)
-  # 1. {'A':[0,1,2],'B':[3,4,5]}
-  # 2. [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
-  # 3. [['A','B'],[0,3],[1,4],[2,5]]
+  # 1. cols: {'A':[0,1,2],'B':[3,4,5]}
+  # 2. dict: [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
+  # 3. rows: [['A','B'],[0,3],[1,4],[2,5]]
   log(2,'fio.save_csv: '+fname)
   with open(genpath(fname),'w') as f:
     if isinstance(obj,dict):
@@ -50,11 +54,11 @@ def save_csv(fname,obj):
       w.writerows(obj)
 
 def load_csv(fname,fmt='rows',cast=float,castbak=str,**kwds):
-  # fmt options are same as save_csv (default=2)
-  # 1. fmt='cols': {'A':[0,1,2],'B':[3,4,5]}
-  # 2. fmt='dict': [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
-  # 3. fmt='rows': [['A','B'],[0,3],[1,4],[2,5]]
-  # we try cast variables using 'cast', and default to castbak if it fails
+  # fmt options are same as save_csv
+  # 1. 'cols': {'A':[0,1,2],'B':[3,4,5]}
+  # 2. 'dict': [{'A':0,'B':3},{'A':1,'B':4},{'A':2,'B':5}]
+  # 3. 'rows': [['A','B'],[0,3],[1,4],[2,5]]
+  # we try to cast variables using 'cast', and default to castbak if it fails
   log(2,'fio.load_csv: '+fname)
   if cast is None: cast = lambda x: x
   def castfun(x):
@@ -90,17 +94,17 @@ def datestamp(date=None):
   return date.strftime('%Y-%m-%d')
 
 def filehash(*fnames,root=None,n=7):
-  # get a unique hash based on the current state of some files
+  # get a unique n-length hash based on the current state of some file(s)
   root = '.' if root is None else root
   return ''.join([os.popen('sha1sum '+os.path.join(root,fname)).read()[0:n] for fname in fnames])
 
 def randhash(n=7):
-  # get a random hash
+  # get a random n-length hash
   chars = '0123456789abcdefghijklmnopqrstuvwxyz'
   return ''.join(np.random.choice(list(chars),n))
 
 def tmpfile(fname=None,root=None,n=7):
-  # generate a dir based on randhash & return path
+  # generate a dir based on randhash, create, & return path
   fname = '' if fname is None else fname
   root  = '.tmp' if root is None else root
   return genpath(os.path.join(root,randhash(n),fname))
@@ -117,7 +121,7 @@ def pdfmerge(ofname,fnames,rm=False):
     for fname in fnames:
       os.remove(fname)
 
-def argvkwds(i=1,**kwds):
+def argvkwds(i=1,**kwds): # delete
   # parse argv to dict, e.g. ['a','b=1'] -> dict(a=True,b=1)
   for arg in sys.argv[i:]:
     k,e,v = arg.partition('=')
