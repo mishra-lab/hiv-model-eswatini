@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from model.target import filter_targets
-from utils import _,log,genpath,flatten,dict_split,interval_qs,clr_interp,squarish,itslice,tdt
+from utils import _,log,genpath,flatten,dict_split,interval_qs,clr_interp,itslice,tdt
 from model import out,strats
 
 # ------------------------------------------------------------------------------
