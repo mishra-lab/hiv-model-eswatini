@@ -4,7 +4,7 @@ import csv
 import numpy as np
 from datetime import datetime
 from PyPDF2 import PdfMerger as pdfm
-from utils.log import log
+from utils import log
 
 # therootpath: full path to parent of /code/utils/fio.py
 # so we can reliably create full paths regardless of the project root folder location
@@ -120,16 +120,3 @@ def pdfmerge(ofname,fnames,rm=False):
   if rm:
     for fname in fnames:
       os.remove(fname)
-
-def argvkwds(i=1,**kwds): # delete
-  # parse argv to dict, e.g. ['a','b=1'] -> dict(a=True,b=1)
-  for arg in sys.argv[i:]:
-    k,e,v = arg.partition('=')
-    if e:
-      try:
-        kwds[k] = int(v)
-      except:
-        kwds[k] = v
-    else:
-      kwds[k] = True
-  return kwds
