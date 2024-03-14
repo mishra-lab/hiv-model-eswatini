@@ -12,8 +12,6 @@
 module load python/3.8 # {scinet}
 PYCODE="""
 from model.scenario import imis,art,foi,tpaf
-from utils import parallel
-parallel.cpus = 80 # {scinet}
 b = $SLURM_ARRAY_TASK_ID # {scinet}
 """
 export PYTHONPATH=.:$PYTHONPATH

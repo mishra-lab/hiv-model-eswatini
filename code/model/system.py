@@ -1,6 +1,6 @@
 import numpy as np
 from model import params,target,foi
-from utils import _,log,deco,parallel,rk4step
+from utils import _,log,deco,ppool,rk4step
 
 def get_t(t0=1980,tf=2050,dt=0.05):
   # define a time vector with some defaults
@@ -18,7 +18,7 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
   log(2,'system.run_n: N = '+str(len(Ps)))
   if para:
     fun = lambda P: run(P,t=t,T=T,**kwds)
-    return log(-1,parallel.ppool(len(Ps)).map(fun,Ps))
+    return log(-1,ppool(len(Ps)).map(fun,Ps))
   else:
     return log(-1,[run(P,t=t,T=T,**kwds) for P in Ps])
 

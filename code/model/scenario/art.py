@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from copy import deepcopy
-from utils import stats,log,fio,parallel,flatten,minimize
+from utils import stats,log,fio,ppool,flatten,minimize
 from model import strats,params,system,target,fit,out
 from model.scenario import tvec,fname
 
@@ -29,7 +29,7 @@ def run_rf(b):
   T = get_refit_T(case+'all-')
   D = get_refit_D(case+'aq-')
   fun = lambda P: run_rf_1(P,D,T,tvec['cal'],ftol=.1)
-  Ps = parallel.ppool(len(P0s)).map(fun,P0s); log(1)
+  Ps = ppool(len(P0s)).map(fun,P0s); log(1)
   fio.save_npy(fname('npy','art-rf','Ps',case=case),Ps)
 
 def rerun_rf():

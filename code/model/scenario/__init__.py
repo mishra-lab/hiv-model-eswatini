@@ -1,5 +1,5 @@
 import os
-from utils import log,fio,rootpath,genpath,parallel
+from utils import log,fio,rootpath,genpath
 from model import system
 
 uid = fio.datestamp()
