@@ -1,19 +1,21 @@
 from utils import deco
 import numpy as np
 
-# TODO: slicing?
-
 class tarray:
+  # subclass of np.ndarray for on-the-fly spline interpolation along 1 (time) dimension
+  # at initialization, we pre-compute monotonic cubic spline coeffs for each element
+  # we can later evaluate the splines by 'calling' the tarray like X(t)
+  # see toy/tarray-demo for an example, including how NaNs are ignored
   def __init__(self,ti,xi):
     ti,xi = np.array(ti),np.array(xi)
-    self.shape = xi.shape[0:-1]
+    self.shape = xi.shape[0:-1] # t dim (last) is removed
     self.params = self.fit(ti,xi)
 
   def __call__(self,t):
     tsize = np.array(t).size
-    if tsize == 1:
+    if tsize == 1: # single time point
       return np.reshape([eval_spline(t,**p) for p in self.params],self.shape)
-    else:
+    else: # time vector: t dim will be last
       return np.reshape([eval_spline(ti,**p) for p in self.params for ti in t],(*self.shape,tsize))
 
   def fit(self,ti,xi):
@@ -26,9 +28,10 @@ class tarray:
     self.shape = shape
     return self
 
+# fit & eval from: https://wikipedia.org/wiki/Monotone_cubic_interpolation
+
 @deco.nowarn
 def fit_spline(ti,xi):
-  # monotonic
   i = np.isfinite(xi)
   ti,xi = ti[i],xi[i]
   n = len(ti)
