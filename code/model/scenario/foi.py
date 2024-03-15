@@ -47,6 +47,6 @@ def run_ep():
 
 def run_tpaf(case):
   log(0,'foi.run_tpaf: '+case)
-  P1s = fio.load_npy(fname('npy','fit','Ps',case=case))
-  E = tpaf.run(P1s,**tkp,**tpaf_kwds)
+  Ps = fio.load_npy(fname('npy','fit','Ps',case=case))
+  E = tpaf.run(Ps,**tkp,**tpaf_kwds)
   fio.save_csv(fname('csv','tpaf','expo',case=case),E)
