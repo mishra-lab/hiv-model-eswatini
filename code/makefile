@@ -1,4 +1,5 @@
 export PYTHONPATH := .:$$PYTHONPATH
+export SLURM_ARRAY_TASK_ID := 0
 do.debug:
 	python3 model/debug.py
 do.model:
