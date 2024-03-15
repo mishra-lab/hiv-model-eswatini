@@ -18,7 +18,7 @@ def run_n(Ps,t=None,T=None,para=True,**kwds):
   log(2,'system.run_n: N = '+str(len(Ps)))
   if para:
     fun = lambda P: run(P,t=t,T=T,**kwds)
-    return log(-1,ppool(len(Ps)).map(fun,Ps))
+    return log(-1,ppool().map(fun,Ps))
   else:
     return log(-1,[run(P,t=t,T=T,**kwds) for P in Ps])
 

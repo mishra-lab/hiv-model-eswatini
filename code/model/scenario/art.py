@@ -29,7 +29,7 @@ def run_rf(b):
   T = get_refit_T(case+'all-')
   D = get_refit_D(case+'aq-')
   fun = lambda P: run_rf_1(P,D,T,tvec['cal'],ftol=.1)
-  Ps = ppool(len(P0s)).map(fun,P0s); log(1)
+  Ps = ppool().map(fun,P0s); log(1)
   fio.save_npy(fname('npy','art-rf','Ps',case=case),Ps)
 
 def rerun_rf():

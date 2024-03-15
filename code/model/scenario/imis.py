@@ -57,7 +57,7 @@ def sample_mvn(G,gsam=10,jmax=100,**kwds):
       if np.max(lps) > -np.inf: break # success: prior > 0
     log(3,str(z).rjust(9)+' ')
     return params.get_depend(Ps[np.argmax(lps)],id=z,**kwds)
-  return log(-1,ppool(N['isam']).map(sample_fun,range(N['isam'])))
+  return log(-1,ppool().map(sample_fun,range(N['isam'])))
 
 def run(case,b,**kwds):
   log(0,'imis.run: {} @ b = {}'.format(case,b))
