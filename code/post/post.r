@@ -53,7 +53,7 @@ plot.post.cor = function(X.cor,thr=0){
 }
 
 distr.tests = function(X,group='distr'){
-  p.vals = par.lapply(p.vars(X),function(var){ print(var)
+  p.vals = par.lapply(p.vars(X),function(var){ pout(var)
     # p.val = kSamples::qn.test(split(X[[var]],X[[group]]))$qn[2] # DEBUG
     p.val = kSamples::ad.test(split(X[[var]],X[[group]]))$ad[1,3]
   })

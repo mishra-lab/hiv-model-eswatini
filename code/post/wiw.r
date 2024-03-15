@@ -3,7 +3,7 @@ clean.wiw.data = function(X,infs='q0.5'){
   X = X[,!grepl('^q\\d',names(X))]
   X$from  = factor(1+X$fs*4+X$fi,levels=1:8,labels=set.labs$pop.all)
   X$to    = factor(1+X$ts*4+X$ti,levels=1:8,labels=set.labs$pop.all)
-  X$part  = factor(1+X$p,levels=1:4,labels=set.labs$part)
+  X$ptr   = factor(1+X$p,levels=1:4,labels=set.labs$ptr)
   return(X)
 }
 do.norm = function(X,margin,strat=NULL,scale=100){
@@ -13,7 +13,7 @@ do.norm = function(X,margin,strat=NULL,scale=100){
   X$infs.total = NULL
   return(X)
 }
-do.alluvial = function(X,fill='part',norm=FALSE){
+do.alluvial = function(X,fill='ptr',norm=FALSE){
   # paste hack to maintain order in alluvial
   X$from = factor(1+X$fs*4+X$fi,1:8,paste(set.labs$pop.all,''))
   X$to   = factor(1+(1-X$ts)*4+X$ti,1:8,paste0('',c(set.labs$pop.all[5:8],set.labs$pop.all[1:4])))
@@ -36,7 +36,7 @@ do.alluvial.facet = function(X,tvec=seq(1990,2020,10),nrow=1){
     theme(legend.position='top')
 }
 do.ratio = function(X){
-  X.p = aggregate(infs~t+from+to,X,sum) # sum parts
+  X.p = aggregate(infs~t+from+to,X,sum) # sum ptrs
   X. = merge(rename.cols(aggregate(infs~t+from,X.p,sum),infs='infs.fr',from='pop'),
              rename.cols(aggregate(infs~t+to,  X.p,sum),infs='infs.to',to='pop'))
   X.$infs.ratio = X.$infs.fr / X.$infs.to

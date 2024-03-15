@@ -52,7 +52,7 @@ sets = list(
   pop.all = c('wl','wm','fsw.l','fsw.h','ml','mm','cli.l','cli.h'),
   pop.cal = c('all','w','m','fsw'),
   pop.art = c('all','aq','fsw','cli'),
-  part    = c('msp','cas','swo','swr'))
+  ptr     = c('msp','cas','swo','swr'))
 # collect colours, labels, linetypes for plotting
 f = function(x,i){ ifelse(len(x) < i,NA,x[[i]]) }
 strat.cols = sapply(names(strats),function(id){ f(strats[[id]],1) })

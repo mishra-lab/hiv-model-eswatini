@@ -102,7 +102,7 @@ main.1.rai = function(){
 main.1.wiw = function(){
   X = clean.wiw.data(read.csvs('art-rf','wiw-diff','art',skip='base'))
   X = X[X$t > 2003 & X$t <= 2030,]
-  for (margin in c('part','from','to')){
+  for (margin in c('ptr','from','to')){
     g = do.margin(X,margin,type='abs',strat='case.lab') +
       facet_grid('~case.lab',scales='free_y') +
       labs(y='Additional Infections (\'000s)') +

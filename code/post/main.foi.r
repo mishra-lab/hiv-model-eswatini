@@ -39,7 +39,7 @@ main.ep = function(){
   X = read.csvs('foi-ep','expo','foi')
   Xe = filter.cols(X,pop=c('aq','fsw','cli'),t=seq(1980,2035))
   # Xe = filter.cols(X,pop=c('aq','fsw'),t=seq(1980,2035)) # slides
-  Xe$pop = factor(Xe$pop,levels=names(slice.labs),labels=slice.labs)
+  Xe$pop = factor(Xe$pop,levels=names(strat.labs),labels=strat.labs)
   Xe$case.lab.x = Xe$case.lab
   # duplicate base data for each other case
   b.cols = grep('^q.*|case.lab$|^op$',names(Xe))
@@ -59,21 +59,21 @@ main.wiw = function(){
   X = rbind(
     cbind(clean.wiw.data(read.csvs('foi-ep','wiw','foi')),par='Equal Parameters'),
     cbind(clean.wiw.data(read.csvs('fit',   'wiw','foi')),par='Recalibrated Parameters'))
-  g = do.margin(X,'part',type='rel',strat=c('case.lab','par')) +
+  g = do.margin(X,'ptr',type='rel',strat=c('case.lab','par')) +
     facet_grid('par~case.lab') +
     labs(y='Yearly Infections (%)')
-  fig.save(uid,nid,'foi.wiw.part',w=11,h=5)
+  fig.save(uid,nid,'foi.wiw.ptr',w=11,h=5)
 }
 
 main.tpaf = function(){
   X = read.csvs('tpaf','expo','foi')
   X$t.hor = X$t - X$tpaf.t0
   # plot groups of transmission pathways
-  pops = list(part=c('msp','cas','swx'),popf=c('aqf','fswf','clif'),popt=c('aqt','fswt','clit'))
-  # pops = list(part=c('msp','cas','swx')) # slides + (tpaf.t0 = 2010)
+  paths = list(ptr=c('msp','cas','swx'),popf=c('aqf','fswf','clif'),popt=c('aqt','fswt','clit'))
+  # paths = list(ptr=c('msp','cas','swx')) # slides + (tpaf.t0 = 2010)
   for (pop in names(pops)){
-    g = plot.tpaf.box(X,tpaf.pop=pops[[pop]],tpaf.t0=c(1990,2000,2010)) +
-      facet_grid('tpaf.t0 ~ tpaf.pop',scales='free_y')
+    g = plot.tpaf.box(X,tpaf.path=pops[[pop]],tpaf.t0=c(1990,2000,2010)) +
+      facet_grid('tpaf.t0 ~ tpaf.path',scales='free_y')
     g = plot.clean.foi(g)
     fig.save(uid,nid,'foi.tpaf',pop,w=8,h=7)
     # fig.save(uid,nid,'foi.tpaf.slides',w=7,h=3) # slides
