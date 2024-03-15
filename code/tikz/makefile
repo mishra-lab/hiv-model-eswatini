@@ -1,9 +1,11 @@
 figs =
 # figs += model.risk
+# figs += model.pop.risk
 # figs += model.hiv
 # figs += model.hiv.p
 # figs += model.cascade
 # figs += binom.dur
+# figs += binom.inert
 # figs += binom.wph
 # figs += binom.bph
 # figs += dots.wph

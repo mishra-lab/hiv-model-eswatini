@@ -1,0 +1,8 @@
+\def\xbeta{.03}
+\begin{tikzpicture}[x=.5mm,y=25mm]
+  \binomaxes
+  \node[axlab,below] at (50,0) {$A$: number of sex acts};
+  \node[axlab,above,rotate=90] at (0,.5) {$P$: inert sex act\\proportion\\};
+  \draw[red,plot={1}{100}] plot ({\x},{1 - (1-(1-\xbeta)^(\x))/(\xbeta*\x)});
+  \node[red] at (33,.67) {$\displaystyle1 - \frac{B}{\beta A}$};
+\end{tikzpicture}

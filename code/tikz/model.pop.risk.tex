@@ -1,0 +1,27 @@
+\def\htp{2}
+\newcommand{\person}[3]{% x,y,style
+  \fill[draw=white,fill=#3!67,rounded corners=1]
+    (#1-.22*\htp,#2+.24*\htp) -- (#1+.22*\htp,#2+.24*\htp) -- % shoulder
+    (#1+.22*\htp,#2-.10*\htp) -- (#1+.12*\htp,#2-.10*\htp) -- % right arm
+    (#1+.12*\htp,#2-.50*\htp) -- (#1-.12*\htp,#2-.50*\htp) -- % feet
+    (#1-.12*\htp,#2-.10*\htp) -- (#1-.22*\htp,#2-.10*\htp) -- % left arm
+    cycle;
+  \fill[draw=white,fill=#3!67] (#1,#2+.38*\htp) circle (.12*\htp);} % head
+\newcommand{\group}[7]{% n,x,y,style,centre,above,label
+  \foreach \i in {#1,...,0}{
+    \foreach \j in {#1,...,0}{
+      \person{#2+\j*.75-\i*.3}{#3+\i*.5+\j*.15}{#4}}}
+  % \coordinate (#5) at (#2+.225*#1,#3+.325*#1-1);
+  \node[align=center,font=\tiny] at (#2+.225*#1,#3-2+  0  *4+#6*.65*#1) {#7};} % #6
+\begin{tikzpicture}[x=1em,y=1em]
+  \group{4}  {0}{4}{wl}   {wl}  {1}{} % 0-1 partners\\no sex work}
+  \group{3}  {5}{4}{wm}   {wm}  {1}{} % 2+ partners\\no sex work}
+  \group{2}  {9}{4}{fsw.l}{fswl}{1}{} % lower activity\\sex work}
+  \group{1} {13}{4}{fsw.h}{fswh}{1}{} % higher activity\\sex work}
+  \group{3}  {0}{0}{ml}   {ml}  {0}{0-1 partners\\no sex work} % {0-1 partners\\no buying sex}
+  \group{3}{4.5}{0}{mm}   {mm}  {0}{2+ partners\\no sex work}  % {2+ partners\\no buying sex}
+  \group{3}  {9}{0}{cli.l}{clil}{0}{lower activity\\sex work}  % {lower activity\\clients}
+  \group{2} {13}{0}{cli.h}{clih}{0}{higher activity\\sex work} % {higher activity\\clients}
+  \node[anchor=east,font=\tiny] at (-2,4.5) {women};
+  \node[anchor=east,font=\tiny] at (-2,0.5) {men};
+\end{tikzpicture}
