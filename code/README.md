@@ -1,59 +1,125 @@
-TODO: needs major update
+# Eswatini HIV Transmission Model: Code
 
-# Notation Conventions
-- dimensions: see __init__.py
-- variables:
-  - X: modelled population
-  - P: parameter set (dict)
-  - T: targets (list)
-  - R: model result (dict)
-  - Ps,Ts,Rs: list of any above
-- parameter names:
-  - *_{stuff}: stuff is either the dimensions that * is stratified by (e.g. si: sex and activity)
-               or a specific value within * (e.g. FSW_2010: female sex workers in 2010)
-  - R*: relative value of *
-  - dx,tx,vx: rates of diagnosis, treatment, and viral suppression
-- _ = None, a shorthand for adding new dimensions to ndarrays
+## overview
 
-# Structure
-- model - mostly everything related to running the model
-  - __init__: common stuff for slicing by name & "global" definitions of dimension stuff
-  - check:    [old] model checking stuff
-  - foi:      subset of system stuff just related to force of infection (incidence)
-  - fit:      easily create many plots for debugging model parameters
-  - main:     where everything starts
-  - out:      main & supporting functions for calculating outputs from the model
-  - params:   functions for defining & sampling parameters
-  - plot:     functions for plotting stuff, often calling out functions to compute it too
-  - scenario: working functions to run the main-ish analyses
-  - system:   all non-foi functions related to the ODE system, plus some helpers for solving
-  - target:   definitions of calibration target & infrastructure to compare with model outputs
-              n.b.: some outputs/targets are based on one "pop"ulation, some based on two
-              the "vs" stuff helps organize two-population outputs, i.e how to compare them ("vsop")
-- utils - python and R "utility" (helper) functions
-  - ops: a lot of tiny helper functions
-  - stats: some wrappers for scipy.stats 
-  - tarray: custom class for time-varying parameters, including ndarrays
-    - arguments: time points (list), known values or "knots" (ndarray), with t dimension last
-    - implementation: we fit a monotonic spline for every array value (separately) at initialization
-    - the fitted spline parameters are stored, and then can be evaluated as needed
-    - use A(t) to evaluate all the splines at "t", then reshape the list to the appropriate shape
-  - deco: we use decorators to evaluate standard code before/after a bunch of functions
-    - e.g. rmap selects which keys within "R" should passed as keyword arguments to the function
-    - e.g. tslice slices some time-varying arguments at "t", assuming those args have t-dim first
-    - e.g. nanzero sets all nans in the return argument to zero
-- params - upstream code for parameterization
-  - distr.py: helper code for estimating distribution parameters from mean +/- 95% CI
-  - fsw: main analysis code for FSW risk stuff
+- model:    all model implementation & scenarios code (py)
+- params:   ad-hoc analyses to inform model parameters (R & py)
+- post:     ad-hoc analyses on model outputs, mainly stats & plots (R)
+- profile:  enable profiling & run model 10 times without parallel (py)
+- tikz:     diagram-drawing code (latex/tikz)
+- toy:      ad-hoc analyses of toy systems (py)
+- utils:    collection of utility functions (R & py)
+- makefile: commands for running all major analyses
 
-# Platform
+## model code
+
+- __init__: global model config stuff
+- debug:    minimal code to run the model & plot some figures
+- fit:      functions for plotting model outputs vs calibration targets (does not run fitting)
+- foi:      force of infection functions, including transmission-prob, mixing, & incidence
+- out:      functions for computing (stratified) model outputs
+- params:   functions to specify & sample model parameters (inputs)
+- plot:     functions for plotting model outputs & calibration targets
+- strat:    a collection of strata meta-data for plotting in python
+- system:   main functions for running the model
+- target:   functions to specify & check model outputs vs calibration targets
+- tpaf:     function to compute TPAFs by running model with vs without masked transmission
+- scenario: files for running the model for main analyses
+  - __init__: global config stuff, including model version & filenames
+  - main:     bash script for all major analysis steps & running on SciNet
+  - imis:     implements adapted IMIS calibration
+  - art:      runs recalibration, outputs, & sensitivity analyses for ART inequalities paper
+  - foi:      runs recalibration & outputs for FOI equations paper
+
+### model code notation
+
+- X:    # people in each compartment over time (model state variable)
+  - Xk: X without summing across EPA partnership dimension
+- T:    list of calibration targets
+  - Ti: individual calibration target
+- P:    dict of model parameters (inputs)
+  - Ps: list of P dicts, mainly for running model multiple times
+- D:    dict of sampling distributions for P
+- R:    dict of model result/return data
+  - Rs: list of R dicts, mainly from running model multiple times
+- key config objects:
+  - N:     dict of IMIS sample counts (numbers of model runs)
+  - b:     int index of this IMIS batch
+  - tvec:  dict of time vectors for different model runs
+  - uid:   ID for this version of model, params, & targets
+  - nid:   ID for current N
+
+### model code conventions
+
+- dimensions & strata: see model.__init__ (comments)
+- targets & outputs: see model.out (labels)
+- parameter names (see also code/params/tab/par.defs.csv)
+  - x_a:   parameter 'x' is either stratified by dimension 'a'
+           or corresponds to a specific value 'a'
+  - Px_a_b: proportion of 'x' which is 'b' among 'a'
+  - Rx_a:b: relative value of 'x' among 'a' vs 'b'
+  - aRx:   additional relative value of 'x', like Rx = 1+aRx
+  - C12m:  reported partners in past 12 months
+           not equal to change rate due to duration adjustment
+  - K:     current number of partners (cross-sectional)
+  - Q:     partnership change rate (per-year)
+  - F:     frequency of sex per partnership (no dilution)
+  - dur:   duration in risk group or partnership length
+  - turn:  rate of turnover among risk groups
+  - lpref: log-preference of mixing among risk groups
+  - beta:  probability of transmission per sex act
+  - gud:   genital ulcer disease (increases both sus & inf)
+  - prog:  rate of HIV progression among stages
+  - dx:    rate of HIV diagnosis among PLHIV
+  - tx:    rate of ART initiation among diagnosed
+  - vx:    rate of viral suppression among those on ART
+  - unvx:  rate of ART failure/discontinuation among VLS
+  - revx:  rate of re-viral suppression among fail/discontinued
+
+## post code
+
+- config:    global config stuff, including model version & filenames
+- post:      functions to support loading & plotting posterior param distributions
+- tpaf:      functions to support plotting TPAFs
+- wiw:       functions to support plotting out.wiw (who infected whom)
+- main.base: functions for analysis of base calibration
+- main.art:  functions for plotting & analyses for ART inequalities paper
+- main.foi:  functions for plotting & analyses for FOI equations paper
+
+## utils code
+
+- ops:    small helper functions (py & R)
+- stats:  functions to support stats; mainly remap args for scipy.stats (py)
+- fio:    functions to save & load data as: .npy, .csv, .txt (py)
+- deco:   decorators to execute code before and/or after other functions (py)
+- tarray: subclass of np.ndarray to interpolate time dimension on-the-fly (py)
+- plot:   functions to support plotting, including from out.expo (R)
+
+## tikz code
+
+- makefile: lists all figure names (un-comment to run a figure)
+- maketikz: shell script to compile main to .pdf, crop, & save in out/fig/tikz/
+- main:     skeleton latex file to compile
+- config:   packages & macros to support other figures
+- colors:   standardized color definitions to match strata
+- * :       (all other files) tikz code for each specific figure
+
+## platform
+
 everything built & tested on:
 
 - linux mint 20.1
 - python 3.8.10
-  - we depend on ordered dicts (3.7+)
 - R 3.6.3
-- atom 1.57.0
 
-... no guarantees things will run elsewhere
+windows plebs may have trouble; maybe try WSL
+
+## authorship
+
+model developed & maintained by:
+
+- Jesse Knight [2022.01 - 2024.03] jesse.x.knight@protonmail.com
+- Siyi Wang [2024.04+]
+
+see docs/ * /meta.tex for contributors & co-authors
 
