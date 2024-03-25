@@ -71,11 +71,11 @@ main.tpaf = function(){
   # plot groups of transmission pathways
   paths = list(ptr=c('msp','cas','swx'),popf=c('aqf','fswf','clif'),popt=c('aqt','fswt','clit'))
   # paths = list(ptr=c('msp','cas','swx')) # slides + (tpaf.t0 = 2010)
-  for (pop in names(pops)){
-    g = plot.tpaf.box(X,tpaf.path=pops[[pop]],tpaf.t0=c(1990,2000,2010)) +
+  for (path in names(paths)){
+    g = plot.tpaf.box(X,tpaf.path=paths[[path]],tpaf.t0=c(1990,2000,2010)) +
       facet_grid('tpaf.t0 ~ tpaf.path',scales='free_y')
     g = plot.clean.foi(g)
-    fig.save(uid,nid,'foi.tpaf',pop,w=8,h=7)
+    fig.save(uid,nid,'foi.tpaf',path,w=8,h=7)
     # fig.save(uid,nid,'foi.tpaf.slides',w=7,h=3) # slides
   }
 }
