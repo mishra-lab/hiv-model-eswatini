@@ -1,5 +1,5 @@
 \section{Force of Infection}\label{sr.foi}
-This section presents supplementary results regarding
+This section presents supplementary results and commentary regarding
 force of infection equations and assumptions.
 %===================================================================================================
 \subsection{Inert Sex Act Proportion}\label{sr.foi.inert}
@@ -51,7 +51,86 @@ produces an intermediate per-partnership probability $B_{\xph}$:%
   \qquad B_{\xph} = 1 - {(1 - \sum_f \alpha_f \beta_f)}^{A}
 \end{equation}
 %===================================================================================================
-\subsection{Illustrative Scenario}\label{sr.foi.toy}
+\subsection{Alternate Modelling Frameworks}\label{sr.foi.alt}
+Recognizing the limitations of compartmental models in simulating
+infectious disease transmission via sexual partnerships,
+two main alternate modelling frameworks have been developed \cite{Rao2021}.
+These frameworks are illustrated in Figure~\ref{fig:fw}.
+Modelling frameworks are further classified Appendix~1 of \cite{Johnson2016mf}.
+\begin{figure}[b]
+  \centering\foreach \var/\cap in
+  {comp/Classic compartmental,pair/Pair-based,ibm/Individual-based}{%
+  \begin{subfigure}[b]{.33\linewidth}
+    \centering
+    \includegraphics[width=.9\linewidth]{mf.\var}
+    \caption{\cap}
+    \label{fig:mf.\var}
+  \end{subfigure}}
+  \caption{Representations of health states and sexual partnerships
+    under 3 different STI modelling frameworks}
+  \label{fig:fw}
+  \floatfoot{
+    $S$: susceptible; $I$: infectious;
+    solid arrows: partnerships; dashed arrows: state transitions.}
+\end{figure}
+%---------------------------------------------------------------------------------------------------
+\paragraph{Pair-Based Models}
+Pair-based models, also known as pair-formation models, were developed as early as 1988,
+with the explicit motivation to overcome limitations of
+classic compartmental models of STI transmission \cite{Dietz1988sti}.
+In pair-based models, the fundamental population stratification
+reflects different partnership configurations and health states \cite{Kretzschmar2017}, such as:
+susceptible and single, a susceptible/infected pair in a long-term partnership, etc.
+(Figure~\ref{fig:mf.pair}).
+Such models can therefore track the numbers of partnerships
+where transmission is \vs is not possible,
+thereby avoiding the instantaneous partnership assumption.
+Pair-based models have been applied to a variety of STIs \cite{Kretzschmar2017}.
+However, the numbers of compartments required to reflect all possible partnership configurations
+\emph{and} all possible health states among connected partners
+quickly become impractical \cite{Kretzschmar2017,Rao2021}.
+For example, a classic compartmental model with 2 risk groups and 2 health states
+would require $2\times2=4$ compartments;
+whereas even a first-order pair-based model (\ie without ``triples'')
+would require $2\times2$ (singles) + ${(2\times2)}^2$ (pairs) ${} = 20$ compartments;
+a second-order pair-based model (\ie with ``tripples'')
+would require $4 + 4^2 + 4^3 = 84$ compartments.
+Thus, pair-based models are especially limited in their ability to model partnership concurrency
+--- the role of which in HIV epidemiology remains controversial \cite{Sawers2013}.
+As such, pair-based models have seen little widespread adoption
+for HIV transmission modelling~\cite{Rao2021}.
+%---------------------------------------------------------------------------------------------------
+\paragraph{Individual-Based Models}
+Individual-based models, also knowns as agent-based, network-based, or microsimulation models,
+explicitly simulate unique individuals (Figure~\ref{fig:mf.ibm}).
+They represent a fundamental change in the model unit from groups of individuals
+--- \ie the ``compartments'' of compartmental models \cite{Rao2021}.
+Individual-based models can therefore model unique partnerships, and track them over time.
+Such individuals and partnerships can then be
+parameterized in fundamentally different ways \vs compartmental models,
+including with continuous valued features like infection age and sex frequency,
+\vs predetermined categories like infection stages and partnership types \cite{Pellis2015,Rao2021}.
+Parameters for each individual and partnership are thus sampled randomly and/or dynamically,
+allowing more complete and nuanced representations of risk heterogeneity and partnership dynamics.
+Such nuances can in fact be key determinants of epidemic dynamics and intervention impact
+\cite{Hontelez2013,Johnson2016mf}.
+Evidently, many of the limitations of compartmental and pair-based models
+do not apply to individual-based models \cite{Rao2021}.
+Yet these limitations are replaced with new challenges,
+especially related to implementing, parameterizing, and calibrating these powerful models
+\cite{Rao2021,Pellis2015,Hazelbag2020}.
+For example, much effort has been dedicated to
+formalizing the statistical properties of dynamic networks
+via temporal exponential family random graph models (tERGM) \cite{Jenness2018}
+or latent order logistic models (LOLOG) \cite{Clark2022},
+so that dynamic networks can be generated which are consistent with observed data.
+Although individual-based models have seen greater use than pair-based models,
+these challenges still prevent universal adoption over classic compartmental models \cite{Rao2021}.
+It's worth noting that not all individual-based models are transmission models,
+as individual-based models can also be used for
+simulation and inference for non-infectious diseases~\cite{Silverman2021}.
+%===================================================================================================
+\subsection{Illustrative Scenario Motivating the Proposed Approach}\label{sr.foi.toy}
 Consider the moment of one transmission event
 in a population of 16 monogamous partnerships, with 25\% infection prevalence
 and random mixing by infection status (Figure~\ref{fig:foi.toy.pair}).
@@ -155,7 +234,7 @@ as expected (see \sref{foi.exp.mod.dyn}).
   \end{figure}}
 %===================================================================================================
 \subsection{Distributions of Infections}\label{sr.foi.exp}
-% TODO
+% TODO (!)
 \begin{figure}
   \includegraphics[width=\linewidth]{foi.wiw.ptr}
   \caption{Proportions of modelled yearly HIV infections
