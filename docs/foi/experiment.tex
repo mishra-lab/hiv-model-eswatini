@@ -1,6 +1,6 @@
 \section{Experiments}\label{foi.exp}
-In this section, we describe some experiments (methods and results) to
-highlight differences in the various equations and approaches
+In this section, we describe several experiments (methods and results) to
+highlight differences among the various approaches
 to modelling HIV transmission via sexual partnerships.
 Specifically:
 \sref{foi.exp.xph}~and~\ref{foi.exp.dur} examine how
@@ -21,9 +21,9 @@ within-partnership heterogeneity (WPH) \vs between-partnership heterogeneity (BP
 As shown in \sref{sr.foi.proof}, $B_{\wph} \ge B_{\bph}$.
 Here we explore under what conditions the ratio $B_{\wph}~/~B_{\bph}$ is maximized
 --- \ie when does the choice of approach matter most.
-For simplicity, we considered a single illustrative factor $f$
-affecting $\alpha_f \in [0,1]$ proportion of sex acts ($1-\alpha_f$ are unaffected),
-with relative probability of transmission $R_f \in [0.01,10]$.
+For simplicity, we considered a single illustrative factor
+affecting $\alpha \in [0,1]$ proportion of sex acts ($1-\alpha$ are unaffected),
+with relative probability of transmission $R \in [0.01,10]$.
 We then computed $B_{\wph}$ and $B_{\bph}$ for $A \in [1,1000]$ total sex acts,
 using a base per-act probability of transmission $\beta = 0.34$\%
 as a representative value for HIV \cite{Boily2009}.
@@ -36,10 +36,10 @@ as a representative value for HIV \cite{Boily2009}.
   \label{fig:B.xph.surf}
   \floatfoot{
     $B$: probability of transmission per partnership (log scale colourmap);
-    $\beta = 0.34\%$: probability of transmission per sex act (fixed) \cite{Boily2009};
+    $\beta = 0.34\%$: base probability of transmission per sex act (fixed) \cite{Boily2009};
     $A$: total sex acts per partnership (log scale);
-    $\alpha_f$: proportion of sex acts affected by factor $f$ (linear scale);
-    $R_f$: relative $\beta$ given factor $f$ (log scale);
+    $\alpha$: proportion of sex acts affected by factor (linear scale);
+    $R$: relative $\beta$ given factor (log scale);
     WPH: within-partnership heterogeneity;
     BPH: between-partnership heterogeneity.}
 \end{figure}
@@ -53,9 +53,9 @@ as a representative value for HIV \cite{Boily2009}.
     $B_{\wph}~/~B_{\bph}$: line colour;
     $\beta = 0.34\%$: probability of transmission per sex act (fixed) \cite{Boily2009};
     $A$: total sex acts per partnership (log scale);
-    $\alpha_f$: proportion of sex acts affected by factor $f$ (linear scale);
-    $R_f$: relative $\beta$ given factor $f$ (log scale);
-    gray lines denote equivalent contours for $2\beta$ and $\frac12\beta$.}
+    $\alpha$: proportion of sex acts affected by factor (linear scale);
+    $R$: relative $\beta$ given factor (log scale);
+    gray lines denote equivalent contours for $2\beta$~and~$\frac12\beta$.}
 \end{figure}
 Figure~\ref{fig:B.xph.surf} illustrates four 2-dimensional cross sections of $B(R,\alpha,A)$
 under WPH \vs BPH, and the ratio $B_{\wph} / B_{\bph}$;
@@ -82,21 +82,23 @@ and likewise larger for risk-increasing factors (\eg anal sex)
 affecting a minority of a moderate number of sex acts ($\alpha \approx 100$).
 %===================================================================================================
 \subsection{Partnership Durations}\label{foi.exp.dur}
-As described in \sref{foi.prior.part}, multiple prior models have
+As described in \sref{foi.prior.ptr}, multiple prior models have
 implicitly assumed a maximum partnership duration $\delta \le 1$ year.
-As such, the adjustment for PTC \eqref{eq:B} would have less effect.
-This reduced effect can be quantified via
+As such, the adjustment for inert sex acts \eqref{eq:B} would have reduced effect.
+This reduction can be quantified via
 the effective probability of transmission per sex act $\beta'$
 --- \ie tangent slopes in Figure~\ref{fig:binom.dur} --- defined as:
 \begin{equation}\label{eq:beta.eff}
   \beta' = \frac{B}{A} = \frac{1 - {(1 - \beta)}^{A}}{A}
 \end{equation}
-Figure~\ref{fig:dur.surf} illustrates the 1-year $\beta'_1$ \vs true-duration $\beta'_\delta$, for
-different partnership durations $\delta \in [1, 30]$ and sex frequencies $F \in [1,180]$ per year.
-% Evidently $\beta'_1$ does not depend on $\delta$.
+Figure~\ref{fig:dur.surf} illustrates
+the 1-year $\beta'_1$ \vs true-duration $\beta'_\delta$, for different
+partnership durations $\delta \in [1, 30]$ year and
+sex frequencies $F \in [1,180]$ per year.
 Assuming $\delta \le 1$ can considerably increase the modelled rate of transmission
 for partnerships with $F \ge 52$ (\ie weekly) and a true duration $\delta \ge 5$ years,
-including up to \emph{8-fold} difference with $F \approx 100$ and $\delta \approx 30$.
+including up to \emph{8-fold} difference with
+$F \approx 100$ per year and $\delta \approx 30$ years.
 Thus, prior models using $\delta \le 1$ may have
 substantially overestimated the relative contribution of
 longer partnerships with frequent sex --- including main/spousal partnerships ---
@@ -120,7 +122,7 @@ modelling and parameterizing the force of infection equation
 influence key outputs from a full transmission model.
 We focused on two aspects of prior approaches:
 whether or not partnership durations are effectively capped at 1 year (\sref{foi.prior.dur}), and
-whether incidence is aggregated across partnerships as a rate \vs proportion (\sref{foi.prior.part}).
+whether incidence is aggregated across partnerships as a rate \vs proportion (\sref{foi.prior.ptr}).
 Thus, we considered 3 prior approaches:
 \emph{Instantaneous Rate-Duration}~(\ird),
 \emph{Instantaneous Rate-1-Year}~(\iry), and
@@ -132,7 +134,7 @@ Among these 4 approaches, we sought to characterize:
   \item \label{obj:foi.dyn}
   fundamental differences in transmission dynamics under each approach
   \item \label{obj:foi.tpaf}
-  differences in the model-estimated prevention priorities under each approach
+  differences in model-estimated prevention priorities under each approach
   \end{enumerate}
 For aim~\ref{obj:foi.dyn}, we compared group-specific HIV incidence
 using \emph{equal} model parameters across approaches.
@@ -140,7 +142,7 @@ While the specific parameters required by each approach are slightly different,
 we derived these parameters from a consistent set of ``upstream'' data as described below.
 For aim~\ref{obj:foi.tpaf}, we compared selected
 transmission population attributable fractions (TPAFs, details below)
-using \emph{approach-specific} model parameters (\ie recalibrated).
+using \emph{approach-specific} (\ie recalibrated) model parameters.
 Since applied models are usually calibrated to a given context,
 aim~\ref{obj:foi.tpaf} thus provides a realistic comparison of
 how prevention priorities could differ when informed by distinct models using each approach.
@@ -153,17 +155,18 @@ how prevention priorities could differ when informed by distinct models using ea
 %---------------------------------------------------------------------------------------------------
 \paragraph{Eswatini HIV Transmission Model}
 We integrated each approach within an existing compartmental model
-of heterosexual HIV transmission in Eswatini \cite{Knight2023art}
+of heterosexual HIV transmission in Eswatini \cite{Knight2024art}
 (full details in Appendix~\ref{mod}).
 Briefly, the model includes: 2~sexes, 4~levels of sexual activity
 --- including female sex workers (FSW) and their clients ---
-and 4 partnership types:
+and 4 partnership types (Figure~\ref{fig:model.risk}): % MAN below
 main/spousal (14--19 years, lowest condom use),
 casual (3--18 months, moderate condom use),
 occasional/one-off sex work (1 sex act, highest condom use), and
 regular/repeat sex work (2--12 months, high condom use).
 The model also includes
-5 stages of HIV infection and 5 stages of the HIV treatment cascade, plus
+5 stages of HIV infection (Figure~\ref{fig:model.hiv}) and
+5 stages of the HIV treatment cascade (Figure~\ref{fig:model.cascade}), plus
 anal \vs vaginal sex, male circumcision, and genital ulcer disease,
 with differences over time and/or risk groups.
 %---------------------------------------------------------------------------------------------------
@@ -171,11 +174,11 @@ with differences over time and/or risk groups.
 \begin{figure}
   \centering\includegraphics[scale=1]{diag.foi.par}
   \caption{Flow chart for deriving model parameters for each force of infection approach
-    from a consistent set of upstream data}
+    from a consistent set of upstream parameters}
   \label{fig:diag.foi.par}
   \floatfoot{\fffoi. See \cite{Knight2023bias} for $K$ equation.}
 \end{figure}
-We calibrated the model separately under each approach
+We calibrated the model (74 uncertain parameters) separately under each approach
 using an adapted version of Incremental Mixture Importance Sampling (IMIS) \cite{Raftery2010}
 (full details in \sref{mod.cal})
 yielding 1000 model fits (parameter sets) per approach.
@@ -189,16 +192,13 @@ as shown in Figure~\ref{fig:diag.foi.par}.
 For aim~\ref{obj:foi.dyn} we used \emph{equal} upstream parameters from \epa model fits,
 while for aim~\ref{obj:foi.dyn} we used \emph{approach-specific} parameters.
 \par
-Appendix~\ref{sr.cal} provides detailed results of model calibration under the \epa approach,
-including Figure~\ref{fig:fit.tdsc} which illustrates
-the modelled proportions of ``transmission-driven seroconcordant'' partnerships under \epa,
-as described in \sref{foi.prop.tdsc}.
-Appendix~\sref{sr.foi.cal} provides selected results of model calibration under all 4 approaches,
+Appendix~\ref{sr.cal} provides detailed results of model calibration under the \epa approach.
+Appendix~\ref{sr.foi.cal} provides selected results of model calibration under all 4 approaches,
 including Figures~\ref{fig:fit.prev.foi}--\ref{fig:fit.inc1v2.foi} which illustrate
 model-estimated HIV prevalence, incidence, and ratios thereof
 \vs calibration targets under each approach.
 Model fits under each approach were qualitatively similar,
-though overall log-likelihoods were highest under \ipy and lowest under \epa
+though overall log-likelihoods were highest under \ipy and lowest under \iry
 (Figure~\ref{fig:ll.hist.foi}).
 Most posterior parameter distributions also differed significantly among approaches
 (rank score test \cite{Kruskal1952}, Figure~\ref{fig:post.distr.foi}).
@@ -254,7 +254,7 @@ We made the following observations:
     \ffpopz; \ffribbon.}
 \end{figure}
 \par
-Figure~\ref{fig:foi.wiw.part} further illustrates the proportions of modelled yearly HIV infections
+Figure~\ref{fig:foi.wiw.ptr} further illustrates the proportions of modelled yearly HIV infections
 transmitted via different partnership types under each approach
 using equal parameters (top) and approach-specific parameters for comparison (bottom).
 For equal parameters, the 1-year approaches (\iry,~\ipy) featured
@@ -300,7 +300,7 @@ such that mixing patterns were not affected.
 %---------------------------------------------------------------------------------------------------
 \paragraph{TPAFs of Partnership Types}
 % TODO: (!) update text after improved calibration
-Figure~\ref{fig:foi.tpaf.part} illustrates the TPAFs for partnership types.
+Figure~\ref{fig:foi.tpaf.ptr} illustrates the TPAFs for partnership types.
 TPAFs generally increased over longer time horizons $\Delta_t$,
 increased with calendar year $t_0$ for non-sex work partnerships, and
 decreased with $t_0$ for sex work (note vertical scales).
@@ -309,7 +309,7 @@ TPAFs of key populations are typically large at first
 and decrease as epidemics become more widespread
 \cite{Johnson2011,Mishra2012sr,Boily2015}.
 \foreach \var/\lab in {%
-  part/transmission via different partnership types,%
+  ptr/transmission via different partnership types,%
   popf/transmission from different risk groups}{
 \begin{figure}
   \includegraphics[width=\linewidth]{foi.tpaf.\var}

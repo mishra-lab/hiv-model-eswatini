@@ -171,11 +171,11 @@ should be aggregated as BPH,%
   either approach to aggregating heterogeneity in $\beta$.}
 with $\gamma_g$ as the conditional prevalence of each stage/status~$g$ among infected partners.
 In fact, aggregating infection stage and treatment status is often deferred to
-the full incidence equation (see \sref{foi.prior.part}) using an equivalent form,
+the full incidence equation (see \sref{foi.prior.ptr}) using an equivalent form,
 but where $\gamma_g$ is replaced by
 the unconditional prevalence of stage/status~$g$ among \emph{all} partners.
 %===================================================================================================
-\subsection{Aggregating Partnerships}\label{foi.prior.part}
+\subsection{Aggregating Partnerships}\label{foi.prior.ptr}
 Although we considered between-partnership heterogeneity in \sref{foi.prior.xph},
 the modelled per-partnership probability of transmission $B$
 still corresponds to a single average partnership.
@@ -332,7 +332,7 @@ and likely depend on numerous factors and conditions.
 \paragraph{Incidence Proportion}
 Risk from multiple partnerships is sometimes aggregated as
 incidence proportion $\lambda^\ip$ via \eqref{eq:foi.ip}.
-As noted in \sref{foi.prior.part}, this approach is not inherently wrong,
+As noted in \sref{foi.prior.ptr}, this approach is not inherently wrong,
 but the specified time period $\Delta_t = 1$ often is.
 This $\Delta_t$ \emph{should} be matched to the timestep of the numerical solver,
 but $\Delta_t = 1$ year is often used,
