@@ -204,6 +204,29 @@ Most posterior parameter distributions also differed significantly among approac
 (rank score test \cite{Kruskal1952}, Figure~\ref{fig:post.distr.foi}).
 % TODO: (*) try to summarize patterns / trends in differences?
 %---------------------------------------------------------------------------------------------------
+\paragraph{Transmission-Driven Seroconcordance}
+Figure~\ref{fig:fit.tdsc.foi} further illustrates the modelled
+transmission-driven seroconcordance (TDSC) proportion for each partnership type
+among infected individuals --- \ie using denominator (b) from \sref{foi.prop.tdsc}.
+This model output is only possible under the \epa approach, and reflects
+the relative reduction in onward transmission risk among infected individuals
+due to infections ``trapped'' within partnerships.
+The TDSC proportion increases rapidly for all partnership types during epidemic growth,
+but later declines alongside HIV incidence.
+% TODO: (?) % TDSC is related to: incidence (convolve) ptr duration distribution
+The TDSC proportion tends to be higher for
+longer partnerships (\eg main/spousal \vs other types) and for
+partnership types with lower concurrency (\eg casual \vs sex work).
+Since the TDSC proportion varies across time, partnership types, and risk groups,
+it may be challenging to define a simplified incidence adjustment
+to account for trapped infections in existing transmission models.
+\begin{figure}
+  \centering\includegraphics[scale=\fitscale]{fit.tdsc.base.all}
+  \caption{Modelled transmission-driven seroconcordance within different partnership types}
+  \label{fig:fit.tdsc.foi}
+  \floatfoot{\fffit; \ffribbon.}
+\end{figure}
+%---------------------------------------------------------------------------------------------------
 \subsubsection{Transmission Dynamics using Equal Parameters}\label{foi.exp.mod.dyn}
 Figure~\ref{fig:foi.ep.incidence} illustrates HIV incidence under each approach among
 FSW, clients, and everybody else (``lower risk'').
