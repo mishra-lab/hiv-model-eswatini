@@ -58,4 +58,5 @@ strats = {Si.key:Si for Si in [
   Strat('cas',   dict(p=(1)),              (.58,.15,.40),'Casual'),
   Strat('swo',   dict(p=(2)),              (.87,.32,.23),'Sex Work Occasional'),
   Strat('swr',   dict(p=(3)),              (.99,.65,.04),'Sex Work Regular'),
+  Strat('swx',   dict(p=(2,3)),            (.93,.48,.13),'Sex Work Overall'),
 ]}

@@ -13,7 +13,7 @@ plot.clean.foi = function(g,leg='top',lab='FOI Approach'){
 
 main.post = function(){
   X = read.csvs('fit','Ps','foi',rdata='load')
-  g = plot.post.uni(X,'case.lab',ncol=7) # MAN
+  g = plot.post.uni(X,'case.lab',ncol=7,stats=TRUE) # MAN
   g = plot.clean.foi(g)
   fig.save(uid,nid,'post.distr.foi',w=12,h=16)
 }

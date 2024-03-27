@@ -31,6 +31,8 @@ def labels(x='Year',y=None,title=None,fs=11):
   if y     is not None: plt.ylabel(y,fontsize=fs)
   if title is not None: plt.title(title,fontsize=fs)
 
+fkeys = ['tvec','rate','t0','s','i','p','h','c']
+
 # ------------------------------------------------------------------------------
 # main plot functions
 
@@ -121,7 +123,7 @@ def plot_S(fun,t,R,skey,box=False,**kwds):
   S = strats[skey]
   kwds.update(color=kwds.pop('color',S.color))
   kwds.update(label=kwds.pop('label',S.label))
-  fkwds = dict_split(kwds,['tvec','rate','t0']) # pop non-plotting kwds
+  fkwds = dict_split(kwds,fkeys) # pop non-plotting kwds
   if isinstance(fun,str): fun = out.by_name(fun)
   if isinstance(R,list):
     xs = [fun(Ri,**S.ind,**fkwds) for Ri in R]
@@ -137,7 +139,7 @@ def plot_vS(fun,t,R,skey1,skey2,vsop,box=False,**kwds):
   S2 = strats[skey2]
   kwds.update(color=kwds.pop('color',clr_interp(S1.color,S2.color)))
   kwds.update(label=kwds.pop('label',out.vs_label(S1.label,S2.label,vsop)))
-  fkwds = dict_split(kwds,['tvec','rate','t0'])
+  fkwds = dict_split(kwds,fkeys)
   if isinstance(R,list):
     xs = [out.vs_ind(fun,Ri,S1.ind,S2.ind,vsop,**fkwds) for Ri in R]
     ribbon_or_box(t,xs,box=box,**kwds)
@@ -151,7 +153,7 @@ def plot_SvR(fun,t,R1,R2,skey,vsop,box=False,**kwds):
   S = strats[skey]
   kwds.update(color=kwds.pop('color',S.color))
   kwds.update(label=kwds.pop('label',S.label))
-  fkwds = dict_split(kwds,['tvec','rate','t0'])
+  fkwds = dict_split(kwds,fkeys)
   if isinstance(R1,list):
     xs = [out.vs_R(fun,R1i,R2i,vsop,**S.ind,**fkwds) for R1i,R2i in zip(R1,R2)]
     ribbon_or_box(t,xs,box=box,**kwds)
