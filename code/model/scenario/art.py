@@ -126,5 +126,6 @@ def get_sens_sample(Ps,Ns,seed):
     'u': stats.gamma(m=6.5,sd=3.5),  # CI: (1.5, 15)
   }
   D = {'R'+step+'x:'+skey: Ds[step] for skey in ('fsw','cli','aq') for step in 'dtu'}
-  return [Rxs_update(deepcopy(P),Pu,ss=ss) for P in Ps
-    for ss,Pu in enumerate(params.get_n_sample_lhs(D,Ns,seed=seed))]
+  return [Rxs_update(deepcopy(P),Pu,ss=ss)
+    for ps,P  in enumerate(Ps)
+    for ss,Pu in enumerate(params.get_n_sample_lhs(D,Ns,seed=seed+ps))]
