@@ -157,9 +157,9 @@ clean.2.data = function(X.list,t.hor=2030,t.ref=2005){
   X = data.frame(
     id      = colnames(X.list$par[i.list$par]),
     cai     = (x.out(case='sens',pop='all',t=t.hor,out='cuminfect') - x.out(case='base',pop='all',t=t.hor,out='cuminfect')) /
-               x.out(case='sens',pop='all',t=t.hor,out='cuminfect'),
+               x.out(case='base',pop='all',t=t.hor,out='cuminfect'),
     air     = (x.out(case='sens',pop='all',t=t.hor,out='incidence') - x.out(case='base',pop='all',t=t.hor,out='incidence')) /
-               x.out(case='sens',pop='all',t=t.hor,out='incidence'),
+               x.out(case='base',pop='all',t=t.hor,out='incidence'),
     Du.all  =  x.out(case='base',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='all',t=2020,out='vls_u'),
     du.fsw  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='fsw',t=2020,out='vls_u'),
     du.cli  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='cli',t=2020,out='vls_u'),
@@ -177,7 +177,7 @@ fit.2.glm = function(X,y,std=TRUE){
   if (std){ X[,all.vars] = apply(X[,all.vars],2,function(x){ (x-mean(x))/sd(x) }) }
   # if (std){ X[,all.vars] = apply(X[,all.vars],2,function(x){ (x-median(x))/iqr(x) }) } # DEBUG
   term.fun = function(x){ paste('(',paste(x,collapse=' + '),')') }
-  f = paste(y,'* 100 ~ 0 +',
+  f = paste(y,'* 100 ~ 1 +',
     term.fun(adj.vars),'+',
     term.fun(pred.vars),'+',
     term.fun(pred.vars),':',term.fun(mod.vars))
@@ -217,14 +217,29 @@ plot.2.glm.effects = function(M.list,o.lab){
   g = plot.clean(g,legend.position='none')
 }
 
+plot.2.glm.resid = function(M,name){
+  rfun = function(r){ r = abs(r); r = pmin(r,quantile(r,.99)) }
+  X = data.frame(y=M$y,yp=predict(M),r=residuals(M))
+  g = ggplot(X,aes(x=y,y=yp,color=rfun(r))) +
+    geom_abline(color='gray') +
+    geom_point(shape=1,size=1) +
+    scale_color_viridis() +
+    labs(x=paste('True',name,'(%)'),
+         y=paste('Predicted',name,'(%)'),
+         color='Residual')
+  g = plot.clean(g)
+}
+
 main.2.stats = function(){
   X.list = load.2.data('load')
   X = clean.2.data(X.list)
   for (name in names(y.vars)){
     y = y.vars[[name]]
     M = fit.2.glm(X,y)
+    g = plot.2.glm.resid(M,name)
+    fig.save(uid,nid,'art.2',y,'res',w=5,h=4)
     g = plot.2.glm.effects(list(x=M),name)
-    fig.save(uid,nid,'art.2',y,w=6,h=5)
+    fig.save(uid,nid,'art.2',y,'eff',w=6,h=5)
   }
 }
 
