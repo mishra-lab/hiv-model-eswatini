@@ -30,10 +30,10 @@ pred.vars = c(
   'd Clients' = 'du.cli')
 mod.vars = c(
   'FSW % Population'     = 'px.fsw',
-  'FSW / Women HIV PR'   = 'pr.fsw',
+  'FSW / Women HIV IR'   = 'ir.fsw',
   'FSW Turnover'         = 'tur.fsw',
   'Clients % Population' = 'px.cli',
-  'Clients / Men HIV PR' = 'pr.cli',
+  'Clients / Men HIV IR' = 'ir.cli',
   'Clients Turnover'     = 'tur.cli')
 
 var.lab.fun = function(vars){
@@ -150,21 +150,21 @@ load.2.data = function(rdata=''){
   'par' = read.csvs('art-ss','P0s','sens'))
 }
 
-clean.2.data = function(X.list,t.hor=2030,t.ref=2005){
+clean.2.data = function(X.list,t.hor=2030,t.ref=2020,y.pop='all'){
   i.list = lapply(X.list,grep.i.col)
   x.out = function(...){ c(t(filter.cols(X.list$out,...)[,i.list$out])) }
   x.par = function(par){ c(t(filter.cols(X.list$par,par=par)[,i.list$par])) }
   X = data.frame(
     id      = colnames(X.list$par[i.list$par]),
-    cai     = (x.out(case='sens',pop='all',t=t.hor,out='cuminfect') - x.out(case='base',pop='all',t=t.hor,out='cuminfect')) /
-               x.out(case='base',pop='all',t=t.hor,out='cuminfect'),
-    air     = (x.out(case='sens',pop='all',t=t.hor,out='incidence') - x.out(case='base',pop='all',t=t.hor,out='incidence')) /
-               x.out(case='base',pop='all',t=t.hor,out='incidence'),
-    Du.all  =  x.out(case='base',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='all',t=2020,out='vls_u'),
-    du.fsw  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='fsw',t=2020,out='vls_u'),
-    du.cli  =  x.out(case='sens',pop='all',t=2020,out='vls_u') - x.out(case='sens',pop='cli',t=2020,out='vls_u'),
-    pr.fsw  =  x.out(case='sens',pop='fsw',t=t.ref,out='prevalence') / x.out(case='sens',pop='w',t=t.ref,out='prevalence'),
-    pr.cli  =  x.out(case='sens',pop='cli',t=t.ref,out='prevalence') / x.out(case='sens',pop='m',t=t.ref,out='prevalence'),
+    cai     = (x.out(case='sens',pop=y.pop,t=t.hor,out='cuminfect') - x.out(case='base',pop=y.pop,t=t.hor,out='cuminfect')) /
+               x.out(case='base',pop=y.pop,t=t.hor,out='cuminfect'),
+    air     = (x.out(case='sens',pop=y.pop,t=t.hor,out='incidence') - x.out(case='base',pop=y.pop,t=t.hor,out='incidence')) /
+               x.out(case='base',pop=y.pop,t=t.hor,out='incidence'),
+    Du.all  =  x.out(case='base',pop='all',t=t.ref,out='vls_u') - x.out(case='sens',pop='all',t=t.ref,out='vls_u'),
+    du.fsw  =  x.out(case='sens',pop='all',t=t.ref,out='vls_u') - x.out(case='sens',pop='fsw',t=t.ref,out='vls_u'),
+    du.cli  =  x.out(case='sens',pop='all',t=t.ref,out='vls_u') - x.out(case='sens',pop='cli',t=t.ref,out='vls_u'),
+    ir.fsw  =  x.out(case='sens',pop='fsw',t=t.ref,out='incidence') / x.out(case='sens',pop='w',t=t.ref,out='incidence'),
+    ir.cli  =  x.out(case='sens',pop='cli',t=t.ref,out='incidence') / x.out(case='sens',pop='m',t=t.ref,out='incidence'),
     tur.fsw = 1/x.par('dur_fsw'),
     tur.cli = 1/x.par('dur_cli'),
     px.fsw  = x.par('PX_fsw'),
@@ -176,7 +176,8 @@ fit.2.glm = function(X,y,std=TRUE){
   all.vars = c(adj.vars,pred.vars,mod.vars)
   if (std){ X[,all.vars] = apply(X[,all.vars],2,function(x){ (x-mean(x))/sd(x) }) }
   # if (std){ X[,all.vars] = apply(X[,all.vars],2,function(x){ (x-median(x))/iqr(x) }) } # DEBUG
-  term.fun = function(x){ paste('(',paste(x,collapse=' + '),')') }
+  # if (std){ X[,all.vars] = apply(X[,all.vars],2,function(x){ rank(x)/length(x) }) } # DEBUG
+  term.fun = function(...){ paste('(',paste(c(...),collapse=' + '),')') }
   f = paste(y,'* 100 ~ 1 +',
     term.fun(adj.vars),'+',
     term.fun(pred.vars),'+',
@@ -206,7 +207,7 @@ plot.2.glm.effects = function(M.list,o.lab){
     e = e[!is.na(e$facet),]
   }))
   dodge = position_dodge(width=.7)
-  clrs = c(clr.map(6,'Blues')[c(5,4,3,6)],clr.map(6,'Reds')[c(6,5,4,3)]) # HACK
+  clrs = c(clr.map(6,'Blues')[c(5:3,6)],clr.map(6,'Reds')[c(6,5:3)]) # HACK
   g = ggplot(E,aes(y=var,x=100*Estimate,xmin=100*Est.low,xmax=100*Est.high,color=var)) +
     facet_grid('facet',scales='free',space='free') +
     geom_vline(xintercept=0,color=rgb(.8,.8,.8),lwd=1) +
@@ -219,25 +220,27 @@ plot.2.glm.effects = function(M.list,o.lab){
 
 plot.2.glm.resid = function(M,name){
   rfun = function(r){ r = abs(r); r = pmin(r,quantile(r,.99)) }
-  X = data.frame(y=M$y,yp=predict(M),r=residuals(M))
+  X = cbind(M$data,data.frame(y=M$y,yp=predict(M),r=residuals(M)))
   g = ggplot(X,aes(x=y,y=yp,color=rfun(r))) +
     geom_abline(color='gray') +
     geom_point(shape=1,size=1) +
-    scale_color_viridis() +
+    scale_color_viridis(option='inferno',end=.9) +
+    coord_fixed() +
     labs(x=paste('Simulation',name,'(%)'),
          y=paste('Regression',name,'(%)'),
          color='Residual')
-  g = plot.clean(g)
+  g = plot.clean(g,legend.position='top')
 }
 
 main.2.stats = function(){
   X.list = load.2.data('load')
   X = clean.2.data(X.list)
+  # print(cor(as.matrix(X[,2:ncol(X)]))) # DEBUG
   for (name in names(y.vars)){
     y = y.vars[[name]]
     M = fit.2.glm(X,y)
     g = plot.2.glm.resid(M,name)
-    fig.save(uid,nid,'art.2',y,'r',w=5,h=4)
+    fig.save(uid,nid,'art.2',y,'r',w=4,h=4)
     g = plot.2.glm.effects(list(x=M),name)
     fig.save(uid,nid,'art.2',y,w=6,h=5)
   }
