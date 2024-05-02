@@ -224,8 +224,8 @@ plot.2.glm.resid = function(M,name){
     geom_abline(color='gray') +
     geom_point(shape=1,size=1) +
     scale_color_viridis() +
-    labs(x=paste('True',name,'(%)'),
-         y=paste('Predicted',name,'(%)'),
+    labs(x=paste('Simulation',name,'(%)'),
+         y=paste('Regression',name,'(%)'),
          color='Residual')
   g = plot.clean(g)
 }
@@ -247,4 +247,4 @@ main.2.stats = function(){
 # main.1.rai()
 # main.1.wiw()
 # main.2.cascade()
-# main.2.stats()
+main.2.stats()
