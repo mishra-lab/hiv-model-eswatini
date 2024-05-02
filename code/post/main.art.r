@@ -237,9 +237,9 @@ main.2.stats = function(){
     y = y.vars[[name]]
     M = fit.2.glm(X,y)
     g = plot.2.glm.resid(M,name)
-    fig.save(uid,nid,'art.2',y,'res',w=5,h=4)
+    fig.save(uid,nid,'art.2',y,'r',w=5,h=4)
     g = plot.2.glm.effects(list(x=M),name)
-    fig.save(uid,nid,'art.2',y,'eff',w=6,h=5)
+    fig.save(uid,nid,'art.2',y,w=6,h=5)
   }
 }
 
