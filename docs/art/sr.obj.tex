@@ -1,35 +1,31 @@
 \section{Objectives}\label{sr.art}
-This section presents supplementary results to Objectives \ref{obj:art.1}~and~\ref{obj:art.2}.
 %===================================================================================================
 \subsection{Objective~1}\label{sr.art.1}
-%---------------------------------------------------------------------------------------------------
-\subsubsection{Scenario Cascades \& HIV Incidence}\label{sr.art.1.expo}
 Figure~\ref{fig:art.1.cascade} illustrates cascade attainment over time across
 the base case and counterfactual scenarios (Table~\ref{tab:art.1.scen})
 for FSW, clients, everyone else, and the population overall.
 Transient declines in VLS among treated around 2010 correspond to expanding ART eligibility.
-Figure~\ref{fig:art.1.cascade} illustrates overall HIV incidence over time across scenarios.
-\begin{figure}[h]
-  \centerline{\includegraphics[scale=.8]{art.1.cascade}}
-  \caption{Cascade attainment over time across scenarios}
-  \label{fig:art.1.cascade}
-  \floatfoot{\ffpopz; \ffcas; \ffart; \ffribbon.}
-\end{figure}
-\begin{figure}[h]
+\par
+Figure~\ref{fig:art.1.inc} illustrates overall HIV incidence over time across scenarios.
+As in \sref{sr.cal.wiw}, Figure~\ref{fig:art.1.wiw} illustrates
+the distributions of additional infections over time \vs the base case across
+counterfactual scenarios  (Table~\ref{tab:art.1.scen}),
+stratified by partnership type, transmitting group, and acquiring group.
+\begin{figure}[b]
   \centerline{\includegraphics[scale=.8]{art.1.inc}}
   \caption{Overall HIV incidence over time across scenarios}
   \label{fig:art.1.inc}
   \floatfoot{\ffart; \ffribbon.}
 \end{figure}
-%---------------------------------------------------------------------------------------------------
-\subsubsection{Distributions of Additional Infections}\label{sr.art.1.wiw}
-As in \sref{sr.cal.wiw}, Figure~\ref{fig:art.1.wiw} illustrates
-the distributions of additional infections over time \vs the base case across
-counterfactual scenarios  (Table~\ref{tab:art.1.scen}),
-stratified by partnership type, transmitting group, and acquiring group.
+\begin{figure}
+  \centerline{\includegraphics[scale=.8]{art.1.cascade}}
+  \caption{Cascade attainment over time across scenarios}
+  \label{fig:art.1.cascade}
+  \floatfoot{\ffpopz; \ffcas; \ffart; \ffribbon.}
+\end{figure}
 \begin{figure}
   \subcapoverlap
-  \foreach \var in {part,from,to}{
+  \foreach \var in {ptr,from,to}{
   \begin{subfigure}{\linewidth}
     \includegraphics[width=\linewidth]{art.1.wiw.\var}
     \caption{\raggedright}
@@ -37,7 +33,7 @@ stratified by partnership type, transmitting group, and acquiring group.
   \end{subfigure}}
   \caption{Additional infections in each counterfactual scenario
     \vs the base case, stratified by:
-    \sfref{fig:art.1.wiw.part} partnership type,
+    \sfref{fig:art.1.wiw.ptr} partnership type,
     \sfref{fig:art.1.wiw.from} transmitting group, and
     \sfref{fig:art.1.wiw.to} acquiring group}
   \label{fig:art.1.wiw}
@@ -49,10 +45,47 @@ Figure~\ref{fig:art.2.cascade} illustrates the distributions of cascade attainme
 for FSW, clients, everyone else, and the population overall,
 in the 10,000 randomly generated counterfactual scenarios
 for the Objective~\ref{obj:art.2} regression analysis.
+Figure~\ref{fig:art.2.dag} illustrates
+the corresponding directed acyclic graph as reflected in \eqref{eq:art.2.glm}.
+Figure~\ref{fig:art.2.r} then illustrates the simulated \vs regression-estimated
+cumulative additional infections (CAI) and additional incidence rate (AIR),
+which supports the use of linear regression
+despite minor heteroskedasticity.
 \begin{figure}[h]
   \centering
   \includegraphics[scale=.8]{art.2.cascade}
   \caption{Cascade attainment by 2020 across 10,000 randomly generated counterfactual scenarios}
   \label{fig:art.2.cascade}
   \floatfoot{\ffpopz; \ffcas; \ffbox.}
+\end{figure}
+\begin{figure}
+  \centering\includegraphics[scale=1]{art.2.dag}
+  \caption{Directed acyclic graph (DAG) for inferring
+    the epidemic conditions under which
+    differential viral suppression across subpopulations matters most}
+  \label{fig:art.2.dag}
+  \floatfoot{
+    $Y$: cumulative additional infections (CAI) or additional incidence rate (AIR) by 2030;
+    $D$: difference in population-overall viral non-suppression
+      in counterfactual \vs base case scenario;
+    $d_i$: difference in subpopulation-$i$-specific viral non-suppression
+      \vs population overall within counterfactual scenario;
+    $C_j$: epidemic conditions (effect modifiers of $d_i$).}
+\end{figure}
+\begin{figure}[h]
+  \begin{subfigure}{.5\linewidth}
+    \includegraphics[width=\linewidth]{art.2.cai.r}
+    \caption{Cumulative additional infections}
+    \label{fig:art.2.cai.r}
+  \end{subfigure}%
+  \begin{subfigure}{.5\linewidth}
+    \includegraphics[width=\linewidth]{art.2.air.r}
+    \caption{Additional incidence rate}
+    \label{fig:art.2.air.r}
+  \end{subfigure}
+  \caption{Simulated \vs regression-estimated outcomes,
+    and corresponding residuals for Objective~\ref{obj:art.2}.}
+  \label{fig:art.2.r}
+  \floatfoot{Outcomes computed for 2030 \vs base case;
+    regression models defined in \eqref{eq:art.2.glm}.}
 \end{figure}
