@@ -3,10 +3,10 @@ We first summarize modelled patterns of HIV transmission in the base case (1000 
 calibrated to reflect the Eswatini epidemic up to 2020.
 Our model suggests that transmission within regular sex work partnerships
 was a dominant driver of early epidemic growth
-(Figures \ref{fig:wiw.base.part}~and~\ref{fig:wiw.base.alluvial}).
-However, from approximately 1997 onward,
+(Figures \ref{fig:wiw.base.ptr}~and~\ref{fig:wiw.base.alluvial}).
+However, from approximately 1994 onward,
 the majority of new yearly infections were transmitted within casual partnerships, % MAN
-including 44\% (median) of infections in 2020 in the base case.% % MAN
+including 50\% (median) of infections in 2020 in the base case.% % MAN
 \footnote{In our model, casual partnerships can be formed by any subpopulation,
   and these partnerships subsume transactional partnerships.}
 By 2020, the majority of cumulative infections acquired
@@ -14,16 +14,16 @@ were among women with lowest sexual activity (Figure~\ref{fig:wiw.base.to}),
 while the majority of cumulative infections transmitted
 were from clients (Figure~\ref{fig:wiw.base.from}).
 Overall HIV prevalence in 2020 was median (95\% CI):
-24.4~(23.3,~25.4)\,\% (Figure~\ref{fig:fit.prev}), % MAN
-and overall incidence was 8.0~(6.7,~9.4) per 1000 person-years (Figure~\ref{fig:fit.inc}).
-The prevalence ratio between FSW and women overall was 1.75~(1.69,~1.86), % MAN
-and between clients and men overall it was 2.14~(1.55,~2.99) % MAN
+23.8~(22.4,~24.7)\,\% (Figure~\ref{fig:fit.prev}), % MAN
+and overall incidence was 6.6~(5.3,~7.6) per 1000 person-years (Figure~\ref{fig:fit.inc}).
+The prevalence ratio between FSW and women overall was 1.78~(1.70,~1.87), % MAN
+and between clients and men overall it was 1.92~(1.49,~2.49) % MAN
 (Figure~\ref{fig:fit.prev1v2}).
 Due to turnover and higher HIV incidence among FSW,
 achieving similar rates of diagnosis among FSW \vs other women (Figure~\ref{fig:fit.dx.rate})
 required approximately twice the rate of testing. % MAN
 Sex work contributed a growing proportion of infections
-over 2020--2040: from 40\% to 52\% (Figure~\ref{fig:wiw.base.part}). % MAN
+over 2020--2040: from 32\% to 42\% (Figure~\ref{fig:wiw.base.ptr}). % MAN
 %===================================================================================================
 \subsection{Objective~1: Influence of cascade differences between subpopulations}\label{art.res.1}
 Figure~\ref{fig:art.1.cascade} illustrates ART cascade attainment over time
@@ -34,16 +34,16 @@ Figure~\ref{fig:art.1.rai} then illustrates
 cumulative additional infections (CAI) and additional incidence rate (AIR)
 in each counterfactual scenario \vs the base case.
 Leaving behind neither FSW and nor clients led to the fewest CAI: median (95\%~CI)
-13.3~(9.2,~18.7)\,\% more than the base case by 2030. % MAN
+14.9~(10.4,~18.4)\,\% more than the base case by 2030. % MAN
 By contrast, leaving behind both FSW and clients led to the most CAI:
-26.7~(19.7,~33.8)\,\% more than the base case by 2030 % MAN
---- a 104~(50,~167)\,\% increase. % MAN
+26.3~(19.7,~33.0)\,\% more than the base case by 2030 % MAN
+--- a 73~(40,~149)\,\% increase. % MAN
 Leaving behind either FSW or clients resulted in
-22.3~(16.5,~27.9)\,\% or 19.1~(12.9,~25.0)\,\% cumulative additional infections
+19.7~(15.4,~23.6)\,\% or 22.7~(17.6,~26.7)\,\% cumulative additional infections
 \vs the base case, respectively. % MAN
 Results were similar for additional incidence rate (AIR).
 In all counterfactual scenarios, the majority of additional infections were
-transmitted via casual partnerships (Figure~\ref{fig:art.1.wiw.part}), % MAN
+transmitted via casual partnerships (Figure~\ref{fig:art.1.wiw.ptr}), % MAN
 and acquired among non-FSW women (Figure~\ref{fig:art.1.wiw.to}). % MAN
 Patterns of onward transmission were also similar across scenarios % MAN
 (Figure~\ref{fig:art.1.wiw.from}),
@@ -59,22 +59,21 @@ though subpopulation contributions increased if they were left behind.
 The fitted regression models \eqref{eq:art.2.glm} indicated that
 population-overall viral non-suppression ($D$) and
 relative non-suppression among FSW and clients ($d_i$)
-each had strong and positive effects on 2030 CAI and AIR outcomes ($p < 10^{-5}$),
-though the effect size was larger for clients.
-These effects support the results of Objective~\ref{obj:art.1}.
+each had strong and positive effects on 2030 CAI and AIR outcomes ($p < 10^{-5}$). % MAN
+These effects corroborate the results of Objective~\ref{obj:art.1}.
+Regression residuals are shown in Figure~\ref{fig:art.2.r}, while
 Figure~\ref{fig:art.2} plots the estimated effects of
-subpopulation-specific non-suppression $d_i$, and
+subpopulation-specific non-suppression $d_i$, plus
 effect modification by epidemic conditions $C_j$.
 % MAN below
-The effect of relative non-suppression among both FSW and clients on CAI and AIR increased with:
-larger client population size,
-faster client turnover,
-larger HIV prevalence ratio among clients \vs other men, and
-smaller HIV prevalence ratio among FSW \vs other women.
-The effect of relative non-suppression among FSW further increased slightly with
-duration in sex work, while
-the effect of relative non-suppression among clients further increased slightly with
-\emph{smaller} FSW population size.
+The effect of relative non-suppression on CAI and AIR
+among both FSW and clients generally increased with:
+larger FSW and client population sizes, and
+larger HIV incidence ratio among clients vs other men.
+Effects of relative non-suppression among clients
+further increased with duration buying sex (slower turnover), while
+effects of relative non-suppression among both groups on CAI specifically
+further increased with HIV incidence ratio among FSW vs other women.
 \begin{figure}[h]
   \subcapoverlap\centering
   \vskip1ex
@@ -98,9 +97,8 @@ the effect of relative non-suppression among clients further increased slightly 
     \sfref{fig:art.2.air} additional incidence rate
     by 2030 \vs base case;
     FSW: female sex workers; Clients: of FSW;
-    PR: prevalence ratio in 2005;
+    IR: incidence ratio in 2020;
     $d_i$: difference in subpopulation-$i$-specific viral non-suppression
       \vs population overall within counterfactual scenario;
   \ffpbar[effect estimated via \eqref{eq:art.2.glm}].}
 \end{figure}
-\pagebreak % TEMP
