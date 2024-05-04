@@ -17,29 +17,7 @@ Two types of sex acts ($a$) are also considered.
   \input{\app/tab.dims}
   \floatfoot{See footnote \ref{foot:code.note} regarding indices in the code.}
 \end{table}
-\begin{figure}[h]
-  \begin{subfigure}{\linewidth}
-    \includegraphics[scale=.8]{model.risk}
-    \caption{Activity groups and partnership types}
-    \label{fig:model.risk}
-  \end{subfigure}
-  \begin{subfigure}{\linewidth}
-    \includegraphics[scale=.8]{model.hiv}
-    \caption{HIV states}
-    \label{fig:model.hiv}
-  \end{subfigure}
-  \begin{subfigure}{\linewidth}
-    \includegraphics[scale=.8]{model.cascade}
-    \caption{ART cascade states}
-    \label{fig:model.cascade}
-  \end{subfigure}
-  \caption{Model structure and transitions}
-  \label{fig:model}
-  \floatfoot{
-    \ffpops;
-    CD4: CD4+ T-cell count per mm\tsup{3};
-    Not shown: turnover amongst activity groups in \sfref{fig:model.risk}.}
-\end{figure}
+\ifappfigmodel\input{\app/fig.model}\fi
 %---------------------------------------------------------------------------------------------------
 \paragraph{Sexual Activity}
 Sexual activity groups were defined to reflect common stratifications in the available data,
