@@ -27,8 +27,8 @@ strats = list(
   # partnerships
   'msp'   = list(rgb(.26,.04,.41),'Main / Spousal'),
   'cas'   = list(rgb(.58,.15,.40),'Casual'),
-  'swo'   = list(rgb(.87,.32,.23),'Sex Work Occas.'),
-  'swr'   = list(rgb(.99,.65,.04),'Sex Work Reg.'),
+  'swo'   = list(rgb(.87,.32,.23),'One-Off Sex Work'),
+  'swr'   = list(rgb(.99,.65,.04),'Repeat Sex Work'),
   'swx'   = list(rgb(.93,.48,.13),'Sex Work Overall'),
   # scenarios
   'foi-rd'   = list('#00CC99','Partnership Duration','62'),

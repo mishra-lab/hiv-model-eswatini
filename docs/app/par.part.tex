@@ -16,8 +16,8 @@ we sampled the number of sex acts per year in main/spousal partnerships
 from a gamma prior distribution with 95\%~CI (26,~156),
 and a relative rate for casual partnerships from $\opname{Unif}(0.5,2)$.
 As described in \sref{mod.par.pnum.swx},
-we defined $F_{\txc{swo}} = 12$ for occasional sex work partnerships,
-and $F_{\txc{swr}} \sim \opname{Unif}(12,36)$ for regular sex work partnerships.
+we defined $F_{\txc{swo}} = 12$ for one-off sex work partnerships,
+and $F_{\txc{swr}} \sim \opname{Unif}(12,36)$ for repeat sex work partnerships.
 We also constrained samples of $F_{p_{4}}$ such that
 higher risk FSW never have commercial sex more than twice daily, on average.
 % TODO: (?) Coital frequency is not thought to be influenced by concurrent partnerships \cite{Delva2013}.
@@ -98,12 +98,12 @@ A gamma distribution was chosen \vs uniform or normal
 to reflect non-uniform belief while preventing negative values.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Sex Work Partnerships}
-As noted in \sref{mod.par.pnum.swx}, duration of occasional sex work partnerships
+As noted in \sref{mod.par.pnum.swx}, duration of one-off sex work partnerships
 is ill defined, but can be defined to comprise a single sex act with
 $F_{\txc{swo}}\delta_{\txc{swo}} = 1$.
-Data on regular sex work partnerships is severely limited, and
+Data on repeat sex work partnerships is severely limited, and
 sometimes regular paying clients later become
 non-paying emotional partners \cite{Voeten2007,Mbonye2022}.
 Based on \cite{Voeten2002}, I defined a gamma prior distribution for
-the mean duration of regular sex work partnerships $\delta_{\txc{swr}}$
+the mean duration of repeat sex work partnerships $\delta_{\txc{swr}}$
 with 95\%~CI (2,~12) months.

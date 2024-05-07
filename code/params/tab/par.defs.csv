@@ -14,18 +14,18 @@ C12m_msp_xl,        number of main/spousal partners in p12m among lowest activit
 C12m_cas_xl,        number of casual partners in p12m among lowest activity
 C12m_cas_wm,        number of casual partners in p12m among medium activity women
 RC_cas_cli:wm,      relative casual partners among clients vs medium activity women
-C1m_swo_fsw_l,      number of occasional sex work partners in p1m among lower risk FSW
-C1m_swr_fsw_l,      number of regular sex work partners in p1m among lower risk FSW
-C1m_swo_fsw_h,      number of occasional sex work partners in p1m among higher risk FSW
-C1m_swr_fsw_h,      number of regular sex work partners in p1m among higher risk FSW
+C1m_swo_fsw_l,      number of one-off sex work partners in p1m among lower risk FSW
+C1m_swr_fsw_l,      number of repeat sex work partners in p1m among lower risk FSW
+C1m_swo_fsw_h,      number of one-off sex work partners in p1m among higher risk FSW
+C1m_swr_fsw_h,      number of repeat sex work partners in p1m among higher risk FSW
 KF_swx_cli,         rate of visiting FSW (sex acts) among clients overall
 RKF_swx_cli_h:l,    relative visits (sex acts) among higher vs lower risk clients
 F_msp,              rate of sex acts in main/spousal partnerships
 RF_cas:msp,         relative rate of sex acts in casual vs main/spousal partnerships
 dur_msp,            duration of main/spousal partnerships
 dur_cas,            duration of casual partnerships
-dur_swr,            duration of regular sex work partnerships
-F_swr,              rate of sex acts in regular sex work partnerships
+dur_swr,            duration of repeat sex work partnerships
+F_swr,              rate of sex acts in repeat sex work partnerships
 PF_ai_mcx,          proportion of anal sex acts in main/spousal and casual partnerships
 RPF_ai_swx:mcx,     relative proportion of anal sex acts in sex work vs other partnerships
 lpref_msp_xl,       log-odds of main/spousal partnership formation among lowest activity
@@ -37,12 +37,12 @@ PF_condom_msp_2006, condom use in main/spousal partnerships in 2006
 PF_condom_msp_2016, condom use in main/spousal partnerships in 2006
 PF_condom_cas_2006, condom use in casual partnerships in 2006
 PF_condom_cas_2016, condom use in casual partnerships in 2016
-PF_condom_swo_2002, condom use in occasional sex work partnerships in 2002
-PF_condom_swo_2011, condom use in occasional sex work partnerships in 2011
-PF_condom_swo_2014, condom use in occasional sex work partnerships in 2014
-PF_condom_swr_2002, condom use in regular sex work partnerships in 2002
-PF_condom_swr_2011, condom use in regular sex work partnerships in 2011
-PF_condom_swr_2014, condom use in regular sex work partnerships in 2014
+PF_condom_swo_2002, condom use in one-off sex work partnerships in 2002
+PF_condom_swo_2011, condom use in one-off sex work partnerships in 2011
+PF_condom_swo_2014, condom use in one-off sex work partnerships in 2014
+PF_condom_swr_2002, condom use in repeat sex work partnerships in 2002
+PF_condom_swr_2011, condom use in repeat sex work partnerships in 2011
+PF_condom_swr_2014, condom use in repeat sex work partnerships in 2014
 PF_circum_2050,     prevalence of circumcision by 2050
 beta_0,             per-act probability of HIV transmission $\beta$ for CD4 $>$ 350 (REF)
 Rbeta_acute,        relative $\beta$ during acute infection

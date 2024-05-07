@@ -56,7 +56,7 @@ strats = {Si.key:Si for Si in [
   Strat('vx',    dict(c=(4)),              (.80,.80,.00),'Virally Suppressed'),
   Strat('msp',   dict(p=(0)),              (.26,.04,.41),'Main / Spousal'),
   Strat('cas',   dict(p=(1)),              (.58,.15,.40),'Casual'),
-  Strat('swo',   dict(p=(2)),              (.87,.32,.23),'Sex Work Occasional'),
-  Strat('swr',   dict(p=(3)),              (.99,.65,.04),'Sex Work Regular'),
+  Strat('swo',   dict(p=(2)),              (.87,.32,.23),'One-Off Sex Work'),
+  Strat('swr',   dict(p=(3)),              (.99,.65,.04),'Repeat Sex Work'),
   Strat('swx',   dict(p=(2,3)),            (.93,.48,.13),'Sex Work Overall'),
 ]}
