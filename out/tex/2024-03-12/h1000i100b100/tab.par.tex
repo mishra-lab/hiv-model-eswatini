@@ -1,0 +1,104 @@
+\begin{landscape}
+  \singlespacing
+  \small\setlength{\tabcolsep}{3pt}
+  \def\unsep{\null\hspace{-3pt}\null}
+  \begin{longtable}{rllRRlRRl}
+    \caption{Definitions and distributions of calibrated parameters}
+    \label{tab:par.cal} \\
+    \toprule
+    & & \multicolumn{4}{c}{Prior} & \multicolumn{3}{c}{Posterior} \\
+    \cmidrule(rl){3-6}\cmidrule(rl){7-9}
+    Parameter & Definition & Type & Mean & \multicolumn{2}{c}{(95\%~CI)} & Mean & \multicolumn{2}{c}{(95\%~CI)} \\
+    \midrule \endfirsthead
+    \multicolumn{3}{l}{continued \dots} \\ \midrule \endhead
+    \midrule \multicolumn{3}{l}{continued \dots} \\ \endfoot
+    \bottomrule \noalign{\vskip\abovecaptionskip} \multicolumn{9}{c}{\begin{minipage}{\linewidth}\footnotesize
+    FSW: female sex worker;
+    p12m: past 12 months;
+    $\beta$: per-act probability of HIV transmission;
+    GUD: any genital ulcer disease in p12m;
+    ART: antiretroviral therapy;
+    VLS: viral load suppression;
+    additional relative (aR): relative value beyond one, \eg $R = 1.5 \rightarrow aR = 0.5$;
+    prevalence interpolator (iP): \eg $P_0 = 0.2, P_1 = 0.4, iP_x = 0.5 \rightarrow P_x = 0.3$;
+    all rates in per-year;
+    all durations in years;
+    all parameters reflect stratum averages.
+    \end{minipage}} \endlastfoot
+\texttt{t0_hiv} & year of HIV introduction to Eswatini & Uniform & 1982.5 & (1980.1, & 1984.9) & 1982.6 & (1980.3, & 1985.0) \\
+\texttt{PX_w_fsw} & proportion of women who are FSW & Beta & 0.0288 & (0.00703, & 0.065) & 0.0344 & (0.0207, & 0.0526) \\
+\texttt{PX_w_h} & proportion of women who have 2+ partners in p12m & Beta & 0.178 & (0.0961, & 0.278) & 0.191 & (0.134, & 0.245) \\
+\texttt{PX_m_m} & proportion of men who have 2+ partners in p12m & Beta & 0.133 & (0.1, & 0.17) & 0.137 & (0.103, & 0.164) \\
+\texttt{dur_fsw} & duration in sex work overall & Gamma & 4.07 & (2.29, & 6.34) & 3.81 & (2.56, & 5.01) \\
+\texttt{dur_sw_h} & duration in higher risk sex work & Gamma & 0.5 & (0.17, & 1.0) & 0.583 & (0.285, & 0.936) \\
+\texttt{dur_cli} & duration buying sex among clients & Gamma & 8.63 & (4.0, & 15.0) & 8.79 & (4.89, & 12.7) \\
+\texttt{turn_xm_xl} & turnover rate from medium to lowest activity (women and men) & Gamma & 0.216 & (0.05, & 0.5) & 0.231 & (0.11, & 0.443) \\
+\texttt{Pturn_fsw_m:l} & proportion of FSW who transition to medium activity & Beta & 0.724 & (0.503, & 0.898) & 0.743 & (0.594, & 0.881) \\
+\texttt{Pturn_cli_m:l} & proportion of clients who transition to medium activity & Beta & 0.602 & (0.249, & 0.9) & 0.6 & (0.361, & 0.804) \\
+\texttt{growth_2050} & rate of Eswatini population growth in 2050 & Uniform & 0.011 & (0.0072, & 0.0148) & 0.0108 & (0.00737, & 0.0144) \\
+\texttt{C12m_msp_xl} & number of main/spousal partners in p12m among lowest activity & Beta & 0.37 & (0.251, & 0.498) & 0.371 & (0.277, & 0.469) \\
+\texttt{C12m_cas_xl} & number of casual partners in p12m among lowest activity & Beta & 0.366 & (0.201, & 0.549) & 0.368 & (0.239, & 0.497) \\
+\texttt{C12m_cas_wm} & number of casual partners in p12m among medium activity women & Gamma & 1.58 & (1.2, & 2.0) & 1.67 & (1.43, & 1.95) \\
+\texttt{RC_cas_cli:wm} & relative casual partners among clients vs medium activity women & Uniform & 0.625 & (0.269, & 0.981) & 0.751 & (0.296, & 1.0) \\
+\texttt{C1m_swo_fsw_l} & number of one-off sex work partners in p1m among lower risk FSW & Gamma & 3.5 & (2.27, & 5.0) & 3.28 & (2.45, & 4.34) \\
+\texttt{C1m_swr_fsw_l} & number of repeat sex work partners in p1m among lower risk FSW & Gamma & 6.0 & (3.88, & 8.57) & 5.42 & (3.38, & 7.69) \\
+\texttt{C1m_swo_fsw_h} & number of one-off sex work partners in p1m among higher risk FSW & Gamma & 14.0 & (9.06, & 20.0) & 13.7 & (9.67, & 17.3) \\
+\texttt{C1m_swr_fsw_h} & number of repeat sex work partners in p1m among higher risk FSW & Gamma & 21.0 & (13.6, & 30.0) & 22.7 & (14.8, & 29.2) \\
+\texttt{KF_swx_cli} & rate of visiting FSW (sex acts) among clients overall & Gamma & 40.5 & (18.0, & 71.9) & 51.4 & (32.6, & 71.4) \\
+\texttt{RKF_swx_cli_h:l} & relative visits (sex acts) among higher vs lower risk clients & Gamma & 2.03 & (1.6, & 2.5) & 2.04 & (1.74, & 2.38) \\
+\texttt{F_msp} & rate of sex acts in main/spousal partnerships & Gamma & 77.3 & (26.0, & 156.0) & 86.0 & (56.3, & 123.0) \\
+\texttt{RF_cas:msp} & relative rate of sex acts in casual vs main/spousal partnerships & Uniform & 1.25 & (0.538, & 1.96) & 1.6 & (1.0, & 2.0) \\
+\texttt{dur_msp} & duration of main/spousal partnerships & Uniform & 16.5 & (14.6, & 18.4) & 16.6 & (15.0, & 18.5) \\
+\texttt{dur_cas} & duration of casual partnerships & Gamma & 0.743 & (0.25, & 1.5) & 0.78 & (0.484, & 1.12) \\
+\texttt{dur_swr} & duration of repeat sex work partnerships & Gamma & 0.495 & (0.166, & 1.0) & 0.435 & (0.212, & 0.78) \\
+\texttt{F_swr} & rate of sex acts in repeat sex work partnerships & Uniform & 24.0 & (12.6, & 35.4) & 20.7 & (12.0, & 32.3) \\
+\texttt{PF_ai_mcx} & proportion of anal sex acts in main/spousal and casual partnerships & Gamma & 0.0573 & (0.00603, & 0.165) & 0.114 & (0.0584, & 0.217) \\
+\texttt{RPF_ai_swx:mcx} & relative proportion of anal sex acts in sex work vs other partnerships & Uniform & 1.5 & (1.02, & 1.98) & 1.57 & (1.05, & 1.98) \\
+\texttt{lpref_msp_xl} & log-odds of main/spousal partnership formation among lowest activity & Uniform & 0 & (-1.9, & 1.9) & -0.217 & (-1.93, & 1.21) \\
+\texttt{lpref_mcx_swx} & log-odds of non-sex work partnership formation among FSW and clients & Uniform & 0 & (-1.9, & 1.9) & -0.0689 & (-1.79, & 1.57) \\
+\texttt{Rbeta_condom} & relative per-act probability of HIV transmission with a condom & Beta & 0.266 & (0.131, & 0.429) & 0.304 & (0.194, & 0.409) \\
+\texttt{RPF_condom_a:v} & relative condom use in anal vs vaginal sex & Beta & 0.768 & (0.504, & 0.949) & 0.733 & (0.553, & 0.903) \\
+\texttt{RPF_condom_1996} & elative condom use in all partnerships in 1996 vs 2002 or 2006 & Uniform & 0.5 & (0.025, & 0.975) & 0.53 & (0.054, & 0.998) \\
+\texttt{PF_condom_msp_2006} & condom use in main/spousal partnerships in 2006 & Beta & 0.23 & (0.153, & 0.317) & 0.23 & (0.172, & 0.296) \\
+\texttt{PF_condom_msp_2016} & condom use in main/spousal partnerships in 2006 & Beta & 0.416 & (0.308, & 0.529) & 0.418 & (0.335, & 0.504) \\
+\texttt{PF_condom_cas_2006} & condom use in casual partnerships in 2006 & Beta & 0.598 & (0.501, & 0.692) & 0.594 & (0.53, & 0.671) \\
+\texttt{PF_condom_cas_2016} & condom use in casual partnerships in 2016 & Beta & 0.694 & (0.601, & 0.78) & 0.695 & (0.636, & 0.767) \\
+\texttt{PF_condom_swo_2002} & condom use in one-off sex work partnerships in 2002 & Beta & 0.432 & (0.148, & 0.744) & 0.486 & (0.254, & 0.762) \\
+\texttt{PF_condom_swo_2011} & condom use in one-off sex work partnerships in 2011 & Beta & 0.777 & (0.581, & 0.923) & 0.797 & (0.708, & 0.879) \\
+\texttt{PF_condom_swo_2014} & condom use in one-off sex work partnerships in 2014 & Beta & 0.787 & (0.547, & 0.95) & 0.862 & (0.779, & 0.939) \\
+\texttt{PF_condom_swr_2002} & condom use in repeat sex work partnerships in 2002 & Beta & 0.337 & (0.118, & 0.603) & 0.294 & (0.126, & 0.485) \\
+\texttt{PF_condom_swr_2011} & condom use in repeat sex work partnerships in 2011 & Beta & 0.754 & (0.568, & 0.9) & 0.706 & (0.608, & 0.788) \\
+\texttt{PF_condom_swr_2014} & condom use in repeat sex work partnerships in 2014 & Beta & 0.759 & (0.481, & 0.949) & 0.745 & (0.649, & 0.84) \\
+\texttt{PF_circum_2050} & prevalence of circumcision by 2050 & Beta & 0.724 & (0.503, & 0.898) & 0.741 & (0.581, & 0.871) \\
+\texttt{beta_0} & per-act probability of HIV transmission $\beta$ for CD4 $>$ 350 (REF) & Gamma & 0.00131 & (0.000498, & 0.00251) & 0.00174 & (0.00123, & 0.00247) \\
+\texttt{Rbeta_acute} & relative $\beta$ during acute infection & Gamma & 6.01 & (1.11, & 15.0) & 9.33 & (4.98, & 15.8) \\
+\texttt{Rbeta_350} & relative $\beta$ for 200 $<$ CD4 $<$ 350 & Gamma & 1.59 & (1.3, & 1.9) & 1.55 & (1.32, & 1.76) \\
+\texttt{Rbeta_200} & relative $\beta$ for CD4 $<$ 200 & Gamma & 8.2 & (4.5, & 13.0) & 8.17 & (5.48, & 11.1) \\
+\texttt{Rbeta_vi_rec} & relative $\beta$ for receptive vaginal sex & Uniform & 1.5 & (1.02, & 1.98) & 1.66 & (1.21, & 1.99) \\
+\texttt{aRbeta_gud_sus} & additional relative $\beta$ for GUD among susceptible partner & Gamma & 2.05 & (0.2, & 6.0) & 2.55 & (0.415, & 5.45) \\
+\texttt{aRbeta_gud_inf} & additional relative $\beta$ for GUD among infectious partner & Gamma & 0.99 & (0.2, & 2.4) & 1.04 & (0.272, & 1.99) \\
+\texttt{dur_acute} & duration of acute infection & Gamma & 0.172 & (0.0174, & 0.5) & 0.288 & (0.111, & 0.489) \\
+\texttt{P_gud_fsw_l} & prevalence of GUD among lower risk FSW & Beta & 0.295 & (0.2, & 0.4) & 0.294 & (0.218, & 0.368) \\
+\texttt{RP_gud_fsw_h:l} & relative prevalence of GUD among higher vs lower risk FSW & Gamma & 1.28 & (1.0, & 1.6) & 1.31 & (1.07, & 1.52) \\
+\texttt{RP_gud_2030} & relative prevalence of GUD overall in 2030 vs 2010 & Uniform & 0.6 & (0.22, & 0.98) & 0.817 & (0.366, & 1.0) \\
+\texttt{iP_gud_h:l} & interpolator for GUD among medium activity vs DHS and FSW & Uniform & 0.5 & (0.025, & 0.975) & 0.518 & (0.0537, & 0.953) \\
+\texttt{Rbeta_uvls} & relative $\beta$ on ART but before VLS & Beta & 0.244 & (0.0139, & 0.656) & 0.302 & (0.0656, & 0.614) \\
+\texttt{Rdx_global} & relative rate of diagnosis overall & Uniform & 0.75 & (0.512, & 0.988) & 0.645 & (0.536, & 0.775) \\
+\texttt{dx_w_2002} & rate of diagnosis among women in 2002 & Beta & 0.094 & (0.0452, & 0.158) & 0.0949 & (0.056, & 0.135) \\
+\texttt{dx_w_2006} & rate of diagnosis among women in 2006 & Beta & 0.248 & (0.169, & 0.337) & 0.271 & (0.218, & 0.319) \\
+\texttt{Rdx_m:w_2006} & relative rate of diagnosis among men vs women in 2006 & Gamma & 0.377 & (0.207, & 0.597) & 0.471 & (0.333, & 0.66) \\
+\texttt{dx_wq_2011} & rate of diagnosis among non-FSW women in 2011 & Gamma & 0.637 & (0.466, & 0.834) & 0.544 & (0.421, & 0.657) \\
+\texttt{Rdx_m:wq_2011} & relative rate of diagnosis among men vs non-FSW women in 2011 & Gamma & 0.529 & (0.351, & 0.742) & 0.467 & (0.385, & 0.555) \\
+\texttt{aRdx_fsw:wq_2011} & additional relative diagnosis among FSW vs non-FSW women in 2011 & Gamma & 0.521 & (0.206, & 0.98) & 0.542 & (0.301, & 0.854) \\
+\texttt{aRdx_wq_16:11} & additional relative diagnosis among non-FSW women in 2016 vs 2011 & Gamma & 0.204 & (0.118, & 0.313) & 0.186 & (0.12, & 0.264) \\
+\texttt{aRdx_fsw:wq_2016} & additional relative diagnosis among FSW vs non-FSW women in 2016 & Gamma & 0.619 & (0.291, & 1.07) & 0.589 & (0.416, & 0.848) \\
+\texttt{tx_2010} & rate of ART initiation among diagnosed and eligible in 2010 & Gamma & 1.5 & (0.509, & 3.02) & 1.5 & (0.937, & 2.1) \\
+\texttt{tx_2012} & rate of ART initiation among diagnosed and eligible in 2012 & Gamma & 8.75 & (6.01, & 12.0) & 7.75 & (5.91, & 9.8) \\
+\texttt{Rtx_fsw:wq} & relative rate of ART initiation among FSW vs non-FSW women & Uniform & 0.75 & (0.512, & 0.988) & 0.757 & (0.522, & 0.966) \\
+\texttt{ivx} & duration on ART before achieving VLS initially & Gamma & 0.62 & (0.33, & 1.0) & 0.75 & (0.589, & 0.887) \\
+\texttt{Runvx_m:wq} & relative rate of viral unsuppression among men vs non-FSW women & Uniform & 1.25 & (1.01, & 1.49) & 1.3 & (1.0, & 1.5) \\
+\texttt{Runvx_fsw:wq} & relative rate of viral unsuppression among FSW vs non-FSW women & Uniform & 1.25 & (1.01, & 1.49) & 1.24 & (1.01, & 1.47) \\
+\texttt{revx_2010} & rate of viral re-suppression in 2010 & Gamma & 0.729 & (0.5, & 1.0) & 0.609 & (0.492, & 0.788) \\
+ %
+  \end{longtable}
+\end{landscape}
