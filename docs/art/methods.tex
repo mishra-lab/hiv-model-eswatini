@@ -4,7 +4,8 @@ subpopulations defined by sex and sexual activity, and
 health states reflecting HIV natural history and ART cascade of care.
 The model includes eight subpopulations,
 including FSW at higher \vs lower risk, and likewise for clients of FSW,
-and four partnership types, including regular and occasional sex work (Figure~\ref{fig:model.m}).
+and four partnership types, including
+main/spousal, casual, repeat sex work, and one-off sex work (Figure~\ref{fig:model.m}).
 We calibrated the model to reflect the HIV epidemic and ART scale-up in Eswatini (\emph{base case}).
 We then explored \emph{counterfactual} scenarios in which
 ART cascade was reduced among various combinations of subpopulations,
@@ -49,11 +50,11 @@ and constant relative rates for
 men with low/medium sexual activity ($RR < 1$), clients ($RR < 1$), and FSW ($RR > 1$),
 reflecting increased HIV testing access via antenatal care among women \vs men,
 and enhanced screening among FSW \cite{Baral2014}.
-We modelled ART initiation similarly except:
+We modelled ART initiation, starting in 2003, similarly except:
 the relative rate for ART initiation among FSW was $RR < 1$,
 reflecting specific barriers to uptake and engagement in care \cite{Lancaster2016sr}; and
 we defined additional relative rates by CD4 count ($RR \le 1$)
-to reflect historical ART eligibility criteria \cite{SHIMS2}.
+to reflect historical ART eligibility criteria (Figure~\ref{fig:art.elig}) \cite{SHIMS2}.
 We modelled viral suppression using a fixed rate for all subpopulations,
 corresponding to an average of 4 months from ART initiation \cite{Mujugira2016}.
 We modelled treatment failure / discontinuation with a single monotonically decreasing rate
