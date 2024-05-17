@@ -10,6 +10,12 @@ We calibrated the model to reflect the HIV epidemic and ART scale-up in Eswatini
 We then explored \emph{counterfactual} scenarios in which
 ART cascade was reduced among various combinations of subpopulations,
 and quantified ART prevention impacts by comparing \emph{base case} and \emph{counterfactual} scenarios.
+\paragraph{Ethical Approval}
+We used only published aggregate data,
+except for individual-level data from FSW surveys in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014},
+which were accessed under approval from
+\blind{the Scientific and Ethics Committee of the Eswatini Ministry of Health (MH/599B)}, and
+\blind{the Institutional Review Board of the Johns Hopkins Bloomberg School of Public Health (3508)}.
 %===================================================================================================
 \subsection{Model Parameterization \& Calibration}\label{art.meth.par}
 Complete details of the model structure, parameterization, and calibration are given in Appendix~\ref{mod}.
@@ -187,8 +193,7 @@ Finally, we defined a general linear model for each outcome (CAI, AIR) as:
                  + \sum_i \beta_i\,d_i
                  + \sum_{ij} \beta_{ij}\,d_i\,C_j
 \end{equation}
-such that each outcome was modelled as a linear sum of the effects of:
-an intercept term;
+such that each outcome was modelled as a liner sum of an intercept plus effects of:
 differential population-level non-suppression in the counterfactual \vs the base scenario ($D$);
 differential non-suppression among FSW and clients
 \vs the population overall within the counterfactual scenario ($d_i$); and
