@@ -6,7 +6,8 @@ The model includes eight subpopulations,
 including FSW at higher \vs lower risk, and likewise for clients of FSW,
 and four partnership types, including
 main/spousal, casual, repeat sex work, and one-off sex work (Figure~\ref{fig:model.m}).
-We calibrated the model to reflect the HIV epidemic and ART scale-up in Eswatini (\emph{base case}).
+We calibrated the model to reflect
+the HIV epidemic and ART scale-up in Eswatini through 2021 (\emph{base case}).
 We then explored \emph{counterfactual} scenarios in which
 ART cascade was reduced among various combinations of subpopulations,
 and quantified ART prevention impacts by comparing \emph{base case} and \emph{counterfactual} scenarios.
@@ -31,18 +32,20 @@ subpopulation size, turnover among subpopulations,
 genital ulcer disease (GUD) prevalence, and rates / types of partnership formation;
 and partnership-level factors, including
 assortative mixing, partnership duration, frequency of sex, and levels of condom use.
-Table~\ref{tab:art.het} summarizes key parameter values and sampling distributions related to risk heterogeneity.
+Table~\ref{tab:art.het} summarizes
+key parameter values and sampling distributions related to risk heterogeneity.
 To parameterize FSW at higher \vs lower risk, we analyzed individual-level survey data
 from Swati FSW in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014} (Appendix~\ref{mod.par.fsw}).
-We parameterized the remaining subpopulations using reported data from national studies in
-2006 \cite{SDHS2006}, 2011 \cite{SHIMS1}, and 2016 \cite{SHIMS2}.
+We parameterized the remaining subpopulations using reported data from
+national studies in 2006 \cite{SDHS2006}, 2011 \cite{SHIMS1}, and 2016 \cite{SHIMS2}.
 We modelled
 increasing condom use (Figure~\ref{fig:fit.condom}),
 increasing voluntary medical male circumcision (Figure~\ref{fig:fit.circum}), and
-decreasing GUD prevalence over time,
-We did not model other interventions
-(\eg current pre-exposure prophylaxis scale-up)
-nor non-heterosexual HIV transmission.
+decreasing GUD prevalence over time.
+We did not model non-heterosexual HIV transmission
+nor pre-exposure prophylaxis (PrEP),
+which first became available in Eswatini in 2017
+and reached 12\% of FSW by 2021 \cite{EswIBBS2022}.
 \begin{table}
   \centering
   \caption{Selected model parameters related to risk heterogeneity}
@@ -59,7 +62,7 @@ and enhanced screening among FSW \cite{Baral2014}.
 We modelled ART initiation, starting in 2003, similarly except:
 the relative rate for ART initiation among FSW was $RR < 1$,
 reflecting specific barriers to uptake and engagement in care \cite{Lancaster2016sr}; and
-we defined additional relative rates by CD4 count ($RR \le 1$)
+we defined additional relative rates by CD4 count ($0 \le RR \le 1$)
 to reflect historical ART eligibility criteria (Figure~\ref{fig:art.elig}) \cite{SHIMS2}.
 We modelled viral suppression using a fixed rate for all subpopulations,
 corresponding to an average of 4 months from ART initiation \cite{Mujugira2016}.
@@ -74,7 +77,7 @@ We modelled reduced HIV-attributable mortality among individuals on ART,
 in addition to mortality benefits of CD4 recovery.
 \paragraph{Calibration}
 We calibrated the model to reflect
-available data from Eswatini on HIV prevalence, HIV incidence, and ART cascade of care
+available data from Eswatini on HIV prevalence, HIV incidence, and ART cascade of care,
 overall and stratified by subpopulation where possible
 (Tables \ref{tab:targ.prev}--\ref{tab:targ.cascade})
 \cite{SDHS2006,SHIMS1,SHIMS2,SHIMS3,Baral2014,EswKP2014,EswIBBS2022}
