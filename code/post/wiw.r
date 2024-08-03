@@ -1,24 +1,24 @@
-clean.wiw.data = function(X,infs='q0.5'){
+clean.wiw.data = function(X,infs='q0.5',tmax=2020){
   X$infs = X[[infs]]
-  X = X[,!grepl('^q\\d',names(X))]
+  X = X[X$t <= tmax, !grepl('^q\\d',names(X))]
   X$from  = factor(1+X$fs*4+X$fi,levels=1:8,labels=set.labs$pop.all)
   X$to    = factor(1+X$ts*4+X$ti,levels=1:8,labels=set.labs$pop.all)
   X$ptr   = factor(1+X$p,levels=1:4,labels=set.labs$ptr)
   return(X)
 }
-do.norm = function(X,margin,strat=NULL,scale=100){
+wiw.norm = function(X,margin,strat=NULL,scale=100){
   X.s = aggregate(formula(paste(c('infs ~ t',strat),collapse=' + ')),X,sum)
   X = merge(X,rename.cols(X.s,infs='infs.total'))
   X$infs = scale * X$infs / X$infs.total
   X$infs.total = NULL
   return(X)
 }
-do.alluvial = function(X,fill='ptr',norm=FALSE){
+wiw.alluvial = function(X,fill='ptr',norm=FALSE){
   # paste hack to maintain order in alluvial
   X$from = factor(1+X$fs*4+X$fi,1:8,paste(set.labs$pop.all,''))
   X$to   = factor(1+(1-X$ts)*4+X$ti,1:8,paste0('',c(set.labs$pop.all[5:8],set.labs$pop.all[1:4])))
   X.long = to_lodes_form(X,key='pop',axis=c('from','to'))
-  if (norm){ X.long = do.norm(X.long,margin=fill,scale=200) }
+  if (norm){ X.long = wiw.norm(X.long,margin=fill,scale=200) }
   ylab = paste('Yearly Infections',ifelse(norm,'(%)','(\'000s)'))
   g = ggplot(X.long,aes(y=infs,x=pop,stratum=stratum,label=stratum,alluvium=alluvium)) +
     geom_alluvium(aes_string(fill=fill),width=.4) +
@@ -30,12 +30,12 @@ do.alluvial = function(X,fill='ptr',norm=FALSE){
     scale_fill_manual(values=set.cols[[fill]])
   g = plot.clean(g)
 }
-do.alluvial.facet = function(X,tvec=seq(1990,2020,10),nrow=1){
-  g = do.alluvial(X[X$t %in% tvec,],norm=TRUE) +
+wiw.alluvial.facet = function(X,tvec=seq(1990,2020,10),nrow=1){
+  g = wiw.alluvial(X[X$t %in% tvec,],norm=TRUE) +
     facet_wrap(~factor(t),nrow=nrow) +
     theme(legend.position='top')
 }
-do.ratio = function(X){
+wiw.ratio = function(X){
   X.p = aggregate(infs~t+from+to,X,sum) # sum ptrs
   X. = merge(rename.cols(aggregate(infs~t+from,X.p,sum),infs='infs.fr',from='pop'),
              rename.cols(aggregate(infs~t+to,  X.p,sum),infs='infs.to',to='pop'))
@@ -49,9 +49,9 @@ do.ratio = function(X){
     labs(x='Year',y='Yearly Infections Transmitted / Acquired ',color='',fill='')
   g = plot.clean(g,legend.position='top')
 }
-do.margin = function(X,margin,type='both',strat=NULL){
+wiw.margin = function(X,margin,type='both',strat=NULL){
   X.abs = aggregate(formula(paste(c('infs ~ t',margin,strat),collapse=' + ')),X,sum)
-  X.rel = do.norm(X.abs,margin=margin,strat=strat)
+  X.rel = wiw.norm(X.abs,margin=margin,strat=strat)
   X.abs$scale = 'Absolute (\'000s)'
   X.rel$scale = 'Proportion (%)'
   if (margin %in% c('from','to')){

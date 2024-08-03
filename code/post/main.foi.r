@@ -59,7 +59,7 @@ main.wiw = function(){
   X = rbind(
     cbind(clean.wiw.data(read.csvs('foi-ep','wiw','foi')),par='Equal Parameters'),
     cbind(clean.wiw.data(read.csvs('fit',   'wiw','foi')),par='Recalibrated Parameters'))
-  g = do.margin(X,'ptr',type='rel',strat=c('case.lab','par')) +
+  g = wiw.margin(X,'ptr',type='rel',strat=c('case.lab','par')) +
     facet_grid('par~case.lab') +
     labs(y='Yearly Infections (%)')
   fig.save(uid,nid,'foi.wiw.ptr',w=11,h=5)

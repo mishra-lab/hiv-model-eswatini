@@ -70,7 +70,7 @@ plot.clean.art = function(g){
 plot.1.rai = function(X){
   X$out = factor(X$out,names(out.labs),out.labs)
   g = plot.expo.box(expo.qs(X),unlist(out.labs),'case.lab',seq(2005,2030,5)) +
-    facet_grid('out',scales='free_y') + 
+    facet_grid('out',scales='free_y') +
     labs(y='Relative Additional Infections (%)') +
     theme(legend.pos=c(.005,.99),legend.just=c(0,1))
   g = plot.clean.art(g)
@@ -103,7 +103,7 @@ main.1.wiw = function(){
   X = clean.wiw.data(read.csvs('art-rf','wiw-diff','art',skip='base'))
   X = X[X$t > 2003 & X$t <= 2030,]
   for (margin in c('ptr','from','to')){
-    g = do.margin(X,margin,type='abs',strat='case.lab') +
+    g = wiw.margin(X,margin,type='abs',strat='case.lab') +
       facet_grid('~case.lab',scales='free_y') +
       labs(y='Additional Infections (\'000s)') +
       guides(colour=guide_legend(nrow=1),fill=guide_legend(nrow=1))
@@ -183,7 +183,7 @@ fit.2.glm = function(X,y,std=TRUE){
     term.fun(pred.vars),'+',
     term.fun(pred.vars),':',term.fun(mod.vars))
   # print(f) # DEBUG
-  M = geeglm(formula(f),'gaussian',X[order(X$id),],id=factor(X$id),corstr='e')
+  M = geeglm(formula(f),'gaussian',X,id=factor(X$id),corstr='e')
   # print(M); print(anova(M)) # DEBUG
   return(M)
 }

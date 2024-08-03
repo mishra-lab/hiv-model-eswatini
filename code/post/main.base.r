@@ -42,11 +42,11 @@ main.wiw = function(){
   X = clean.wiw.data(read.csvs('fit','wiw','base',rdata='load'))
   X$infs.prop = X$infs / aggregate(infs~t,X,sum)$infs
   print(aggregate(infs.prop~ptr+t,X,sum)) # NUM
-  do.ratio(X);         fig.save(uid,nid,'wiw.base.ratio',w=5,h=5)
-  do.margin(X,'ptr');  fig.save(uid,nid,'wiw.base.ptr',  w=5,h=5.5)
-  do.margin(X,'from'); fig.save(uid,nid,'wiw.base.from', w=5,h=8)
-  do.margin(X,'to');   fig.save(uid,nid,'wiw.base.to',   w=5,h=8)
-  do.alluvial.facet(X,seq(1990,2040,10),nrow=2); fig.save(uid,nid,'wiw.base.alluvial',w=8,h=10)
+  wiw.ratio(X);         fig.save(uid,nid,'wiw.base.ratio',w=5,h=5)
+  wiw.margin(X,'ptr');  fig.save(uid,nid,'wiw.base.ptr',  w=5,h=5.5)
+  wiw.margin(X,'from'); fig.save(uid,nid,'wiw.base.from', w=5,h=8)
+  wiw.margin(X,'to');   fig.save(uid,nid,'wiw.base.to',   w=5,h=8)
+  wiw.alluvial.facet(X,seq(1990,2020,10),nrow=1); fig.save(uid,nid,'wiw.base.alluvial',w=10,h=5)
 }
 
 # main.num()
