@@ -2,7 +2,7 @@ import numpy as np
 from model import params,target,foi
 from utils import _,log,deco,ppool,rk4step
 
-def get_t(t0=1980,tf=2050,dt=0.05):
+def get_t(t0=1980,tf=2025,dt=0.05):
   # define a time vector with some defaults
   return np.round(np.arange(t0,tf+dt,dt),9)
 
