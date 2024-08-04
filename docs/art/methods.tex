@@ -1,25 +1,14 @@
 \section{Methods}\label{art.meth}
-We constructed a deterministic compartmental model of heterosexual HIV transmission, stratified by
-subpopulations defined by sex and sexual activity, and
-health states reflecting HIV natural history and ART cascade of care.
-The model includes eight subpopulations,
-including FSW at higher \vs lower risk, and likewise for clients of FSW,
-and four partnership types, including
-main/spousal, casual, repeat sex work, and one-off sex work (Figure~\ref{fig:model.m}).
-We calibrated the model to reflect
-the HIV epidemic and ART scale-up in Eswatini through 2021 (\emph{base case}).
-We then explored \emph{counterfactual} scenarios in which
-ART cascade was reduced among various combinations of subpopulations,
-and quantified ART prevention impacts by comparing \emph{base case} and \emph{counterfactual} scenarios.
-\paragraph{Ethical Approval}
-We used only published aggregate data,
-except for individual-level data from FSW surveys in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014},
-which were accessed under approval from
-\blind{the Scientific and Ethics Committee of the Eswatini Ministry of Health (MH/599B)}, and
-\blind{the Institutional Review Board of the Johns Hopkins Bloomberg School of Public Health (3508)}.
+% JK: this methods intro para was shortened a lot
+%     since it was redundant with the last intro para
+The development of the model and analyses thereof are summarized as follows.
 %===================================================================================================
 \subsection{Model Parameterization \& Calibration}\label{art.meth.par}
-Complete details of the model structure, parameterization, and calibration are given in Appendix~\ref{mod}.
+The modelled population is stratified by
+HIV status, subpopulations defined by sex and sexual activity, and the ART cascade of care
+(Figure~\ref{fig:model}).
+Complete details of the model structure, parameterization, and calibration
+are given in Appendix~\ref{mod}.
 \mf{\input{\app/fig.model}}
 \paragraph{HIV}
 HIV natural history included acute infection and stages defined by CD4-count.
@@ -27,7 +16,12 @@ We modelled relative rates of infectiousness by stage
 as an approximation of viral load \cite{Boily2009,Donnell2010,Bellan2015},
 as well as rates of HIV-attributable mortality by stage \cite{Mangal2017}.
 \paragraph{Risk heterogeneity}
-We captured risk heterogeneity through subpopulation-level factors, including
+The model includes eight subpopulations,
+including FSW at higher \vs lower risk, and likewise for clients of FSW,
+and four partnership types, including
+main/spousal, casual, repeat sex work, and one-off sex work (Figure~\ref{fig:model.m}).
+We captured risk heterogeneity through both
+subpopulation-level factors, including
 subpopulation size, turnover among subpopulations,
 genital ulcer disease (GUD) prevalence, and rates / types of partnership formation;
 and partnership-level factors, including
@@ -84,6 +78,12 @@ overall and stratified by subpopulation where possible
 using an adapted version of Incremental Mixture Importance Sampling (IMIS) \cite{Raftery2010}.
 Full methodology is given in Appendix~\ref{mod.cal},
 while calibration results are given in Appendix~\ref{sr.cal}.
+\paragraph{Ethical Approval}
+We used only published aggregate data,
+except for individual-level data from FSW surveys in 2011 \cite{Baral2014} and 2014 \cite{EswKP2014},
+which were accessed under approval from
+\blind{the Scientific and Ethics Committee of the Eswatini Ministry of Health (MH/599B)}, and
+\blind{the Institutional Review Board of the Johns Hopkins Bloomberg School of Public Health (3508)}.
 %===================================================================================================
 \subsection{Scenarios \& Analysis}\label{art.meth.obj}
 %---------------------------------------------------------------------------------------------------
