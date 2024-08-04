@@ -12,11 +12,26 @@ Botswana, Eswatini, Rwanda, Tanzania, and Zimbabwe
 have already surpassed 95-95-95 nationally \cite{UNAIDS2023}, and
 and achieving these targets is expected to help reduce HIV incidence towards elimination.
 \par
+Numerous transmission modelling studies have sought to estimate
+the prevention impacts of achieving 90-90-90+ across Sub-Saharan Africa
+\cite{Eaton2012sys,Knight2022sr}.
+Modelled populations are often stratified by risk,
+including key populations like female sex workers (FSW) and their clients,
+to capture important epidemic dynamics related to risk heterogeneity \cite{Watts2010}.
+However, these studies have generally assumed that ART cascade
+attainment (\ie proportions diagnosed, treated, and virally suppressed) or
+progression (\ie rates of diagnosis, treatment initiation, and viral suppression)
+were equal across modelled subpopulations.
+For example, among the studies in \cite{Knight2022sr} (see also Box~\ref{ric}),
+key populations were usually assumed to have
+equal cascade progression with the population overall,
+or greater in some scenarios, but never lesser.
+\par
 Yet, there are growing concerns that inequalities in the ART cascade
 could undermine the population-level prevention impacts of ART
 anticipated from individual-level and model-based studies
 \cite{Baral2019,Green2020,Maheu-Giroux2024}.
-Specifically, available data suggest that cascade attainment is often lower
+Specifically, available data suggest that cascade attainment can be lower
 among subpopulations at greater risk of HIV acquisition and/or transmission,
 including key populations, younger men and women, and highly mobile populations
 \cite{Hakim2018,Green2020}.
@@ -29,37 +44,20 @@ Moreover, cascade data may be lacking entirely
 for subpopulations experiencing the greatest barriers to care
 --- \ie the lowest ART cascades likely remain unmeasured \cite{Hakim2018}.
 \par
-Numerous transmission modelling studies have sought to estimate
-the prevention impacts of achieving 90-90-90+ across Sub-Saharan Africa
-\cite{Eaton2012,Knight2022sr}.
-Modelled populations are often stratified by risk,
-including key populations like female sex workers (FSW) and their clients,
-to capture important epidemic dynamics related to risk heterogeneity \cite{Watts2010}.
-However, these studies have generally assumed that ART cascade
-attainment (\ie proportions diagnosed, treated, and virally suppressed) or
-progression (\ie rates of diagnosis, treatment initiation, and viral suppression)
-were equal across modelled subpopulations.
-For example, among the studies in \cite{Knight2022sr} (see also Box~\ref{ric}),
-key populations were usually assumed to have
-equal cascade progression with the population overall,
-or greater in some scenarios, but never lesser.
-Thus, the potential influence of intersecting risk and cascade inequalities
-on ART prevention impacts has not been explored.
-\par
-We therefore examined the following questions in an illustrative modelling analysis:
-\begin{enumerate}
-  \item\label{obj:art.1} How are estimates of population-level ART prevention impacts
-    influenced by inequalities in ART cascade across subpopulations?
-  \item\label{obj:art.2} Under which epidemic conditions
-    do such inequalities have the largest influence?
-\end{enumerate}
-We examined these questions using
-a deterministic compartmental model of heterosexual HIV transmission in Eswatini,
-focusing on inequalities related to sex work.
-Eswatini has the highest national HIV prevalence in the world,
-and recently surpassed \cashi with minimal inequalities across subpopulations
-\cite{SHIMS3,UNAIDS2023}.
-As such, we used observed ART cascade scale-up in Eswatini as a \emph{base case}
-reflecting exemplary and evidently attainable scale-up,
-and explored \emph{counterfactual} scenarios in which scale-up was slower,
-and where specific subpopulations could have been left behind.
+Eswatini, which has had the highest national HIV prevalence in the world,
+largely minimized these cascade inequalities en route to 95-95-95,
+drawing on community engagement to identify and address
+subpopulation-specific barriers to care \cite{Walsh2020,SHIMS3,EswIBBS2022}.
+We sought to quantity the impacts of this achievement on HIV transmission.
+To do so, we developed a deterministic compartmental model
+of heterosexual HIV transmission, including FSW and their clients,
+and calibrated this model to reflect
+the observed HIV epidemic and cascade scale-up in Eswatini.
+We then compared cumulative HIV infections and HIV incidence over 2000--2020
+in this \emph{base case} with \emph{counterfactual} scenarios in which
+cascade scale-up was slower, and where
+FSW and/or their clients were disproportionately left behind
+(Objective~\obj{art.1}).
+We also sought to identify epidemic conditions under which
+such inequalities in cascade scale-up could have the largest impact
+(Objective~\obj{art.2}).
