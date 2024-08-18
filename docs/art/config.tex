@@ -12,6 +12,8 @@
 \newcommand{\cascli}{\mbox{xx-xx-xx}\xspace}
 \newcommand{\tdef}[2]{#1{\,:\,}\txn{#2}}
 \newcommand{\mf}[2][.m]{\def\mfx{#1}#2\def\mfx{}} % main figure
+\newcounter{obj} % objectives
+\newcommand{\obj}[1]{\refstepcounter{obj}\theobj\label{obj:#1}}
 %---------------------------------------------------------------------------------------------------
 % ric
 \usepackage{float,mdframed}
