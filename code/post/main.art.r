@@ -6,11 +6,11 @@ source('post/wiw.r')
 out.labs = list(
   cuminfect = 'Cumulative Additional Infections',
   incidence = 'Additional Incidence',
-  diagnosed = 'Diagnosed among PLHIV',
-  treated_c = 'Treated among Diagnosed',
-  vls_c     = 'VLS among Treated',
-  treated_u = 'Treated among PLHIV',
-  vls_u     = 'VLS among PLHIV')
+  diagnosed = 'Diagnosed\namong PLHIV',
+  treated_c = 'Treated\namong Diagnosed',
+  vls_c     = 'VLS\namong Treated',
+  treated_u = 'Treated\namong PLHIV',
+  vls_u     = 'VLS\namong PLHIV')
 
 pop.labs = list(
   all = 'Overall',
@@ -44,9 +44,9 @@ var.lab.fun = function(vars){
   vars = gsub('^.*:','',vars)
 }
 
-melt.expo.labs = function(X.wide,...){
+melt.expo.labs = function(X.wide,...,s=100){
   X = melt.expo.i(X.wide,...)
-  X$value = 100 * X$value
+  X$value = s * X$value
   X$out = factor(X$out,names(out.labs),out.labs)
   X$pop = factor(X$pop,names(pop.labs),pop.labs)
   return(X)
@@ -71,15 +71,15 @@ plot.1.rai = function(X){
   X$out = factor(X$out,names(out.labs),out.labs)
   g = plot.expo.box(expo.qs(X),unlist(out.labs),'case.lab',seq(2005,2020,5)) +
     facet_grid('out',scales='free_y') +
-    labs(y='Relative Additional Infections (%)') +
-    theme(legend.pos=c(.005,.99),legend.just=c(0,1))
+    labs(y='Relative Additional Infections (%)')
   g = plot.clean.art(g)
   fig.save(uid,nid,'art.1.rai',w=6,h=5)
 }
 
-num.1.rai = function(X,t.hor=2020){
+num.1.rai = function(X,t.hor=2020,s=1,rnd=1){
+  X$value = s * X$value
   X.hor = X[X$t==t.hor,]
-  print(expo.qs(X.hor,q=q3,trans=function(x){ round(x,1) }))
+  print(expo.qs(X.hor,q=q3,trans=function(x){ round(x,rnd) }))
   x.case = function(case){ X.hor[X.hor$case==case,] }
   X.ref = x.case('fsw+cli+')
   X.ref$value = (x.case('fsw-cli-')$value - X.ref$value) / X.ref$value
@@ -90,9 +90,11 @@ main.1.rai = function(){
   X.wide = read.csvs('art-rf','expo','art',rdata='load')
   X = melt.expo.i(X.wide,pop='all',out=c('incidence','cuminfect'))
   base.value = X[X$case=='base',]$value
-  X$value = 100 * (X$value - base.value) / base.value
+  num.1.rai(X[X$out=='cuminfect',],s=1,   rnd=0) # '000s
+  num.1.rai(X[X$out=='incidence',],s=1000,rnd=0) # per 1000 PY
+  X$value = (X$value - base.value) / base.value
   X = X[X$case!='base',]
-  num.1.rai(X)
+  num.1.rai(X,s=100,rnd=1)
   plot.1.rai(X)
 }
 
@@ -110,15 +112,15 @@ main.1.wiw = function(){
 
 main.1.expo = function(){
   X.wide = read.csvs('art-rf','expo','art',rdata='load')
-  X.wide = X.wide[X.wide$t > 1995 & X.wide$t <= 2020,]
+  X.wide = X.wide[X.wide$t >= 1995 & X.wide$t <= 2020,]
   X.cascade = melt.expo.cascade(X.wide)
   g = plot.expo.ribbon(expo.qs(X.cascade),unlist(out.labs),'case.lab') + facet_grid('out ~ pop') +
-    lims(y=c(0,100)) + labs(y='Cascade Step (%)') + theme(legend.pos='top')
-  g = plot.clean.art(g); fig.save(uid,nid,'art.1.cascade',w=8,h=10)
-  X.inc = melt.expo.labs(X.wide,out='incidence',pop='all')
+    lims(y=c(0,100)) + labs(y='Cascade Step (%)') + scale_x_continuous(breaks=c(2000,2010,2020))
+  g = plot.clean.art(g); fig.save(uid,nid,'art.1.cascade',w=8,h=8)
+  X.inc = melt.expo.labs(X.wide,out='incidence',pop='all',s=1000)
   g = plot.expo.ribbon(expo.qs(X.inc),unlist(out.labs),'case.lab',alpha=.1) +
-    labs(y='HIV Incidence (per person-year)') + theme(legend.position='top')
-  g = plot.clean.art(g); fig.save(uid,nid,'art.1.inc',w=5,h=4)
+    lims(y=c(0,NA)) + labs(y='HIV Incidence (per 1000 person-years)')
+  g = plot.clean.art(g); fig.save(uid,nid,'art.1.inc',w=6,h=3)
 }
 
 main.2.cascade = function(){
@@ -126,14 +128,14 @@ main.2.cascade = function(){
   X = melt.expo.cascade(X.wide,t=2020)
   print(expo.qs(X[X$pop=='Overall',],q=q3,trans=function(x){ round(x,1) }))
   g = ggplot(expo.qs(X)) +
-    geom_boxplot(q.aes('box','pop',x='pop'),stat='identity',alpha=.2) +
+    geom_boxplot(q.aes('box','pop',x='pop'),stat='identity',alpha=.2,width=.8) +
     facet_grid('out') + coord_flip() +
     scale_y_continuous(breaks=seq(0,100,20),limits=c(0,100)) +
     scale_color_manual(values=set.cols$pop.art) +
     scale_fill_manual(values=set.cols$pop.art) +
     labs(y='Cascade step (%)',x='Population',color='',fill='')
   g = plot.clean(g,legend.position='none')
-  fig.save(uid,nid,'art.2.cascade',w=5,h=9)
+  fig.save(uid,nid,'art.2.cascade',w=5,h=7)
 }
 
 load.2.data = function(rdata=''){
