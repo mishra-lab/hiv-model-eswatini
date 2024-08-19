@@ -1,16 +1,20 @@
 \section{Objectives}\label{sr.art}
 %===================================================================================================
 \subsection{Objective~1}\label{sr.art.1}
-Figure~\ref{fig:art.1.cascade} illustrates cascade attainment over time across
-the base case and counterfactual scenarios (Table~\ref{tab:art.1.scen})
+Table~\ref{tab:art.1.num} summarizes the results of Objective~\ref{obj:art.1} numerically, while
+Figure~\ref{fig:art.1.inc} illustrates overall HIV incidence over time across
+base case and counterfactual scenarios (Table~\ref{tab:art.1.scen}).
+Figure~\ref{fig:art.1.cascade} illustrates cascade attainment over time across scenarios
 for FSW, clients, everyone else, and the population overall.
 Transient declines in VLS among treated around 2010 correspond to expanding ART eligibility.
-\par
-Figure~\ref{fig:art.1.inc} illustrates overall HIV incidence over time across scenarios.
 As in \sref{sr.cal.wiw}, Figure~\ref{fig:art.1.wiw} illustrates
-the distributions of additional infections over time \vs the base case across
-counterfactual scenarios  (Table~\ref{tab:art.1.scen}),
+the distributions of additional infections over time \vs the base case across counterfactual scenarios,
 stratified by partnership type, transmitting group, and acquiring group.
+\begin{table}[h]
+  \caption{Numeric summary of outcomes for Objective~\ref{obj:art.1}}
+  \label{tab:art.1.num}
+  \input{tab.art.1.num}
+\end{table}
 \begin{figure}[b]
   \centerline{\includegraphics[scale=.8]{art.1.inc}}
   \caption{Overall HIV incidence over time across scenarios}
@@ -39,6 +43,7 @@ stratified by partnership type, transmitting group, and acquiring group.
   \label{fig:art.1.wiw}
   \floatfoot{\ffart; \ffwiw.}
 \end{figure}
+\clearpage % TEMP
 %===================================================================================================
 \subsection{Objective~2}\label{sr.art.2}
 Figure~\ref{fig:art.2.cascade} illustrates the distributions of cascade attainment by 2020
@@ -65,7 +70,7 @@ despite minor heteroskedasticity.
     differential viral suppression across subpopulations matters most}
   \label{fig:art.2.dag}
   \floatfoot{
-    $Y$: cumulative additional infections (CAI) or additional incidence rate (AIR) by 2030;
+    $Y$: cumulative additional infections (CAI) or additional incidence rate (AIR) by 2020;
     $D$: difference in population-overall viral non-suppression
       in counterfactual \vs base case scenario;
     $d_i$: difference in subpopulation-$i$-specific viral non-suppression
@@ -86,6 +91,6 @@ despite minor heteroskedasticity.
   \caption{Simulated \vs regression-estimated outcomes,
     and corresponding residuals for Objective~\ref{obj:art.2}.}
   \label{fig:art.2.r}
-  \floatfoot{Outcomes computed for 2030 \vs base case;
+  \floatfoot{Outcomes computed for 2020 \vs base case;
     regression models defined in \eqref{eq:art.2.glm}.}
 \end{figure}
