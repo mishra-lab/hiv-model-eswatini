@@ -69,7 +69,7 @@ plot.clean.art = function(g){
 
 plot.1.rai = function(X){
   X$out = factor(X$out,names(out.labs),out.labs)
-  g = plot.expo.box(expo.qs(X),unlist(out.labs),'case.lab',seq(2005,2030,5)) +
+  g = plot.expo.box(expo.qs(X),unlist(out.labs),'case.lab',seq(2005,2020,5)) +
     facet_grid('out',scales='free_y') +
     labs(y='Relative Additional Infections (%)') +
     theme(legend.pos=c(.005,.99),legend.just=c(0,1))
@@ -77,13 +77,10 @@ plot.1.rai = function(X){
   fig.save(uid,nid,'art.1.rai',w=6,h=5)
 }
 
-num.1.rai = function(X,t.hor=2030){
+num.1.rai = function(X,t.hor=2020){
   X.hor = X[X$t==t.hor,]
   print(expo.qs(X.hor,q=q3,trans=function(x){ round(x,1) }))
   x.case = function(case){ X.hor[X.hor$case==case,] }
-  X.ref = x.case('fsw-cli-')
-  X.ref$value = (X.ref$value - x.case('fsw+cli+')$value) / X.ref$value
-  print(expo.qs(X.ref,q=q3,trans=function(x){ round(100*x,1) }))
   X.ref = x.case('fsw+cli+')
   X.ref$value = (x.case('fsw-cli-')$value - X.ref$value) / X.ref$value
   print(expo.qs(X.ref,q=q3,trans=function(x){ round(100*x,1) }))
@@ -101,7 +98,7 @@ main.1.rai = function(){
 
 main.1.wiw = function(){
   X = clean.wiw.data(read.csvs('art-rf','wiw-diff','art',skip='base'))
-  X = X[X$t > 2003 & X$t <= 2030,]
+  X = X[X$t > 2003 & X$t <= 2020,]
   for (margin in c('ptr','from','to')){
     g = wiw.margin(X,margin,type='abs',strat='case.lab') +
       facet_grid('~case.lab',scales='free_y') +
@@ -113,7 +110,7 @@ main.1.wiw = function(){
 
 main.1.expo = function(){
   X.wide = read.csvs('art-rf','expo','art',rdata='load')
-  X.wide = X.wide[X.wide$t > 1995 & X.wide$t <= 2030,]
+  X.wide = X.wide[X.wide$t > 1995 & X.wide$t <= 2020,]
   X.cascade = melt.expo.cascade(X.wide)
   g = plot.expo.ribbon(expo.qs(X.cascade),unlist(out.labs),'case.lab') + facet_grid('out ~ pop') +
     lims(y=c(0,100)) + labs(y='Cascade Step (%)') + theme(legend.pos='top')
@@ -150,7 +147,7 @@ load.2.data = function(rdata=''){
   'par' = read.csvs('art-ss','P0s','sens'))
 }
 
-clean.2.data = function(X.list,t.hor=2030,t.ref=2020,y.pop='all'){
+clean.2.data = function(X.list,t.hor=2020,t.ref=2020,y.pop='all'){
   i.list = lapply(X.list,grep.i.col)
   x.out = function(...){ c(t(filter.cols(X.list$out,...)[,i.list$out])) }
   x.par = function(par){ c(t(filter.cols(X.list$par,par=par)[,i.list$par])) }
@@ -163,8 +160,8 @@ clean.2.data = function(X.list,t.hor=2030,t.ref=2020,y.pop='all'){
     Du.all  =  x.out(case='base',pop='all',t=t.ref,out='vls_u') - x.out(case='sens',pop='all',t=t.ref,out='vls_u'),
     du.fsw  =  x.out(case='sens',pop='all',t=t.ref,out='vls_u') - x.out(case='sens',pop='fsw',t=t.ref,out='vls_u'),
     du.cli  =  x.out(case='sens',pop='all',t=t.ref,out='vls_u') - x.out(case='sens',pop='cli',t=t.ref,out='vls_u'),
-    ir.fsw  =  x.out(case='sens',pop='fsw',t=t.ref,out='incidence') / x.out(case='sens',pop='w',t=t.ref,out='incidence'),
-    ir.cli  =  x.out(case='sens',pop='cli',t=t.ref,out='incidence') / x.out(case='sens',pop='m',t=t.ref,out='incidence'),
+    ir.fsw  =  x.out(case='sens',pop='fsw',t=2010,out='incidence') / x.out(case='sens',pop='w',t=2010,out='incidence'),
+    ir.cli  =  x.out(case='sens',pop='cli',t=2010,out='incidence') / x.out(case='sens',pop='m',t=2010,out='incidence'),
     tur.fsw = 1/x.par('dur_fsw'),
     tur.cli = 1/x.par('dur_cli'),
     px.fsw  = x.par('PX_fsw'),
@@ -214,7 +211,7 @@ plot.2.glm.effects = function(M.list,o.lab){
     geom_point(position=dodge,size=1.5) +
     geom_errorbar(position=dodge,width=.25,lwd=.7) +
     scale_color_manual(values=clrs) +
-    labs(x=paste('Effect on',o.lab,'(%)'),y='')
+    labs(x=paste('Effect on',o.lab,'(%) per SD change in variable     '),y='')
   g = plot.clean(g,legend.position='none')
 }
 
