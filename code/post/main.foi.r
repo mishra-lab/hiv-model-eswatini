@@ -34,10 +34,10 @@ plot.ep = function(Xepp,op,ylab,leg='top',oname='incidence'){
   g = plot.clean.foi(g,leg=leg)
 }
 
-main.ep = function(){
+main.ep = function(tmax=2025){
   # load & clean data
   X = read.csvs('foi-ep','expo','foi')
-  Xe = filter.cols(X,pop=c('aq','fsw','cli'),t=seq(1980,2035))
+  Xe = filter.cols(X,pop=c('aq','fsw','cli'),t=seq(1980,tmax))
   # Xe = filter.cols(X,pop=c('aq','fsw'),t=seq(1980,2035)) # slides
   Xe$pop = factor(Xe$pop,levels=names(strat.labs),labels=strat.labs)
   Xe$case.lab.x = Xe$case.lab
@@ -51,14 +51,14 @@ main.ep = function(){
   plot.ep(Xepp,'raw','HIV Incidence (per person-year)')
     fig.save(uid,nid,'foi.ep.incidence.raw',w=9,h=6.5)
     # fig.save(uid,nid,'foi.ep.incidence.slides',w=7,h=4) # slides
-  plot.ep(Xepp,'1-2/2','Relative Difference in HIV Incidence (X - EPA / EPA)',leg='none')
+  plot.ep(Xepp,'1-2/2','Relative Difference in HIV Incidence (X - EPA / EPA)\n',leg='none')
     fig.save(uid,nid,'foi.ep.incidence.rel',w=9,h=6)
 }
 
-main.wiw = function(){
+main.wiw = function(tmax=2025){
   X = rbind(
-    cbind(clean.wiw.data(read.csvs('foi-ep','wiw','foi')),par='Equal Parameters'),
-    cbind(clean.wiw.data(read.csvs('fit',   'wiw','foi')),par='Recalibrated Parameters'))
+    cbind(clean.wiw.data(read.csvs('foi-ep','wiw','foi'),tmax=tmax),par='Equal Parameters'),
+    cbind(clean.wiw.data(read.csvs('fit',   'wiw','foi'),tmax=tmax),par='Recalibrated Parameters'))
   g = wiw.margin(X,'ptr',type='rel',strat=c('case.lab','par')) +
     facet_grid('par~case.lab') +
     labs(y='Yearly Infections (%)')
@@ -69,15 +69,11 @@ main.tpaf = function(){
   X = read.csvs('tpaf','expo','foi')
   X$t.hor = X$t - X$tpaf.t0
   # plot groups of transmission pathways
-  paths = list(ptr=c('msp','cas','swx'),popf=c('aqf','fswf','clif'),popt=c('aqt','fswt','clit'))
-  # paths = list(ptr=c('msp','cas','swx')) # slides + (tpaf.t0 = 2010)
-  for (path in names(paths)){
-    g = plot.tpaf.box(X,tpaf.path=paths[[path]],tpaf.t0=c(1990,2000,2010)) +
-      facet_grid('tpaf.t0 ~ tpaf.path',scales='free_y')
-    g = plot.clean.foi(g)
-    fig.save(uid,nid,'foi.tpaf',path,w=8,h=7)
-    # fig.save(uid,nid,'foi.tpaf.slides',w=7,h=3) # slides
-  }
+  paths = c('msp','cas','swx','aqf','fswf','clif')
+  g = plot.tpaf(X,tpaf.path=paths,tpaf.t0=seq(1990,2020,10),t.hor=3,t='tpaf.t0') +
+    facet_wrap('tpaf.path') + labs(x='Year TPAF starts',y='3-Year TPAF (%)')
+  g = plot.clean.foi(g)
+  fig.save(uid,nid,'foi.tpaf.3x2',w=8,h=5)
 }
 
 # main.post()

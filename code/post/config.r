@@ -31,9 +31,9 @@ strats = list(
   'swr'   = list(rgb(.99,.65,.04),'Repeat Sex Work'),
   'swx'   = list(rgb(.93,.48,.13),'Sex Work Overall'),
   # scenarios
-  'foi-rd'   = list('#00CC99','Partnership Duration','62'),
-  'foi-ry'   = list('#0099CC','Partnership Year','22'),
-  'foi-py'   = list('#CC00CC','All Partnerships Year','4212'),
+  'foi-rd'   = list('#00CC99','Rate-Duration','62'),
+  'foi-ry'   = list('#0099CC','Rate-1-Year','22'),
+  'foi-py'   = list('#CC00CC','Proportion-1-Year','4212'),
   'fsw-cli+' = list('#FF0033','FSW','62'),
   'fsw+cli-' = list('#0066CC','Clients','22'),
   'fsw-cli-' = list('#990099','Both','3212'),
