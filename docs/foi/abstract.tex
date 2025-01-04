@@ -3,7 +3,7 @@ populations are stratified into homogeneous, memoryless states
 such that timing of transmission within specific sexual partnerships cannot be tracked.
 Instead, these models define the force of infection (incidence rate) via
 mean rates of partnership change, multiplied by
-cumulative probabilities of transmission per partnership (or partnership-year).
+cumulative probabilities of transmission per partnership or partnership-year.
 Thus, partnerships are effectively modelled as instantaneous.
 In this paper, we critically review
 the assumptions and limitations of this ``instantaneous partnerships'' approach,
@@ -16,13 +16,14 @@ and then reduces these individuals' effective partnerships by one,
 until they change partners.
 Unlike pair-based models, EPA only adds one stratification per partnership type,
 and can therefore easily handle high levels of partnership concurrency.
-Next, we implemented EPA and three instantaneous partnership approaches
+We implemented EPA and three instantaneous partnership variations
 in an existing model of heterosexual HIV transmission in Eswatini,
 and examined differences in model outputs
 under equal and approach-specific (recalibrated) parameters.
 We found that model outputs were similar between EPA and
-an instantaneous approach that allowed partnership change rates $\ll$ 1, whereas
+one instantaneous approach that allowed partnership change rates $\ll$ 1, whereas
 two instantaneous approaches that forced partnership change rates to be $\ge$ 1
 severely overestimated transmission via long-term partnerships,
 even after recalibrating parameters, relative to EPA.
-% TODO: not sure how to conclude
+Future modellers and stakeholders should continue to interrogate
+how best to model HIV transmission via sexual partnerships.
