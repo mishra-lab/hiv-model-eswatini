@@ -36,16 +36,16 @@ Let $x_f = {(1 - \beta_f)}^A$; then
 \end{equation}
 Since $\sum_f \alpha_f = 1$ and $\alpha_f \in [0,1]$ are effectively weights,
 \eqref{eq:AM-GM} is the weighted arithmetic mean--geometric mean (AM-GM) inequality \cite{Aldaz2009}.
-In fact, \citet{Aldaz2009} further shows that the gap between $B_{\wph}$ and $B_{\bph}$
+\citet{Aldaz2009} further shows that the gap between $B_{\wph}$ and $B_{\bph}$
 increases with the $\alpha_f$-weighted variance in ${\beta_f}^{\frac12}$
-(although the increase is not exact),
+(though the proportionality is not exactly linear),
 which supports the results of \sref{foi.exp.xph} mathematically.
 \par
 Using Jensen's inequality \cite{Jensen1906} we can also show that
 the approach in \cite{Kerr2015} (and others)
 to aggregate heterogeneity by HIV infection stage first
 produces an intermediate per-partnership probability $B_{\xph}$:%
-\footnote{\hreftt{math.stackexchange.com/questions/4660409}}
+\footnote{\hreftt{math.stackexchange.com/q/4660409}}
 \begin{equation}
   B_{\wph} \ge B_{\xph} \ge B_{\bph},
   \qquad B_{\xph} = 1 - {(1 - \sum_f \alpha_f \beta_f)}^{A}
@@ -99,6 +99,9 @@ Thus, pair-based models are especially limited in their ability to model partner
 --- the role of which in HIV epidemiology remains controversial \cite{Sawers2013}.
 As such, pair-based models have seen little widespread adoption
 for HIV transmission modelling~\cite{Rao2021}.
+If long-term concurrency is rare, a hybrid approach is possible,
+wherein long-term pairs are explicitly modelled,
+but additional ``one-off'' partnerships are modelled as instantaneous~\cite{Xiridou2003,Powers2011ahi}.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Individual-Based Models}
 Individual-based models, also knowns as agent-based, network-based, or microsimulation models,
@@ -182,11 +185,21 @@ This assumption is evidently worse for longer partnerships.
     dashed circles: individuals involved in transmission event.}
 \end{figure}
 %===================================================================================================
-\subsection{Calibration}\label{sr.foi.cal}
-% TODO: (!)
+\subsection{Calibration under Different Force of Infection Approaches}\label{sr.foi.cal}
+This section presents supplementary results of Eswatini model calibration
+under the 4 force of infection approaches explored in \sref{foi.exp.model}:
+Effective Partnerships Reduction (\epa),
+Instantaneous Rate-Duration (\ird),
+Instantaneous Rate-1-Year (\iry), and
+Instantaneous Proportion-1-Year (\ipy).
+\par
+Figure~\ref{fig:ll.hist.foi} illustrates
+the distributions of log likelihoods for 1000 model fits under each approach, while
+Figure~\ref{fig:post.distr.foi} illustrates
+the corresponding distributions of calibrated model parameters.
 \begin{figure}
   \centering\includegraphics[scale=1]{ll.hist.foi}
-  \caption{}
+  \caption{Distribution of log likelihoods across force of infection approaches}
   \label{fig:ll.hist.foi}
   \floatfoot{\fffoi.}
 \end{figure}
@@ -198,12 +211,7 @@ This assumption is evidently worse for longer partnerships.
   \floatfoot{\ffpar; \fffoi; \ffpost;
     \ffast{QN rank score test \cite{Kruskal1952} for comparing distributions}}
 \end{figure}
-This section illustrates the results of model calibration
-under the four force of infection approaches explored in \sref{foi.exp.model}:
-Effective Partnerships Reduction (\epa),
-Instantaneous Rate-Duration (\ird),
-Instantaneous Rate-1-Year (\iry), and
-Instantaneous Proportion-1-Year (\ipy).
+\par
 Figures~\ref{fig:fit.prev.foi}--\ref{fig:fit.inc1v2.foi} illustrate the modelled HIV
 prevalence, prevalence ratios, incidence, and incidence ratios,
 plus associated calibration targets, for each approach.
@@ -232,10 +240,13 @@ as expected (see \sref{foi.exp.mod.dyn}).
         \sfref{fig:fit.\var.\foi}: \flab;}
       \fffoi; \fffit; \ffribbon; \ffpbar.}
   \end{figure}}
-%===================================================================================================
-\subsection{Distributions of Infections}\label{sr.foi.exp}
-% TODO (!)
-\begin{figure}
+\par
+Finally, Figure~\ref{fig:foi.wiw.ptr} illustrates
+the proportions of modelled yearly HIV infections
+transmitted via different partnership types under each approach, with
+equal parameters (calibrated under \epa, top row) and
+approach-specific parameters (recalibrated, bottom row).
+\begin{figure}[h]
   \includegraphics[width=\linewidth]{foi.wiw.ptr}
   \caption{Proportions of modelled yearly HIV infections
     transmitted via different partnership types in Eswatini
