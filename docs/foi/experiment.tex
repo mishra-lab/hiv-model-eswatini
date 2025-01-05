@@ -229,36 +229,42 @@ to account for trapped infections in existing transmission models.
 \end{figure}
 %---------------------------------------------------------------------------------------------------
 \subsubsection{Transmission Dynamics using Equal Parameters}\label{foi.exp.mod.dyn}
-Figure~\ref{fig:foi.ep.incidence} illustrates HIV incidence under each approach among
-FSW, clients, and everybody else (``lower risk'').
+Figure~\ref{fig:foi.ep.incidence} illustrates HIV incidence among
+FSW, clients, and everybody else (``lower risk'')
+under each approach using equal parameters.
 Specifically, Figure~\ref{fig:foi.ep.incidence.raw} illustrates incidence per person-year
-(\epa repeated for comparison)
+(\epa repeated across panels for comparison)
 and Figure~\ref{fig:foi.ep.incidence.rel} illustrates relative differences \vs the \epa approach.%
 \footnote{Relative differences were ``paired'' according to each parameter set $k$,
   and computed as $(\textsc{ixx}_k - \epa_k) / \epa_k$.}
-We made the following observations:
-\begin{itemize}
-  \item Incidence among lower risk groups was generally much higher under 1-year approaches (\iry,~\ipy)
-    --- underestimation of PTC under these approaches
-    disproportionately increases transmission via main/spousal partnerships,
-    allowing more transmission to/from lower risk individuals,
-    including a positive feedback loop via increasing HIV prevalence
-    given like-with-like mixing (see \sref{mod.par.mix.odds}).
-  \item Incidence differences between the 1-year approaches (\iry,~\ipy) \vs \epa generally grew over time
-    --- \epa explicitly models the accumulation of
-    transmission-driven seroconcordant partnerships (Figure~\ref{fig:fit.tdsc}) wherein all sex acts are PTC;
-    thus, by underestimating PTC throughout the epidemic,
-    the 1-year approaches are initially less biased \vs \epa, but later overestimate incidence.
-  \item Incidence among FSW and clients was lower under the ``incidence proportion'' approach (\ipy)
-    --- incidence proportion \eqref{eq:foi.ip} treats all transmission risks as competing,
-    and notably forces incidence $\lambda^\ip \le 1$,
-    disproportionately reducing incidence among those at highest risk.
-  \item Incidence under the full-duration approach (\ird) was consistently similar to \epa
-    --- complete accounting of PTC under this approach delays
-    effectively delays transmission in longer partnership types,
-    but shorter partnerships contribute the majority of new infections.
-  % TODO: (*) why does ird > epa before 1990?
-\end{itemize}
+We made the following observations and hypothesized explanations.
+\par
+First, incidence among lower risk groups
+was generally much higher under 1-year approaches (\iry,~\ipy).
+Underestimation of inert sex acts under these approaches
+disproportionately increases transmission via main/spousal partnerships,
+allowing more transmission to/from lower risk individuals,
+including a positive feedback loop via
+increasing HIV prevalence among lower risk individuals
+given like-with-like mixing (see \sref{mod.par.mix.odds}).
+Second, incidence differences between
+the 1-year approaches (\iry,~\ipy) \vs \epa generally grew over time.
+The \epa approach explicitly models the accumulation of
+transmission-driven seroconcordant partnerships (Figure~\ref{fig:fit.tdsc})
+wherein all sex acts are inert.
+Thus, by underestimating inert sex acts throughout the epidemic,
+the 1-year approaches are initially less biased \vs \epa, but later overestimate incidence.
+Third, incidence among FSW and clients was lower under the ``incidence proportion'' approach (\ipy).
+Incidence proportion \eqref{eq:foi.ip} treats all transmission risks as competing,
+and notably forces incidence $\lambda^\ip \le 1$,
+disproportionately reducing incidence among those at highest risk.
+Finally, incidence under the full-duration approach (\ird) was consistently similar to \epa.
+Complete accounting of inert sex acts under this approach
+effectively delays transmission in longer partnership types,
+but with limited impact on overall dynamics because
+shorter partnerships contribute the majority of new infections,
+especially during epidemic growth.
+% TODO: (*) why does ird > epa before 1990: instant onward transmission risk?
 \begin{figure}
   \subcapoverlap
   \foreach \var in {raw,rel}{
@@ -285,12 +291,12 @@ For equal parameters, the 1-year approaches (\iry,~\ipy) featured
 the greatest proportions of transmission via main/spousal partnerships, and the least via sex work.
 By contrast, the full-duration approach (\ird) featured
 the smallest proportions transmitted via main/spousal partnerships, and the most via sex work.
-The distribution under the proposed approach (\epa) was in between these two extremes.
+The distribution under \epa was in between these two extremes,
+but overall closer to \ird.
 %---------------------------------------------------------------------------------------------------
 \subsubsection{Prevention Priorities using Approach-Specific Parameters}\label{foi.exp.mod.tpaf}
-Many models applied to assess HIV prevention priorities
-explicitly model specific intervention scenarios, often with a cost dimension.
-However, these context-specific intervention and cost details
+Many models applied to assess HIV prevention priorities model specific intervention scenarios.
+However, these context-specific intervention details
 require additional analyses and/or assumptions,
 and only explore a subset of the modelled transmission pathways.
 By contrast, the TPAF reflects an ``intervention agnostic'' measure of
@@ -311,78 +317,79 @@ Thus, TPAFs reflect hypothetical interventions with perfect prevention,
 ignoring practical implementation challenges associated with any real intervention.
 Like classic PAFs, TPAFs can sum to more than 100\% \cite{Rowe2004,Mishra2021}.
 \par
-We computed TPAFs for the following transmission pathways:
-main/spousal, casual, and sex work (occasional and regular combined) partnership types; and
-transmission from FSW, clients, and everybody else (``lower risk'').
-We computed these TPAFs under each of the 4 force of infection approaches,
-over $\Delta_t = {}$1, 3, and 10-year time horizons,
-starting in $t_0 = {}$1990, 2000, and 2010 (270 total TPAFs).
-We implemented scenarios without transmission via pathway $k$
+We computed TPAFs among the population overall ($j$)
+for 6 transmission pathways ($k$):
+transmission from FSW, clients, and everybody else (``lower risk''); and
+transmission via main/spousal, casual, and sex work (one-off and repeat combined) partnership types.
+% JK: @SM we originally had 1,3,10 year time horizons
+%     However, the TPAFs and differences across approaches were so similar across time horizons
+%     I decided to remove the horizon stratification altogether and just use 3-year horizons
+%     and then combine the figure for risk groups and partnership types.
+%     This also prompted me to add 2020 (was previously 1990-2010)
+%     where we see FSW/client/SW TPAFs all bounce back up
+We computed 3-year TPAFs for each pathway
+after recalibration under each of the 4 force of infection approaches,
+starting in $t_0 = {}$1990, 2000, 2010, and 2020 (96 total TPAFs).
+We implemented scenarios without transmission via a given pathway
 using a boolean ``mask'' applied to the mixing matrix $M_{pii'}$,
 \emph{after} resolving the values per \sref{mod.par.mix},
 such that mixing patterns were not affected.
-%---------------------------------------------------------------------------------------------------
-\paragraph{TPAFs of Partnership Types}
-% TODO: (!) update text after improved calibration
-Figure~\ref{fig:foi.tpaf.ptr} illustrates the TPAFs for partnership types.
-TPAFs generally increased over longer time horizons $\Delta_t$,
-increased with calendar year $t_0$ for non-sex work partnerships, and
-decreased with $t_0$ for sex work (note vertical scales).
-Such trends are consistent with prior work showing that
-TPAFs of key populations are typically large at first
-and decrease as epidemics become more widespread
-\cite{Johnson2011,Mishra2012sr,Boily2015}.
-\foreach \var/\lab in {%
-  ptr/transmission via different partnership types,%
-  popf/transmission from different risk groups}{
+\par
 \begin{figure}
-  \includegraphics[width=\linewidth]{foi.tpaf.\var}
-  \caption{TPAF of \lab\ (horizontal facets),
-    starting from different $t_0$ (vertical facets),
+  \includegraphics[width=\linewidth]{foi.tpaf.3x2}
+  \caption{3-Year TPAFs of transmission
+    from different risk groups (top row) and
+    via different partnership types (bottom row)
+    starting from different $t_0$ (x-axis),
     estimated under different force of infection approaches (colours)}
-  \label{fig:foi.tpaf.\var}
+  \label{fig:foi.tpaf}
   \floatfoot{\fffoi; \fftpaf; \ffbox.}
-\end{figure}}
+\end{figure}
+Figure~\ref{fig:foi.tpaf} illustrates the 3-year TPAFs
+for the 6 transmission pathways explored.
+Trends in TPAFs across risk groups and approaches
+were similar for 1- and 10-year time horizons (results not shown).
+As $t_0$ increased from 1990 through 2010, TPAFs generally
+decreased for FSW, clients, and sex work overall, and
+increased for lower risk groups, main/spousal and casual partnerships;
+these trends then reversed in 2020.
+Such trends are consistent with prior work showing that
+TPAFs of key populations are typically large at first,
+decrease in widespread HIV epidemics, and
+are anticipated to increase again as incidence declines
+\cite{Johnson2011,Mishra2012sr,Boily2015,Brown2019,Garnett2021}.
 \par
-TPAF differences across force of infection approaches were largest for main/spousal partnerships,
-with 1-year approaches (\iry,~\ipy) significantly larger than the full-duration approach (\ird).
-Main/spousal TPAFs under \epa were similar to \iry~and~\ipy from 1990 over short time horizons,
-beyond which TPAFs under \epa were more similar to \ird;
-similar to incidence differences in \sref{foi.exp.mod.dyn},
-these findings reflect reduced transmission via longer partnerships over time
-due to the accumulation of seroconcordant partnerships, which are only captured under \epa.
-Relative differences in casual partnership TPAFs across approaches
-were exactly opposite (but less pronounced) \vs differences in main/spousal partnership TPAFs.
-As such, casual TPAFs were always greater than main/spousal TPAFs under \ird,
-while main/spousal TPAFs were almost always greater than casual TPAFs under \iry~and~\ipy.
-There were minimal differences in TPAFs for main/spousal or casual partnerships
-\emph{between} 1-year approaches (\iry~\vs~\ipy).
+Differences in TPAFs across force of infection approaches were
+largest for main/spousal partnerships, with TPAFs
+under the 1-year approaches (\iry,~\ipy) significantly larger than
+under the full-duration approach (\ird).
+Main/spousal TPAFs under \epa were similar to \iry~and~\ipy in 1990,
+but tended closer to \ird from 2000 onward.
+These trends reflect that fact that only \epa captures
+a growing proportion of inert sex acts over time,
+whereas \iry~and~\ipy effectively estimate a small static proportion,
+while \ird estimates a large static proportion.
+Relative differences across approaches in lower risk population TPAFs were
+similar (but less pronounced) to main/spousal partnership TPAFs, while
+casual partnership and client population TPAFs were
+opposite (but also less pronounced);
+TPAFs for FSW and sex work overall were similar across approaches.
 \par
-Interestingly, differences in sex work TPAFs across force of infection approaches
-were less pronounced \vs for other partnership types.
-These smaller differences could be explained by two factors.
-First, HIV prevalence in Eswatini may saturate among FSW and their clients,
-such that the rate of new infections is mainly influenced by
-``supply'' of susceptible individuals via risk group turnover,
-and less by differences between force of infection approaches.
-Second, modelled regular sex work partnership durations were not especially long or short,
-with posterior distribution spanning 0.5--2.0 years
-(see \sref{mod.par.pdur} and Figure~\ref{fig:post.distr}).
-By 2010, clearer differences across approaches in sex work TPAFs emerged,
-which were similar to differences for casual partnerships.
-%---------------------------------------------------------------------------------------------------
-\paragraph{TPAFs of Risk Groups}
-Figure~\ref{fig:foi.tpaf.popf} illustrates the TPAFs for transmission from selected risk groups,
-which can be related to the goal of perfect viral suppression via ART.
-In 1990, the TPAFs of FSW and clients were largest
-and overall similar to TPAFs of sex work partnerships.
-In 2000 and 2010, the TPAFs of FSW and clients remained similar to sex work partnerships,
-but TPAFs for clients \vs FSW grew larger
-and with more pronounced differences between force of infection approaches.
-Such results reflect the greater onward transmission potential of clients \vs FSW
-due to their larger population size and greater number of casual partnerships
-(\eg Figure~\ref{fig:wiw.base.alluvial}).
-TPAFs of lower risk groups (not engaged in sex work) had differences across approaches that were
-similar to those for main/spousal partnerships but less pronounced.
-These differences reflect the strong influence of the 1-year partners duration assumption
-(\ie approaches \iry,~\ipy) on the contribution of lower risk groups to overall transmission.
+In general, we observed TPAF differences across approaches
+in the absence of pathway-specific calibration targets.
+For example, model recalibration under each approach to
+HIV incidence and prevalence targets for FSW (\sref{mod.cal.targ})
+induced compensatory shifts in posterior parameter distributions
+(Figure~\ref{fig:post.distr.foi})
+which counteracted the innate differences in
+transmission via sex work under each approach.
+By contrast, none of the available calibration targets directly inform
+the relative contribution of main/spousal \vs casual partnerships to overall transmission
+(and our model parameterization allows all risk groups to form both types),
+so innate differences between approaches directly shape differences in TPAFs.
+Similarly, we assumed that calibration targets for
+men reporting 2+ sexual partners in the past 12 months
+reflected a mixture of clients and non-clients
+(Tables~\ref{tab:targ.prev}--\ref{tab:targ.ir}),
+hence persistent TPAF differences for lower risk and client populations as well.
+% TODO: (*) Figure~\ref{fig:wiw.base.alluvial}
