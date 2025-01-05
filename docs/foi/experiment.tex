@@ -61,12 +61,10 @@ Figure~\ref{fig:B.xph.surf} illustrates four 2-dimensional cross sections of $B(
 under WPH \vs BPH, and the ratio $B_{\wph} / B_{\bph}$;
 the cross sections were at: $A = 32$, $\alpha = 0.5$, $R = 0.1$, and $R = 5$.
 Based on these results, the difference between approaches can be summarized as:
-\begin{itemize}
-  \item negligible for $A < 10$, and small for $A < 100$
-  \item increasing as $R$ gets farther from 1 ($R \rightarrow 0$ or $R \rightarrow \infty$)
-  \item maximized by specific values of $(\alpha,A)$ for a given $R$, including
-    $\alpha > \frac12$ for $R < 1$, and $\alpha < \frac12$ for $R > 1$
-\end{itemize}
+negligible for $A < 10$, and small for $A < 100$;
+increasing as $R$ gets farther from 1 ($R \rightarrow 0$ or $R \rightarrow \infty$); and
+maximized by specific values of $(\alpha,A)$ for a given $R$, including
+$\alpha > \frac12$ for $R < 1$, and $\alpha < \frac12$ for $R > 1$.
 The specific values of $(\alpha,A)$ which maximize
 the difference between approaches for a given $R$ and $\beta$
 create a continuous curve (Figure~\ref{fig:B.xph.max}), which slowly tends towards
@@ -99,10 +97,10 @@ Assuming $\delta \le 1$ can considerably increase the modelled rate of transmiss
 for partnerships with $F \ge 52$ (\ie weekly) and a true duration $\delta \ge 5$ years,
 including up to \emph{8-fold} difference with
 $F \approx 100$ per year and $\delta \approx 30$ years.
-Thus, prior models using $\delta \le 1$ may have
+This suggests that prior models using $\delta \le 1$ could have
 substantially overestimated the relative contribution of
 longer partnerships with frequent sex --- including main/spousal partnerships ---
-to overall transmission.
+to overall transmission, as further evidenced below in \sref{foi.exp.model}.
 \begin{figure}
   \centering\includegraphics[scale=.6]{dur.surf}
   \caption{Effective probability of transmission per sex act
@@ -127,9 +125,10 @@ Thus, we considered 3 prior approaches:
 \emph{Instantaneous Rate-Duration}~(\ird),
 \emph{Instantaneous Rate-1-Year}~(\iry), and
 \emph{Instantaneous Proportion-1-Year}~(\ipy),
-plus the \emph{Effective Partnerships Adjustment} (\epa) approach from \sref{foi.prop}
+plus the \emph{Effective Partnerships Adjustment} (\epa) approach
+proposed in \sref{foi.prop}
 (Table~\ref{tab:foi.models}).
-Among these 4 approaches, we sought to characterize:
+Among these 4 approaches, we sought to characterize (aims):
 \begin{enumerate}
   \item \label{obj:foi.dyn}
   fundamental differences in transmission dynamics under each approach
@@ -139,7 +138,7 @@ Among these 4 approaches, we sought to characterize:
 For aim~\ref{obj:foi.dyn}, we compared group-specific HIV incidence
 using \emph{equal} model parameters across approaches.
 While the specific parameters required by each approach are slightly different,
-we derived these parameters from a consistent set of ``upstream'' data as described below.
+we derived these parameters from a consistent set of ``upstream'' parameters as described below.
 For aim~\ref{obj:foi.tpaf}, we compared selected
 transmission population attributable fractions (TPAFs, details below)
 using \emph{approach-specific} (\ie recalibrated) model parameters.
@@ -158,12 +157,12 @@ We integrated each approach within an existing compartmental model
 of heterosexual HIV transmission in Eswatini \cite{Knight2024art}
 (full details in Appendix~\ref{mod}).
 Briefly, the model includes: 2~sexes, 4~levels of sexual activity
---- including female sex workers (FSW) and their clients ---
+(including female sex workers [FSW] and their clients)
 and 4 partnership types (Figure~\ref{fig:model.risk}): % MAN below
-main/spousal (14--19 years, lowest condom use),
+main/spousal (14--19 years long, lowest condom use),
 casual (3--18 months, moderate condom use),
-occasional/one-off sex work (1 sex act, highest condom use), and
-regular/repeat sex work (2--12 months, high condom use).
+one-off sex work (1 sex act, highest condom use), and
+repeat sex work (2--12 months, high condom use).
 The model also includes
 5 stages of HIV infection (Figure~\ref{fig:model.hiv}) and
 5 stages of the HIV treatment cascade (Figure~\ref{fig:model.cascade}), plus
@@ -171,23 +170,18 @@ anal \vs vaginal sex, male circumcision, and genital ulcer disease,
 with differences over time and/or risk groups.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Equal \& Approach-Specific Parameters}
-\begin{figure}
-  \centering\includegraphics[scale=1]{diag.foi.par}
-  \caption{Flow chart for deriving model parameters for each force of infection approach
-    from a consistent set of upstream parameters}
-  \label{fig:diag.foi.par}
-  \floatfoot{\fffoi. See \cite{Knight2023bias} for $K$ equation.}
-\end{figure}
-We calibrated the model (74 uncertain parameters) separately under each approach
+We calibrated the model separately under each approach
 using an adapted version of Incremental Mixture Importance Sampling (IMIS) \cite{Raftery2010}
 (full details in \sref{mod.cal})
 yielding 1000 model fits (parameter sets) per approach.
 For all approaches, we directly specified or sampled the following ``upstream parameters'':
-numbers of reported partners $x$ for a given recall period $\omega$ (see \sref{mod.par.pnum}),
+mean numbers of reported partners $x$ per person for a given recall period ($\omega$:
+12 months for main/spousal and casual; 1 month for one-off and repeat sex work;
+details in \sref{mod.par.pnum}),
 partnership durations $\delta$ (see \sref{mod.par.pdur}), and
 sex frequencies per partnership $F$ (see \sref{mod.par.fsex}).
 Then, we derived the required ``downstream parameters'' for each approach
---- \ie $K$, $F$, and $\delta$ for \epa; $Q$ and $A$ for \ird, \iry, and \ipy ---
+--- \ie $K$, $F$, and $\delta$ for \epa; $Q$ and $A$ for \ird, \iry, and \ipy\ ---
 as shown in Figure~\ref{fig:diag.foi.par}.
 For aim~\ref{obj:foi.dyn} we used \emph{equal} upstream parameters from \epa model fits,
 while for aim~\ref{obj:foi.dyn} we used \emph{approach-specific} parameters.
@@ -198,14 +192,21 @@ including Figures~\ref{fig:fit.prev.foi}--\ref{fig:fit.inc1v2.foi} which illustr
 model-estimated HIV prevalence, incidence, and ratios thereof
 \vs calibration targets under each approach.
 Model fits under each approach were qualitatively similar,
-though overall log-likelihoods were highest under \ipy and lowest under \iry
+though overall log-likelihoods were highest under \ipy and lowest under \iry % MAN
 (Figure~\ref{fig:ll.hist.foi}).
 Most posterior parameter distributions also differed significantly among approaches
 (rank score test \cite{Kruskal1952}, Figure~\ref{fig:post.distr.foi}).
 % TODO: (*) try to summarize patterns / trends in differences?
+\begin{figure}
+  \centering\includegraphics[scale=1]{diag.foi.par}
+  \caption{Flow chart for deriving model parameters for each force of infection approach
+    from a consistent set of upstream parameters}
+  \label{fig:diag.foi.par}
+  \floatfoot{\fffoi. See \cite{Knight2023bias} for $K$ equation.}
+\end{figure}
 %---------------------------------------------------------------------------------------------------
 \paragraph{Transmission-Driven Seroconcordance}
-Figure~\ref{fig:fit.tdsc.foi} further illustrates the modelled
+Figure~\ref{fig:fit.tdsc.foi} illustrates the modelled
 transmission-driven seroconcordance (TDSC) proportion for each partnership type
 among infected individuals --- \ie using denominator (b) from \sref{foi.prop.tdsc}.
 This model output is only possible under the \epa approach, and reflects
