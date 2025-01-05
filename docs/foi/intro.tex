@@ -2,8 +2,6 @@
 In compartmental models of infectious disease transmission,
 the ``force of infection'' equation defines
 the rate at which susceptible individuals acquire infection.
-This equation therefore mechanistically integrates
-various factors relevant to transmission.
 In the simplest compartmental transmission models,
 the force of infection $\lambda$ can be defined as:
 \begin{equation}\label{eq:foi.simple}
@@ -30,15 +28,15 @@ $I_{i'h'}/N_{i'}$ is the prevalence of infection state $h'$ among group $i'$.%
   contact rate and mixing by infection state is random.}
 The contact matrix $C_{pii'}$ is often specified to reflect
 complex mixing patterns among risk groups,
-which are key determinants of transmission dynamics \cite{??}
+which are key determinants of transmission dynamics \cite{Bansal2010,Rao2021}
 \par
 The force of infection equation is further complicated by
 repeated contacts with the same individuals, such as
 in sexual partnerships, shared households, and other social relationships.
 With repeated \vs random contacts, individuals who recently acquired or transmitted infection
-will often continue to contact the same person, resulting in ``inert'' contacts
+may continue to contact the same person, resulting in ``inert'' contacts
 --- also called ``wasted'' or ``post-transmission'' contacts ---
-and slower infection spread through the contact network \vs without inert contacts \cite{??}.
+and slower infection spread through the contact network \vs without inert contacts \cite{Smieszek2009}.
 Models of sexually transmitted infections like HIV
 --- in which contacts reflect individual sex acts ---
 must therefore accurately capture dynamics of sexual partnerships \cite{Rao2021}.
@@ -51,16 +49,16 @@ within HIV force of infection equations.
 That is, equations differed not only in which
 risk groups, partnership types, health states, and/or interventions were modelled,
 but also in which mathematical approximations of sexual partnership dynamics were used
-(see also \cite{Rao2021}).
+(see also \cite{Rao2021,Johnson2016mf}).
 Previous work comparing different modelling frameworks
 --- \ie compartmental \vs pair-formation \vs individual-based models ---
-has shown that similar differences can influence key model outputs,
+has shown that these differences can influence key model outputs,
 such as inferred parameter values and projected intervention impacts
 \cite{Kretzschmar1998,Eames2002,Lloyd-Smith2004,Johnson2016mf}.
 However, no study has examined the differences that we identified
 among \emph{compartmental} model force of infection equations.
-\par\pagebreak % TEMP
-Therefore, regarding different approaches to modelling HIV transmission
+\par
+Therefore, regarding these different approaches to modelling HIV transmission
 via sexual partnerships in compartmental models, we sought to:
 critically review assumptions and limitations of prior approaches (\sref{foi.prior}),
 propose a new approach which overcomes several limitations of prior approaches (\sref{foi.prop}),

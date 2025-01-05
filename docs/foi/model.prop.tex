@@ -9,6 +9,7 @@ the \emph{Effective Partnerships Adjustment} (EPA).%
 That is, this approach overcomes
 the main limitations of prior approaches described above,
 without the need to change modelling frameworks.
+% TODO: (?) mention by name pair-based and individual-based models here
 %===================================================================================================
 \subsection{Conceptual Development}\label{foi.prop.concept}
 A core challenge of modelling HIV transmission via sexual partnerships is
@@ -39,23 +40,23 @@ Using this conceptual basis,
 we propose a new stratification of the modelled infected population, denoted $\p$.
 The stratum $\p = 0$ corresponds to no recent transmission,
 or all ``new'' (potentially serodiscordant) partnerships.
-Other strata $\p \ne 0$ correspond to recent transmission via (to or from) partnership type $\p$.
+Other strata $\p > 0$ correspond to recent transmission via (to or from) partnership type $\p$.
 Figure~\ref{fig:model.hiv.p} illustrates the new stratification
-together with with the existing HIV infection stratification (Figure~\ref{fig:model.hiv}).
-Following infection, all individuals enter a stratum $\p \ne 0$
+together with with an existing HIV infection stratification (Figure~\ref{fig:model.hiv}).
+Following infection, all individuals enter a stratum $\p > 0$
 corresponding to the partnership type $p$ by which they were infected.
 Thus, the rate of entry to this stratum among susceptibles is defined by
-the force of infection without aggregating across partnership types: $\lambda_{ip}$.
-Individuals may then transition from $\p \ne 0$ to $\p = 0$
+the force of infection without aggregating across partnership types: $\lambda_{p}$.
+Individuals may then transition from $\p > 0$ to $\p = 0$
 upon forming a new partnership, at a rate $\delta_p^{-1}$.
-Finally, individuals may re-enter any stratum $\p \ne 0$
+Finally, individuals may re-enter any stratum $\p > 0$
 if they transmit infection via partnership type $p$.
-We denote the corresponding rate as $\lambda'_{ip}$,
+We denote the corresponding rate as $\lambda'_{p}$,
 representing the per-person rate of \emph{transmission},
-not \emph{acquisition} as in $\lambda_{ip}$.
-This rate $\lambda'_{ip}$ is not defined or needed in prior approaches (\sref{foi.prior})
+not \emph{acquisition} as in $\lambda_{p}$.
+This rate $\lambda'_{p}$ is not defined or needed in prior approaches (\sref{foi.prior})
 but we develop the necessary equations below in \sref{foi.prop.eq}.
-The issue of transmission via multiple partnerships is discussed in \sref{foi.prop.mp}.
+The issue of multiple post-transmission partnerships is discussed in \sref{foi.prop.mp}.
 \begin{figure}
   \centering\includegraphics[scale=1]{model.hiv.p}
   \caption{Modelled states and transitions related to HIV infection,
@@ -68,7 +69,7 @@ The issue of transmission via multiple partnerships is discussed in \sref{foi.pr
     $p$: partnership type;
     $\p$: new stratification, where
       $\p = 0$ reflects no recent transmission (all new partnerships), and
-      $\p \ne 0$ reflects recent transmission via a type-$p$ partnership;
+      $\p > 0$ reflects recent transmission via a type-$p$ partnership;
     $\lambda$: force of infection per susceptible;
     $\lambda'$: force of infection per infectious;
     $\eta$: rate of progression between infection stages;
@@ -115,8 +116,8 @@ from group $i'$ and infection stage $h'$ to group $i$ via type-$p$ partnerships 
   \left(\frac{M_{S,pi}}{M_{pi}}\right)
   \left(\frac{M_{I,pi'h'}}{M_{pi'}}\right)
 \end{equation}
-where the two fractions represent the proportions of all partnerships $M_{pii'}$
-formed between susceptible individuals from group $i$ ($M_{S,pi}$)
+where the two fractions represent the proportions of all type-$p$ partnerships $M_{pii'}$
+that are formed between susceptible individuals from group $i$ ($M_{S,pi}$)
 and infectious individuals in group/infection stage $i'h'$ ($M_{I,pi'h'}$).
 The per-person transmission rates to group $i$, and from group $i'h'$
 (Figure~\ref{fig:model.hiv.p}) can then be defined as:
@@ -150,7 +151,7 @@ all possible combinations of partnership states in pair-based models \cite{Kretz
 However, under frequentist assumptions, we can equivalently model
 two transmissions by one individual as one transmission each by two individuals.
 Thus, we can transfer two individuals from $I_{ih\p_0}$ to
-$I_{ih\p_1}$ and $I_{ih\p_2}$ (one each) under the $P+1$ stratification,
+$I_{ih\p_1}$ and $I_{ih\p_2}$ (one each) under the proposed $P+1$ stratification,
 instead of just one individual from $I_{ih\p_0}$ to
 ``$I_{ih\p_{12}}$'' under an exponential ($x^P$) stratification.
 \par
@@ -162,9 +163,9 @@ Moreover, we can also have $I_{ih\p} > I_{ih}$, provided that:
 \begin{equation}\label{eq:I.constr}
   I_{ih\p} \le I_{ih} K_{pi}
 \end{equation}
-reflecting the situation where 100\% of $I_{ih}$
+reflecting the situation where $>100$\% of $I_{ih}$
 have recently acquired and/or transmitted infection via at least one type-$p$ partnership,
-or 50\% via at least two partnerships, etc.
+or $>50$\% via at least two partnerships, etc.
 This situation can therefore only arise in the context of
 multiple concurrent type-$p$ partnerships: $K_{pi} > 1$.
 If $I_{ih\p} > I_{ih}$, then $I_{ih\p_0}$ \emph{must} be negative,
@@ -173,7 +174,7 @@ With this perspective, the constraint in \eqref{eq:I.constr} may be more intuiti
 we cannot ``remove'' more than the total number of current partnerships.
 This constraint should also be easy to guarantee for a small enough timesteps,
 because in \eqref{eq:M.I}, $M_{I,pih}$ approaches zero as $I_{ih\p}$ approaches $I_{ih} K_{pi}$
---- i.e. all type-$p$ partnerships become HIV+ seroconcordant,
+--- i.e. all type-$p$ partnerships become seroconcordant-infected,
 and no more transmission can occur via these partnerships until partners change.
 %===================================================================================================
 \subsection{Transmission-Driven Seroconcordance}\label{foi.prop.tdsc}
@@ -181,8 +182,8 @@ Another benefit of the proposed approach is that
 we can quantify the proportion of partnerships that are seroconcordant
 due to prior transmission within the partnership.
 We call these partnerships ``transmission-driven seroconcordant''
-to distinguish them from seroconcordant partnerships formed by chance
-or due to serosorting \cite{Purcell2017,Kim2020}
+to distinguish them from seroconcordant partnerships \emph{newly} formed
+by chance or due to serosorting \cite{Purcell2017,Kim2020}
 among two previously infected individuals.
 For this proportion,
 the numerator is the population size of stratum $\p=p$, while
@@ -199,7 +200,7 @@ the denominator is the total number of type-$p$ partnerships among
 where $*$ could specify any subset of the population
 defined by modelled strata --- \eg sex, activity group, HIV state, etc.
 While denominator (a) may be interesting conceptually,
-denominator (b) can be directly interpreted as
+denominator (b) can be more directly interpreted as
 a relative reduction in onward transmission risk among infected individuals
 due to infections ``trapped'' within partnerships.
 The actual total reduction would be weighted by

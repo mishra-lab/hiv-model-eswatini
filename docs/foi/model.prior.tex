@@ -28,7 +28,7 @@ is applied at the moment of partnership change \cite{Dietz1988sti}.
 This cumulative risk can be defined in terms of
 the average total numbers of sex acts per partnership,
 but the timing of specific sex acts or other events within partnerships
-cannot be captured in compartmental models.
+cannot be captured in traditional compartmental models.
 Further implications of the ``instantaneous partnership assumption''
 and alternate modelling frameworks which avoid this assumption
 are discussed below in \sref{foi.prior.lims}, \ref{foi.prop}, and \ref{sr.foi.alt}
@@ -50,7 +50,7 @@ can be described by a binomial distribution:
 \begin{equation}\label{eq:B.n}
   p(n) = {A \choose n}\,\beta^n\,{(1 - \beta)}^{A-n}
 \end{equation}
-Since transmission of HIV can actually only occur once,
+Since transmission of HIV can effectively only occur once,
 the per-partnership probability of transmission $B$ is defined via
 the probability of ``escaping'' infection after all $A$ acts:%
 \footnote{\eqref{eq:B} can also be reasonably approximated
@@ -98,7 +98,7 @@ as follows (illustrated in Figure~\ref{fig:binom.inert}):
 \end{figure}
 %===================================================================================================
 \subsection{Heterogeneity in the Per-Act Probability of Transmission}\label{foi.prior.xph}
-As noted above, the per-act probability of transmission $\beta$ is actually heterogeneous,
+As noted above, the per-act probability of transmission $\beta$ is heterogeneous,
 varying with factors like: HIV infection stage, genital ulcer disease, condom use, etc.
 \cite{Boily2009,Giannou2016}.
 The next step in developing a force of infection equation is to extend \eqref{eq:B}
@@ -138,7 +138,7 @@ For BPH (right), the overall probability of escaping infection is modelled as
 a weighted average across partnerships, each affected by a single factor $f$.
 Both approaches guarantee $B < 1$,
 but we can show that $B_{\wph} \ge B_{\bph}$
-by the (weighted) AM-GM inequality (see \sref{sr.foi.proof}) \cite{Aldaz2009}.
+by the weighted AM-GM inequality (see \sref{sr.foi.proof}) \cite{Aldaz2009}.
 Intuitively, this inequality arises because
 any large probability of transmission $\beta_f$
 has disproportionate influence in \eqref{eq:B.wph},
@@ -238,10 +238,11 @@ Such applications erroneously reduce transmission within each \emph{current} tim
 in anticipation of competing risks between partnerships across \emph{future} timesteps.
 These competing risks are already captured via
 loss of susceptibles to infection over successive timesteps.
-For example, if we compute $\lambda^\ip = 0.2$ using $\Delta_t = 1$ year,
-but we apply this incidence using a timestep of 1 month,
-then the newly infected proportion after 1 year would be modelled as:
-$1 - {(1 - \lambda^\ip/12)}^{12} = 0.18 < 0.20$.
+% For example, if we compute $\lambda^\ip = 0.2$ using $\Delta_t = 1$ year,
+% but we apply this incidence using a timestep of 1 month,
+% then the newly infected proportion after 1 year would be modelled as:
+% $1 - {(1 - \lambda^\ip/12)}^{12} = 0.18 < 0.20$.
+% JK: I don't think the above example is helpful.
 While $\Delta_t = 1$ year may be chosen to match common reporting periods for sexual behaviour data,
 this choice remains mathematically arbitrary,
 and often coincides with ignoring partnership dynamics beyond 1 year,
@@ -275,12 +276,12 @@ These dynamics are further explored in simulation experiments (\sref{foi.exp.mod
 \par
 Lastly, we note that partnership duration $\delta$ is further related to
 the average partnership formation rate $Q$ and
-the average number of concurrent partners $K$ by $Q = K/\delta$.
+the average number of current partners $K$ by $Q = K/\delta$.
 % \footnote{Gaps between partnerships do not result in $Q < K/\delta$,
 %   because the average $K$ would be reduced if some individuals are ``between partnerships''.}
 Thus, an alternate force of infection parameterization could specify
-the number of concurrent partners $K$ and the frequency of sex with each partner $F$.
-The overall rate of sex would be the same: $QA = KF$, since $A = F\delta$.
+the number of current partners $K$ and the frequency of sex with each partner $F$.
+The overall rate of sex would be the same: $QA = KF$.
 In some ways, this $KF$ parameterization is more intuitive,
 and it will be useful in our new force of infection approach (\sref{foi.prop}).
 %===================================================================================================
@@ -296,17 +297,17 @@ are described in \sref{sr.foi.alt}.
 the current HIV prevalence $I/N$ directly in the force of infection.
 Thus, newly infected individuals are modelled to be
 immediately at risk of onward transmission,
-including via the exact same partnership by which they were infected.
-Similarly, individuals who recently transmitted to a given partner are also modelled to be
-at risk of transmitting (again) to the same partner,
+including via the exact same partnership by which they were infected,
 albeit with a small absolute rate reduction due to the smaller susceptible population.
+Similarly, individuals who recently transmitted to a given partner are also modelled to be
+at risk of transmitting (again) to the same partner.
 This modelling assumption acts to increase the modelled rate of transmission \vs reality,
 especially for longer partnerships.
 As a result, the contribution of longer partnerships to overall transmission could be overestimated,
 while the contribution of shorter partnerships could be underestimated.
 %---------------------------------------------------------------------------------------------------
 \paragraph{Aggregating Past/Future Sex Acts}
-The instantaneous partnerships assumption is in fact directly related to inert sex acts,
+The instantaneous partnerships assumption is directly related to inert sex acts,
 because the delay in onward transmission risk that is missing under instantaneous partnerships
 reflects the same post-transmission period within partnerships
 wherein additional sex acts cannot result in more infections.
@@ -336,7 +337,7 @@ Risk from multiple partnerships is sometimes aggregated as
 incidence proportion $\lambda^\ip$ via \eqref{eq:foi.ip}.
 As noted in \sref{foi.prior.ptr}, this approach is not inherently wrong,
 but the specified time period $\Delta_t = 1$ often is.
-This $\Delta_t$ \emph{should} be matched to the timestep of the numerical solver,
+This $\Delta_t$ should be matched to the timestep of the numerical solver,
 but $\Delta_t = 1$ year is often used,
 and the resulting incidence applied as a rate over smaller timesteps, reducing transmission.
 Since $\lambda^\ip$ saturates at 1 --- similar to $B(A)$ in Figure~\ref{fig:binom.dur} ---
@@ -354,4 +355,4 @@ For some factors, there may be no ``correct'' choice,
 but modellers should be aware of the assumptions implied by their choice.
 The implications of model choice for transmission dynamics
 mainly derive from the fact that $B_{\wph} \ge B_{\bph}$,
-but even then differences are often small (see \sref{foi.exp.xph}). % TODO: (!)
+but even then differences are often small (see \sref{foi.exp.xph}).
