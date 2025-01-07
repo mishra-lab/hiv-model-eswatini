@@ -1,121 +1,115 @@
+% TODO: (!) big re-order pars
 \section{Discussion}\label{foi.disc}
-% TODO: Rottingen2002 \sref{foi.prior.xph}
-In this chapter, I have critically reviewed
-key assumptions and differences among various existing approaches to modelling
-HIV transmission via sexual partnerships in compartmental models.
-I formalized distinctions between:
+Compartmental models of HIV transmission continue to guide the epidemic response
+through projection of resource needs and analysis of intervention scenarios \cite{??}.
+As such, accurate estimation of transmission rates along specific pathways
+--- \ie to/from which risk groups and via which sexual partnership types --- remains essential.
+Here we have critically reviewed key assumptions among existing approaches to
+modelling HIV transmission via sexual partnerships in compartmental models.
+We formalized distinctions between:
 within- \vs between-partnership heterogeneity
 when calculating the average probability of transmission per partnership;
-per partnership-year \vs per partnership-duration
-when adjusting for ``post-transmission contacts'' (PTC); and
+risk per partnership \vs per partnership-year
+when adjusting for inert sex acts; and
 incidence rate \vs incidence proportion
 when aggregating risk across multiple partnerships.
-I also proposed a new approach: the \emph{Effective Partnerships Adjustment},
-which can overcome some of the key limitations of prior approaches.
-Finally, through comparison with the new approach in the Eswatini model,
-I found that two popular prior approaches may overestimate
-the relative contribution of longer \vs shorter partnerships to overall transmission,
+We also proposed a new approach: the \emph{Effective Partnerships Adjustment} (EPA),
+which can overcome some of the key limitations of prior approaches
+without the need to change modelling frameworks.
+Finally, through model comparison experiments, we showed that
+approaches based on risk per partnership-year (\vs partnership) can
+substantially overestimate the relative contribution of
+longer \vs shorter partnerships to overall transmission,
 even after recalibrating the model under each approach.
-%===================================================================================================
-\subsection{Insights for Transmission Modelling}\label{foi.disc.ins}
-The critical review and experiment results in this chapter
-offer new insights for modelling transmission of HIV, and possibly other infectious diseases.
-This section discusses these insights
-and draws connections to several prior model comparison studies.
-%---------------------------------------------------------------------------------------------------
-\subsubsection{Average Probabilities of Transmission per Partnership}
+\par % per partnership probabilities --------------------------------------------------------------
 Models with instantaneous partnerships must compute
 average probabilities of transmission per partnership.
 The choice of averaging equation implies either
-``within-partnership heterogeneity'' or ``between-partnership heterogeneity''
-in the probability of transmission per act.
-While I have shown that these two cases are mathematically related by an inequality,
-I only found notable differences (\eg~$>10\%$) in the context of large cumulative risk
---- \eg a high volume of sex and/or risk-increasing transmission modifiers.
-Indeed, approximations in HIV force of infection equations are often justified by noting that
-the probabilities of transmission are typically small \cite{Kerr2015}.
-Thus, the distinction between within- \vs between-partnership heterogeneity
-may be of little practical consequence.
-Moreover, ``correct'' interpretations of data on transmission modifiers are not always obvious.
-For example, levels of condom use are often derived from questions like
+within-partnership heterogeneity or between-partnership heterogeneity
+in the probability of transmission per sex act.
+The correct choice is not always obvious, even for empirical data.
+For example, survey questions like
 \shortquote{Did you use a condom the last time you had sex?}
---- but this does not distinguish between
-50\% condom use in 100\% partnerships \vs 100\% condom use in 50\% partnerships.
-\par
+cannot distinguish between
+50\% condom use in 100\% of partnerships \vs 100\% condom use in 50\% of partnerships.
+While we have shown that these two cases can be relative by an inequality,
+we only found notable differences (\eg~$>10$\%) when cumulative risk is large
+--- \eg a high volume of sex and/or risk-increasing transmission modifiers.
+Thus, the distinction between within- \vs between-partnership heterogeneity
+may be of little consequence.
 On the other hand, two major challenges remain for
 calculating average probabilities of transmission per partnership.
 First, relative risks associated with transmission modifiers
 are typically quantified at the per act (\vs per partnership) level, using
-exposure-stratified individual-level data \cite{Jewell1990hiv,Gray2001,Wawer2005,Boily2009}.
+exposure-stratified individual-level data \cite{Gray2001,Wawer2005,Boily2009}.
 Yet, these relative risks have been directly applied to
 average probabilities of transmission per partnership in several models.
 This approach would then
 underestimate the impact of risk-reducing modifiers (\eg condoms) and
-overestimate the impact of risk-increassing modifiers (\eg GUD).%
-\footnote{Modifying the transmission probability via $R$ ---
+overestimate the impact of risk-increasing modifiers (\eg genital ulcer disease).%
+\footnote{Modifying the transmission probability via relative risk $R$ ---
   per-act: $B_a = (1 - {(1 - R\beta)}^A)$ \vs per-partnership: $B_p = R\,(1 - {(1 - \beta)}^A)$;
   thus: $B_a > B_p$ if $R < 1$, and $B_a < B_p$ if $R > 1$.}
-% TODO: (*) this belongs in foi.prior vs discussion
-Second, it's not clear how \emph{dynamic} transmission modifiers (\eg condom use, infection stage)
+Second, it remains unclear how \emph{dynamic} transmission modifiers
+(\eg condom use, infection stage, )
 should be modelled when aggregating sex acts across many years within longer partnerships.
-%---------------------------------------------------------------------------------------------------
-\subsubsection{Accumulation of Seroconcordance}
-The concept of ``post-transmission contacts'' (PTC) is directly related to seroconcordance,
-because transmission naturally generates seroconcordant ($I$-$I$) partnerships,
-wherein ``post-transmission contacts'' occur.
-Seroconcordant partnerships thus accumulate during an epidemic,
-which decouples incidence from prevalence,
-as shown in \sref{sr.foi.toy}~and~\ref{foi.exp.mod.dyn}.
-An ealier version of this work \cite{Knight2022smdm} therefore
-described the accumulation of seroconcordant partnerships as
-\shortquote{partnership level herd effects}, while
-\citet{Eames2002} describe this accumulation in a network model as
+\par % seroconcordance: accumulation & data -------------------------------------------------------
+Transmission within sexual partnerships naturally generates seroconcordant-infected partnerships.
+As shown in Figure~\ref{fig:fit.tdsc.foi}, seroconcordance therefore
+accumulates within sexual partnerships during epidemic growth,
+and can later decline as incidence declines.
+This mechanism, captured by EPA but not instantaneous approaches,
+decouples incidence from prevalence.
+An earlier version of this work \cite{Knight2022smdm}
+described this accumulation as \shortquote{partnership-level herd effects}, while
+Eames and Keeling \cite{Eames2002} describe it as
 \shortquote{correlation of infection statuses of neighboring individuals}.
 There are two main implications of this seroconcordance perspective.
-First, an alternate adjustment for ``post-transmission contacts'' in compartmental models
-could make use of data on seroconcordant and/or serodiscordant partnerships.
-Such an adjustment should consider potential biases in these data, and
-be applied mainly over shorter time horizons
-due to the dynamic nature of the seroconcordant proportion.
+First, an alternate adjustment for inert sex acts in compartmental HIV models
+could make use of empirical data on seroconcordant partnerships.
+Such an adjustment should carefully consider potential sources of biases and time trends.
 Second, efforts to quantify serosorting --- preferential selection of sexual partners
 with matching (perceived) HIV serostatus \cite{Cassels2013} ---
 may need to focus on new partnerships or longitudinal data \cite{Kim2020},
 since it may not be possible to distinguish intentional seroconcordance
-from transmission-driven seroconcordance in cross-sectional data \cite{Cassels2009,Wang2020}.
-%---------------------------------------------------------------------------------------------------
-\subsubsection{Influence of Instantaneous Partnerships on Epidemic Growth}
-Prior model comparisons of instantaneous partnerships
-with pair-based models \cite{Kretzschmar1998,Eames2002,Lloyd-Smith2004} and
-with a stochastic dynamic network model \cite{Johnson2016mf}
+from transmission-driven seroconcordance in cross-sectional data \cite{Cassels2009}.
+\par % prior work & 1-year ------------------------------------------------------------------------
+Prior comparisons of instantaneous partnership models with
+pair-based models \cite{Kretzschmar1998,Eames2002,Lloyd-Smith2004} and
+a stochastic dynamic network model \cite{Johnson2016mf}
 have shown that instantaneous partnerships
 can overestimate the initial epidemic growth rate and equilibrium prevalence.
-Such findings seem intuitive.
-However, in \sref{foi.exp.model} (Figure~\ref{fig:foi.ep.incidence}),
-I showed how the epidemic growth rate under instantaneous partnerships depends
-on the effective partnership duration used for the PTC adjustment
---- if such an adjustment is applied at all.
-That is, when durations were capped at 1 year (approaches \iry,~\ipy),
-this adjustment likely had little effect,
-and modelled incidence was indeed overestimated relative to the \epa approach;
-by contrast, when full partnership durations were used (approach \ird),
-this adjustment reduced transmission immediately in anticipation of future PTC,
-and modelled incidence was \emph{underestimated} relative to the \epa approach.
-No PTC adjustments were described in \cite{Eames2002,Lloyd-Smith2004}, and
-the PTC adjustments in \cite{Johnson2016mf} did not consider full partnership durations,%
-\footnote{The PTC adjustments in \cite{Johnson2016mf} considered
+Such findings seem intuitive due to
+the immediate risk of onward transmission after acquisition under instantaneous partnerships.
+However, in \sref{foi.exp.model}, we showed how
+epidemic dynamics under instantaneous partnerships strongly depend
+on the partnership durations and change rates used.
+That is, when durations were effectively capped at 1 year,
+the adjustment for inert sex acts has little effect,
+and modelled incidence was indeed overestimated relative to EPA.
+By contrast, when full partnership durations were used,
+modelled incidence was surprisingly similar to EPA.
+No adjustments for inert sex acts were described in \cite{Eames2002,Lloyd-Smith2004}, and
+the adjustments in \cite{Johnson2016mf} did not consider full partnership durations,%
+\footnote{The adjustments in \cite{Johnson2016mf} considered
   1 month for main/spousal, 6 months for casual, and nothing for sex work partnerships;
-  thus, repeated sex work contacts were not considered.}
-similar to the former 1-year case.
-%---------------------------------------------------------------------------------------------------
-\subsubsection{Partnership Types \vs Risk Groups}
-The results in \sref{foi.exp.mod.tpaf} suggest that models ignoring or underestimating PTC
-have the potential to systematically overestimate
+  thus, repeat sex work contacts were not considered.}
+making them closer to the partnership-year approaches.
+\par % existing evidence / risk groups ------------------------------------------------------------
+The results in \sref{foi.exp.mod.tpaf} suggest that
+different force of infection approaches can influence model-estimated prevention priorities,
+mainly when the available data for model calibration cannot inform
+the relative contribution of specific transmission pathways.
+These data should include, at minimum,
+infection prevalence and/or incidence estimates for all modelled risk groups,
+which seemed to align the contribution of sex work across approaches in our results.
+However, the relative contribution of partnership types formed by multiple risk groups
+--- \eg main/spousal and casual partnerships ---
+may be much harder to identify using commonly available epidemiological data.
+Thus, models underestimating inert sex acts are likely to systematically overestimate
 the relative contribution of longer \vs shorter partnerships to overall transmission.
-Such results then extend to various risk groups,
-depending on the average numbers and types of partnerships among each group.
-These results are corroborated by \citet{Johnson2016mf}, who concluded:%
-\footnote{The term ``frequency-dependent'' in \cite{Johnson2016mf} is synonymous with
-  ``instantaneous partnerships'' here.}
+% TODO: (*) revise below
+These results are corroborated by Johnson and Geffen \cite{Johnson2016mf}, who concluded:
 \shortquote{Frequency-dependent models are likely to
   underestimate the importance of interventions that are targeted at high-risk groups,
   while overestimating the impact of interventions targeted at low-risk groups.}
@@ -124,96 +118,51 @@ higher risk is not necessarily synonymous with shorter partnerships.
 Indeed, the Eswatini model includes both
 shorter (casual) partnerships among the lowest risk groups and
 longer (regular sex work) partnerships among the highest risk groups.
-This distinction between risk groups and partnership types is therefore important to keep in mind
+This distinction between risk groups and partnership types
+is therefore important to keep in mind
 when interpreting these results and their potential implications.
-%===================================================================================================
-\subsection{Implications for Existing Model-Based Evidence}\label{foi.disc.evid}
-The majority of existing compartmental HIV transmission models
-have used an instantaneous partnerships approach,
-with adjustments for PTC considering 1 year or less.
-As noted above, it is possible that these models have systematically overestimated
-the relative contribution of longer \vs shorter partnerships to overall transmission,
-and thus, the relative impact of some prevention strategies \vs others.
-I have illustrated these potential biases
-in the context of the high-prevalence epidemic in Eswatini,
-but these biases and implications could be different and possibly greater elsewhere.
-Below I further discuss two specific models,
-chosen due to their widespread use in numerous countries,
-usually for the explicit purpose of guiding resource allocation.
-%---------------------------------------------------------------------------------------------------
-\paragraph{Optima HIV Model}\cite{Kerr2015,Stuart2018how,Kerr2020,Optima2021}
-The Optima model allows for flexible definitions of demographic/risk groups,
-which usually include key populations.
-Within the model, the force of infection is defined as an incidence proportion,
-wherein all sex acts over a given time period (default $\Delta_t = 0.2$~years)%
-\footnote{From: \hreftt{github.com/optimamodel/optima/blob/master/optima/parameters.py}}
-are modelled as competing risks.
-Thus, partnership durations are not considered.
-While Optima results have often recommended
-increased resources for key populations over country-specific current spending,
-these recommendations may still undervalue
-prevention in shorter partnerships and among highest risk groups
-due to overestimation of transmission in longer partnerships.
-%---------------------------------------------------------------------------------------------------
-\paragraph{Goals Risk-Structured Model}\cite{Stover2014,Stover2021}
-The Goals Model includes 11 total risk groups, including
-FSW, their clients, MSM, and PWID, without age stratification \cite{Stover2014}.%
-\footnote{An age stratified variant of Goals was recently developed for ``generalized'' epidemics,
-  which subsumes key populations as proportions of age strata;
-  the new model is called the Goals ``Age-Stratified Model'' (ASM), whereas
-  the original model is now called the Goals ``Risk-Stratified Model'' (RSM) \cite{Stover2021}.
-  To confuse matters further, a Goals ``Age-Risk-Stratified Model'' is also being developed.}
-As in the Optima model, the force of infection is defined as an incidence proportion,
-this time with $\Delta_t = 1$~year, and a default partnership change rate of
-at least 1 per year among all risk groups.
-Thus, for the same reasons as Optima, the relative impact of prioritizing
-shorter partnerships and key populations for prevention
-have likely been underestimated by the Goals Model.
-%===================================================================================================
-\subsection{Outlook \& Future Work}\label{foi.disc.fw}
-% TODO: (~) explicitly mention limitations of IBMs again \cite{Hazelbag2020,Pellis2015}
-The 2021 review by \citet{Rao2021} summarizes frameworks that have been used to
-simulate partnership dynamics for modelling sexually transmitted infections
-(see also \sref{foi.prior.alt} and Appendix~1 of \cite{Johnson2016mf}).
+\par % alaternate modelling frameworks ------------------------------------------------------------
+The 2021 review by \citet{Rao2021} summarizes
+modelling frameworks that have been used to
+approximate partnership dynamics for modelling sexually transmitted infections.%
+\footnote{See also \sref{sr.foi.alt} and Appendix~1 of \cite{Johnson2016mf}.}
 Besides pair-based models, the review does not identify another approach
-which has extended the compartmental modelling framework beyond instantaneous partnerships.
-However, several hybrid models have been developed \cite{Xiridou2003,Powers2011ahi}
-wherein long-term pairs are explicitly modelled,
-but additional ``one-off'' partnerships are modelled as instantaneous.
+which can extend compartmental models beyond instantaneous partnerships.
+However, several hybrid models have been developed for HIV \cite{Xiridou2003,Powers2011ahi}
+wherein long-term pair are explicitly modelled,
+but additional partnerships are modelled as instantaneous.
 When long-term partnership concurrency is low, such hybrid approaches
 may offer substantial improvements over fully instantaneous partnerships
 \cite{Kretzschmar1998,Eames2002,Lloyd-Smith2004}.
-However, the high number of \emph{regular} clients reported by Swati FSW (\sref{mod.par.fsw})
-reflects precisely the kind of dense, persistent sexual network --- \ie high concurrency ---
-which is difficult to model using a pair-based approach.%
-\footnote{The importance of partnership concurrency in HIV transmission has been debated extensively
-  \cite{Mah2010,Tanser2011,Goodreau2012conc,Boily2012,Sawers2013}.}
-Thus, the \emph{Effective Partnerships Adjustment} represents
-an alternative to hybrid / pair-based models for such contexts,
+However, the high number of repeat clients reported by Swati FSW (\sref{mod.par.fsw})
+reflects precisely the high level of concurrency
+which is difficult to model using a pair-based or hybrid approach.%
+\footnote{Indeed, the importance of partnership concurrency in HIV transmission
+  has been discussed extensively \cite{Boily2012}.}
+Thus, EPA represents an alternative to hybrid / pair-based models for such contexts,
 and a new solution to a longstanding modelling challenge \cite{Dietz1988sti}.
-%---------------------------------------------------------------------------------------------------
-\paragraph{Future Work}
-In considering potential integration of the \emph{Effective Partnerships Adjustment} approach
-into new and existing models, four key areas for future work should be considered.
-First, it would be helpful to explore in more detail which of the Eswatini model parameters
-``adjusted'' during model recalibration under each approach,
-in order to fit the same calibration targets.
-Second, while I developed the approach in the context of the Eswatini model,
-examining this approach in a simpler model
---- \eg with 2 risk groups and 2 partnerships types ---
-may allow a more precise understanding of potential biases and mechanisms involved.
-A simpler model may also be more practical as an example implemention of the approach
---- \eg as a reference for other modellers.%
-\footnote{The main implemention of this approach in the Eswatini model is in:\\
- \hreftt{github.com/mishra-lab/hiv-fsw-art/blob/master/code/model/foi.py},
-  where \texttt{foi_mode='base'}.}
-Third, the approach should be compared and validated against
-``gold standard'' individual-based models, similar to experiments in \cite{Johnson2016mf}.
-Finally, while I developed the proposed approach in the context of HIV,
-accurate simulation of partnership dynamics is also relevant for
-models of other sexually transmitted infections.
-However, the approach should be carefully adapted for
+\par % future work --------------------------------------------------------------------------------
+We have identified four key areas of future work.
+First, we developed EPA as part of the Eswatini HIV transmission model,
+which includes 8 risk groups and 4 partnership types;
+a simpler model --- \eg with 2 risk groups and 2 partnerships types ---
+may allow more precise understanding of model dynamics under different conditions,
+and could be used as a reference implementation for other modellers.
+To this end, we have developed such a model with code online.%
+\footnote{\hreftt{github.com/mishra-lab/epa-model-toy}}
+Second, it would be helpful to explore in more detail which model parameters
+can compensate for differences between force of infection approaches
+during model calibration to common targets,
+which may be better studied using the simpler model.
+Third, EPA should be compared and validated against
+``gold standard'' individual-based models, as well as pair-based and hybrid models,
+similar to experiments in \cite{Johnson2016mf}.
+Finally, while we have focused on HIV here,
+approximation of sexual partnership dynamics is also relevant for
+modelling other sexually transmitted infections \cite{??}.
+Indeed, approximation of repeated contact dynamics in general is likely relevant for
+modelling a broad range of infectious diseases \cite{Pung2024temp}.
+However, careful consideration should be given to
 infections with recovery and/or re-infection,
-as I have not considered how transitions \emph{out} of the newly proposed infected strata
-should be conceptualized and parameterized.
-% JK: omitting conclusion subsection for now, it felt repetitive
+as we have not yet considered how such processes
+should be modelled within the EPA framework.
