@@ -1,21 +1,23 @@
-In classic compartmental models of HIV and other sexually transmitted infections,
+%SM: reall well-written abstract --> clear and easy to follow for a general scientific / modeling audience, which is hard to do with methodsy-abstracts :) 
+In classic compartmental models of HIV and other sexually transmitted infections, %SM: am wondering if we should remove STI here, even though its true, just to keep the focus on HIV as the case-study throughout abstract. 
 populations are stratified into homogeneous, memoryless states
 such that timing of transmission within specific sexual partnerships cannot be tracked.
-Instead, these models define the force of infection (incidence rate) via
+These models define the force of infection (incidence rate) via
 mean rates of partnership change, multiplied by
 cumulative probabilities of transmission per partnership or partnership-year.
 Thus, partnerships are effectively modelled as instantaneous.
-In this paper, we critically review
+In this paper, we critically review %SM: nice!
 the assumptions and limitations of this ``instantaneous partnerships'' approach,
 including different variations thereof.
 We then propose a new approach, the Effective Partnerships Adjustment (EPA),
-which overcomes several of these limitations.
+which overcomes several of these limitations while retaining the compartmental nature of these transmission dynamic models. %SM: thinking ahead in abstract re: ABM...
 EPA adds a new population stratification to track
 individuals in partnerships where transmission has already occurred,
 and then reduces these individuals' effective partnerships by one,
-until they change partners.
-Unlike pair-based models, EPA only adds one stratification per partnership type,
-and can therefore easily handle high levels of partnership concurrency.
+until they change partners. %SM: nice
+Although pair-based compartmental models are another solution, unlike pair-based models, %SM: not 100% sure we need this first part, but added to provide some "intro" to the why we mentioned pair-based here - see what you think?
+ EPA only adds one stratification per partnership type,
+and can therefore easily handle high levels of partnership concurrency. %very nice
 We implemented EPA and three instantaneous partnership variations
 in an existing model of heterosexual HIV transmission in Eswatini,
 and examined differences in model outputs
@@ -25,5 +27,9 @@ one instantaneous approach that allowed partnership change rates $\ll$ 1, wherea
 two instantaneous approaches that forced partnership change rates to be $\ge$ 1
 severely overestimated transmission via long-term partnerships,
 even after recalibrating parameters, relative to EPA.
-Future modellers and stakeholders should continue to interrogate
-how best to model HIV transmission via sexual partnerships.
+%SM: how about a concluding statemtent like this instead? 
+When modelling the transmission dynamics of HIV, the EPA approach offers an opportunity to reduce potential biases when 
+drawing inference or generating predictions related to transmissions or interventions in medium to long-term sexual partnerships.
+
+%Future modellers and holders should continue to interrogate
+%how best to model HIV transmission via sexual partnerships.
