@@ -1,17 +1,15 @@
 \section{Proposed Approach: Effective Partnerships Adjustment}\label{foi.prop}
-Considering the limitations outlined above, and
-the potential drawbacks of alternate modelling frameworks described in \sref{sr.foi.alt},
-an improved approach to modelling HIV transmission via sexual partnerships
+An approach to modelling HIV transmission via sexual partnerships that addresses the above limitations while remaining
 within the traditional compartmental framework would be useful.
-In this section, we propose such an approach:
+In this section, we propose such an approach: %SM: not cirtical, but would it be accurate to say "develop and propose"? since you are walking through its develpment as well in paras below?
 the \emph{Effective Partnerships Adjustment} (EPA).%
 \footnote{A preliminary version of this approach was presented in \cite{Knight2022smdm}.}
 That is, this approach overcomes
 the main limitations of prior approaches described above,
 without the need to change modelling frameworks.
-% TODO: (?) mention by name pair-based and individual-based models here
+% TODO: (?) mention by name pair-based and individual-based models here %SM: agree
 %===================================================================================================
-\subsection{Conceptual Development}\label{foi.prop.concept}
+\subsection{Conceptual Development}\label{foi.prop.concept} %SM: LOVE this section
 A core challenge of modelling HIV transmission via sexual partnerships is
 to account for inert sex acts.
 Any partnership where transmission has already occurred
@@ -56,7 +54,7 @@ representing the per-person rate of \emph{transmission},
 not \emph{acquisition} as in $\lambda_{p}$.
 This rate $\lambda'_{p}$ is not defined or needed in prior approaches (\sref{foi.prior})
 but we develop the necessary equations below in \sref{foi.prop.eq}.
-The issue of multiple post-transmission partnerships is discussed in \sref{foi.prop.mp}.
+The issue of multiple post-transmission partnerships is discussed in \sref{foi.prop.mp}. %SM: multiple or concurrent? or means same thing really?
 \begin{figure}
   \centering\includegraphics[scale=1]{model.hiv.p}
   \caption{Modelled states and transitions related to HIV infection,
@@ -78,7 +76,7 @@ The issue of multiple post-transmission partnerships is discussed in \sref{foi.p
 %===================================================================================================
 \subsection{Equations}\label{foi.prop.eq}
 Since partnership duration is now considered separately and explicitly,
-we do not define any per-partnership probability of transmission $B$.
+we do not define any per-partnership probability of transmission $B$. %SM: should it be "we need not" isntad of "we do not"?
 Rather, we define the force of infection to directly include
 the frequency of sex per partnership $F$ and probability of transmission per sex act $\beta$.
 However, the mixing is slightly more complicated than before,
@@ -108,7 +106,7 @@ This \eqref{eq:M.I} is the key equation whereby
 the  numbers of ``effective type-$p$ partnerships'' among
 individuals in stratum $\p$ are reduced by 1.
 This reduction is then propagated through the mixing patterns when defining $M_{pii'}$.
-% TODO: (*) double-check that this reduction should be propagated through the mixing patterns
+% TODO: (*) double-check that this reduction should be propagated through the mixing patterns %SM: not sure I follow what this means re: propogated through the mixing patterns? i think we mean the effective reduction is propogated (like herd effects essentially?) but that the actual partnersips are not influenced by whether transmissions occurred or not (i.e. we assume no behavoiur change following transmission?)
 Next, we define the total (population-level, not per-person) rate of transmission
 from group $i'$ and infection stage $h'$ to group $i$ via type-$p$ partnerships as:
 \begin{equation}
@@ -147,7 +145,7 @@ where $P$ is the number of different partnership types modelled.
 For transmission via three different partnerships,
 the required size would be at least $3^{P}$, and so on.
 Indeed, this exponential relationship is related to the challenge of specifying
-all possible combinations of partnership states in pair-based models \cite{Kretzschmar2017}.
+all possible combinations of partnership states in pair-based models \cite{Kretzschmar2017}. %SM: nice
 However, under frequentist assumptions, we can equivalently model
 two transmissions by one individual as one transmission each by two individuals.
 Thus, we can transfer two individuals from $I_{ih\p_0}$ to
@@ -181,7 +179,7 @@ and no more transmission can occur via these partnerships until partners change.
 Another benefit of the proposed approach is that
 we can quantify the proportion of partnerships that are seroconcordant
 due to prior transmission within the partnership.
-We call these partnerships ``transmission-driven seroconcordant''
+We call these partnerships ``transmission-driven seroconcordant''  %SM: reallly like this
 to distinguish them from seroconcordant partnerships \emph{newly} formed
 by chance or due to serosorting \cite{Purcell2017,Kim2020}
 among two previously infected individuals.
