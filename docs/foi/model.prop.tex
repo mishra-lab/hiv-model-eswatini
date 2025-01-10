@@ -1,15 +1,17 @@
 \section{Proposed Approach: Effective Partnerships Adjustment}\label{foi.prop}
-An approach to modelling HIV transmission via sexual partnerships that addresses the above limitations while remaining
-within the traditional compartmental framework would be useful.
-In this section, we propose such an approach: %SM: not cirtical, but would it be accurate to say "develop and propose"? since you are walking through its develpment as well in paras below?
+An approach to modelling HIV transmission via sexual partnerships
+that addresses the above limitations
+while remaining within the traditional compartmental framework would be useful.
+In this section, we develop and propose such an approach:
 the \emph{Effective Partnerships Adjustment} (EPA).%
 \footnote{A preliminary version of this approach was presented in \cite{Knight2022smdm}.}
 That is, this approach overcomes
 the main limitations of prior approaches described above,
-without the need to change modelling frameworks.
-% TODO: (?) mention by name pair-based and individual-based models here %SM: agree
+without changing to a pair-based or individual-based modelling framework \cite{Rao2021}.
 %===================================================================================================
-\subsection{Conceptual Development}\label{foi.prop.concept} %SM: LOVE this section
+\subsection{Conceptual Development}\label{foi.prop.concept}
+% SM: LOVE this section
+% JK: thanks!
 A core challenge of modelling HIV transmission via sexual partnerships is
 to account for inert sex acts.
 Any partnership where transmission has already occurred
@@ -21,7 +23,7 @@ in a compartmental (non-pair-based) model,
 these partnerships can be tracked as proportions of individuals, namely:
 all individuals who recently acquired infection \emph{and}
 all individuals who recently transmitted infection.
-Here, we use ``recent'' to mean ``before individuals change partners''.
+Here, we use ``recently'' to mean ``before individuals change partners''.
 If some individuals have multiple concurrent partners,
 then these individuals should not be removed entirely,
 but their numbers of ``effective partnerships'' should be reduced by 1.
@@ -54,7 +56,7 @@ representing the per-person rate of \emph{transmission},
 not \emph{acquisition} as in $\lambda_{p}$.
 This rate $\lambda'_{p}$ is not defined or needed in prior approaches (\sref{foi.prior})
 but we develop the necessary equations below in \sref{foi.prop.eq}.
-The issue of multiple post-transmission partnerships is discussed in \sref{foi.prop.mp}. %SM: multiple or concurrent? or means same thing really?
+The issue of multiple concurrent post-transmission partnerships is discussed in \sref{foi.prop.mp}.
 \begin{figure}
   \centering\includegraphics[scale=1]{model.hiv.p}
   \caption{Modelled states and transitions related to HIV infection,
@@ -76,7 +78,7 @@ The issue of multiple post-transmission partnerships is discussed in \sref{foi.p
 %===================================================================================================
 \subsection{Equations}\label{foi.prop.eq}
 Since partnership duration is now considered separately and explicitly,
-we do not define any per-partnership probability of transmission $B$. %SM: should it be "we need not" isntad of "we do not"?
+we need not define any per-partnership probability of transmission $B$.
 Rather, we define the force of infection to directly include
 the frequency of sex per partnership $F$ and probability of transmission per sex act $\beta$.
 However, the mixing is slightly more complicated than before,
@@ -106,7 +108,18 @@ This \eqref{eq:M.I} is the key equation whereby
 the  numbers of ``effective type-$p$ partnerships'' among
 individuals in stratum $\p$ are reduced by 1.
 This reduction is then propagated through the mixing patterns when defining $M_{pii'}$.
-% TODO: (*) double-check that this reduction should be propagated through the mixing patterns %SM: not sure I follow what this means re: propogated through the mixing patterns? i think we mean the effective reduction is propogated (like herd effects essentially?) but that the actual partnersips are not influenced by whether transmissions occurred or not (i.e. we assume no behavoiur change following transmission?)
+% TODO: (*) double-check that this reduction should be propagated through the mixing patterns
+% SM: not sure I follow what this means re: propogated through the mixing patterns?
+%     i think we mean the effective reduction is propogated (like herd effects essentially?)
+%     but that the actual partnersips are not influenced by whether transmissions occurred or not
+%     (i.e. we assume no behavoiur change following transmission?)
+% JK: Damn it, you're right :) That is, the current implementation does in fact
+%     induce mixing changes due to transmission. I had convinced myself it didn't
+%     since mixing is implemented via "log-odds" (Morris) which is "invariant to margins"
+%     but this ignores the fact that transmission removes elements from the
+%     global current partners matrix M_{pii'} non-randomly.
+%     I think it may be a simple fix, so I will try to think more addition
+%     update to this section and maybe we can discuss how to proceed.
 Next, we define the total (population-level, not per-person) rate of transmission
 from group $i'$ and infection stage $h'$ to group $i$ via type-$p$ partnerships as:
 \begin{equation}
@@ -145,7 +158,7 @@ where $P$ is the number of different partnership types modelled.
 For transmission via three different partnerships,
 the required size would be at least $3^{P}$, and so on.
 Indeed, this exponential relationship is related to the challenge of specifying
-all possible combinations of partnership states in pair-based models \cite{Kretzschmar2017}. %SM: nice
+all possible combinations of partnership states in pair-based models \cite{Kretzschmar2017}.
 However, under frequentist assumptions, we can equivalently model
 two transmissions by one individual as one transmission each by two individuals.
 Thus, we can transfer two individuals from $I_{ih\p_0}$ to
@@ -179,7 +192,7 @@ and no more transmission can occur via these partnerships until partners change.
 Another benefit of the proposed approach is that
 we can quantify the proportion of partnerships that are seroconcordant
 due to prior transmission within the partnership.
-We call these partnerships ``transmission-driven seroconcordant''  %SM: reallly like this
+We call these partnerships ``transmission-driven seroconcordant''
 to distinguish them from seroconcordant partnerships \emph{newly} formed
 by chance or due to serosorting \cite{Purcell2017,Kim2020}
 among two previously infected individuals.
