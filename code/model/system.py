@@ -27,7 +27,7 @@ def run(P,t=None,T=None,RPts=None,Xk=False):
   if t is None: t = get_t()
   if RPts is None:
     # RPts are tarray params which we add to R to make some out.functions easier
-    RPts = ['PF_condom_t','PF_circum_t','dx_sit','tx_sit','Rtx_ht','unvx_t','revx_t']
+    RPts = ['PF_condom_t','PF_circum_t','dx_sit','tx_sit','Rtx_ht','unvx_sit','revx_t']
   R = solve(P,t)
   log(3,str(P['id']).rjust(9)+(' ' if R else '!'))
   if not R: # if aborted/failed for any reason
@@ -102,7 +102,7 @@ def get_dX(X,t,P):
   dX[:,:,:,1:6,3] -= dXi # treat
   dX[:,:,:,1:6,4] += dXi # vls
   # cascade: treatment fail / discontinue
-  dXi = X[:,:,:,1:6,4] * P['unvx_t'](t) * P['Runvx_si'] * P['Rux_scen']
+  dXi = X[:,:,:,1:6,4] * P['unvx_sit'](t) * P['Rux_scen']
   dX[:,:,:,1:6,4] -= dXi # vls
   dX[:,:,:,1:6,2] += dXi # fail
   # cascade: viral re-suppression

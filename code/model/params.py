@@ -527,17 +527,17 @@ def get_treat(P):
   ).reshape([1,1,1,5])
   # vx: viral suppression; unvx: treatment fail/discontinue; revx: re-suppress
   vx = np.array(1/P['ivx'])
-  unvx_t = ta.tarray([1980,2010,2018,2051],[.15,.15,.05,.05])
   Runvx_si = np.array([
     [1,1,P['Runvx_fsw:wq'],P['Runvx_fsw:wq']],
-    [P['Runvx_m:wq'],P['Runvx_m:wq'],P['Runvx_m:wq'],P['Runvx_m:wq']]]).reshape((2,4,1,1))
+    [P['Runvx_m:wq'],P['Runvx_m:wq'],P['Runvx_m:wq'],P['Runvx_m:wq']]]).reshape([2,4,1,1,1])
+  unvx_sit = ta.tarray([1980,2010,2018,2051],
+    Runvx_si * np.array([.15,.15,.05,.05]).reshape([1,1,1,1,4]))
   revx_t = ta.tarray([1980,2010,2018,2051],P['revx_2010']*np.array([1,1,1.5,1.5]))
   return {
     'tx_sit': tx_sit,
     'Rtx_ht': Rtx_ht,
     'vx': vx,
-    'unvx_t': unvx_t,
-    'Runvx_si': Runvx_si,
+    'unvx_sit': unvx_sit,
     'revx_t': revx_t,
   }
 
