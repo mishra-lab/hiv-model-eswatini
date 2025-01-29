@@ -395,7 +395,7 @@ def get_K(P):
   K_psi[3,1,3] = P['XKF_swr'] / F[3] / wPX * P['RKF_swx_cli_h:l']
   KF_psi = K_psi.sum(axis=3) * F[:,_,_]
   # aK_pk: K reduction for ptr-type "p" in EPA stratum "k"
-  aK_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape((4,1,1,5))
+  aK_pk = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]]).reshape([4,1,1,5])
   aK_pk = aK_pk * (K_psi > 0) # don't reduce partners that don't exist
   return {
     'K_psi': K_psi,
@@ -507,7 +507,7 @@ def get_diag(P):
   Rdx_m_t   = np.array([1,1,0.1,P['Rdx_m:w_2006'],*3*[P['Rdx_m:wq_2011']]])
   dx_sit = ta.tarray(t_dx,P['Rdx_global']*dx_wq_t*np.array(
     [[Rdx_wq_t,Rdx_wq_t,Rdx_fsw_t,Rdx_fsw_t],
-     [ Rdx_m_t, Rdx_m_t,  Rdx_m_t,  Rdx_m_t]])).reshape((2,4,1,1))
+     [ Rdx_m_t, Rdx_m_t,  Rdx_m_t,  Rdx_m_t]])).reshape([2,4,1,1])
   return {
     'dx_sit': dx_sit,
   }
