@@ -7,9 +7,10 @@ class tarray:
   # we can later evaluate the splines by 'calling' the tarray like X(t)
   # see toy/tarray-demo for an example, including how NaNs are ignored
   def __init__(self,ti,xi):
-    ti,xi = np.array(ti),np.array(xi)
-    self.shape = xi.shape[0:-1] # t dim (last) is removed
-    self.params = self.fit(ti,xi)
+    self.ti = np.array(ti)
+    self.xi = np.array(xi)
+    self.shape = self.xi.shape[0:-1] # t dim (last) is removed
+    self.params = self.fit(self.ti,self.xi)
 
   def __call__(self,t):
     tsize = np.array(t).size
