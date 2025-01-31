@@ -26,7 +26,8 @@ class tarray:
     size = np.prod(self.shape)
     if size != np.prod(shape):
       raise ValueError('cannot reshape tarray of size {} into shape {}'.format(size,shape))
-    self.shape = shape
+    self.xi = self.xi.reshape((*shape,len(self.ti)))
+    self.shape = tuple(shape)
     return self
 
 # fit & eval from: https://wikipedia.org/wiki/Monotone_cubic_interpolation
