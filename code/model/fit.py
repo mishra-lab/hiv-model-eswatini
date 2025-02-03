@@ -15,6 +15,7 @@ specs = dict(
   inc     = dict(oname='incidence',ymax=[.1,.1,.1,2]),
   inc1v2  = dict(oname='incidence',skeys=[('wh','wl'),('mh','ml')],vsop='1/2',ymax=100),
   cuminf  = dict(oname='cuminfect'),
+  cumdeath= dict(oname='cumdeath',skeys=['ahi','>500','<500','<350','<200']),
   tdsc    = dict(oname='tdsc',skeys=['msp','cas','swo','swr'],ymax=1),
   diag    = dict(oname='diagnosed',ymax=1),
   treat_c = dict(oname='treated_c',ymax=1),
@@ -29,7 +30,7 @@ specs = dict(
 specsets = dict(
   hiv     = ['prev','prev1v2','inc','inc1v2'],
   cascade = ['diag','treat_c','treat_u','vls_c','vls_u'],
-  extra   = ['Nsi','Psi','Ph','tdsc','condom','circum','prevanc'],
+  extra   = ['Nsi','Psi','Ph','cumdeath','tdsc','condom','circum','prevanc'],
   rates   = ['dx_rate','tx_rate'],
 )
 
@@ -54,7 +55,7 @@ def plot_output(t,Rss,oname,skeys,fname,T=None,ylab=None,ymax=None,**kwds):
   if np.size(ymax) == 1: ymax = len(skeys) * flatten(ymax)
   fh,ah = plot.subplots(1,len(skeys)) # subplot per stratum
   kwds.update(interval=1,median=(len(Rss)==1)) # HACK: plot median if not debug
-  if oname == 'cuminfect': kwds.update(tvec=t) # need original t vec for cuminf
+  if oname in ['cuminfect','cumdeath']: kwds.update(tvec=t) # need original t vec
   for s,skey in enumerate(skeys): # strata
     plot.plt.sca(ah[0,s])
     if isinstance(skey,tuple): # 2-group (vs) type

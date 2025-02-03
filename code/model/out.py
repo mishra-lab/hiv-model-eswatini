@@ -138,6 +138,15 @@ def cuminfect(X,inc,foi_mode,tvec,s=None,i=None,aggr=True,t0=None):
     I_dt[tvec < t0] = 0
   return np.cumsum(I_dt,axis=0)
 
+@deco.rmap(Rk=['X'],Pk=['death_hc'])
+def cumdeath(X,death_hc,tvec,s=None,i=None,h=None,c=None,aggr=True,t0=None):
+  dt = dtfun(tvec) # timestep sizes
+  D_sihc = xdi(X * death_hc[:,:,0,:,:],{1:s,2:i,3:h,4:c}) # mult by rate & select
+  D_dt = D_sihc.sum(axis=(1,2,3,4)) * dt if aggr else D_sihc * dt[:,_,_,_,_]
+  if t0: # zero new deaths before t0
+    D_dt[tvec < t0] = 0
+  return np.cumsum(D_dt,axis=0)
+
 @deco.nanzero
 @deco.rmap(Rk=['Xk'],Pk=['K_psi'])
 @deco.tslice(tk=['Xk'])
@@ -281,7 +290,7 @@ def expo(R1s,tvec,t,onames,skeys,R2s=None,vsop='raw',ecols=None,mode='q',**kwds)
   for oname in onames: # outputs
     ofun = by_name(oname)
     for skey in skeys: # strata
-      if oname == 'cuminfect': # special case: cannot use @deco.tslice
+      if oname in ['cuminfect','cumdeath']: # special case: cannot use @deco.tslice
         sofun = lambda R: ofun(R,**strats[skey].ind,tvec=tvec,**kwds)[itslice(t,tvec)]
       else:
         sofun = lambda R: ofun(R,**strats[skey].ind,tvec=tvec,t=t,**kwds)
