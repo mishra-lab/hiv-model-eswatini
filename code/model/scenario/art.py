@@ -63,7 +63,7 @@ def run_rf_1(P,T,t):
     dict(key='Rux',D=stats.uniform(l=1,h=20),x0=[.5,.5,.5],out='vls'),
   ]
   def run_rf_step(Z,tol,x0=None,**kwds):
-    log(3,'[{}] '.format('.'.join([Zi['key'][1] for Zi in Z])).rjust(10))
+    log(3,'[{}]'.format('.'.join([Zi['key'][1] for Zi in Z])).rjust(9)+' ')
     Dz = {Zi['key']+':'+skey: Zi['D'] for Zi in Z for skey in ('fsw','cli','aq')}
     Tz = flatten(Ti for Zi in Z for Ti in T if (Zi['out'] in Ti.name))
     xz = flatten(Zi['x0'] for Zi in Z) if x0 is None else x0
@@ -75,6 +75,7 @@ def run_rf_1(P,T,t):
   xt,kwt = run_rf_step([Z0[1]],tol=1,**kwd)
   xu,kwu = run_rf_step([Z0[2]],tol=1,**kwd,**kwt)
   xa,kwa = run_rf_step(Z0,     tol=.001,x0=[*xd,*xt,*xu])
+  log(3,'[x]'.rjust(9)+' ')
   return P
 
 def Rxs_update(P,Pu,q=None,**kwds):
