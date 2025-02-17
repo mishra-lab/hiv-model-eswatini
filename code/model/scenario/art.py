@@ -1,4 +1,3 @@
-import re
 import numpy as np
 from copy import deepcopy
 from utils import stats,log,fio,ppool,flatten,minimize
@@ -19,16 +18,12 @@ ekwds = dict(
   onames = ['incidence','prevalence','cuminfect','diagnosed','treated_c','treated_u','vls_c','vls_u'],
   mode = 'id')
 
-def parse_case(case):
-  return re.findall('(.*?)(\+|\-)',case)
-
 def run_rf(b):
   case = cases[b]
   log(0,'art.run_rf: {}'.format(case))
   P0s = fio.load_npy(fname('npy','fit','Ps',case='base'))
   T = get_refit_T(case+'all-')
-  D = get_refit_D(case+'aq-')
-  fun = lambda P: run_rf_1(P,D,T,tvec['cal'],ftol=.1)
+  fun = lambda P: run_rf_1(P,T,tvec['cal'])
   Ps = ppool().map(fun,P0s); log(1)
   fio.save_npy(fname('npy','art-rf','Ps',case=case),Ps)
 
@@ -37,7 +32,7 @@ def rerun_rf():
   for case in ['base']+cases:
     log(1,case)
     base = (case == 'base')
-    T = get_refit_T('fsw+cli+all+' if base else case+'all-')
+    T = get_refit_T('all+' if base else case+'all-')
     Ps = fio.load_npy(fname('npy','fit' if base else 'art-rf','Ps',case=case))
     R1s = system.run_n(Ps,t=tvec['main'],T=T)
     fio.save_csv(fname('csv','art-rf','wiw',case=case),out.wiw(R1s,**tkp))
@@ -51,51 +46,47 @@ def rerun_rf():
       fio.save_csv(fname('csv','art-rf','wiw-diff',case=case),out.wiw(R1s,R2s=R2s,vsop='1-2',**tkp))
 
 def get_refit_T(case):
-  Ts = {
+  T = {
     'fsw-': target.make_targets_2020(cascade['low'], s=0,i=(2,3)),
-    'fsw+': target.make_targets_2020(cascade['high'],s=0,i=(2,3),w=1e-6),
+    'fsw+': target.make_targets_2020(cascade['mid'], s=0,i=(2,3)),
     'cli-': target.make_targets_2020(cascade['low'], s=1,i=(2,3)),
-    'cli+': target.make_targets_2020(cascade['high'],s=1,i=(2,3),w=1e-6),
+    'cli+': target.make_targets_2020(cascade['mid'], s=1,i=(2,3)),
     'all-': target.make_targets_2020(cascade['mid'], s=(0,1),i=(0,1,2,3)),
-    'all+': target.make_targets_2020(cascade['high'],s=(0,1),i=(0,1,2,3),w=1e-6),
+    'all+': target.make_targets_2020(cascade['high'],s=(0,1),i=(0,1,2,3)),
   }
-  return flatten( Ts[skey+c] for skey,c in parse_case(case) )
+  return flatten( T[k] for k in T if k in case )
 
-def get_refit_D(case):
-  eps = 1e-9
-  Ds = {
-    'd+': stats.uniform(l=1-eps,h=1+eps), 'd-': stats.uniform(l=0,h=1),
-    't+': stats.uniform(l=1-eps,h=1+eps), 't-': stats.uniform(l=0,h=1),
-    'u+': stats.uniform(l=1-eps,h=1+eps), 'u-': stats.uniform(l=1,h=20),
-  }
-  return {'R'+step+'x:'+skey: Ds[step+c] for skey,c in parse_case(case) for step in 'dtu'}
-
-def run_rf_1(P,D,T,t,ftol=.1):
-  kwds = dict(method='SLSQP',options=dict(ftol=ftol))
-  Dz,x0z,Tz = {},[],[]
-  for pz,oz in zip(['Rdx','Rtx','Rux'],['diagnosed','treated','vls']):
-    Dzi = {k:v for k,v in D.items() if (pz in k)} # new fitted params
-    Dz.update(Dzi)                                # add to fitted params
-    x0z += [.5]*len(Dzi)                          # add to initial values
-    Tz  += [Ti for Ti in T if (oz in Ti.name)]    # add to targets
-    jfun = lambda x: - system.run(Rxs_update(P,Dz,x),t,T,RPts=[])['ll']
-    M = minimize(jfun,x0z,bounds=[(0,1) for k in Dz],**kwds)
-    x0z[:] = M.x
-    if not M.success: return False
+def run_rf_1(P,T,t):
+  Z0 = [
+    dict(key='Rdx',D=stats.uniform(l=0,h= 1),x0=[.5,.5,.5],out='diagnosed'),
+    dict(key='Rtx',D=stats.uniform(l=0,h= 1),x0=[.5,.5,.5],out='treated'),
+    dict(key='Rux',D=stats.uniform(l=1,h=20),x0=[.5,.5,.5],out='vls'),
+  ]
+  def run_rf_step(Z,tol,x0=None,**kwds):
+    log(3,'[{}] '.format('.'.join([Zi['key'][1] for Zi in Z])).rjust(10))
+    Dz = {Zi['key']+':'+skey: Zi['D'] for Zi in Z for skey in ('fsw','cli','aq')}
+    Tz = flatten(Ti for Zi in Z for Ti in T if (Zi['out'] in Ti.name))
+    xz = flatten(Zi['x0'] for Zi in Z) if x0 is None else x0
+    jfun = lambda x: - system.run(Rxs_update(P,Dz,q=x,**kwds),t,T,RPts=[])['ll']
+    M = minimize(jfun,xz,bounds=[(0,1) for x in xz],method='L-BFGS-B',options=dict(ftol=tol))
+    P = Rxs_update(P,Dz,q=M.x,**kwds)
+    return M.x, {key:P[key] for Zi in Z if (key := Zi['key']+'_scen')}
+  xd,kwd = run_rf_step([Z0[0]],tol=1)
+  xt,kwt = run_rf_step([Z0[1]],tol=1,**kwd)
+  xu,kwu = run_rf_step([Z0[2]],tol=1,**kwd,**kwt)
+  xa,kwa = run_rf_step(Z0,     tol=.001,x0=[*xd,*xt,*xu])
   return P
 
 def Rxs_update(P,Pu,q=None,**kwds):
   # update R*x_scen using Pu, e.g. {'Rdx:fsw':1.5}
   # q might be given as quantiles, e.g. Pu[k].ppf(qk) -> 1.5
-  def Rx_update_S(Rx,skey,sRx):
-    s = flatten(strats[skey].ind['s'])
-    i = flatten(strats[skey].ind['i'])
-    Rx[np.ix_(s,i)] = sRx
-    return Rx
   if q is not None: Pu = {k:Pu[k].ppf(qk) for k,qk in zip(Pu.keys(),q)}
   for key,sRx in Pu.items():
-    rate,skey = key.split(':')
-    P.update({rate+'_scen':Rx_update_S(P[rate+'_scen'],skey,sRx)},**kwds)
+    pkey,skey = key.split(':')
+    s = flatten(strats[skey].ind['s'])
+    i = flatten(strats[skey].ind['i'])
+    P[pkey+'_scen'][np.ix_(s,i)] = sRx
+  P.update(**kwds)
   return P
 
 def run_ss(Ns=10,seed=0):
@@ -120,12 +111,12 @@ def merge_expo(Es):
   return {k:[x for E in Es for x in E[k]] for k in Es[0]}
 
 def get_sens_sample(Ps,Ns,seed):
-  Ds = {
-    'd': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
-    't': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
-    'u': stats.gamma(m=6.5,sd=3.5),  # CI: (1.5, 15)
+  D0 = {
+    'Rdx': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
+    'Rtx': stats.betabin(p=.65,n=5.3), # CI: (.25,.95)
+    'Rux': stats.gamma(m=6.5,sd=3.5),  # CI: (1.5, 15)
   }
-  D = {'R'+step+'x:'+skey: Ds[step] for skey in ('fsw','cli','aq') for step in 'dtu'}
+  D = {pkey+':'+skey: D0[pkey] for skey in ('fsw','cli','aq') for pkey in D0}
   return [Rxs_update(deepcopy(P),Pu,ss=ss)
     for ps,P  in enumerate(Ps)
     for ss,Pu in enumerate(params.get_n_sample_lhs(D,Ns,seed=seed+ps))]
