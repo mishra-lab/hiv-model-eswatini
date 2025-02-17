@@ -69,7 +69,7 @@ def run_rf_1(P,T,t):
     xz = flatten(Zi['x0'] for Zi in Z) if x0 is None else x0
     jfun = lambda x: - system.run(Rxs_update(P,Dz,q=x,**kwds),t,T,RPts=[])['ll']
     M = minimize(jfun,xz,bounds=[(0,1) for x in xz],method='L-BFGS-B',options=dict(ftol=tol))
-    P = Rxs_update(P,Dz,q=M.x,**kwds)
+    Rxs_update(P,Dz,q=M.x,**kwds)
     return M.x, {key:P[key] for Zi in Z if (key := Zi['key']+'_scen')}
   xd,kwd = run_rf_step([Z0[0]],tol=1)
   xt,kwt = run_rf_step([Z0[1]],tol=1,**kwd)
