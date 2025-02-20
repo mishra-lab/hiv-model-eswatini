@@ -11,7 +11,7 @@
 # setup every time -------------------------------------------------------------
 module load python/3.8 # {scinet}
 PYCODE="""
-from model.scenario import imis,art,foi
+from model.scenario import imis,art,foi,future
 b = $SLURM_ARRAY_TASK_ID # {scinet}
 """
 export PYTHONPATH=.:$PYTHONPATH
@@ -34,6 +34,9 @@ export MPLCONFIGDIR=.tmp # {scinet}
 # PYCODE+="imis.sample_post(case=case)"               # 0:15:00
 # PYCODE+="imis.rerun(case=case)"                     # 0:15:00
 # PYCODE+="foi.run_tpaf(case=case)"                   # 4:00:00
+
+# future scenarios -------------------------------------------------------------
+# PYCODE+="future.run()"                              # 1:00:00
 
 # run every time ---------------------------------------------------------------
 echo "$PYCODE"
