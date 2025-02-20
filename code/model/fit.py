@@ -49,7 +49,7 @@ def plot_sets(t,Rs,T=None,tfname=None,debug=False,sets=None,skeys=None):
     if name != 'tdsc' or out.can_tdsc(Rs[0])] # can't plot tdsc if didn't save Xk
   if debug: fio.pdfmerge('pyplots.pdf',tfnames) # merge figs into 1 pdf
 
-def plot_output(t,Rss,oname,skeys,fname,T=None,ylab=None,ymax=None,**kwds):
+def plot_output(t,Rss,oname,skeys,fname,T=None,ylab=None,ymax=None,xlim=None,**kwds):
   # plot output (ribbons) for multiple strata, plus any matching targets
   if ylab is None: ylab = out.labels.get(oname,oname)
   if np.size(ymax) == 1: ymax = len(skeys) * flatten(ymax)
@@ -70,6 +70,7 @@ def plot_output(t,Rss,oname,skeys,fname,T=None,ylab=None,ymax=None,**kwds):
         plot.plot_S(oname,t,Rs,skey,**kwds)
       plot.targets_S(T,oname,skey)
     plot.plt.ylim((0,ymax[s]))
+    plot.plt.xlim(xlim)
   fh.set_size_inches((.5+plotsize*len(skeys),plotsize))
   fh.tight_layout()
   return plot.save(fname)
