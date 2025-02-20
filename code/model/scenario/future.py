@@ -56,7 +56,7 @@ def get_scen(Ps,adjs,t5,recov=1):
     # TODO: PF_circum_t ?
     if 'dx' in adjs:
       x4 = P['dx_sit']([t5[0]]*4)
-      x4 = apply_RR4(x4,[[.75,.75,.50,.50],[.50,.50,.50,.50]],recov)
+      x4 = apply_RR4(x4,[[.60,.60,.40,.40],[.40,.40,.40,.40]],recov)
       P['dx_sit'] = edit_tarray(P['dx_sit'],t5,x4)
     if 'unvx' in adjs:
       x4 = P['unvx_sit']([t5[0]]*4)
