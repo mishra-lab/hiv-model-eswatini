@@ -76,7 +76,7 @@ def get_scen(Ps,adjs,t5,recov=1):
 
 def run(base=True):
   log(0,'future.run')
-  P0s = fio.load_npy(fname('npy','fit','Ps',case='foi-rd'))
+  P0s = fio.load_npy(fname('npy','fit','Ps',case='base'))
   if base:
     R0s = system.run_n(P0s,t=tvec['main'])
     fio.save_csv(fname('csv','future','expo',case='base'),
