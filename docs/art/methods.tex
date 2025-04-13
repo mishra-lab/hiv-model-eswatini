@@ -66,6 +66,10 @@ The modelled ART cascade includes states for:
 undiagnosed HIV, diagnosis before ART, ART before viral suppression, viral suppression,
 and a generic ART failure / discontinuation state
 (Figure~\ref{fig:model.cascade.m}).
+HIV stage-specific infectiousness is then modelled as
+reduced on ART but before viral suppression,
+zero on ART after viral suppression, and
+modestly reduced during ART failure / discontinuation.
 We modelled rates of HIV diagnosis among people living with HIV
 as monotonically increasing over time.
 We defined a base rate for women with low/medium sexual activity,
@@ -109,12 +113,16 @@ For Objective~\ref{obj:art.1},
 We defined the \emph{base case} scenario to reflect
 observed ART cascade scale-up in Eswatini, reaching
 \cashi for the population overall by 2020 \cite{SHIMS3}, and
-\casfsw among FSW specifically \cite{EswIBBS2022}.%
-\footnote{Data on viral suppression for FSW were not available, which we denote as ``xx'';
+88-98-(91) among FSW specifically \cite{EswIBBS2022}.%
+\footnote{Data on viral suppression for FSW were not available,
+  so we report the median proportion from model fitting in parentheses;
   no cascade data were available for clients specifically.}
 Next, we defined four \emph{counterfactual} scenarios in which
 the overall population cascade reached \casmd by 2020,
 and where FSW, clients, both, or neither were disproportionately left behind.
+We chose \casmd to reflect potential attainment if
+investment in cascade scale-up had been slower,
+as in some other contexts \cite{UNAIDS2023}.
 In these counterfactual scenarios, we altered cascade attainment among
 FSW, clients, and/or the remaining population (``all others'') by calibrating
 fixed subpopulation-specific relative rates of:
@@ -124,16 +132,15 @@ treatment failure / discontinuation ($1 \le {RR}_u \le 20$).
 When FSW and/or clients were left behind, we calibrated their $RR$s such that
 these subpopulations attained approximately \caslo by 2020, reflecting
 some of the lowest cascades recently observed among key populations \cite{Hakim2018}.
-By contrast, we calibrated $RR$s for the remaining population such that
+When FSW and/or clients were not left behind, we fixed their $RR=1$,
+reflecting maintenance of prioritized outreach/services from the base case.
+In all counterfactual scenarios, we calibrated $RR$s for the remaining population such that
 the Swati population \emph{overall} attained \casmd in all 4 counterfactual scenarios,
 thus ensuring that a consistent proportion of the population overall
 attained viral suppression.
 \par
 Table~\ref{tab:art.1.scen} summarizes these scenarios, while
 Figure~\ref{fig:art.1.cascade} plots the modelled cascades over time.
-When cascade rates among FSW and/or clients were unchanged from the base case,
-the cascade these subpopulations attained could be lower than in the base case
-due to subpopulation turnover and higher incidence.
 \begin{table}
   \centering
   \caption{Modelling scenarios for Objective~\ref{obj:art.1} defined by 2020 calibration targets}
@@ -141,10 +148,10 @@ due to subpopulation turnover and higher incidence.
   \input{tab.scenarios}
 \end{table}
 \par
-We quantified ART prevention impacts via relative
-cumulative additional infections (CAI) and additional incidence rate (AIR) by 2020
+We quantified ART prevention impacts via two outcomes: relative
+cumulative additional infections and additional incidence rate by 2020
 in the counterfactual scenarios ($k$) \vs the base case ($0$):
-\begin{equation}\label{eq:art.api}
+\begin{equation}\label{eq:art.out}
   \txn{CAI, AIR}\,(t) = \frac{\Omega_{k}(t) - \Omega_{0}(t)}{\Omega_{0}(t)}
   ,\qquad \Omega(t) =
   \begin{cases}
@@ -155,15 +162,17 @@ in the counterfactual scenarios ($k$) \vs the base case ($0$):
 $\Lambda$ denotes absolute numbers of infections per year,
 $\lambda$ denotes incidence rate per susceptible per year,
 and $t_0 = 2000$.
-For each scenario, we computed these outcomes (CAI and AIR) for each model fit $f$,
+For each scenario, we computed these outcomes for each model fit $f$,
 and reported median (95\% credible interval, CI) values across model fits, reflecting uncertainty.
 %---------------------------------------------------------------------------------------------------
 \subsubsection{Objective~2: Conditions that maximize the influence of ART cascade differences}\label{art.meth.obj.2}
 For Objective~\ref{obj:art.2}, we estimated via linear regression:
-the effects of lower ART cascade among FSW and clients on relative CAI and AIR,
+the effects of lower ART cascade among FSW and clients on each outcome
 plus potential effect modification by epidemic conditions.
 The hypothesized causal effects are illustrated
 as a directed acyclic graph in Figure~\ref{fig:art.2.dag}.
+As explained in \sref{sr.art.2}, this approach aims to improve upon
+conventional sensitivity analyses for HIV transmission models \cite{Blower1994}.
 \par
 For this regression, we generated 10,000 synthetic samples as follows.
 We explored a wider range of counterfactual scenarios \vs Objective~\ref{obj:art.1}
@@ -173,14 +182,12 @@ and treatment failure / discontinuation ${RR}_u \sim \opname{Gamma}$ with 95\%~C
 for each of: FSW, clients, and the remaining population (9~total values),
 yielding cascades in 2020 spanning
 approximately \mbox{60-60-90} through \mbox{85-90-95} (Figure~\ref{fig:art.2.cascade}). % MAN
-% JK: simplified the above a bit to reduce the reader's cognitive burden
 For each of $N_f = 1000$ model fits,
 we generated $N_k = 10$ counterfactual scenarios per fit
 using Latin hypercube sampling of $RR$s \cite{Stein1987},
 yielding $N_f N_k = {}$10,000 total counterfactual scenario samples for the regression.
 \par
-For each of these 10,000 samples, we defined
-relative CAI and AIR by 2020 \vs the base case as in \eqref{eq:art.api}.
+For each of these 10,000 samples, we defined each outcome as in \eqref{eq:art.out}.
 For each sample, we further defined
 $U_{fki}$ for subpopulations $i \in \{\tdef{1}{FSW}, \tdef{2}{clients}, \tdef{*}{overall}\}$
 as the proportions \emph{not} virally suppressed among those living with HIV by 2020,
@@ -198,16 +205,11 @@ as hypothesized modifiers of the effect of unequal viral non-suppression on rela
 FSW and client population sizes (\% of population overall);
 average rate of turnover among FSW and clients (reciprocal of duration selling / buying sex); and
 HIV incidence ratios in 2010 among FSW \vs women overall, and among clients \vs men overall.
-% To calculate the HIV incidence ratios, we combined FSW at higher and lower risk,
-% and likewise for clients at higher and lower risk.
-% JK: propose to remove the above as I think it's implied
-%     & adds more details the reader needs to think about
-%     in this already complicated section.
 We used HIV incidence ratios to reflect summary measures of risk heterogeneity,
 rather than including all risk factors from the transmission model,
 which could lead to overfitting and improper inference due to effect mediation.
 \par
-Finally, we defined a general linear model for each outcome (CAI, AIR) as:
+Finally, we defined a general linear model for each outcome as:
 \begin{equation}\label{eq:art.2.glm}
   \txn{CAI, AIR} = \beta_0
                  + \beta_1\,D

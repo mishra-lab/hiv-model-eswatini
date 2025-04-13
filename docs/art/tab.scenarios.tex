@@ -1,20 +1,18 @@
-\begin{tabular}{lcccccc}
+\begin{tabular}{lccc}
   \toprule
-  & \multicolumn{3}{c}{ART cascade in 2020\tn{a}}
-  & \multicolumn{3}{c}{Re-scaled cascade rates\tn{b}} \\
-  \cmidrule(rl){2-4}\cmidrule(rl){5-7}
-  Scenario & FSW & Clients & Overall & FSW & Clients & All Others \\
+  & \multicolumn{3}{c}{ART cascade in 2020\tn{a}} \\
+  \cmidrule(rl){2-4}
+  Scenario & FSW & Clients & Overall \\
   \midrule
-  \emph{Base Case}                    & \casfsw& \cascli& \cashi &  --- &  --- &  --- \\
-  \emph{Leave Behind: FSW}            & \caslo &   ---  & \casmd & \yes & \no  & \yes \\
-  \emph{Leave Behind: Clients}        &   ---  & \caslo & \casmd & \no  & \yes & \yes \\
-  \emph{Leave Behind: FSW \& Clients} & \caslo & \caslo & \casmd & \yes & \yes & \yes \\
-  \emph{Leave Behind: Neither}        &   ---  &   ---  & \casmd & \no  & \no  & \yes \\
+  \emph{Base Case}                    & 88-98-(91) & (76-94-95) & \cashi \\
+  \emph{Leave Behind: FSW}            & \caslo     & (68-93-92) & \casmd \\
+  \emph{Leave Behind: Clients}        & (79-92-88) & \caslo     & \casmd \\
+  \emph{Leave Behind: FSW \& Clients} & \caslo     & \caslo     & \casmd \\
+  \emph{Leave Behind: Neither}        & (82-92-89) & (71-93-93) & \casmd \\
   \bottomrule
 \end{tabular}
 \floatfoot{
   \tnt[a]{Cascade: \% diagnosed among PLHIV; \% on ART among diagnosed; \% virally suppressed among on ART;
-    xx: no data available};
-  \tnt[b]{Rates of: diagnosis; ART initiation; treatment failure};
+    ($*$): median from model fits reported given no available data};
   \ffpopz.
   Figure~\ref{fig:art.1.cascade} plots the modelled cascades over time.}

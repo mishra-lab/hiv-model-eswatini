@@ -8,12 +8,19 @@
 \newcommand{\caslo}{\mbox{60-40-80}\xspace}
 \newcommand{\casmd}{\mbox{80-80-90}\xspace}
 \newcommand{\cashi}{\mbox{95-95-95}\xspace}
-\newcommand{\casfsw}{\mbox{88-98-xx}\xspace}
-\newcommand{\cascli}{\mbox{xx-xx-xx}\xspace}
 \newcommand{\tdef}[2]{#1{\,:\,}\txn{#2}}
 \newcommand{\mf}[2][.m]{\def\mfx{#1}#2\def\mfx{}} % main figure
 \newcounter{obj} % objectives
 \newcommand{\obj}[1]{\refstepcounter{obj}\theobj\label{obj:#1}}
+\usepackage{afterpage}
+\newcounter{dfo}\newcounter{dfi}
+\newcommand{\delayfigure}[2][1]{%
+  \setcounter{dfo}{\value{figure}}
+  \stepcounter{figure}
+  \afterpage{
+    \setcounter{dfi}{\value{figure}}%
+    \setcounter{figure}{\value{dfo}}%
+    #2\setcounter{figure}{\value{dfi}}}}
 %---------------------------------------------------------------------------------------------------
 % ric
 \usepackage{float,mdframed}

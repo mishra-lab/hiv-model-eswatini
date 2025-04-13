@@ -9,17 +9,8 @@ the majority of new yearly infections were transmitted within casual partnership
 including 50\% (median) of infections in 2020 in the base case.% % MAN
 \footnote{In our model, casual partnerships can be formed by any subpopulation,
   and these partnerships subsume transactional partnerships.}
-% By 2020, the largest proportion of cumulative infections acquired
-% were among women with lowest sexual activity (Figure~\ref{fig:wiw.base.to}),
-% while the largest proportion of cumulative infections transmitted
-% were from clients (Figure~\ref{fig:wiw.base.from}).
-% JK: propose to remove the above because:
-%     - potentially stigmatizing
-%     - a bit confusing without noting it is likely due to population sizes
-%     - doesn't contribute to the story
-%     - word count
 Overall HIV prevalence in 2020 was median (95\% CI):
-23.8~(22.4,~24.7)\,\% (Figure~\ref{fig:fit.prev}), % MAN
+23.8~(22.4,~24.7)\% (Figure~\ref{fig:fit.prev}), % MAN
 and overall incidence was 6.6~(5.3,~7.6) per 1000 person-years (Figure~\ref{fig:fit.inc}).
 The prevalence ratio between FSW and women overall was 1.78~(1.70,~1.87), % MAN
 and between clients and men overall it was 1.92~(1.49,~2.49) % MAN
@@ -36,21 +27,26 @@ in the base case (\cashi overall by 2020) and
 each of the four counterfactual scenarios (\casmd overall by 2020), while
 Figure~\ref{fig:art.1.inc} illustrates overall HIV incidence in each scenario.
 Figure~\ref{fig:art.1.rai} then illustrates
-cumulative additional infections (CAI) and additional incidence rate (AIR)
+cumulative additional infections and additional incidence rate
 in each counterfactual scenario \vs the base case.
-% JK: rephrased results below for objectives reframing
 If ART scale-up in Eswatini had been slower but relatively equal,
 we estimate there would have been
-8.8~(6.3,~10.9)\,\% CAI \vs the base case by 2020. % MAN
+30\,700~(22\,200,~38\,800) additional infections by 2020 ---
+8.8~(6.3,~10.9)\% more than the base case. % MAN
 By contrast, if ART scale-up up had been slower and
 disproportionately left behind FSW and clients,
 we estimate there would have been
-14.3~(10.8,~18.6)\,\% CAI \vs the base case by 2020 % MAN
---- a 63~(31,~128)\,\% increase. % MAN
+49,900~(39,200,~62,700) additional infections by 2020 ---
+14.3~(10.8,~18.6)\% more than the base case % MAN
+and a 63~(31,~128)\% increase over the neither left behind scenario. % MAN
 Leaving behind either FSW or clients resulted in similar
-10.9~(8.4,~13.3)\,\% or 12.4~(9.8,~14.6)\,\% CAI
+10.9~(8.4,~13.3)\% or 12.4~(9.8,~14.6)\% additional infections
 \vs the base case, respectively. % MAN
-Results were similar for AIR.
+Results were similar for overall incidence rate in 2020:
+13~(11,~16) \vs 19~(15,~22) infections per 1000 person-years
+in the neither left behind \vs FSW \& clients left behind scenarios ---
+106~(68,~138)\% \vs 193~(152,~235)\% higher than the base case, respectively.
+Table~\ref{tab:art.1.num} summarizes complete results numerically.
 In all counterfactual scenarios, the majority of additional infections were
 transmitted via casual partnerships (Figure~\ref{fig:art.1.wiw.ptr}) % MAN
 and acquired among non-FSW women (Figure~\ref{fig:art.1.wiw.to}). % MAN
@@ -59,26 +55,30 @@ Patterns of onward transmission were also similar across scenarios % MAN
 though subpopulation contributions increased if they were left behind.
 \begin{figure}[h]
   \centering\includegraphics[width=.7\linewidth]{art.1.rai}
-  \caption{Relative additional infections under counterfactual scenarios \vs the base case}
+  \caption{Modelled outcomes under counterfactual scenarios \vs the base case:
+    cumulative additional infections and additional incidence rate}
   \label{fig:art.1.rai}
-  \floatfoot{\ffart; \ffbox.}
+  \floatfoot{\ffart; \ffbox;
+    see \eqref{eq:art.out} for outcome definitions.}
 \end{figure}
 %===================================================================================================
 \subsection{Objective~2: Conditions that maximize the influence of cascade differences}\label{art.res.2}
 The fitted regression models \eqref{eq:art.2.glm} indicated that
 population-overall viral non-suppression ($D$) and
 relative non-suppression among FSW and clients ($d_i$)
-each had strong and positive effects on 2020 CAI and AIR outcomes ($p < 10^{-5}$), % MAN
+each had strong and positive effects on both
+cumulative additional infections and additional incidence rate ($p < 10^{-5}$), % MAN
 corroborating the results of Objective~\ref{obj:art.1}.
 Figure~\ref{fig:art.2} plots the estimated effects of
 subpopulation-specific non-suppression $d_i$, plus
 effect modification by epidemic conditions $C_j$.
 % MAN below
 The effect of non-suppression among FSW increased
-with FSW population size for both CAI and AIR, and
-with client population size and HIV incidence ratio \vs men overall for AIR.
+with FSW population size for both outcomes, and
+with client population size and HIV incidence ratio \vs men overall
+for incidence rate specifically.
 The effect of non-suppression among clients increased
-with client population size and incidence ratio for both CAI and AIR.
+with client population size and incidence ratio for both outcomes.
 Durations buying or selling sex did not appear to modify
 the impact of non-suppression among either FSW or clients,
 and neither did HIV incidence ratio among FSW \vs women overall.
@@ -110,3 +110,4 @@ and neither did HIV incidence ratio among FSW \vs women overall.
       \vs population overall within counterfactual scenario;
   \ffpbar[effect estimated via \eqref{eq:art.2.glm}].}
 \end{figure}
+\clearpage % TEMP

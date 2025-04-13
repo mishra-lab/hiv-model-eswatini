@@ -1,32 +1,34 @@
 \section{Objectives}\label{sr.art}
 %===================================================================================================
 \subsection{Objective~1}\label{sr.art.1}
-Table~\ref{tab:art.1.num} summarizes the results of Objective~\ref{obj:art.1} numerically, while
-Figure~\ref{fig:art.1.inc} illustrates overall HIV incidence over time across
-base case and counterfactual scenarios (Table~\ref{tab:art.1.scen}).
-Figure~\ref{fig:art.1.cascade} illustrates cascade attainment over time across scenarios
+Figure~\ref{fig:art.1.cascade} (next page) illustrates cascade attainment over time across
+base case and counterfactual scenarios (Table~\ref{tab:art.1.scen})
 for FSW, clients, everyone else, and the population overall.
 Transient declines in VLS among treated around 2010 correspond to expanding ART eligibility.
+Figure~\ref{fig:art.1.inc} illustrates overall HIV incidence over time across scenarios, while
+Table~\ref{tab:art.1.num} summarizes the results of Objective~\ref{obj:art.1} numerically.
 As in \sref{sr.cal.wiw}, Figure~\ref{fig:art.1.wiw} illustrates
 the distributions of additional infections over time \vs the base case across counterfactual scenarios,
 stratified by partnership type, transmitting group, and acquiring group.
-\begin{table}[h]
-  \caption{Numeric summary of outcomes for Objective~\ref{obj:art.1}}
-  \label{tab:art.1.num}
-  \input{tab.art.1.num}
-\end{table}
-\begin{figure}[b]
-  \centerline{\includegraphics[scale=.8]{art.1.inc}}
-  \caption{Overall HIV incidence over time across scenarios}
-  \label{fig:art.1.inc}
-  \floatfoot{\ffart; \ffribbon.}
-\end{figure}
+\delayfigure{
 \begin{figure}
   \centerline{\includegraphics[scale=.8]{art.1.cascade}}
   \caption{Cascade attainment over time across scenarios}
   \label{fig:art.1.cascade}
   \floatfoot{\ffpopz; \ffcas; \ffart; \ffribbon.}
+\end{figure}}
+\begin{table}[b]
+  \caption{Numeric summary of outcomes for Objective~\ref{obj:art.1}}
+  \label{tab:art.1.num}
+  \input{tab.art.1.num}
+\end{table}
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=.8]{art.1.inc}}
+  \caption{Overall HIV incidence over time across scenarios}
+  \label{fig:art.1.inc}
+  \floatfoot{\ffart; \ffribbon.}
 \end{figure}
+\clearpage
 \begin{figure}
   \subcapoverlap
   \foreach \var in {ptr,from,to}{
@@ -46,14 +48,61 @@ stratified by partnership type, transmitting group, and acquiring group.
 \clearpage % TEMP
 %===================================================================================================
 \subsection{Objective~2}\label{sr.art.2}
+%---------------------------------------------------------------------------------------------------
+\paragraph{Sensitivity Analysis Methodology}
+The conventional method for sensitivity analysis of HIV transmission models is to
+examine partial rank correlation coefficients (PRCC) of model inputs (parameters) \vs model outputs,
+after using Latin hypercube sampling to obtain good coverage of plausible input values
+\cite{Blower1994,Marino2008,Johnson2016cc}.
+Estimating PRCCs then fundamentally uses a regression-like procedure \cite{Kim2015}.
+Overall, this approach aims to make minimal assumptions:
+first about the shape of relationship between model inputs and outputs
+--- and thus only considers linear relationships among rank-transformed variables; and
+second about the causal relationships among variables
+--- and thus considers no interactions or hypothesized causal pathway.
+\par
+We aimed to improve on this method in two ways for Objective~\ref{obj:art.2}.
+First, we do not rank transform any variables (inputs or outputs)
+in order to retain their original scale --- \eg preferring
+``1000 more cumulative infections'' \vs
+``a 10\% increase in the rank of cumulative infections among samples''.
+This forces the choice of a link function for regression,
+for which we chose simple linear,
+and later verified by examining residuals (Figure~\ref{fig:art.2.r}, below).
+Second, we conceptualized a specific causal pathway
+(Figure~\ref{fig:art.2.dag}) to guide our analysis.
+In this conceptualization, the main predictors of each outcome ($Y$) are
+overall viral non-suppression ($D$), and
+relative non-suppression among FSW and clients \vs the population overall ($d_i$).
+Next, we conceptualized epidemic conditions ($C_j$) as
+effect modifiers of main predictors (interactions).
+However, if all main predictors $D = d_i = 0$
+(no differences in viral suppression \vs base case),
+both outcomes are zero by definition in \eqref{eq:art.out};
+thus, epidemic conditions cannot have main effects
+--- in contrast to conventional PRCC analysis.
+\begin{figure}[b]
+  \centering\includegraphics[scale=1]{art.2.dag}
+  \caption{Directed acyclic graph (DAG) for inferring
+    the epidemic conditions under which
+    differential viral suppression across subpopulations matters most}
+  \label{fig:art.2.dag}
+  \floatfoot{
+    $Y$: cumulative additional infections or additional incidence rate by 2020;
+    $D$: difference in population-overall viral non-suppression
+      in counterfactual \vs base case scenario;
+    $d_i$: difference in subpopulation-$i$-specific viral non-suppression
+      \vs population overall within counterfactual scenario;
+    $C_j$: epidemic conditions (effect modifiers of $d_i$).}
+\end{figure}
+%---------------------------------------------------------------------------------------------------
+\paragraph{Supplemental Results}
 Figure~\ref{fig:art.2.cascade} illustrates the distributions of cascade attainment by 2020
 for FSW, clients, everyone else, and the population overall,
 in the 10,000 randomly generated counterfactual scenarios
-for the Objective~\ref{obj:art.2} regression analysis.
-Figure~\ref{fig:art.2.dag} illustrates
-the corresponding directed acyclic graph as reflected in \eqref{eq:art.2.glm}.
+for Objective~\ref{obj:art.2}.
 Figure~\ref{fig:art.2.r} then illustrates the simulated \vs regression-estimated
-cumulative additional infections (CAI) and additional incidence rate (AIR),
+cumulative additional infections and additional incidence rate,
 which supports the use of linear regression
 despite minor heteroskedasticity.
 \begin{figure}[h]
@@ -62,20 +111,6 @@ despite minor heteroskedasticity.
   \caption{Cascade attainment by 2020 across 10,000 randomly generated counterfactual scenarios}
   \label{fig:art.2.cascade}
   \floatfoot{\ffpopz; \ffcas; \ffbox.}
-\end{figure}
-\begin{figure}
-  \centering\includegraphics[scale=1]{art.2.dag}
-  \caption{Directed acyclic graph (DAG) for inferring
-    the epidemic conditions under which
-    differential viral suppression across subpopulations matters most}
-  \label{fig:art.2.dag}
-  \floatfoot{
-    $Y$: cumulative additional infections (CAI) or additional incidence rate (AIR) by 2020;
-    $D$: difference in population-overall viral non-suppression
-      in counterfactual \vs base case scenario;
-    $d_i$: difference in subpopulation-$i$-specific viral non-suppression
-      \vs population overall within counterfactual scenario;
-    $C_j$: epidemic conditions (effect modifiers of $d_i$).}
 \end{figure}
 \begin{figure}[h]
   \begin{subfigure}{.5\linewidth}

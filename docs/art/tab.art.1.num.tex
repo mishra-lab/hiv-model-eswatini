@@ -1,21 +1,22 @@
 \setlength\tabcolsep{4pt}
 \begin{tabular}{lrcrcrcrc}
   \toprule
-  & \multicolumn{2}{c}{CI\tn{a}} & \multicolumn{2}{c}{CAI\tn{b}}
-  & \multicolumn{2}{c}{IR\tn{c}} & \multicolumn{2}{c}{AIR\tn{d}} \\
+  & \multicolumn{4}{c}{cumulative HIV infections}
+  & \multicolumn{4}{c}{HIV incidence rate} \\
+  \cmidrule(rl){2-5}\cmidrule(rl){6-9}
+  & \multicolumn{2}{c}{raw (1000s)}       & \multicolumn{2}{c}{relative (\%)\tn{a}}
+  & \multicolumn{2}{c}{raw (per 1000 PY)} & \multicolumn{2}{c}{relative (\%)\tn{a}} \\
   \cmidrule(rl){2-3}\cmidrule(rl){4-5}\cmidrule(rl){6-7}\cmidrule(rl){8-9}
-  Scenario                           & Mean & (95\%~CI) & Mean & (95\%~CI) & Mean & (95\%~CI) & Mean & (95\%~CI) \\
+  Scenario                           & Mean & (95\%~CI)  & Mean &    (95\%~CI) & Mean &  (95\%~CI)  & Mean & (95\%~CI)  \\
   \midrule
-  \emph{Base Case}                    & 349 & (332,~372) &  --- &      ---     &  7 &  (5,~8)  & --- &     ---    \\
-  \emph{Leave Behind: FSW}            & 388 & (362,~406) &  8.4 & (10.9,~13.3) & 16 & (13,~18) & 106 & (140,~179) \\
-  \emph{Leave Behind: Clients}        & 392 & (370,~409) &  9.8 & (12.4,~14.6) & 17 & (14,~20) & 120 & (163,~201) \\
-  \emph{Leave Behind: FSW \& Clients} & 400 & (381,~419) & 10.8 & (14.3,~18.6) & 19 & (15,~22) & 152 & (193,~235) \\
-  \emph{Leave Behind: Neither}        & 381 & (353,~398) &  6.3 &  (8.8,~10.9) & 13 & (11,~16) &  68 & (106,~138) \\
+  \emph{Base Case}                    & 349 & (332,~372) &  --- &      ---     &  6.6 &  (5.3,~7.6)  & --- &     ---    \\
+  \emph{Leave Behind: FSW}            & 388 & (362,~406) & 10.9 &  (8.4,~13.3) & 15.7 & (13.3,~18.2) & 140 & (106,~179) \\
+  \emph{Leave Behind: Clients}        & 392 & (370,~409) & 12.4 &  (9.8,~14.6) & 17.3 & (14.4,~19.9) & 163 & (120,~201) \\
+  \emph{Leave Behind: FSW \& Clients} & 400 & (381,~419) & 14.3 & (10.8,~18.6) & 19.1 & (15.2,~22.3) & 193 & (152,~235) \\
+  \emph{Leave Behind: Neither}        & 381 & (353,~398) &  8.8 &  (6.3,~10.9) & 13.3 & (10.8,~15.7) & 106 &  (68,~138) \\
   \bottomrule
 \end{tabular}
 \floatfoot{\ffart;
-  \tnt[a]{CI:  cumulative HIV infections (000s)};
-  \tnt[b]{CAI: relative cumulative additional infections (\%) \vs base case};
-  \tnt[c]{IR:  HIV incidence rate (per 1000 person-years)};
-  \tnt[d]{AIR: relative additional incidence rate (\%) \vs base case};
+  \tnt[a]{relative increase \vs base case as defined in \eqref{eq:art.out}
+    --- \ie $(\txn{scenario} - \txn{base}) / \txn{base}$};
   all outcomes for 2020.}
