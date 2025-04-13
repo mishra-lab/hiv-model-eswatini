@@ -68,6 +68,7 @@ Thus, we sampled relative infectiousness on ART but before viral suppression ($c
 from a BAB distribution with mean (95\%~CI) of 0.25~(0.01,~0.67).
 Finally, we assumed that the virally un-suppressed state ($c=5$) had
 half the reduced infectiousness of $c=3$, yielding 95\%~CI: (0.50,~0.83).
+All reductions are applied relative to HIV stage-specific infectiousness.
 %---------------------------------------------------------------------------------------------------
 \subsubsection{HIV Progression \& Mortality on ART}\label{mod.par.art.hiv}
 \def\hunprog{$h = 6 \rightarrow 5 \rightarrow 4 \rightarrow 3$\xspace}
@@ -146,7 +147,7 @@ to reproduce the available data on HIV+ status awareness via model calibration.
 To this end, we parameterized HIV diagnosis rates over time based on reported testing rates (below),
 with a global reduction factor $f \sim \opname{Unif}(0.5,1)$.
 We further specified diagnosis rates using non-FSW women as a reference group,
-with separate time-varying \emph{relative} rates defined for FSW and men.
+with separate time-varying \emph{relative} rates defined for FSW ($> 1$) and men ($< 1$).
 Confidence intervals for relative rates were assumed using
 a standard deviation of 0.2 for FSW and 0.1 for men (gamma priors).
 %---------------------------------------------------------------------------------------------------
@@ -335,7 +336,7 @@ but among 354 FSW on ART in \cite{EswIBBS2022} (2021),
 of whom only 8 self-reported undetectable viral load.
 Such data may again reflect the unique barriers to accessing ART faced by FSW \cite{Lancaster2016sr}.
 \par
-Considering all of the above data,  assumed:
+Considering all of the above data, we assumed:
 a yearly rate of viral un-suppression $\zeta$ among non-FSW women of
 15\% until 2010, decreasing to 5\% by 2018;
 plus relative rates for men and FSW: [1,~1.5] (uniform priors).
